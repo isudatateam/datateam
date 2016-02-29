@@ -12,7 +12,7 @@ import pyiem.cscap_utils as util
 
 
 config = util.get_config(
-    '/mesonet/www/apps/iemwebsite/scripts/cscap/mytokens.json')
+    '/mesonet/www/apps/datateam/config/mytokens.json')
 
 
 def clean(val):

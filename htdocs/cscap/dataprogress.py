@@ -13,7 +13,7 @@ ALL = " ALL SITES"
 varorder = []
 varlookup = {}
 
-CFG = "/mesonet/www/apps/iemwebsite/scripts/cscap/mytokens.json"
+CFG = "/mesonet/www/apps/datateam/config/mytokens.json"
 
 
 def build_vars(mode):

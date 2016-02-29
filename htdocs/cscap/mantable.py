@@ -20,7 +20,7 @@ COVER_SITES = ['MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
 
 def reload_data():
     """ Run the sync script to download data from Google """
-    os.chdir("/mesonet/www/apps/iemwebsite/scripts/cscap")
+    os.chdir("/mesonet/www/apps/datateam/scripts/cscap")
     p = subprocess.Popen("python harvest_management.py", shell=True,
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
