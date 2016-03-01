@@ -7,7 +7,7 @@ import datetime
 import pandas as pd
 import numpy as np
 
-CENTRAL_TIME = ['ISUAG', 'ISUAG.USB', 'GILMORE', 'SERF']
+CENTRAL_TIME = ['ISUAG', 'ISUAG.USB', 'GILMORE', 'SERF', 'HICKS.B', 'HICKS.G']
 
 
 def translate(df):
@@ -85,7 +85,7 @@ def process3(fn):
 def process5(uniqueid, dirname):
     """Look through a directory of XL files"""
     os.chdir(dirname)
-    files = glob.glob("WS3*.xlsx")
+    files = glob.glob("*.xlsx")
     files.sort()
     for fn in files:
         plotid = fn.split()[0]
@@ -103,6 +103,62 @@ def process5(uniqueid, dirname):
         if len(df.index) > 0:
             database_save(uniqueid, plotid, df)
     return {}
+
+
+def process6(uniqueid, dirname):
+    """HICKS"""
+    os.chdir(dirname)
+    files = glob.glob("*.xlsx")
+    files.sort()
+    for fn in files:
+        plotid = fn.split("_")[1].replace("Field", "")
+        thissite = "HICKS.%s" % (plotid[0], )
+        plotid = plotid[1]
+        print fn, thissite, plotid
+        df = pd.read_excel(fn, sheetname=None)
+        print df
+
+
+def process7(uniqueid, fn):
+    """Kellogg"""
+    df = pd.read_excel(fn)
+    x = {}
+    plotids = []
+    for colname in df.columns:
+        if colname == 'valid':
+            continue
+        depth = colname.split("-")[-1]
+        if depth == "20":
+            port = 2
+        elif depth == '40':
+            port = 3
+        elif depth == '60':
+            port = 4
+        elif depth == '80':
+            port = 5
+        else:
+            print colname
+            sys.exit()
+        plotid = "-".join(colname.split("-")[:-1])
+        if plotid not in plotids:
+            plotids.append(plotid)
+        x[colname] = "%s_d%smoisture" % (plotid, port)
+
+    df.rename(columns=x, inplace=True)
+    df2 = {}
+    for plotid in plotids:
+        df2[plotid] = pd.DataFrame(
+            {'valid': df['valid'],
+             'd2moisture': df['%s_d2moisture' % (plotid, )],
+             'd3moisture': df['%s_d3moisture' % (plotid, )],
+             'd4moisture': (df['%s_d4moisture' % (plotid, )] if
+                            '%s_d4moisture' % (plotid, ) in df.columns else
+                            None),
+             'd5moisture': (df['%s_d5moisture' % (plotid, )] if
+                            '%s_d5moisture' % (plotid, ) in df.columns else
+                            None)})
+
+    return df2
 
 
 def database_save(uniqueid, plot, df):
@@ -195,6 +251,10 @@ def main(argv):
         df = process4(fn)
     elif fmt == '5':
         df = process5(uniqueid, fn)
+    elif fmt == '6':
+        df = process6(uniqueid, fn)
+    elif fmt == '7':
+        df = process7(uniqueid, fn)
     if isinstance(df, dict):
         for plot in df:
             print(("File: %s[%s] found: %s lines for columns %s"
