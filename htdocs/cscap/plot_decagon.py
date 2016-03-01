@@ -1,18 +1,13 @@
 #!/usr/bin/env python
 """Decagon SM Plot!"""
 import psycopg2
-import matplotlib
 import sys
-import cStringIO
+import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
 import cgi
 import datetime
-import pytz
 import os
-matplotlib.use('agg')
-import matplotlib.pyplot as plt  # NOPEP8
-import matplotlib.dates as mdates  # NOPEP8
 
 DEPTHS = [None, '10 cm', '20 cm', '40 cm', '60 cm', '100 cm']
 
@@ -23,21 +18,16 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
 
 def send_error(msg):
     """" """
-    fig, ax = plt.subplots(1, 1)
-    ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha='center')
-    sys.stdout.write("Content-type: image/png\n\n")
-    ram = cStringIO.StringIO()
-    fig.savefig(ram, format='png')
-    ram.seek(0)
-    sys.stdout.write(ram.read())
+    sys.stdout.write("Content-type: application/javascript\n\n")
+    sys.stdout.write("alert('No data found, sorry');")
     sys.exit()
 
 
 def make_plot(form):
     """Make the plot"""
     (uniqueid, plotid) = form.getfirst('site', 'ISUAG::302E').split("::")
-    if uniqueid == 'MASON':
-        DEPTHS[1] = None
+    if uniqueid in ['KELLOGG', 'MASON']:
+        DEPTHS[1] = '-'
         DEPTHS[5] = '80 cm'
     elif uniqueid == 'NAEW':
         DEPTHS[1] = '5 cm'
@@ -46,15 +36,14 @@ def make_plot(form):
         DEPTHS[4] = '30 cm'
         DEPTHS[5] = '50 cm'
 
-    sts = datetime.datetime.strptime(form.getfirst('date', '2014-01-01'),
+    sts = datetime.datetime.strptime(form.getfirst('date', '2014-06-10'),
                                      '%Y-%m-%d')
     days = int(form.getfirst('days', 1))
     ets = sts + datetime.timedelta(days=days)
     pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb')
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
-    tz = pytz.timezone(tzname)
-    viewopt = form.getfirst('view', 'plot')
+    viewopt = form.getfirst('view', 'js')
     ptype = form.getfirst('ptype', '1')
     plotid_limit = "and plotid = '%s'" % (plotid, )
     depth = form.getfirst('depth', 'all')
@@ -75,6 +64,9 @@ def make_plot(form):
         from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
+        df['v'] = df['v'].apply(
+            lambda x: x.tz_localize('UTC').tz_convert(tzname))
+
     elif ptype in ['3', '4']:
         res = 'hour' if ptype == '3' else 'week'
         df = read_sql("""SELECT
@@ -109,7 +101,7 @@ def make_plot(form):
         df['v'] = df['v'].apply(
             lambda x: x.tz_localize('UTC').tz_convert(tzname))
 
-    if viewopt != 'plot':
+    if viewopt != 'js':
         df.rename(columns=dict(v='timestamp',
                                d1t='%s Temp (C)' % (DEPTHS[1], ),
                                d2t='%s Temp (C)' % (DEPTHS[2], ),
@@ -158,80 +150,150 @@ def make_plot(form):
             os.unlink('/tmp/ss.xlsx')
             return
 
-    (fig, ax) = plt.subplots(2, 1, sharex=True)
+    # Begin highcharts output
     lbl = "Plot:%s" % (plotid,)
     if depth != 'all':
         lbl = "Depth:%s" % (DEPTHS[int(depth)],)
-    ax[0].set_title(("Decagon Temperature + Moisture for\n"
-                     "Site:%s %s Period:%s to %s"
-                     ) % (uniqueid, lbl, sts.date(), ets.date()))
+    title = ("Decagon Temperature + Moisture for "
+             "Site:%s %s Period:%s to %s"
+             ) % (uniqueid, lbl, sts.date(), ets.date())
+    sys.stdout.write("Content-type: application/javascript\n\n")
+    sys.stdout.write("""
+/**
+ * In order to synchronize tooltips and crosshairs, override the
+ * built-in events with handlers defined on the parent element.
+ */
+var charts = [],
+    options;
+
+/**
+ * Synchronize zooming through the setExtremes event handler.
+ */
+function syncExtremes(e) {
+    var thisChart = this.chart;
+
+    if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
+        Highcharts.each(Highcharts.charts, function (chart) {
+            if (chart !== thisChart) {
+                if (chart.xAxis[0].setExtremes) { // It is null while updating
+                    chart.xAxis[0].setExtremes(e.min, e.max, undefined, false,
+                    { trigger: 'syncExtremes' });
+                }
+            }
+        });
+    }
+}
+
+function syncTooltip(container, p) {
+    var i = 0;
+    for (; i < charts.length; i++) {
+        if (container.id != charts[i].container.id) {
+            var d = [];
+            for (j=0; j < charts[i].series.length; j++){
+                d[j] = charts[i].series[j].data[p];
+            }
+            charts[i].tooltip.refresh(d);
+        }
+    }
+}
+
+
+options = {
+    chart: {zoomType: 'x'},
+    plotOptions: {
+        series: {
+            point: {
+                events: {
+                    mouseOver: function () {
+                        // Note, I converted this.x to this.index
+                        syncTooltip(this.series.chart.container, this.index);
+                    }
+                }
+            }
+        }
+    },
+    tooltip: {
+        shared: true,
+        crosshairs: true
+    },
+    xAxis: {
+        type: 'datetime',
+        crosshair: true,
+        events: {
+            setExtremes: syncExtremes
+        }
+    }
+};
+
+""")
+    # to_json can't handle serialization of dt
+    df['ticks'] = df['v'].astype(np.int64) // 10 ** 6
+    lines = []
+    lines2 = []
     if depth == 'all':
-        ax[0].plot(df['v'], df['d1t'].astype('f'), c='r', lw=2,
-                   label=DEPTHS[1])
-        ax[0].plot(df['v'], df['d2t'].astype('f'), c='purple', lw=2,
-                   label=DEPTHS[2])
-        ax[0].plot(df['v'], df['d3t'].astype('f'), c='b', lw=2,
-                   label=DEPTHS[3])
-        ax[0].plot(df['v'], df['d4t'].astype('f'), c='g', lw=2,
-                   label=DEPTHS[4])
-        ax[0].plot(df['v'], df['d5t'].astype('f'), c='turquoise', lw=2,
-                   label=DEPTHS[5])
-        lines = 5
+        for i, n in enumerate(['d1t', 'd2t', 'd3t', 'd4t', 'd5t']):
+            v = df[['ticks', n]].to_json(orient='values')
+            lines.append("""{
+            name: '"""+DEPTHS[i+1]+""" Temp',
+            type: 'line',
+            tooltip: {valueDecimal: 1},
+            data: """+v+"""
+            }
+            """)
+        for i, n in enumerate(['d1m', 'd2m', 'd3m', 'd4m', 'd5m']):
+            v = df[['ticks', n]].to_json(orient='values')
+            lines2.append("""{
+            name: '"""+DEPTHS[i+1]+""" VSM',
+            type: 'line',
+            tooltip: {valueDecimal: 3},
+            data: """+v+"""
+            }
+            """)
     else:
         dlevel = "d%st" % (depth, )
         plot_ids = df['plotid'].unique()
         plot_ids.sort()
         for i, plotid in enumerate(plot_ids):
             df2 = df[df['plotid'] == plotid]
-            ax[0].plot(df2['v'], df2[dlevel].astype('f'), lw=2,
-                       label=plotid, linestyle=LINESTYLE[i])
-        lines = len(df['plotid'].unique())
-
-    ax[0].grid()
-    ax[0].set_ylabel("Temperature [C]")
-    if lines < 7:
-        ax[0].legend(loc='upper center', bbox_to_anchor=(0.5, 0), ncol=6,
-                     fontsize=12)
-    else:
-        ax[0].legend(loc='upper center', bbox_to_anchor=(0.5, 0), ncol=6,
-                     fontsize=8)
-    if depth == 'all':
-        ax[1].plot(df['v'], df['d1m'].astype('f'), c='r', lw=2)
-        ax[1].plot(df['v'], df['d2m'].astype('f'), c='purple', lw=2)
-        ax[1].plot(df['v'], df['d3m'].astype('f'), c='b', lw=2)
-        ax[1].plot(df['v'], df['d4m'].astype('f'), c='g', lw=2)
-        ax[1].plot(df['v'], df['d5m'].astype('f'), c='turquoise', lw=2)
-        # v = min([df['d1m'].min(), df['d2m'].min(), df['d3m'].min(),
-        #         df['d4m'].min(), df['d5m'].min()])
-        # v2 = max([df['d1m'].max(), df['d2m'].max(), df['d3m'].max(),
-        #          df['d4m'].max(), df['d5m'].max()])
-        # ax[1].set_ylim(0 if v > 0 else v, v2 + v2 * 0.05)
-    else:
+            v = df2[['ticks', dlevel]].to_json(orient='values')
+            lines.append("""{
+            name: '"""+plotid+"""',
+            type: 'line',
+            tooltip: {valueDecimal: 3},
+            data: """+v+"""
+            }
+            """)
         dlevel = "d%sm" % (depth, )
         plot_ids = df['plotid'].unique()
         plot_ids.sort()
         for i, plotid in enumerate(plot_ids):
             df2 = df[df['plotid'] == plotid]
-            ax[1].plot(df2['v'], df2[dlevel].astype('f'), lw=2,
-                       linestyle=LINESTYLE[i])
-    ax[1].grid(True)
-    ax[1].set_ylabel("Volumetric Soil Moisture [cm$^{3}$ cm$^{-3}$]",
-                     fontsize=9)
-    if days > 4:
-        ax[1].xaxis.set_major_formatter(mdates.DateFormatter('%-d %b\n%Y',
-                                                             tz=tz))
-    else:
-        ax[1].xaxis.set_major_formatter(
-            mdates.DateFormatter('%I %p\n%-d %b', tz=tz))
-    ax[1].set_xlabel("Time (%s Timezone)" % (tzname, ))
-    plt.subplots_adjust(bottom=0.15)
-    box = ax[1].get_position()
-    ax[1].set_position([box.x0, box.y0, box.width, box.height * 0.95])
-    sys.stdout.write("Content-type: image/png\n\n")
-    ram = cStringIO.StringIO()
-    fig.savefig(ram, format='png')
-    ram.seek(0)
-    sys.stdout.write(ram.read())
+            v = df2[['ticks', dlevel]].to_json(orient='values')
+            lines2.append("""{
+            name: '"""+plotid+"""',
+            type: 'line',
+            tooltip: {valueDecimal: 3},
+            data: """+v+"""
+            }
+            """)
+    series = ",".join(lines)
+    series2 = ",".join(lines2)
+    sys.stdout.write("""
+charts[0] = new Highcharts.Chart($.extend(true, {}, options, {
+    chart: { renderTo: 'hc1'},
+    title: {text: '"""+title+"""'},
+    yAxis: {title: {text: 'Temperature [C]'}},
+    series: ["""+series+"""]
+}));
+charts[1] = new Highcharts.Chart($.extend(true, {}, options, {
+    chart: { renderTo: 'hc2'},
+    title: {text: '"""+title+"""'},
+    yAxis: {title: {text: 'Volumetric Soil Moisture [cm3/cm3]'}},
+    series: ["""+series2+"""]
+}));
+    """)
+
+    # ax[1].set_xlabel("Time (%s Timezone)" % (tzname, ))
 
 
 def main():
