@@ -16,6 +16,9 @@ for sheet in action.data:
     hits = 0
     cnt = 0
     for row in s.rows:
+        # Avoid empty rows
+        if row.cells[idx].value is None:
+            continue
         if row.cells[idx].value is True:
             hits += 1
         cnt += 1
