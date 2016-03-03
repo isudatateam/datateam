@@ -23,6 +23,7 @@ def process2(spreadsheetid):
     bigdf = pd.DataFrame(rows)
     bigdf['valid'] = pd.to_datetime(bigdf['enddate'], format='%m/%d/%Y',
                                     errors='coerce')
+    bigdf['valid'] = bigdf['valid'].apply(lambda s: s.replace(hour=12))
     bigdf['wat1'] = pd.to_numeric(bigdf['wat1'], errors='coerce')
     bigdf['discharge_mm'] = bigdf['wat1']
     for plotid in bigdf['plotid'].unique():
