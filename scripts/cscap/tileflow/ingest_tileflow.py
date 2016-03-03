@@ -3,8 +3,31 @@ import psycopg2
 import sys
 import datetime
 import numpy as np
+from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
 
 CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
+
+
+def process2(spreadsheetid):
+    """ Ingest a google sheet of data """
+    config = get_config()
+    sprclient = get_spreadsheet_client(config)
+    ss = Spreadsheet(sprclient, spreadsheetid)
+    df = dict()
+    rows = []
+    for year in ss.worksheets:
+        sheet = ss.worksheets[year]
+        lf = sheet.get_list_feed()
+        for entry in lf.entry:
+            rows.append(entry.to_dict())
+    bigdf = pd.DataFrame(rows)
+    bigdf['valid'] = pd.to_datetime(bigdf['enddate'], format='%m/%d/%Y',
+                                    errors='coerce')
+    bigdf['wat1'] = pd.to_numeric(bigdf['wat1'], errors='coerce')
+    bigdf['discharge_mm'] = bigdf['wat1']
+    for plotid in bigdf['plotid'].unique():
+        df[plotid] = bigdf[bigdf['plotid'] == plotid].copy()
+    return df
 
 
 def process1(fn):
@@ -26,6 +49,12 @@ def database_save(df, uniqueid, plotid):
         if not isinstance(row['valid'], datetime.datetime):
             print('Row df.index=%s, valid=%s, culling' % (i, row['valid']))
             df.drop(i, inplace=True)
+        elif row['valid'] is pd.NaT:
+            print('Row df.index=%s, valid=%s, culling' % (i, row['valid']))
+            df.drop(i, inplace=True)
+    if len(df.index) == 0:
+        print("Skipping plot: %s as there is no data?" % (plotid,))
+        return
     minvalid = df['valid'].min()
     maxvalid = df['valid'].max()
     print("Time Domain: %s - %s" % (minvalid, maxvalid))
@@ -85,8 +114,11 @@ def main(argv):
     plotid = argv[4]
     if fmt == '1':
         df = process1(fn)
-        for plotid in df:
-            database_save(df[plotid], uniqueid, plotid)
+    elif fmt == '2':
+        df = process2(fn)
+    for plotid in df:
+        print("  --> database_save plotid: %s" % (plotid,))
+        database_save(df[plotid], uniqueid, plotid)
 
 
 if __name__ == '__main__':
