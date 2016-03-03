@@ -13,7 +13,6 @@ import os
 import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
-import matplotlib.dates as mdates  # NOPEP8
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
@@ -48,10 +47,8 @@ def make_plot(form):
                               user='nobody')
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
-    tz = pytz.timezone(tzname)
     viewopt = form.getfirst('view', 'plot')
     ptype = form.getfirst('ptype', '1')
-    plotid_limit = "and plotid = '%s'" % (plotid, )
     if ptype == '1':
         df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
         depth_mm_qc as depth, coalesce(depth_mm_qcflag, '') as depth_f
@@ -118,14 +115,14 @@ def make_plot(form):
     s = []
     plot_ids = df['plotid'].unique()
     plot_ids.sort()
-    df['ticks'] = df['v'].astype(np.int64) // 10 ** 6
+    df['ticks'] = pd.to_datetime(df['v']).astype(np.int64) // 10 ** 6
     for plotid in plot_ids:
         df2 = df[df['plotid'] == plotid]
-        s.append(("""{
+        v = df2[['ticks', 'depth']].to_json(orient='values')
+        s.append("""{
             name: '"""+plotid+"""',
-            data: """ + str([[a, b] for a, b in zip(df2['ticks'].values,
-                                                    df2['depth'].values)]) + """
-        }""").replace("None", "null").replace("nan", "null"))
+            data: """ + v + """
+        }""")
     series = ",".join(s)
     sys.stdout.write("""
 $("#hc").highcharts({
