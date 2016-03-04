@@ -38,8 +38,10 @@ def process1(fn):
     df = pd.read_excel(fn, sheetname=None, na_values=['NaN'])
     for sector in ['NW', 'NE', 'SE', 'SW']:
         df2[sector]['valid'] = df['Drainage Flow']['Date&Time']
-        df2[sector]['discharge_mm'] = df['Drainage Flow']['%s_Discharge(mm)' % (sector,)]
-        df2[sector]['discharge_m3'] = df['Tile Net Discharge']['%s_Discharge(m3)' % (sector,)]
+        df2[sector]['discharge_mm'] = (
+            df['Drainage Flow']['%s_Discharge(mm)' % (sector,)])
+        df2[sector]['discharge_m3'] = (
+            df['Tile Net Discharge']['%s_Discharge(m3)' % (sector,)])
     return df2
 
 
