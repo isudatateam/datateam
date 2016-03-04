@@ -89,7 +89,7 @@ def process5(uniqueid, dirname):
     files.sort()
     for fn in files:
         plotid = fn.split()[0]
-        df = pd.read_excel(fn, index_col=False)
+        df = pd.read_excel(fn, index_col=None)
         row0 = df.iloc[0, :]
         row1 = df.iloc[1, :]
         reg = {df.columns[0]: 'valid'}
@@ -108,15 +108,42 @@ def process5(uniqueid, dirname):
 def process6(uniqueid, dirname):
     """HICKS"""
     os.chdir(dirname)
-    files = glob.glob("*.xlsx")
+    files = glob.glob("*2015.xlsx")
     files.sort()
+    res = {}
+    rename = {'Port 1 VWC': 'd1moisture', 'Port 1 Temp': 'd1temp',
+              'Port 2 VWC': 'd2moisture', 'Port 2 Temp': 'd2temp',
+              'Port 3 VWC': 'd3moisture', 'Port 3 Temp': 'd3temp',
+              'Port 4 VWC': 'd4moisture', 'Port 4 Temp': 'd4temp',
+              'Port 5 VWC': 'd5moisture', 'Port 5 Temp': 'd5temp'}
     for fn in files:
         plotid = fn.split("_")[1].replace("Field", "")
         thissite = "HICKS.%s" % (plotid[0], )
         plotid = plotid[1]
         print fn, thissite, plotid
         df = pd.read_excel(fn, sheetname=None)
-        print df
+        sheets = df.keys()
+        df[sheets[0]].set_index('valid', inplace=True)
+        df[sheets[1]].set_index('valid', inplace=True)
+        print df[sheets[0]].columns
+        print df[sheets[1]].columns
+        if 'Port 1 VWC' in df[sheets[0]].columns:
+            print 'Port 1 in sheet 0'
+            ldf = df[sheets[0]].copy()
+            two = 1
+        else:
+            ldf = df[sheets[1]].copy()
+            two = 0
+        for col in ['Port 3 VWC', 'Port 3 Temp',
+                    'Port 4 VWC', 'Port 4 Temp',
+                    'Port 5 VWC', 'Port 5 Temp']:
+            ldf[col] = df[sheets[two]][col]
+        ldf.reset_index(inplace=True)
+        ldf.rename(columns=rename, inplace=True)
+        ldf.fillna(method='bfill', inplace=True, limit=12)
+        ldf['valid'] = pd.to_datetime(ldf['valid'])
+        res[plotid] = ldf.copy()
+    return res
 
 
 def process7(uniqueid, fn):
