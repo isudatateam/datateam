@@ -8,6 +8,17 @@ from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
 CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
 
 
+def process3(fn):
+    """ SERF"""
+    df = pd.read_excel(fn, sheetname=None)
+    for plotid in df:
+        df[plotid]['valid'] = pd.to_datetime(df[plotid]['valid'],
+                                             format='%m/%d/%Y %H:%M',
+                                             errors='coerce')
+        df[plotid]['discharge_mm'] = df[plotid]['WAT1']
+    return df
+
+
 def process2(spreadsheetid):
     """ Ingest a google sheet of data """
     config = get_config()
@@ -78,7 +89,7 @@ def database_save(df, uniqueid, plotid):
         if val is None:
             return 'null'
         if isinstance(val, unicode):
-            if val.strip().lower() in ['nan', ]:
+            if val.strip().lower() in ['nan', 'did not collect']:
                 return 'null'
             return val
         # elif isinstance(val, pd.core.series.Series):
@@ -119,6 +130,8 @@ def main(argv):
         df = process1(fn)
     elif fmt == '2':
         df = process2(fn)
+    elif fmt == '3':
+        df = process3(fn)
     for plotid in df:
         print("  --> database_save plotid: %s" % (plotid,))
         database_save(df[plotid], uniqueid, plotid)
