@@ -46,6 +46,19 @@ def process1(fn):
     return df
 
 
+def process4(fn):
+    """ DPAC, round 2"""
+    df = pd.read_excel(fn)
+    df['valid'] = pd.to_datetime(df['valid'], errors='coerse')
+    res = {}
+    for plotid in ['SW', 'SE', 'NW', 'NE']:
+        res[plotid] = df[['valid', plotid]].copy()
+        res[plotid].rename(columns={plotid: 'depth'}, inplace=True)
+        res[plotid]['depth'] = pd.to_numeric(res[plotid]['depth'],
+                                             errors='coerse')
+    return res
+
+
 def database_save(df, uniqueid, plotid):
     pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb')
     cursor = pgconn.cursor()
@@ -111,14 +124,15 @@ def main(argv):
     if fmt == '1':
         df = process1(fn)
         database_save(df, uniqueid, plotid)
+        return
     elif fmt == '2':
         df = process2(fn)
-        for plotid in df:
-            database_save(df[plotid], uniqueid, plotid)
     elif fmt == '3':
         df = process3(fn)
-        for plotid in df:
-            database_save(df[plotid], uniqueid, plotid)
+    elif fmt == '4':
+        df = process4(fn)
+    for plotid in df:
+        database_save(df[plotid], uniqueid, plotid)
 
 
 if __name__ == '__main__':
