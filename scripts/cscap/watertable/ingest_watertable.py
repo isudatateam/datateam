@@ -48,8 +48,9 @@ def process1(fn):
 
 def process4(fn):
     """ DPAC, round 2"""
-    df = pd.read_excel(fn)
-    df['valid'] = pd.to_datetime(df['valid'], errors='coerse')
+    df = pd.read_excel(fn, na_values=['NaN', ])
+    # Unknown Excel issue here.
+    df['valid'] = df.valid + datetime.timedelta(seconds=1)
     res = {}
     for plotid in ['SW', 'SE', 'NW', 'NE']:
         res[plotid] = df[['valid', plotid]].copy()
@@ -103,12 +104,13 @@ def database_save(df, uniqueid, plotid):
             return 'null'
         return val
     for _, row in df.iterrows():
+        myv = v(row, 'depth')
         cursor.execute("""
         INSERT into watertable_data(uniqueid, plotid, valid,
         depth_mm, depth_mm_qc) VALUES ('%s', '%s', '%s', %s, %s)
         """ % (uniqueid, plotid,
                row['valid'].strftime("%Y-%m-%d %H:%M-"+tzoff),
-               v(row, 'depth'), v(row, 'depth')))
+               myv, myv))
 
     print("Processed %s entries" % (len(df.index), ))
     cursor.close()
