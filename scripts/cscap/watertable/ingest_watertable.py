@@ -3,8 +3,29 @@ import psycopg2
 import sys
 import datetime
 import numpy as np
+import pyiem.cscap_utils as util
 
 CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
+
+
+def process5(spreadkey):
+    """ SERF, round 2"""
+    sprclient = util.get_spreadsheet_client(util.get_config())
+    spreadsheet = util.Spreadsheet(sprclient, spreadkey)
+    lf = spreadsheet.worksheets['2011-2015'].get_list_feed()
+    rows = []
+    for entry in lf.entry:
+        rows.append(entry.to_dict())
+    df = pd.DataFrame(rows)
+    df['valid'] = pd.to_datetime(df['valid'])
+    res = {}
+    for plotid in [str(s) for s in range(1, 9)]:
+        df['plot%swatertablemm' % (plotid,)] = pd.to_numeric(
+                        df['plot%swatertablemm' % (plotid,)], errors='coerse')
+        res[plotid] = df[['valid', 'plot%swatertablemm' % (plotid,)]].copy()
+        res[plotid].columns = ['valid', 'depth']
+
+    return res
 
 
 def process3(fn):
@@ -95,7 +116,7 @@ def database_save(df, uniqueid, plotid):
         #    print row
         #    sys.exit()
         try:
-            if np.isnan(val):
+            if pd.isnull(val):
                 return 'null'
         except Exception, exp:
             print exp
@@ -133,6 +154,8 @@ def main(argv):
         df = process3(fn)
     elif fmt == '4':
         df = process4(fn)
+    elif fmt == '5':
+        df = process5(fn)
     for plotid in df:
         database_save(df[plotid], uniqueid, plotid)
 
