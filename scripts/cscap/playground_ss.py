@@ -13,14 +13,18 @@ for sheet in action.data:
     for col in s.columns:
         titles.append(col.title)
     idx = titles.index('DONE')
+    sidx = titles.index('Site')
     hits = 0
     cnt = 0
+    site = sheet.name.split("_", 1)[1]
     for row in s.rows:
-        # Avoid empty rows
-        if row.cells[idx].value is None:
+        # Check Site Column to see if it is null
+        if row.cells[sidx].value is None:
             continue
+        # if row.cells[sidx].value != site:
+        #    print("WHOA: site: %s row: %s" % (site, row.cells[sidx].value))
         if row.cells[idx].value is True:
             hits += 1
         cnt += 1
-    print "%s,%s,%s,%.2f" % (sheet.name.split("_", 1)[1], hits, cnt,
+    print "%s,%s,%s,%.2f" % (site, hits, cnt,
                              hits / float(cnt) * 100.)
