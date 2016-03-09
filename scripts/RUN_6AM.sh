@@ -27,3 +27,6 @@ python harvest_soil_bd.py 2015
 
 python email_daily_changes.py cscap
 python email_daily_changes.py td
+
+cd ../auth
+python drive2webaccess.py
