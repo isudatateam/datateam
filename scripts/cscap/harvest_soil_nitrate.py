@@ -93,7 +93,12 @@ for item in res['items']:
                     print(("h_soil_nitrate %s[%s] unknown sample date %s"
                            ) % (siteid, YEAR, repr(colheading)))
                 date = None
-            val = worksheet.get_cell_value(row, col, numeric=True)
+            inval = worksheet.get_cell_value(row, col)
+            val = util.cleanvalue(inval)
+            if inval is not None and val is None:
+                print(("harvest_soil_nitrate found None. site: %s year: %s "
+                       " row: %s col: %s varname: %s"
+                       ) % (siteid, YEAR, row, col, varname))
             if varname not in DOMAIN:
                 print(("harvest_soil_nitrate %s[%s] found additional var: %s"
                        ) % (siteid, YEAR, varname))

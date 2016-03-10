@@ -83,7 +83,12 @@ for item in res['items']:
                 #                    worksheet.get_cell_value(1,col).strip(),
                 #                    siteid, YEAR)
                 continue
-            val = worksheet.get_cell_value(row, col, numeric=True)
+            inval = worksheet.get_cell_value(row, col)
+            val = util.cleanvalue(inval)
+            if inval is not None and val is None:
+                print(("harvest_soil_bd found None. site: %s year: %s "
+                       " row: %s col: %s varname: %s"
+                       ) % (siteid, YEAR, row, col, varname))
             try:
                 pcursor.execute("""
                     INSERT into soil_data(site, plotid, varname, year,

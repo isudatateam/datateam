@@ -70,7 +70,12 @@ for item in res['items']:
                        ) % (YEAR, siteid, col))
                 continue
             varname = worksheet.get_cell_value(1, col).strip().split()[0]
-            val = worksheet.get_cell_value(row, col, numeric=True)
+            inval = worksheet.get_cell_value(row, col)
+            val = util.cleanvalue(inval)
+            if inval is not None and val is None:
+                print(("harvest_soil_texture found None. site: %s year: %s "
+                       " row: %s col: %s varname: %s"
+                       ) % (siteid, YEAR, row, col, varname))
             if varname == 'subsample':
                 subsample = "%.0f" % (float(val), )
                 continue

@@ -64,7 +64,12 @@ for item in res['items']:
             plotid = worksheet.get_cell_value(row, plotidcol)
             if plotid is None:
                 continue
-            val = worksheet.get_cell_value(row, col, numeric=True)
+            inval = worksheet.get_cell_value(row, col)
+            val = util.cleanvalue(inval)
+            if inval is not None and val is None:
+                print(("harvest_agronomic found None. site: %s year: %s "
+                       " row: %s col: %s varname: %s"
+                       ) % (siteid, YEAR, row, col, varname))
             # print row, col, plotid, varname, YEAR, val
             try:
                 pcursor.execute("""
