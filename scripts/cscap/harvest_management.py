@@ -78,7 +78,13 @@ for sheetkey in TABS:
         sql = """
             INSERT into %s(%s) VALUES (%s)
             """ % (table, ",".join(cols), ','.join(["%s"]*len(cols)))
-        pcursor.execute(sql, vals)
+        try:
+            pcursor.execute(sql, vals)
+        except Exception as exp:
+            print("harvest_management traceback")
+            print exp
+            for a, b in zip(cols, vals):
+                print("   |%s| -> |%s|" % (a, b))
         added += 1
 
     for key in current.keys():
