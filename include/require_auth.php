@@ -17,5 +17,5 @@ function authorize(){
 	}
 }
 
-authorize();
+//authorize();
 ?>
