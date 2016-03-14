@@ -8,6 +8,34 @@ import pyiem.cscap_utils as util
 CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
 
 
+def process6(spreadkey):
+    """ STJOHNS, round 2"""
+    sprclient = util.get_spreadsheet_client(util.get_config())
+    spreadsheet = util.Spreadsheet(sprclient, spreadkey)
+    rows = []
+    for yr in ['2011', '2012', '2013', '2014', '2015']:
+        lf = spreadsheet.worksheets[yr].get_list_feed()
+        for i, entry in enumerate(lf.entry):
+            if i == 0:
+                continue
+            rows.append(entry.to_dict())
+    df = pd.DataFrame(rows)
+    #print df
+    df['valid'] = df['datetime'].apply(lambda x:
+                                       datetime.datetime.strptime(x,
+                                                '%m/%d/%Y %H:%M:%S'))
+    res = {}
+    print df.columns
+    for plotid in ['WN', 'WS']:
+        df['plot%swatertablemm' % (plotid,)] = pd.to_numeric(
+                        df['%swat4watertabledepth' % (plotid.lower(),)],
+                        errors='coerse') * 10.
+        res[plotid] = df[['valid', 'plot%swatertablemm' % (plotid,)]].copy()
+        res[plotid].columns = ['valid', 'depth']
+
+    return res
+
+
 def process5(spreadkey):
     """ SERF, round 2"""
     sprclient = util.get_spreadsheet_client(util.get_config())
@@ -156,6 +184,8 @@ def main(argv):
         df = process4(fn)
     elif fmt == '5':
         df = process5(fn)
+    elif fmt == '6':
+        df = process6(fn)
     for plotid in df:
         database_save(df[plotid], uniqueid, plotid)
 
