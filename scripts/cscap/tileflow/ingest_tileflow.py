@@ -8,6 +8,36 @@ from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
 CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
 
 
+def process4(spreadsheetid):
+    """ Ingest a google sheet of data """
+    config = get_config()
+    sprclient = get_spreadsheet_client(config)
+    ss = Spreadsheet(sprclient, spreadsheetid)
+    df = dict()
+    rows = []
+    for year in ss.worksheets:
+        sheet = ss.worksheets[year]
+        lf = sheet.get_list_feed()
+        for entry in lf.entry:
+            rows.append(entry.to_dict())
+    bigdf = pd.DataFrame(rows)
+    bigdf['valid'] = pd.to_datetime(bigdf['datetime'],
+                                    format='%m/%d/%Y %H:%M:%S',
+                                    errors='coerce')
+    print bigdf['valid']
+    df['WN'] = bigdf[['valid', 'wndischargemm']].copy()
+    df['WS'] = bigdf[['valid', 'wsdischargemm']].copy()
+    df['WN'].rename(columns={'wndischargemm': 'discharge_mm'},
+                    inplace=True)
+    df['WS'].rename(columns={'wsdischargemm': 'discharge_mm'},
+                    inplace=True)
+    df['WN']['discharge_mm'] = pd.to_numeric(df['WN']['discharge_mm'],
+                                             errors='coerce')
+    df['WS']['discharge_mm'] = pd.to_numeric(df['WS']['discharge_mm'],
+                                             errors='coerce')
+    return df
+
+
 def process3(fn):
     """ SERF"""
     df = pd.read_excel(fn, sheetname=None)
@@ -132,6 +162,8 @@ def main(argv):
         df = process2(fn)
     elif fmt == '3':
         df = process3(fn)
+    elif fmt == '4':
+        df = process4(fn)
     for plotid in df:
         print("  --> database_save plotid: %s" % (plotid,))
         database_save(df[plotid], uniqueid, plotid)
