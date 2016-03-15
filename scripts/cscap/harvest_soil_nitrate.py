@@ -8,6 +8,10 @@ import datetime
 
 YEAR = sys.argv[1]
 
+DUMMY_DATES = {'Spring': datetime.date(int(YEAR), 3, 1),
+               'Fall': datetime.date(int(YEAR), 9, 1),
+               'Summer': datetime.date(int(YEAR), 6, 1)}
+
 config = util.get_config()
 
 pgconn = psycopg2.connect(database='sustainablecorn',
@@ -92,7 +96,10 @@ for item in res['items']:
                 if row == 3:
                     print(("h_soil_nitrate %s[%s] unknown sample date %s"
                            ) % (siteid, YEAR, repr(colheading)))
-                date = None
+                date = DUMMY_DATES.get(datetest, None)
+                if date is None and row == 3:
+                    print(("FIXME h_soil_nitrate %s[%s] double unknown date %s"
+                           ) % (siteid, YEAR, repr(colheading)))
             inval = worksheet.get_cell_value(row, col)
             val = util.cleanvalue(inval)
             if inval is not None and val is None:
