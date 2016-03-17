@@ -230,7 +230,7 @@ def database_save(uniqueid, plot, df):
             print exp
             print(('Plot: %s Val: %s[%s] Name: %s Valid: %s'
                    ) % (plot, val, type(val), name, row['valid']))
-            sys.exit()
+            # sys.exit()
             return 'null'
         return val
     for _, row in df.iterrows():
