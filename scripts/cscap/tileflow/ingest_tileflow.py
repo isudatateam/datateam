@@ -8,8 +8,8 @@ from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
 CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
 
 
-def process4(spreadsheetid):
-    """ Ingest a google sheet of data """
+def process5(spreadsheetid):
+    """ SERF """
     config = get_config()
     sprclient = get_spreadsheet_client(config)
     ss = Spreadsheet(sprclient, spreadsheetid)
@@ -21,20 +21,14 @@ def process4(spreadsheetid):
         for entry in lf.entry:
             rows.append(entry.to_dict())
     bigdf = pd.DataFrame(rows)
-    bigdf['valid'] = pd.to_datetime(bigdf['datetime'],
-                                    format='%m/%d/%Y %H:%M:%S',
+    bigdf['valid'] = pd.to_datetime(bigdf['date'] + " " + bigdf['time'],
+                                    format='%m/%d/%Y %H:%M',
                                     errors='coerce')
-    print bigdf['valid']
-    df['WN'] = bigdf[['valid', 'wndischargemm']].copy()
-    df['WS'] = bigdf[['valid', 'wsdischargemm']].copy()
-    df['WN'].rename(columns={'wndischargemm': 'discharge_mm'},
-                    inplace=True)
-    df['WS'].rename(columns={'wsdischargemm': 'discharge_mm'},
-                    inplace=True)
-    df['WN']['discharge_mm'] = pd.to_numeric(df['WN']['discharge_mm'],
-                                             errors='coerce')
-    df['WS']['discharge_mm'] = pd.to_numeric(df['WS']['discharge_mm'],
-                                             errors='coerce')
+    print bigdf.columns
+    for plotid in ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']:
+        col = '%swat1tileflow' % (plotid.lower(), )
+        df[plotid] = bigdf[['valid', col]].copy()
+        df[plotid].rename(columns={col: 'discharge_mm'}, inplace=True)
     return df
 
 
@@ -116,9 +110,9 @@ def database_save(df, uniqueid, plotid):
 
     def v(row, name):
         val = row.get(name)
-        if val is None:
+        if val is None or isinstance(val, pd.tslib.NaTType):
             return 'null'
-        if isinstance(val, unicode):
+        if isinstance(val, (unicode, str)):
             if val.strip().lower() in ['nan', 'did not collect']:
                 return 'null'
             return val
@@ -164,6 +158,8 @@ def main(argv):
         df = process3(fn)
     elif fmt == '4':
         df = process4(fn)
+    elif fmt == '5':
+        df = process5(fn)
     for plotid in df:
         print("  --> database_save plotid: %s" % (plotid,))
         database_save(df[plotid], uniqueid, plotid)
