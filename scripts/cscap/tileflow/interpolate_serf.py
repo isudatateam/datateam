@@ -3,7 +3,7 @@ import pandas as pd
 df = pd.read_excel("/tmp/SERF Drainage Data.xlsx", sheetname=None)
 
 for plotid in df:
-    if plotid == 'Plot Size':
+    if plotid != 'Plot3':
         continue
     df[plotid]['valid'] = df[plotid][['Year', 'Month', 'Day', 'Time']].apply(
         lambda x: "%.0f/%02.0f/%02.0f %s" % (x[0], x[1], x[2], x[3]), axis=1)

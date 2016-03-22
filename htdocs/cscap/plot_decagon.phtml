@@ -1,6 +1,7 @@
 <?php
 require_once "../../include/require_auth.php";
 include_once "../../include/forms.php";
+require_once "../../include/myview.php";
 
 $site = isset($_GET["site"]) ? $_GET["site"]: 'ISUAG::302E';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2014-06-10';
@@ -197,22 +198,36 @@ EOF;
 	
 	
 }
-
-echo <<<EOF
-<html lang='en'>
-<head>
-<link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-<link href="/css/bootstrap-override.css" rel="stylesheet">
-<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" /> 
-<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />  
-<title>CSCAP Decagon Data Plotting/Download</title>
+$t = new MyView();
+$t->thispage = "cscap-decagon";
+$t->title = "CSCAP Decagon Data Plotting/Download";
+$t->headextra = <<<EOF
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
+EOF;
+$t->jsextra = <<<EOF
+<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
+<script src="/vendor/highcharts/4.2.0/highcharts.js"></script>
+<script src="/vendor/highcharts/4.2.0/highcharts-more.js"></script>
+<script src="/vendor/highcharts/4.2.0/modules/exporting.js"></script>
+{$jsextra}
+<script>
+$(document).ready(function(){
+	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
+		defaultDate: "{$date}",
+		changeMonth: true,
+		changeYear: true,
+		minDate: new Date(2011, 0, 1),
+		maxDate: new Date(2016, 1, 1)});		
+});
+</script>
+EOF;
+$t->content =  <<<EOF
 <style>
 select {
   color: #000;
 }
 </style>
-</head>
-<body>
 
 <h3>CSCAP Decagon Data Plotting/Download</h3>
 
@@ -305,25 +320,7 @@ lines, and reported to represent the entire zone.</li>
  
 </ul>
 
-<script src="/vendor/jquery/1.11.3/jquery-1.11.3.min.js"></script>
-<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="/vendor/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script src="/vendor/highcharts/4.2.0/highcharts.js"></script>
-<script src="/vendor/highcharts/4.2.0/highcharts-more.js"></script>
-<script src="/vendor/highcharts/4.2.0/modules/exporting.js"></script>
-{$jsextra}
-<script>
-$(document).ready(function(){
-	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
-		defaultDate: "{$date}",
-		changeMonth: true,
-		changeYear: true,
-		minDate: new Date(2011, 0, 1),
-		maxDate: new Date(2016, 1, 1)});		
-});
-		
-</script>
-</body>
-</html>
+
 EOF;
+$t->render('single.phtml');
 ?>

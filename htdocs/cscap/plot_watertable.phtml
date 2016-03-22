@@ -1,6 +1,7 @@
 <?php
 require_once "../../include/require_auth.php";
 include_once "../../include/forms.php";
+require_once "../../include/myview.php";
 
 $site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC::NE';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2014-06-10';
@@ -77,21 +78,36 @@ if ($view != 'plot'){
 EOF;
 }
 
-echo <<<EOF
-<html lang='en'>
-<head>
-<link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-<link href="/css/bootstrap-override.css" rel="stylesheet">
+$t = new MyView();
+$t->thispage = "cscap-watertable";
+$t->title = "CSCAP Water Table Data Plotting/Download";
+$t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" /> 
-<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />  
-<title>CSCAP Water Table Data Plotting/Download</title>
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" /> 
+EOF;
+$t->jsextra = <<<EOF
+<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
+<script src="/vendor/highcharts/4.2.0/highcharts.js"></script>
+<script src="/vendor/highcharts/4.2.0/highcharts-more.js"></script>
+<script src="/vendor/highcharts/4.2.0/modules/exporting.js"></script>
+{$jsextra}
+<script>
+$(document).ready(function(){
+	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
+		defaultDate: "{$date}",
+		changeMonth: true,
+		changeYear: true,
+		minDate: new Date(2011, 0, 1),
+		maxDate: new Date(2016, 1, 1)});		
+});
+</script>
+EOF;
+$t->content =  <<<EOF
 <style>
 select {
   color: #000;
 }
 </style>
-</head>
-<body>
 
 <h3>CSCAP Water Table Data Plotting/Download</h3>
 
@@ -151,27 +167,6 @@ daily summaries in the time zone of the station.
 [IN] DPAC       60 minute  n=10 years; 2006 to 2015
 [OH] STJOHNS    60 minute  n=5 years; 2011 to 2015
 </pre></p>
-
-
-<script src="/vendor/jquery/1.11.3/jquery-1.11.3.min.js"></script>
-<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="/vendor/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script src="/vendor/highcharts/4.2.0/highcharts.js"></script>
-<script src="/vendor/highcharts/4.2.0/highcharts-more.js"></script>
-<script src="/vendor/highcharts/4.2.0/modules/exporting.js"></script>
-{$jsextra}
-<script>
-$(document).ready(function(){
-	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
-		defaultDate: "{$date}",
-		changeMonth: true,
-		changeYear: true,
-		minDate: new Date(2006, 0, 1),
-		maxDate: new Date(2016, 0, 1)});		
-});
-		
-</script>
-</body>
-</html>
 EOF;
+$t->render('single.phtml');
 ?>
