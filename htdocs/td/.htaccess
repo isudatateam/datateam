@@ -1,1 +1,8 @@
 SetEnv DATATEAM_APP td
+
+AddHandler cgi-script .py
+Options +ExecCGI
+
+RewriteEngine On
+RewriteRule ^watertable_(.*)_(.*)_(.*)_(.*).js$ plot_watertable.py?site=$1&date=$2&days=$3&ptype=$4&view=js
+RewriteRule ^tileflow_(.*)_(.*)_(.*)_(.*).js$ plot_tileflow.py?site=$1&date=$2&days=$3&ptype=$4&view=js
