@@ -5,7 +5,9 @@ import datetime
 import numpy as np
 from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
 
-CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
+CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF', 'CLAY_C', 'CLAY_R',
+                'MUDS2', 'MUDS3_OLD', 'MUDS4', 'SERF_SD', 'SERF_IA',
+                'STORY', 'UBWC']
 
 
 def process5(spreadsheetid):
@@ -25,7 +27,11 @@ def process5(spreadsheetid):
                                     format='%m/%d/%Y %H:%M',
                                     errors='coerce')
     print bigdf.columns
-    for plotid in ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']:
+    for col in bigdf.columns:
+        if col.find('wat1tileflow') == -1:
+            print("Skipping column: %s" % (repr(col,)))
+            continue
+        plotid = col.replace("wat1tileflow", "").upper()
         col = '%swat1tileflow' % (plotid.lower(), )
         df[plotid] = bigdf[['valid', col]].copy()
         df[plotid].rename(columns={col: 'discharge_mm'}, inplace=True)
@@ -80,8 +86,8 @@ def process1(fn):
     return df2
 
 
-def database_save(df, uniqueid, plotid):
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb')
+def database_save(df, uniqueid, plotid, project):
+    pgconn = psycopg2.connect(database=project, host='iemdb')
     cursor = pgconn.cursor()
     for i, row in df.iterrows():
         if not isinstance(row['valid'], datetime.datetime):
@@ -113,7 +119,8 @@ def database_save(df, uniqueid, plotid):
         if val is None or isinstance(val, pd.tslib.NaTType):
             return 'null'
         if isinstance(val, (unicode, str)):
-            if val.strip().lower() in ['nan', 'did not collect']:
+            if val.strip().lower() in ['nan', 'did not collect', '#ref!',
+                                       'n/a']:
                 return 'null'
             return val
         # elif isinstance(val, pd.core.series.Series):
@@ -150,19 +157,18 @@ def main(argv):
     fmt = argv[2]
     uniqueid = argv[3]
     plotid = argv[4]
+    project = argv[5]
     if fmt == '1':
         df = process1(fn)
     elif fmt == '2':
         df = process2(fn)
     elif fmt == '3':
         df = process3(fn)
-    elif fmt == '4':
-        df = process4(fn)
     elif fmt == '5':
         df = process5(fn)
     for plotid in df:
         print("  --> database_save plotid: %s" % (plotid,))
-        database_save(df[plotid], uniqueid, plotid)
+        database_save(df[plotid], uniqueid, plotid, project)
 
 
 if __name__ == '__main__':

@@ -46,12 +46,12 @@ $jsextra = "";
 if ($view != 'plot'){
 	$imageurl = sprintf("plot_watertable.py?site=%s&date=%s&days=%s&ptype=%s&view=%s", 
 		$site, $date, $days, $ptype, $view);
-	$uri = sprintf("http://iem.local/cscap/%s", $imageurl);
+	$uri = sprintf("http://iem.local/td/%s", $imageurl);
 	if ($view == 'html'){
 		$data = file_get_contents($uri);
 		$interface = $data;
 	} else{
-		Header(sprintf("Location: /cscap/%s", $imageurl));
+		Header(sprintf("Location: /td/%s", $imageurl));
 		die();
 	}
 } else {
@@ -64,7 +64,7 @@ EOF;
 }
 
 $t = new MyView();
-$t->thispage = "cscap-watertable";
+$t->thispage = "td-watertable";
 $t->title = "TD Water Table Data Plotting/Download";
 $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" /> 
