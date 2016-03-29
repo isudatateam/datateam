@@ -9,29 +9,28 @@ CENTRAL_TIME = ['ISUAG', 'GILMORE', 'SERF']
 
 
 def process6(spreadkey):
-    """ STJOHNS, round 2"""
     sprclient = util.get_spreadsheet_client(util.get_config())
     spreadsheet = util.Spreadsheet(sprclient, spreadkey)
     rows = []
-    for yr in ['2011', '2012', '2013', '2014', '2015']:
+    for yr in spreadsheet.worksheets:
         lf = spreadsheet.worksheets[yr].get_list_feed()
         for i, entry in enumerate(lf.entry):
             if i == 0:
                 continue
             rows.append(entry.to_dict())
     df = pd.DataFrame(rows)
-    #print df
-    df['valid'] = df['datetime'].apply(lambda x:
-                                       datetime.datetime.strptime(x,
-                                                '%m/%d/%Y %H:%M:%S'))
+    df['valid'] = pd.to_datetime(df['date'], format='%m/%d/%Y %H:%M:%S')
     res = {}
     print df.columns
-    for plotid in ['WN', 'WS']:
-        df['plot%swatertablemm' % (plotid,)] = pd.to_numeric(
+    for col in df.columns:
+        if col.find('wat4') == -1:
+            print('skipping column %s' % (repr(col), ))
+            continue
+        plotid = col.replace('wat4watertabledepth', '').upper()
+        df['depth'] = pd.to_numeric(
                         df['%swat4watertabledepth' % (plotid.lower(),)],
-                        errors='coerse') * 10.
-        res[plotid] = df[['valid', 'plot%swatertablemm' % (plotid,)]].copy()
-        res[plotid].columns = ['valid', 'depth']
+                        errors='coerse') * 1.  # TODO: watch the units here!
+        res[plotid] = df[['valid', 'depth']].copy()
 
     return res
 
@@ -109,8 +108,8 @@ def process4(fn):
     return res
 
 
-def database_save(df, uniqueid, plotid):
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb')
+def database_save(df, uniqueid, plotid, project):
+    pgconn = psycopg2.connect(database=project, host='iemdb')
     cursor = pgconn.cursor()
     for i, row in df.iterrows():
         if not isinstance(row['valid'], datetime.datetime):
@@ -172,6 +171,7 @@ def main(argv):
     fmt = argv[2]
     uniqueid = argv[3]
     plotid = argv[4]
+    project = argv[5]
     if fmt == '1':
         df = process1(fn)
         database_save(df, uniqueid, plotid)
@@ -187,7 +187,7 @@ def main(argv):
     elif fmt == '6':
         df = process6(fn)
     for plotid in df:
-        database_save(df[plotid], uniqueid, plotid)
+        database_save(df[plotid], uniqueid, plotid, project)
 
 
 if __name__ == '__main__':

@@ -22,7 +22,45 @@ $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
  plotid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
-$ar = Array(		
+$ar = Array(
+		"CLAY_C::FDB1"=>"CLAY_C FDB1 (2014-12-31 to 2015-10-22) [295 days]",
+		"CLAY_C::FDB2"=>"CLAY_C FDB2 (2014-12-31 to 2015-10-22) [295 days]",
+		"CLAY_C::FDM1"=>"CLAY_C FDM1 (2014-12-31 to 2015-10-22) [295 days]",
+		"CLAY_C::FDM2"=>"CLAY_C FDM2 (2014-12-31 to 2015-10-22) [295 days]",
+		"CLAY_C::FDU1"=>"CLAY_C FDU1 (2014-12-31 to 2015-10-22) [295 days]",
+		"CLAY_C::FDU2"=>"CLAY_C FDU2 (2014-12-31 to 2015-10-22) [295 days]",
+		"CLAY_R::CDB1"=>"CLAY_R CDB1 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::CDB2"=>"CLAY_R CDB2 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::CDM1"=>"CLAY_R CDM1 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::CDM2"=>"CLAY_R CDM2 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::CDU1"=>"CLAY_R CDU1 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::CDU2"=>"CLAY_R CDU2 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::SIB1"=>"CLAY_R SIB1 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::SIB2"=>"CLAY_R SIB2 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::SIM1"=>"CLAY_R SIM1 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::SIM2"=>"CLAY_R SIM2 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::SIU1"=>"CLAY_R SIU1 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_R::SIU2"=>"CLAY_R SIU2 (2014-12-31 to 2015-11-09) [313 days]",
+		"CLAY_U::UDB1"=>"CLAY_U UDB1 (2014-12-31 to 2015-11-02) [306 days]",
+		"CLAY_U::UDB2"=>"CLAY_U UDB2 (2014-12-31 to 2015-11-02) [306 days]",
+		"CLAY_U::UDM1"=>"CLAY_U UDM1 (2014-12-31 to 2015-11-02) [306 days]",
+		"CLAY_U::UDM2"=>"CLAY_U UDM2 (2014-12-31 to 2015-11-02) [306 days]",
+		"CLAY_U::UDU1"=>"CLAY_U UDU1 (2014-12-31 to 2015-11-02) [306 days]",
+		"CLAY_U::UDU2"=>"CLAY_U UDU2 (2014-12-31 to 2015-11-02) [306 days]",
+		"DPAC::NE"=>"DPAC NE (2011-01-01 to 2015-12-03) [1797 days]",
+		"DPAC::NW"=>"DPAC NW (2011-01-01 to 2015-12-03) [1797 days]",
+		"DPAC::SE"=>"DPAC SE (2011-01-01 to 2015-12-03) [1797 days]",
+		"DPAC::SW"=>"DPAC SW (2011-01-01 to 2015-12-03) [1797 days]",
+		"SERF_IA::S1"=>"SERF_IA S1 (2010-12-31 to 2015-12-31) [1826 days]",
+		"SERF_IA::S2"=>"SERF_IA S2 (2010-12-31 to 2015-12-31) [1826 days]",
+		"SERF_IA::S3"=>"SERF_IA S3 (2010-12-31 to 2015-12-31) [1826 days]",
+		"SERF_IA::S4"=>"SERF_IA S4 (2010-12-31 to 2015-12-31) [1826 days]",
+		"SERF_IA::S5"=>"SERF_IA S5 (2010-12-31 to 2015-12-31) [1826 days]",
+		"SERF_IA::S6"=>"SERF_IA S6 (2010-12-31 to 2015-12-31) [1826 days]",
+		"SERF_IA::S7"=>"SERF_IA S7 (2010-12-31 to 2015-12-31) [1826 days]",
+		"SERF_IA::S8"=>"SERF_IA S8 (2010-12-31 to 2015-12-31) [1826 days]",
+		"STJOHNS::WN"=>"STJOHNS WN (2011-01-13 to 2015-11-20) [1772 days]",
+		"STJOHNS::WS"=>"STJOHNS WS (2011-01-13 to 2015-11-20) [1772 days]",
 		);
 $siteselect = make_select("site", $site, $ar);
 
