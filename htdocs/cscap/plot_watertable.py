@@ -128,7 +128,7 @@ def make_plot(form):
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
-    yAxis: {title: {text: 'Depth (mm)'},
+    yAxis: {title: {text: 'Depth below ground (mm)'},
         reversed: true
     },
     plotOptions: {line: {turboThreshold: 0}},
