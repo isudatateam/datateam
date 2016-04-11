@@ -1,3 +1,22 @@
+  6 Apr 2016
+  Lori, Gio, Suresh, Katie
+  - Discussion on what will happen with the writing worshop and perhaps there
+    would be time for us to work on it some
+  - Volume 5 of the primary reports for the project is coming from us
+  - Katie has been working on some survey data from Dr Morton that will 
+    eventually come to the db
+  - Discussion of the failure to take the team photo at the TD Project Meeting
+  - Getting the soil data sheets generated for TD is a priority, but we do
+    not know enough yet to generate them (like depths)
+  - Gio wants auto-sync setup for the drainage sheets
+  - Discussion about the STJOHNS elevation difference issue
+  - TD has three tiers for data: Required, Recommended, and Optional
+  - We have a pressing need to get the weather data processed
+  - [ ] Would like to see precipitation on the plots by 15 Apr
+  - source of weather data included on the plot and download
+  - Inclusion of the management data for weirs height
+  - Need to cross check IPM plotids for Suresh
+
  16 Mar 2016
   Lori, Gio, Suresh
   - There is a chance of Canadian collaborators coming to the TD project
