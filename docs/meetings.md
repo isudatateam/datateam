@@ -1,3 +1,17 @@
+ 19 Apr 2016
+  Lori, Gio, Suresh
+  - Purpose is to discuss Gio's data download thoughts
+  - [ ] When I email the team a listing of text, the result is not pretty on 
+    their end
+  - [ ] need to again review the IPM plotids for Suresh and resend email
+  - Lori discussed Syngenta meeting, interested in 4mon/yr coordinator
+  - [x] ISUAG.USB is not in download form
+  - Gio's interface wants drill down with things getting enabled / grayed out
+  - [ ] Allow for deselect of sites when a full state is selected/unselected
+  - All variables on by default for Agro/Soils
+  - Divide output into multiple tabs
+  - Is the year filter at the end problematic?  Likely not.
+
   6 Apr 2016
   Lori, Gio, Suresh, Katie
   - Discussion on what will happen with the writing worshop and perhaps there
