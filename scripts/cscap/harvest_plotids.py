@@ -55,7 +55,10 @@ for item in res['items']:
             vals.append(v)
             cols.append(translate.get(key, key))
         if len(cols) == 0:
+            print("No columns for '%s'?" % (item['title'], ))
             continue
+        if 'uniqueid' not in cols:
+            print("No uniqueid column for '%s'" % (item['title'],))
         sql = """
             INSERT into plotids(%s) VALUES (%s)
         """ % (",".join(cols), ','.join(["%s"]*len(cols)))
