@@ -17,6 +17,27 @@ sdc, sdc_names = util.build_sdc(sdc_feed)
 
 drive_client = util.get_driveclient(config)
 
+
+def adjust_sdc(sitekey, varname):
+    """ Change what we do here """
+    for entry in spr_client.get_list_feed(
+            '1PKK-vWuOryYFOSYSgt4TosrjIDX_F-opHOvrEo5q-i4', 'od6').entry:
+        d = entry.to_dict()
+        if d['key'] != varname:
+            continue
+        val = d[sitekey].strip().upper()
+        years = []
+        for yr in range(11, 16):
+            if val.find(str(yr)) > -1 or val == 'X':
+                years.append(2000 + int(yr))
+        years.remove(int(YEAR))
+        s = "X (%s)" % (", ".join(["'%s" % (y - 2000,) for y in years]), )
+        if len(years) == 0:
+            s = ''
+        entry.set_value(sitekey, s)
+        print("%s %s %s -> %s" % (sitekey, varname, val, s))
+        spr_client.update(entry)
+
 res = drive_client.files().list(q="title contains 'Agronomic Data'").execute()
 for item in res['items']:
     if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
@@ -41,20 +62,29 @@ for item in res['items']:
         if not key.upper().startswith("AGR"):
             continue
         varname = key.upper()
+        vals = []
+        for entry4 in worksheet.list_feed.entry[2:]:
+            d = entry4.to_dict()
+            if d[key] not in vals:
+                vals.append(d[key])
         if varname not in shouldhave:
-            vals = []
-            for entry4 in worksheet.list_feed.entry:
-                d = entry4.to_dict()
-                if d[key] not in vals:
-                    vals.append(d[key])
             print 'EXTRA %s' % (varname,), vals
-            if len(vals) < 5:
-                if raw_input("DELETE? y/n ") == 'y':
-                    print("Deleting...")
-                    worksheet.del_column(varname)
-                    worksheet.get_list_feed()
+            if raw_input("DELETE? y/n ") == 'y':
+                print("Deleting...")
+                worksheet.del_column(varname)
+                worksheet.get_list_feed()
+            continue
         else:
             shouldhave.remove(varname)
+        for _v in ['n/a', 'did not collect']:
+            if _v in vals:
+                vals.remove(_v)
+        if len(vals) == 0:
+            print('DELETING: %s' % (varname,), vals)
+            worksheet.del_column(varname)
+            worksheet.get_list_feed()
+            adjust_sdc(sitekey, varname)
+
     for sh in shouldhave:
         if sh.startswith('AGR'):
             print 'SHOULDHAVE %s' % (sh,)
