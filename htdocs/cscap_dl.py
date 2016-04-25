@@ -66,130 +66,67 @@ def get_nitratedata():
 
 
 def get_agdata():
-    """
-    Go to Google and demand my data back!
-    """
+    """A specialized report"""
     pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
                               user='nobody')
-    cursor = pgconn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor = pgconn.cursor()
 
-    cursor.execute("""SELECT site, a.plotid, year, varname, value,
-    p.rep, p.tillage, p.rotation , p.nitrogen
-    from agronomic_data a JOIN plotids p on (p.uniqueid = a.site and
-    p.plotid = a.plotid) where
-    varname in ('AGR1', 'AGR2', 'AGR7', 'AGR15', 'AGR16', 'AGR17', 'AGR19',
-    'AGR39', 'AGR40')
-    and value ~* '[0-9\.]' and value != '.' and value !~* '<'
-    and (site in ('MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
-    'SEPAC', 'FREEMAN', 'BRADFORD.C') or
-    (site in ('BRADFORD.B1', 'BRADFORD.B2') and p.nitrogen = 'NIT3')
-    )""")
-    data = {}
-    for row in cursor:
-        key = ("%s|%s|%s|%s|%s|%s|%s"
-               ) % (row['site'], row['plotid'], row['year'],
-                    row['rep'], row['tillage'], row['rotation'],
-                    row['nitrogen'])
-        if key not in data:
-            data[key] = {}
-        data[key][row['varname']] = clean(row["value"])
+    SITES = ['MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
+             'SEPAC', 'FREEMAN', 'BRADFORD.C',
+             'BRADFORD.B1', 'BRADFORD.B2']
 
-    # Get the Soil Nitrate data we are going to join with
+    # Load up baseline
+    df = pdsql.read_sql("""
+    with years as (SELECT generate_series(2011, 2015) as year),
+    p as (SELECT uniqueid, plotid, rotation, nitrogen from plotids
+    WHERE uniqueid in %s)
+
+    SELECT uniqueid, plotid, year, rotation, nitrogen from years, p
+    """, pgconn, params=(tuple(SITES),), index_col=None)
+    df['plant_corn_date'] = None
+    df['termination_rye_corn_date'] = None
+
     cursor.execute("""
-    SELECT site, plotid, depth, varname, year, avg(value::float)
-    from soil_data WHERE value is not null
-    and value ~* '[0-9\.]' and value != '.' and value !~* '<'
-    and site in ('MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
-    'SEPAC', 'BRADFORD.C', 'BRADFORD.B1', 'BRADFORD.B2', 'FREEMAN')
-    and varname in ('SOIL13', 'SOIL23', 'SOIL14', 'SOIL27', 'SOIL28', 'SOIL1',
-    'SOIL15',
-    'SOIL11', 'SOIL32', 'SOIL31', 'SOIL2', 'SOIL26')
-    GROUP by site, plotid, depth, varname, year
-    """)
-    sndata = {}
+    select uniqueid, valid, operation from operations
+    where uniqueid in %s
+    and operation in ('plant_corn', 'termination_rye_corn')
+    """, (tuple(SITES),))
     for row in cursor:
-        key = "%s|%s|%s|%s|%s" % (row['site'], row['plotid'], row['year'],
-                                  row['varname'], row['depth'])
-        sndata[key] = row['avg']
+        a = df[(df['uniqueid'] == row[0]) &
+               (df['year'] == row[1].year)]
+        df.loc[a.index.values, "%s_date" % (row[2], )] = row[1]
 
-    res = ("uniqueid,plotid,year,rep,tillage,rotation,nitrogen,agr1,agr2,agr7,"
-           "agr15,agr16,agr17,agr19,agr39,agr40,"
-           "soil11_0-10,soil11_10-20,soil11_20-40,soil11_40-60,"
-           "soil13_0-10,soil13_10-20,soil13_20-40,soil13_40-60,"
-           "soil14_0-10,soil14_10-20,soil14_20-40,soil14_40-60,"
-           "soil26_0-10,soil26_10-20,soil26_20-40,soil26_40-60,"
-           "soil27_0-10,soil27_10-20,soil27_20-40,soil27_40-60,"
-           "soil28_0-10,soil28_10-20,soil28_20-40,soil28_40-60,"
-           "soil32_0-10,soil32_10-20,soil32_20-40,soil32_40-60,"
-           "soil31_0-10,soil31_10-20,soil31_20-40,soil31_40-60,"
-           "soil1_0-10,soil1_10-20,soil1_20-40,soil1_40-60,"
-           "soil2_0-10,soil2_10-20,soil2_20-40,soil2_40-60,"
-           "soil23_0-30,soil23_30-60,soil23_60-90,soil23_90-120,"
-           "soil15_0-30,soil15_30-60,soil15_60-90,\n")
-    for key in data.keys():
-        tokens = key.split("|")
-        lkp = "%s|%s|%s|%s" % (tokens[0], tokens[1], tokens[2], 'SOIL')
-        res += ("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
-                "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
-                "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s"
-                "%s,%s,%s,\n"
-                ) % (tokens[0], tokens[1],
-                     tokens[2], tokens[3], tokens[4], tokens[5], tokens[6],
-                     data[key].get('AGR1', ''), data[key].get('AGR2', ''),
-                     data[key].get('AGR7', ''), data[key].get('AGR15', ''),
-                     data[key].get('AGR16', ''), data[key].get('AGR17', ''),
-                     data[key].get('AGR19', ''), data[key].get('AGR39', ''),
-                     data[key].get('AGR40', ''),
-                     sndata.get(lkp+"11|0 - 10", 'M'),
-                     sndata.get(lkp+"11|10 - 20", 'M'),
-                     sndata.get(lkp+"11|20 - 40", 'M'),
-                     sndata.get(lkp+"11|40 - 60", 'M'),
-                     sndata.get(lkp+"13|0 - 10", 'M'),
-                     sndata.get(lkp+"13|10 - 20", 'M'),
-                     sndata.get(lkp+"13|20 - 40", 'M'),
-                     sndata.get(lkp+"13|40 - 60", 'M'),
-                     sndata.get(lkp+"14|0 - 10", 'M'),
-                     sndata.get(lkp+"14|10 - 20", 'M'),
-                     sndata.get(lkp+"14|20 - 40", 'M'),
-                     sndata.get(lkp+"14|40 - 60", 'M'),
-                     sndata.get(lkp+"26|0 - 10", 'M'),
-                     sndata.get(lkp+"26|10 - 20", 'M'),
-                     sndata.get(lkp+"26|20 - 40", 'M'),
-                     sndata.get(lkp+"26|40 - 60", 'M'),
-                     sndata.get(lkp+"27|0 - 10", 'M'),
-                     sndata.get(lkp+"27|10 - 20", 'M'),
-                     sndata.get(lkp+"27|20 - 40", 'M'),
-                     sndata.get(lkp+"27|40 - 60", 'M'),
-                     sndata.get(lkp+"28|0 - 10", 'M'),
-                     sndata.get(lkp+"28|10 - 20", 'M'),
-                     sndata.get(lkp+"28|20 - 40", 'M'),
-                     sndata.get(lkp+"28|40 - 60", 'M'),
-                     sndata.get(lkp+"32|0 - 10", 'M'),
-                     sndata.get(lkp+"32|10 - 20", 'M'),
-                     sndata.get(lkp+"32|20 - 40", 'M'),
-                     sndata.get(lkp+"32|40 - 60", 'M'),
-                     sndata.get(lkp+"31|0 - 10", 'M'),
-                     sndata.get(lkp+"31|10 - 20", 'M'),
-                     sndata.get(lkp+"31|20 - 40", 'M'),
-                     sndata.get(lkp+"31|40 - 60", 'M'),
-                     sndata.get(lkp+"1|0 - 10", 'M'),
-                     sndata.get(lkp+"1|10 - 20", 'M'),
-                     sndata.get(lkp+"1|20 - 40", 'M'),
-                     sndata.get(lkp+"1|40 - 60", 'M'),
-                     sndata.get(lkp+"2|0 - 10", 'M'),
-                     sndata.get(lkp+"2|10 - 20", 'M'),
-                     sndata.get(lkp+"2|20 - 40", 'M'),
-                     sndata.get(lkp+"2|40 - 60", 'M'),
-                     sndata.get(lkp+"23|0 - 30", 'M'),
-                     sndata.get(lkp+"23|30 - 60", 'M'),
-                     sndata.get(lkp+"23|60 - 90", 'M'),
-                     sndata.get(lkp+"23|90 - 120", 'M'),
-                     sndata.get(lkp+"15|0 - 30", 'M'),
-                     sndata.get(lkp+"15|30 - 60", 'M'),
-                     sndata.get(lkp+"15|60 - 90", 'M'),
-                     )
+    # Get yield data
+    cursor.execute("""
+    SELECT site, plotid, varname, year, value from agronomic_data
+    WHERE site in %s and varname in ('AGR7', 'AGR39', 'AGR16', 'AGR17')
+    and value not in ('', '.', 'n/a', 'did not collect')
+    """, (tuple(SITES), ))
+    for row in cursor:
+        a = df[(df['uniqueid'] == row[0]) &
+               (df['plotid'] == row[1]) &
+               (df['year'] == row[3])]
+        df.loc[a.index.values, row[2]] = row[4]
 
-    return res
+    # Get the Soil Nitrate Data
+    cursor.execute("""
+    SELECT site, plotid, depth, year, sampledate, avg(value::numeric) from
+    soil_data where site in %s and varname = 'SOIL15'
+    and value not in ('', '.', 'n/a', 'did not collect') and value is not null
+    and substr(value, 1, 1) != '<'
+    GROUP by site, plotid, depth, year, sampledate
+    ORDER by sampledate ASC
+    """, (tuple(SITES), ))
+    for row in cursor:
+        season = 'spring' if row[4].month < 7 else 'fall'
+        a = df[(df['uniqueid'] == row[0]) &
+               (df['plotid'] == row[1]) &
+               (df['year'] == row[3])]
+        df.loc[a.index.values, '%s Soil15 Date' % (season,)] = row[4]
+        df.loc[a.index.values, '%s Soil15 %s' % (season,
+                                                 row[2])] = row[5]
+
+    return df.to_csv(index=False)
 
 
 def get_dl(form):
@@ -370,7 +307,7 @@ def main():
     if report == 'ag1':
         sys.stdout.write("Content-type: text/plain\n\n")
         sys.stdout.write(get_agdata())
-    if report == 'dl':  # coming from internal website
+    elif report == 'dl':  # coming from internal website
         sys.stdout.write(get_dl(form))
     else:
         sys.stdout.write("Content-type: text/plain\n\n")
