@@ -78,10 +78,10 @@ def get_agdata():
     # Load up baseline
     df = pdsql.read_sql("""
     with years as (SELECT generate_series(2011, 2015) as year),
-    p as (SELECT uniqueid, plotid, rotation, nitrogen from plotids
+    p as (SELECT uniqueid, plotid, rotation, nitrogen, rep from plotids
     WHERE uniqueid in %s)
 
-    SELECT uniqueid, plotid, year, rotation, nitrogen from years, p
+    SELECT uniqueid, plotid, year, rotation, nitrogen, rep from years, p
     """, pgconn, params=(tuple(SITES),), index_col=None)
     df['plant_corn_date'] = None
     df['termination_rye_corn_date'] = None
