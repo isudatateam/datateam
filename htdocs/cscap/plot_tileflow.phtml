@@ -3,7 +3,7 @@ require_once "../../include/require_auth.php";
 include_once "../../include/forms.php";
 require_once "../../include/myview.php";
 
-$site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC::NE';
+$site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2014-01-10';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
@@ -15,20 +15,20 @@ if (strlen($date) != 10){
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 100;
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
 
-/* with data as (select uniqueid, plotid, min(date(valid)),
- max(date(valid)) from tileflow_data GROUP by uniqueid, plotid)
+/* with data as (select uniqueid, min(date(valid)),
+ max(date(valid)) from tileflow_data GROUP by uniqueid)
  
- SELECT '"'||uniqueid || '::'|| plotid || '"=>"' || uniqueid || ' '||
- plotid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
+ SELECT '"'||uniqueid || '"=>"' || uniqueid
+ || ' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
 $ar = Array(
- "BRADFORD.A::101"=>"BRADFORD.A (2013-05-12 to 2015-12-11) [943 days]",
- "GILMORE::3.1"=>"GILMORE (2011-04-05 to 2015-12-11) [1711 days]",
- "DPAC::NE"=>"DPAC (2011-12-31 to 2015-11-17) [1417 days]",
- "SERF::1"=>"SERF  (2011-01-01 to 2015-12-30) [1824 days]",
- "STJOHNS::WN"=>"STJOHNS (2010-12-31 to 2015-11-20) [1785 days]",		
- "WATERMAN::12"=>"WATERMAN (2013-02-11 to 2015-12-17) [1039 days]",
+ "BRADFORD.A"=>"BRADFORD.A (2013-05-12 to 2015-12-11) [943 days]",
+ "GILMORE"=>"GILMORE (2011-04-05 to 2015-12-11) [1711 days]",
+ "DPAC"=>"DPAC (2011-12-31 to 2015-11-17) [1417 days]",
+ "SERF"=>"SERF  (2011-01-01 to 2015-12-30) [1824 days]",
+ "STJOHNS"=>"STJOHNS (2010-12-31 to 2015-11-20) [1785 days]",		
+ "WATERMAN"=>"WATERMAN (2013-02-11 to 2015-12-17) [1039 days]",
 		);
 $siteselect = make_select("site", $site, $ar);
 
@@ -64,6 +64,39 @@ if ($view != 'plot'){
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
 	$interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
+
+<div style="border:2px solid #000;">
+
+	<div id="edit_info"><h3>Click Point on Chart to Edit it!</h3></div>
+	<div style="display:none;" id="edit_div">
+	<form name="editor">
+	<table class="table table-condensed">
+	<tr><td><i class="glyphicon glyphicon-pencil"></i> Data Editor</td>
+	<th>Plot:</th><td><span id="edit_plot"></span></td>
+	<th>Timestamp:</th><td><span id="edit_time"></span></td>
+	<th>Value:</th>
+			<td><input type="text" name="edit_value" id="edit_value"></td>
+	<th>Options:</th>
+		<td>
+		<button id="edit_delete" type="button" class="btn btn-default"><i class="glyphicon glyphicon-remove"></i> Delete</button>
+		<button id="edit_save" type="button" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i> Save Edit</button>
+		</td>
+	</tr>
+	</table>
+	<strong>Optionally, add a comment about this change:</strong>
+	<br /><textarea id="edit_comment"></textarea>
+	<br />Explaination of Options:<br />
+	<ul>
+		<li><strong>Delete:</strong> Sets the quality controlled value in the
+		database to null.  The original value is retained.</li>
+		<li><strong>Save Edit:</strong> Overwrite the quality controlled value
+		saved in the database.</li>
+	</ul>
+	</form>
+	</div>
+	<div id="edit_waiting" style="display: none;"><img src="/images/wait24trans.gif"> Sending Edit to Server</div>
+	<ul id="edit_log"></ul>
+</div>
 EOF;
 }
 
@@ -76,11 +109,15 @@ $t->headextra = <<<EOF
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="/vendor/highcharts/4.2.0/highcharts.js"></script>
-<script src="/vendor/highcharts/4.2.0/highcharts-more.js"></script>
-<script src="/vendor/highcharts/4.2.0/modules/exporting.js"></script>
+<script src="/vendor/highcharts/4.2.4/highcharts.js"></script>
+<script src="/vendor/highcharts/4.2.4/highcharts-more.js"></script>
+<script src="/vendor/highcharts/4.2.4/modules/exporting.js"></script>
+<script src="/js/putil.js"></script>
 {$jsextra}
 <script>
+var EDIT_TABLE = "tileflow_data";
+var EDIT_UNIQUEID = "{$site}";
+var EDIT_COLUMN = "discharge_mm";
 $(document).ready(function(){
 	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
 		defaultDate: "{$date}",

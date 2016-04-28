@@ -8,12 +8,10 @@ import pandas as pd
 from pandas.io.sql import read_sql
 import cgi
 import datetime
-import pytz
 import os
 import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
-import matplotlib.dates as mdates  # NOPEP8
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
@@ -38,7 +36,7 @@ def send_error(viewopt, msg):
 
 def make_plot(form):
     """Make the plot"""
-    (uniqueid, plotid) = form.getfirst('site', 'ISUAG::302E').split("::")
+    uniqueid = form.getfirst('site', 'ISUAG').split("::")[0]
 
     sts = datetime.datetime.strptime(form.getfirst('date', '2014-01-01'),
                                      '%Y-%m-%d')
@@ -48,10 +46,8 @@ def make_plot(form):
                               user='nobody')
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
-    tz = pytz.timezone(tzname)
     viewopt = form.getfirst('view', 'plot')
     ptype = form.getfirst('ptype', '1')
-    plotid_limit = "and plotid = '%s'" % (plotid, )
     if ptype == '1':
         df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
         discharge_mm_qc as discharge,
@@ -85,16 +81,16 @@ def make_plot(form):
         if viewopt == 'csv':
             sys.stdout.write('Content-type: application/octet-stream\n')
             sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.csv\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                              'filename=%s_%s_%s.csv\n\n'
+                              ) % (uniqueid, sts.strftime("%Y%m%d"),
                                    ets.strftime("%Y%m%d")))
             sys.stdout.write(df.to_csv(index=False))
             return
         if viewopt == 'excel':
             sys.stdout.write('Content-type: application/octet-stream\n')
             sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.xlsx\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                              'filename=%s_%s_%s.xlsx\n\n'
+                              ) % (uniqueid, sts.strftime("%Y%m%d"),
                                    ets.strftime("%Y%m%d")))
             writer = pd.ExcelWriter('/tmp/ss.xlsx')
             df.to_excel(writer, 'Data', index=False)
@@ -127,7 +123,19 @@ $("#hc").highcharts({
     chart: {zoomType: 'x'},
     yAxis: {title: {text: 'Discharge (mm)'}
     },
-    plotOptions: {line: {turboThreshold: 0}},
+    plotOptions: {line: {turboThreshold: 0},
+        series: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            point: {
+                events: {
+                    click: function () {
+                        editPoint(this);
+                    }
+                }
+            }
+        }
+    },
     xAxis: {
         type: 'datetime'
     },
