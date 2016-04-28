@@ -78,10 +78,12 @@ def get_agdata():
     # Load up baseline
     df = pdsql.read_sql("""
     with years as (SELECT generate_series(2011, 2015) as year),
-    p as (SELECT uniqueid, plotid, rotation, nitrogen, rep from plotids
+    p as (SELECT uniqueid, plotid, rotation, nitrogen, rep, tillage
+    from plotids
     WHERE uniqueid in %s)
 
-    SELECT uniqueid, plotid, year, rotation, nitrogen, rep from years, p
+    SELECT uniqueid, plotid, year, rotation, nitrogen, rep, tillage
+    from years, p
     """, pgconn, params=(tuple(SITES),), index_col=None)
     df['plant_corn_date'] = None
     df['termination_rye_corn_date'] = None
@@ -99,7 +101,8 @@ def get_agdata():
     # Get yield data
     cursor.execute("""
     SELECT site, plotid, varname, year, value from agronomic_data
-    WHERE site in %s and varname in ('AGR7', 'AGR39', 'AGR16', 'AGR17')
+    WHERE site in %s and
+    varname in ('AGR7', 'AGR39', 'AGR16', 'AGR17', 'AGR19')
     and value not in ('', '.', 'n/a', 'did not collect')
     """, (tuple(SITES), ))
     for row in cursor:
