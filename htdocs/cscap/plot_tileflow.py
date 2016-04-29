@@ -145,7 +145,7 @@ $("#hc").highcharts({
             minute: "%b %e %Y, %H:%M"
         },
         shared: true,
-        valueDecimals: 0,
+        valueDecimals: 2,
         valueSuffix: ' mm'
     },
     series: ["""+series+"""]

@@ -12,6 +12,32 @@ import pytz
 import json
 
 
+def decagon_logic(uniqueid_in, plotid_in):
+    """Hackery"""
+    # Split the uniqueid by :: to get the plotid
+    (uniqueid, plotid) = uniqueid_in.split("::")
+    # Convert the plotid_in into database columns
+    DEPTHS = ['-', '10 cm', '20 cm', '40 cm', '60 cm', '100 cm']
+    if uniqueid in ['KELLOGG', 'MASON']:
+        DEPTHS[1] = '-'
+        DEPTHS[5] = '80 cm'
+    elif uniqueid == 'NAEW':
+        DEPTHS[1] = '5 cm'
+        DEPTHS[2] = '10 cm'
+        DEPTHS[3] = '20 cm'
+        DEPTHS[4] = '30 cm'
+        DEPTHS[5] = '50 cm'
+    column = "d"
+    for i, d in enumerate(DEPTHS):
+        if plotid_in.startswith(d):
+            column += str(i)
+    if plotid_in.find("VSM") > -1:
+        column += "moisture"
+    else:
+        column += "temp"
+    return uniqueid, plotid, column
+
+
 def main():
     """Do Something"""
     form = cgi.FieldStorage()
@@ -30,6 +56,9 @@ def main():
     comment = form.getfirst('comment')
     if value == 'null':
         value = None
+    if table == "decagon_data":
+        # We have to do some hackery straighten this out
+        uniqueid, plotid, column = decagon_logic(uniqueid, plotid)
 
     dbname = ('sustainablecorn'
               if os.environ.get('DATATEAM_APP') == 'cscap'
@@ -60,3 +89,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # print decagon_logic("ISUAG::302", "10 cm VSM")

@@ -51,16 +51,16 @@ def make_plot(form):
         plotid_limit = ""
     if ptype == '1':
         df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
-        d1temp_qc as d1t, coalesce(d1temp_flag, '') as d1t_f,
-        d2temp_qc as d2t, coalesce(d2temp_flag, '') as d2t_f,
-        d3temp_qc as d3t, coalesce(d3temp_flag, '') as d3t_f,
-        d4temp_qc as d4t, coalesce(d4temp_flag, '') as d4t_f,
-        d5temp_qc as d5t, coalesce(d5temp_flag, '') as d5t_f,
-        d1moisture_qc as d1m, coalesce(d1moisture_flag, '') as d1m_f,
-        d2moisture_qc as d2m, coalesce(d2moisture_flag, '') as d2m_f,
-        d3moisture_qc as d3m, coalesce(d3moisture_flag, '') as d3m_f,
-        d4moisture_qc as d4m, coalesce(d4moisture_flag, '') as d4m_f,
-        d5moisture_qc as d5m, coalesce(d5moisture_flag, '') as d5m_f
+        d1temp_qc as d1t, coalesce(d1temp_qcflag, '') as d1t_f,
+        d2temp_qc as d2t, coalesce(d2temp_qcflag, '') as d2t_f,
+        d3temp_qc as d3t, coalesce(d3temp_qcflag, '') as d3t_f,
+        d4temp_qc as d4t, coalesce(d4temp_qcflag, '') as d4t_f,
+        d5temp_qc as d5t, coalesce(d5temp_qcflag, '') as d5t_f,
+        d1moisture_qc as d1m, coalesce(d1moisture_qcflag, '') as d1m_f,
+        d2moisture_qc as d2m, coalesce(d2moisture_qcflag, '') as d2m_f,
+        d3moisture_qc as d3m, coalesce(d3moisture_qcflag, '') as d3m_f,
+        d4moisture_qc as d4m, coalesce(d4moisture_qcflag, '') as d4m_f,
+        d5moisture_qc as d5m, coalesce(d5moisture_qcflag, '') as d5m_f
         from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
@@ -202,8 +202,13 @@ options = {
     chart: {zoomType: 'x'},
     plotOptions: {
         series: {
+            cursor: 'pointer',
+            allowPointSelect: true,
             point: {
                 events: {
+                    click: function() {
+                        editPoint(this);
+                    },
                     mouseOver: function () {
                         // Note, I converted this.x to this.index
                         syncTooltip(this.series.chart.container, this.index);
