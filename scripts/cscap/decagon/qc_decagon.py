@@ -24,7 +24,7 @@ def bounds_check():
                 if v > 1 and n == 'ec':
                     continue
                 vname = "d%s%s_qc" % (v, n)
-                vflag = "d%s%s_flag" % (v, n)
+                vflag = "d%s%s_qcflag" % (v, n)
                 cursor.execute("""
                     UPDATE decagon_data
                     SET """+vname+""" = null, """+vflag+""" = 'M'
@@ -47,7 +47,7 @@ def ticker_temp():
         cursor2 = pgconn.cursor()
         for v in range(1, 6):
             vname = "d%s%s_qc" % (v, n)
-            vflag = "d%s%s_flag" % (v, n)
+            vflag = "d%s%s_qcflag" % (v, n)
             cursor.execute("""WITH data as(
             SELECT lag(valid) OVER (ORDER by valid ASC) as lag_valid,
             valid, lead(valid) OVER (ORDER by valid ASC) as lead_valid,
@@ -83,7 +83,7 @@ def replace999():
                 continue
             cursor = pgconn.cursor()
             cursor.execute("""UPDATE decagon_data SET
-            d%s%s_flag = 'M', d%s%s = null, d%s%s_qc = null WHERE d%s%s = -999
+            d%s%s_qcflag = 'M', d%s%s = null, d%s%s_qc = null WHERE d%s%s = -999
             """ % (v, n, v, n, v, n, v, n))
             print "%s rows with -999 set to null for d%s%s" % (cursor.rowcount,
                                                                v, n)
