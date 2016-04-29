@@ -1,3 +1,11 @@
+ 28 Apr 2016
+  Lori, Gio, Suresh, Katie
+  - Lori reported on her Globus meeting, most of the folks there were HPC
+  - We are encouraged to register for the digitial Ag meeting 16-17 May
+  - [x] I showed the new data editing, Lori wanted the text changed
+  - [x] modify highcharts pages to use fullpage bootstrap template
+  - Our next meeting is 18 May
+ 
  19 Apr 2016
   Lori, Gio, Suresh
   - Purpose is to discuss Gio's data download thoughts
