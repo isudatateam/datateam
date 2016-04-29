@@ -21,7 +21,7 @@ function updateServer(newval){
 	$('#edit_waiting').css('display', 'block');
 	$.post( "edit.py", data)
 	  .done(function( data ) {
-	    console.log(data);
+	    //console.log(data);
 	    $('#edit_log').append("<li>Server responded with: "+ data.status +"</li>");
 		$('#edit_waiting').css('display', 'none');
 	  });
@@ -45,7 +45,7 @@ function editPoint(pt){
 	// High Charts callback when we click on a point
 	myPoint = pt;
 	showEditForm();
-	console.log(pt);
+	//console.log(pt);
 	var dt = new Date(pt.x);
 	$('#edit_plot').html(pt.series.name);
 	$('#edit_time').html(dt.toISOString());
