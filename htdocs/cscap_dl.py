@@ -129,6 +129,36 @@ def get_agdata():
         df.loc[a.index.values, '%s Soil15 %s' % (season,
                                                  row[2])] = row[5]
 
+    # Get the other soil data Data
+    cursor.execute("""
+    SELECT site, plotid, depth, year, varname, avg(value::numeric) from
+    soil_data where site in %s and
+    varname in ('SOIL13', 'SOIL1', 'SOIL2', 'SOIL29', 'SOIL30', 'SOIL31',
+    'SOIL32', 'SOIL33', 'SOIL34', 'SOIL35', 'SOIL39', 'SOIL41', 'SOIL42')
+    and value not in ('', '.', 'n/a', 'did not collect') and value is not null
+    and substr(value, 1, 1) != '<'
+    GROUP by site, plotid, depth, year, varname
+    """, (tuple(SITES), ))
+    for row in cursor:
+        a = df[(df['uniqueid'] == row[0]) &
+               (df['plotid'] == row[1]) &
+               (df['year'] == row[3])]
+        df.loc[a.index.values, '%s %s' % (row[4], row[2])] = row[5]
+
+    # Get SOIL6
+    cursor.execute("""
+    SELECT site, plotid, year, value from
+    soil_data where site in %s and
+    varname = 'SOIL6'
+    and value not in ('', '.', 'n/a', 'did not collect') and value is not null
+    and substr(value, 1, 1) != '<'
+    """, (tuple(SITES), ))
+    for row in cursor:
+        a = df[(df['uniqueid'] == row[0]) &
+               (df['plotid'] == row[1]) &
+               (df['year'] == row[2])]
+        df.loc[a.index.values, 'SOIL6'] = row[3]
+
     return df.to_csv(index=False)
 
 
