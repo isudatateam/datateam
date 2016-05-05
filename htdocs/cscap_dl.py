@@ -87,11 +87,13 @@ def get_agdata():
     """, pgconn, params=(tuple(SITES),), index_col=None)
     df['plant_corn_date'] = None
     df['termination_rye_corn_date'] = None
+    df['termination_rye_soy_date'] = None
 
     cursor.execute("""
     select uniqueid, valid, operation from operations
     where uniqueid in %s
-    and operation in ('plant_corn', 'termination_rye_corn')
+    and operation in ('plant_corn', 'termination_rye_corn',
+    'termination_rye_soy')
     """, (tuple(SITES),))
     for row in cursor:
         a = df[(df['uniqueid'] == row[0]) &
