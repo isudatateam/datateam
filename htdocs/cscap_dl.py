@@ -122,11 +122,20 @@ def get_agdata():
     GROUP by site, plotid, depth, year, sampledate
     ORDER by sampledate ASC
     """, (tuple(SITES), ))
+    springdates = dict()
     for row in cursor:
         season = 'spring' if row[4].month < 7 else 'fall'
         a = df[(df['uniqueid'] == row[0]) &
                (df['plotid'] == row[1]) &
                (df['year'] == row[3])]
+        if season == 'spring':
+            key = "%s_%s" % (row[0], row[3])
+            if key not in springdates:
+                springdates[key] = row[4]
+            if springdates[key] != row[4]:
+                # print(("Skipping %s for %s, since %s"
+                #        ) % (row[4], row[0], springdates[key]))
+                continue
         df.loc[a.index.values, '%s Soil15 Date' % (season,)] = row[4]
         df.loc[a.index.values, '%s Soil15 %s' % (season,
                                                  row[2])] = row[5]
@@ -350,4 +359,5 @@ def main():
 
 if __name__ == '__main__':
     # Do Something
+    # get_agdata()
     main()
