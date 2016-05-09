@@ -123,8 +123,13 @@ def get_agdata():
     ORDER by sampledate ASC
     """, (tuple(SITES), ))
     springdates = dict()
+    summerdates = dict()
     for row in cursor:
-        season = 'spring' if row[4].month < 7 else 'fall'
+        season = 'fall'
+        if row[4].month < 6:
+            season = 'spring'
+        elif row[4].month < 8:
+            season = 'summer'
         a = df[(df['uniqueid'] == row[0]) &
                (df['plotid'] == row[1]) &
                (df['year'] == row[3])]
@@ -133,8 +138,12 @@ def get_agdata():
             if key not in springdates:
                 springdates[key] = row[4]
             if springdates[key] != row[4]:
-                # print(("Skipping %s for %s, since %s"
-                #        ) % (row[4], row[0], springdates[key]))
+                continue
+        if season == 'summer':
+            key = "%s_%s" % (row[0], row[3])
+            if key not in summerdates:
+                summerdates[key] = row[4]
+            if summerdates[key] != row[4]:
                 continue
         df.loc[a.index.values, '%s Soil15 Date' % (season,)] = row[4]
         df.loc[a.index.values, '%s Soil15 %s' % (season,
