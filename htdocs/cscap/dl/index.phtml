@@ -1,0 +1,87 @@
+<?php 
+require_once "../../../include/require_auth.php";
+
+
+function build_site_ui(){
+	$states = Array("IA" => "Iowa",
+		"MN" => "Minnesota",
+		"WI" => "Wisconsin",
+		"IL" => "Illinois",
+		"MO" => "Missouri",
+		"IN" => "Indiana",
+		"MI" => "Michigan",
+		"OH" => "Ohio");
+	$pgconn = pg_connect("dbname=mesosite host=iemdb user=nobody");
+	$rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
+			" ORDER by name ASC");
+	$data = Array();
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+		$data[$row["state"]][$row["id"]] = $row["name"];
+	}
+	$keys = array_keys($data);
+	asort($keys);
+	$s = '';
+	$q = -1;
+	while (list($v,$k)=each($keys)){
+		$q += 1;
+		if ($q % 3 == 0){
+			$s .= "<div class=\"col-md-4\">\n";
+		}
+		$s .= sprintf("<h3><input type=\"checkbox\" class=\"state-check\"".
+				" value=\"%s\">%s</h3>\n", $k, $states[$k]);
+		while (list($v2, $k2)=each($data[$k])){
+			$s .= sprintf("<br /><input type=\"checkbox\" value=\"%s\"".
+					" data-state=\"%s\" class=\"site-check\"".
+					">%s</input>\n", $v2, $k, $k2);
+		}
+		if ($q % 3 == 2){
+			$s .= "</div>\n";
+		}
+	}
+	if ($q % 3 != 2){
+		$s .= "</div>\n";
+	}
+	return $s;
+}
+
+require_once "../../../include/myview.php";
+$t = new MyView();
+$t->title = "CSCAP Project Data Download";
+$t->headextra = <<<EOF
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
+EOF;
+$t->jsextra = <<<EOF
+<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
+<script src="dl.js"></script>
+EOF;
+
+$siteui = build_site_ui();
+
+$t->content = <<<EOF
+
+<h3>CSCAP Data Download</h3>
+
+<div class="btn-group" role="group" aria-label="Pages">
+  <button type="button" class="btn btn-primary">Site</button>
+  <button type="button" class="btn btn-default">Treatments</button>
+  <button type="button" class="btn btn-default">Agronomic</button>
+  <button type="button" class="btn btn-default">Soil</button>
+  <button type="button" class="btn btn-default">Year</button>
+  <button type="button" class="btn btn-default">Management</button>
+</div>
+
+<div id="site-ui" style="display: block;">
+{$siteui}
+</div>
+<div id="treatment-ui" style="display: none;">
+	<h3>Treatments</h3>
+</div>
+		
+<br clear="both" />
+<button id="next_btn" type="button" class="btn btn-default pull-right">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
+
+EOF;
+$t->render('single.phtml');
+
+?>
