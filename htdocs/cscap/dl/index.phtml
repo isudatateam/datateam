@@ -1,8 +1,51 @@
 <?php 
 require_once "../../../include/require_auth.php";
 
+function build_treatments_ui(){
+	$opts = Array('TIL1', 'TIL2',
+	'ROT1','ROT2',
+'ROT3','ROT4',
+'ROT5','ROT54',
+'ROT6','ROT7',
+'ROT8','ROT9',
+'ROT10','ROT11',
+'ROT12','ROT13',
+'ROT14','ROT15',
+'ROT16','ROT17',
+'ROT37','ROT36',
+'ROT55','ROT38',
+'ROT39','ROT40',
+'ROT41','ROT42',
+'ROT43','ROT44',
+'ROT45','ROT46',
+'ROT47','ROT48',
+'ROT49','ROT50',
+'ROT51','ROT52',
+'ROT53','ROT56',
+'ROT57','ROT58',
+'ROT59','ROT60',
+'ROT61','ROT62',
 
-function build_site_ui(){
+'HERB1','HERB2',
+
+'DWM1','DWM2',
+'DWM3','DWM4',
+'DWM5','DWM6',
+
+'NIT1','NIT2',
+'NIT3','NIT4',
+
+'LND1','LND2','LND3');
+	$s = '';
+	while (list($k, $v)=@each($opts)){
+		$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
+				" data-treatment=\"%s\">%s\n",
+				$v, $v, $v);
+	}
+	return $s;
+}
+
+function build_sites_ui(){
 	$states = Array("IA" => "Iowa",
 		"MN" => "Minnesota",
 		"WI" => "Wisconsin",
@@ -32,7 +75,7 @@ function build_site_ui(){
 		while (list($v2, $k2)=each($data[$k])){
 			$s .= sprintf("<br /><input type=\"checkbox\" value=\"%s\"".
 					" data-state=\"%s\" class=\"site-check\"".
-					">%s</input>\n", $v2, $k, $k2);
+					">%s\n", $v2, $k, $k2);
 		}
 		if ($q % 3 == 2){
 			$s .= "</div>\n";
@@ -56,31 +99,52 @@ $t->jsextra = <<<EOF
 <script src="dl.js"></script>
 EOF;
 
-$siteui = build_site_ui();
+$sitesui = build_sites_ui();
+$treatmentui = build_treatments_ui();
 
 $t->content = <<<EOF
 
 <h3>CSCAP Data Download</h3>
 
 <div class="btn-group" role="group" aria-label="Pages">
-  <button type="button" class="btn btn-primary">Site</button>
-  <button type="button" class="btn btn-default">Treatments</button>
-  <button type="button" class="btn btn-default">Agronomic</button>
-  <button type="button" class="btn btn-default">Soil</button>
-  <button type="button" class="btn btn-default">Year</button>
-  <button type="button" class="btn btn-default">Management</button>
+  <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
+  <button type="button" class="btn btn-default" id="treatments-btn">Treatments</button>
+  <button type="button" class="btn btn-default" id="agronomic-btn">Agronomic</button>
+  <button type="button" class="btn btn-default" id="soil-btn">Soil</button>
+  <button type="button" class="btn btn-default" id="year-btn">Year</button>
+  <button type="button" class="btn btn-default" id="management-btn">Management</button>
+  <button type="button" class="btn btn-default" id="option-btn">Options</button>
 </div>
 
-<div id="site-ui" style="display: block;">
-{$siteui}
+<div id="sites-ui" style="display: block;">
+{$sitesui}
 </div>
-<div id="treatment-ui" style="display: none;">
+<div id="treatments-ui" style="display: none;">
 	<h3>Treatments</h3>
+{$treatmentui}
+</div>
+<div id="agronomic-ui" style="display: none;">
+	<h3>Agronomic</h3>
+</div>
+<div id="soil-ui" style="display: none;">
+	<h3>Soil</h3>
+</div>
+<div id="year-ui" style="display: none;">
+	<h3>Years</h3>
+</div>
+<div id="management-ui" style="display: none;">
+	<h3>Management</h3>
+</div>
+<div id="option-ui" style="display: none;">
+	<h3>Options</h3>
 </div>
 		
+		
 <br clear="both" />
-<button id="next_btn" type="button" class="btn btn-default pull-right">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
-
+<div class="pull-right">
+<button id="prev-btn" type="button" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i> Previous</button>
+<button id="next-btn" type="button" class="btn btn-default">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
+</div>
 EOF;
 $t->render('single.phtml');
 
