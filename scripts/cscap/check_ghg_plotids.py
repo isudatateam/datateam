@@ -1,6 +1,7 @@
 from pandas.io.sql import read_sql
 import psycopg2
 import pyiem.cscap_utils as utils
+import pandas as pd
 
 pgconn = psycopg2.connect(database='sustainablecorn')
 
@@ -19,6 +20,7 @@ X = {"2011": '1DSHcfeBNJArVowk0CG_YvzI0YQnHIZXhcxOjBi2fPM4',
 years = X.keys()
 years.sort()
 unknown = ['UniqueID_PlotID', '-_-']
+rows = []
 for year in years:
     spreadsheet = utils.Spreadsheet(
         spr_client, X.get(year))
@@ -28,6 +30,7 @@ for year in years:
             d = entry.to_dict()
             if d.get('ghg1') is None or d.get('ghg3') is None:
                 continue
+            rows.append(d)
             df2 = plotdf[(plotdf['uniqueid'] == d['ghg1'].upper()) &
                          (plotdf['plotid'] == d['ghg3'].upper())]
             if len(df2.index) == 0:
@@ -38,3 +41,8 @@ for year in years:
                 print("%s Unknown uniqueid: |%s| plotid: |%s|" % (year,
                                                                   d['ghg1'],
                                                                   d['ghg3']))
+
+df = pd.DataFrame(rows)
+writer = pd.ExcelWriter('output.xlsx')
+df.to_excel(writer, 'Sheet1')
+writer.save()
