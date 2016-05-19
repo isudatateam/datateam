@@ -115,10 +115,10 @@ def get_agdata():
 
     # Get the Soil Nitrate Data
     cursor.execute("""
-    SELECT site, plotid, depth, year, sampledate, avg(value::numeric) from
+    SELECT site, plotid, depth, year, sampledate,
+    avg(replace(value, '<', '')::numeric) from
     soil_data where site in %s and varname = 'SOIL15'
     and value not in ('', '.', 'n/a', 'did not collect') and value is not null
-    and substr(value, 1, 1) != '<'
     GROUP by site, plotid, depth, year, sampledate
     ORDER by sampledate ASC
     """, (tuple(SITES), ))
@@ -151,13 +151,13 @@ def get_agdata():
 
     # Get the other soil data Data
     cursor.execute("""
-    SELECT site, plotid, depth, year, varname, avg(value::numeric) from
+    SELECT site, plotid, depth, year, varname,
+    avg(replace(value, '<', '')::numeric) from
     soil_data where site in %s and
     varname in ('SOIL13', 'SOIL1', 'SOIL2', 'SOIL29', 'SOIL30', 'SOIL31',
     'SOIL32', 'SOIL33', 'SOIL34', 'SOIL35', 'SOIL39', 'SOIL41', 'SOIL42',
     'SOIL26', 'SOIL27', 'SOIL28')
     and value not in ('', '.', 'n/a', 'did not collect') and value is not null
-    and substr(value, 1, 1) != '<'
     GROUP by site, plotid, depth, year, varname
     """, (tuple(SITES), ))
     for row in cursor:
@@ -172,7 +172,6 @@ def get_agdata():
     soil_data where site in %s and
     varname = 'SOIL6'
     and value not in ('', '.', 'n/a', 'did not collect') and value is not null
-    and substr(value, 1, 1) != '<'
     """, (tuple(SITES), ))
     for row in cursor:
         a = df[(df['uniqueid'] == row[0]) &
