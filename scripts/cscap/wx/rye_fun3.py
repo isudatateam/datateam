@@ -2,7 +2,8 @@ import psycopg2
 import datetime
 from pyiem.network import Table as NetworkTable
 nt = NetworkTable("CSCAP")
-COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+COOP = psycopg2.connect(database='coop', host='localhost',
+                        port=5555, user='nobody')
 ccursor = COOP.cursor()
 
 SITES = ['MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
@@ -12,8 +13,8 @@ SITES = ['MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
 print("uniqueid,date,high[F],low[F],precip[in]")
 for uniqueid in SITES:
     for year in range(2011, 2016):
-        plantdate = datetime.date(year-1, 10, 15)
-        terminatedate = datetime.date(year, 4, 15)
+        plantdate = datetime.date(year, 4, 15)
+        terminatedate = datetime.date(year, 10, 15)
         clsite = nt.sts[uniqueid]['climate_site']
         ccursor.execute("""SELECT day, high, low, precip from
         alldata_""" + clsite[:2] + """ WHERE station = %s and day >= %s
