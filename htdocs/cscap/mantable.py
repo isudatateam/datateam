@@ -4,6 +4,7 @@ import sys
 import psycopg2
 import cgi
 import subprocess
+import datetime
 import os
 DBCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
                           user='nobody')
@@ -16,6 +17,7 @@ varlookup = {}
 COVER_SITES = ['MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
                'SEPAC', 'BRADFORD.B1', 'BRADFORD.B2',
                'BRADFORD.C', 'FREEMAN']
+D7 = datetime.timedelta(days=7)
 
 
 def reload_data():
@@ -39,57 +41,66 @@ def main():
         reloadres += reload_data()
 
     cursor.execute("""
-        SELECT uniqueid, valid, cropyear, operation, biomassdate1, biomassdate2
-        from operations
+        SELECT uniqueid, valid, cropyear, operation, biomassdate1,
+        biomassdate2, fertilizercrop from operations
         WHERE operation in ('harvest_corn', 'harvest_soy', 'plant_rye',
         'plant_rye-corn-res', 'plant_rye-soy-res', 'sample_soilnitrate',
         'sample_covercrop', 'termination_rye_corn', 'termination_rye_soy',
         'plant_corn', 'plant_soy', 'fertilizer_synthetic')
         and cropyear != '2016' and valid is not null
-        ORDER by valid ASC
+        ORDER by operation DESC, valid ASC
     """)
     data = {}
     for row in cursor:
         site = row[0]
-        valid = row[1]
+        valid = row[1]  # datetime!
         cropyear = str(row[2])
         operation = row[3]
         biomassdate1 = row[4]
-        biomassdate2 = row[5]
-        if not data.has_key(site):
+        # biomassdate2 = row[5]
+        fertilizercrop = row[6]
+        if site not in data:
             data[site] = {}
-            for cy in ['2011', '2012', '2013', '2014','2015']:
-                data[site][cy] = {'harvest_soy': '','harvest_corn': '',
-                                    'plant_rye': '', 'plant_rye-corn-res': '',
-                                    'plant_rye-soy-res': '',
-                                    'plant_corn': '', 'plant_soy': '',
-                                    'fall_sample_soilnitrate_corn': '',
-                                    'fall_sample_soilnitrate_soy': '',
-                                    'spring_sample_soilnitrate_corn': '',
-                                    'spring_sample_soilnitrate_soy': '',
-                                    'termination_rye_corn': '',
-                                    'termination_rye_soy': '',
-                                    'fertilizer_synthetic1': '',
-                                    'fertilizer_synthetic2': '',
-                                    'spring_sample_covercrop_corn': '',
-                                    'spring_sample_covercrop_soy': '',
-                                    'fall_sample_covercrop_corn': '',
-                                    'fal_sample_covercrop_soy': '',
-                }
+            for cy in ['2011', '2012', '2013', '2014', '2015']:
+                data[site][cy] = {'harvest_soy': '',
+                                  'harvest_corn': '',
+                                  'plant_rye': '',
+                                  'plant_rye-corn-res': '',
+                                  'plant_rye-soy-res': '',
+                                  'plant_corn': None,
+                                  'plant_soy': None,
+                                  'fall_sample_soilnitrate_corn': '',
+                                  'fall_sample_soilnitrate_soy': '',
+                                  'spring_sample_soilnitrate_corn': '',
+                                  'spring_sample_soilnitrate_soy': '',
+                                  'termination_rye_corn': '',
+                                  'termination_rye_soy': '',
+                                  'fertilizer_synthetic_starter': '',
+                                  'fertilizer_synthetic_sidedress': '',
+                                  'spring_sample_covercrop_corn': '',
+                                  'spring_sample_covercrop_soy': '',
+                                  'fall_sample_covercrop_corn': '',
+                                  'fal_sample_covercrop_soy': ''}
+        _d = data[site][cropyear]
         if operation == 'plant_rye':
             for op2 in ['plant_rye-soy-res', 'plant_rye-corn-res']:
-                data[site][cropyear][op2] = valid
+                _d[op2] = valid
         elif operation.startswith('termination_rye'):
             if operation.endswith('soy') and biomassdate1 is not None:
-                data[site][cropyear]['spring_sample_covercrop_soy'] = biomassdate1
+                _d['spring_sample_covercrop_soy'] = biomassdate1
             elif biomassdate1 is not None:
-                data[site][cropyear]['spring_sample_covercrop_corn'] = biomassdate1
-            data[site][cropyear][operation] = valid
-        elif operation == 'fertilizer_synthetic':
-            if data[site][cropyear][operation+"1"] == '':
-                data[site][cropyear][operation+"1"] = valid
+                _d['spring_sample_covercrop_corn'] = biomassdate1
+            _d[operation] = valid
+        elif (operation == 'fertilizer_synthetic' and
+                fertilizercrop in [None, 'multiple', 'corn', 'other']):
+            plantcorndate = _d['plant_corn']
+            sys.stderr.write("%s %s %s %s %s\n" % (plantcorndate, valid,
+                                                   fertilizercrop, site,
+                                                   cropyear))
+            if plantcorndate is None or plantcorndate >= (valid - D7):
+                _d[operation+"_starter"] = valid
             else:
-                data[site][cropyear][operation+"2"] = valid
+                _d[operation+"_sidedress"] = valid
 
         elif operation in ['sample_soilnitrate', 'sample_covercrop']:
             # We only want 'fall' events
@@ -98,15 +109,15 @@ def main():
                 continue
             elif valid.month < 6:
                 season = 'spring_'
-            if data[site][cropyear][season+operation+'_soy'] != '':
-                data[site][cropyear][season+operation+'_corn'] = valid
+            if _d[season+operation+'_soy'] != '':
+                _d[season+operation+'_corn'] = valid
             else:
                 data[site][cropyear][season+operation+'_soy'] = valid
         else:
             data[site][cropyear][operation] = valid
 
     table = ""
-    for site in COVER_SITES: #data.keys():
+    for site in COVER_SITES:  # data.keys():
         table += "<tr><td>%s</td>" % (site,)
         for yr in ['2011', '2012', '2013', '2014', '2015']:
             for op in ['harvest_corn', 'harvest_soy']:
@@ -164,13 +175,13 @@ def main():
                         data[site].get(yr, {}).get(op, ''),)
         table4 += "</tr>"
 
-    #---------------------------------------------------------------
+    # ---------------------------------------------------------------
     table5 = ""
-    for site in COVER_SITES: #data.keys():
+    for site in COVER_SITES:  # data.keys():
         table5 += "<tr><td>%s</td>" % (site,)
         for yr in ['2011', '2012', '2013', '2014', '2015']:
-            for op in ['fertilizer_synthetic1',
-                       'fertilizer_synthetic2']:
+            for op in ['fertilizer_synthetic_starter',
+                       'fertilizer_synthetic_sidedress']:
                 table5 += "<td>%s</td>" % (
                         data[site].get(yr, {}).get(op, ''),)
         table5 += "</tr>"
@@ -178,15 +189,16 @@ def main():
     sys.stdout.write("""<!DOCTYPE html>
 <html lang='en'>
 <head>
-    <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/bootstrap-override.css" rel="stylesheet">
+ <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+ <link href="/css/bootstrap-override.css" rel="stylesheet">
 </head>
 <body>
 
-<p>The data presented on this page is current as of the last sync of 
+<p>The data presented on this page is current as of the last sync of
 Google Data to the ISU Database Server.  You can <br />
 <a href="mantable.py?reload=yes"
- class="btn btn-info"><i class="glyphicon glyphicon-cloud-download"></i> Request Sync of Google Data</a> 
+ class="btn btn-info"><i class="glyphicon glyphicon-cloud-download"></i>
+ Request Sync of Google Data</a>
  <br />and a script will run to sync the database.
 %s
 
