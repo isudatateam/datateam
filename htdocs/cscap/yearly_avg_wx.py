@@ -9,8 +9,7 @@ nt = NetworkTable("CSCAP")
 
 def main():
     sys.stdout.write("Content-type: text/html\n\n")
-    pgconn = psycopg2.connect(database='coop', host='localhost', port=5555,
-                              user='mesonet')
+    pgconn = psycopg2.connect(database='coop', host='iemdb', user='mesonet')
     cids = []
     for sid in nt.sts.keys():
         csite = nt.sts[sid]['climate_site']
