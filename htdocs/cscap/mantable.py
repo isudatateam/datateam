@@ -77,6 +77,8 @@ def main():
                                   'termination_rye_soy': '',
                                   'fertilizer_synthetic_starter': '',
                                   'fertilizer_synthetic_sidedress': '',
+                                  'fertilizer_synthetic_preplant': '',
+                                  'fertilizer_synthetic_fall': '',
                                   'spring_sample_covercrop_corn': '',
                                   'spring_sample_covercrop_soy': '',
                                   'fall_sample_covercrop_corn': '',
@@ -97,8 +99,16 @@ def main():
             sys.stderr.write("%s %s %s %s %s\n" % (plantcorndate, valid,
                                                    fertilizercrop, site,
                                                    cropyear))
-            if plantcorndate is None or plantcorndate >= (valid - D7):
+            if plantcorndate is None:
+                sys.stderr.write(("ERROR! No plant corn for %s %s\n"
+                                  ) % (site, cropyear))
+                continue
+            if valid.year < plantcorndate.year:
+                _d[operation+"_fall"] = valid
+            elif valid == plantcorndate:
                 _d[operation+"_starter"] = valid
+            elif valid < (plantcorndate + D7):
+                _d[operation+"_preplant"] = valid
             else:
                 _d[operation+"_sidedress"] = valid
 
@@ -180,7 +190,9 @@ def main():
     for site in COVER_SITES:  # data.keys():
         table5 += "<tr><td>%s</td>" % (site,)
         for yr in ['2011', '2012', '2013', '2014', '2015']:
-            for op in ['fertilizer_synthetic_starter',
+            for op in ['fertilizer_synthetic_fall',
+                       'fertilizer_synthetic_preplant',
+                       'fertilizer_synthetic_starter',
                        'fertilizer_synthetic_sidedress']:
                 table5 += "<td>%s</td>" % (
                         data[site].get(yr, {}).get(op, ''),)
@@ -352,18 +364,18 @@ Google Data to the ISU Database Server.  You can <br />
 <thead>
  <tr>
   <th rowspan="3">Site</th>
-  <th colspan="2">2011</th>
-  <th colspan="2">2012</th>
-  <th colspan="2">2013</th>
-  <th colspan="2">2014</th>
-  <th colspan="2">2015</th>
+  <th colspan="4">2011</th>
+  <th colspan="4">2012</th>
+  <th colspan="4">2013</th>
+  <th colspan="4">2014</th>
+  <th colspan="4">2015</th>
  </tr>
  <tr>
-  <th>Starter</th><th>Side Dress</th>
-  <th>Starter</th><th>Side Dress</th>
-  <th>Starter</th><th>Side Dress</th>
-  <th>Starter</th><th>Side Dress</th>
-  <th>Starter</th><th>Side Dress</th>
+  <th>Fall</th><th>Pre-Plant</th><th>Starter</th><th>Side Dress</th>
+  <th>Fall</th><th>Pre-Plant</th><th>Starter</th><th>Side Dress</th>
+  <th>Fall</th><th>Pre-Plant</th><th>Starter</th><th>Side Dress</th>
+  <th>Fall</th><th>Pre-Plant</th><th>Starter</th><th>Side Dress</th>
+  <th>Fall</th><th>Pre-Plant</th><th>Starter</th><th>Side Dress</th>
  </tr>
 </thead>
 %s
