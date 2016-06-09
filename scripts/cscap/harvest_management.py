@@ -47,7 +47,10 @@ for sheetkey in TABS:
     added = 0
     dups = 0
     entries = 0
-    for entry in sheet.get_list_feed().entry:
+    for rownum, entry in enumerate(sheet.get_list_feed().entry):
+        # Skip the first row of units
+        if rownum == 0:
+            continue
         entries += 1
         d = entry.to_dict()
         # Units row has n/a as the date, so skip it
