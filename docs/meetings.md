@@ -1,3 +1,21 @@
+ 10 Jun 2016
+  Lori, Gio, Suresh
+  - Gio's got a Google Form cronjob that is modifying the form each hour
+  - unsure yet how to handle the SOC issues at MASON and KELLOGG
+  - Hope is to upload to NAL sometime in Feb or Mar
+  - Talked about download form, it is okay for the filter to work in one
+    direction and not worry about going backwards
+  - Add rows to exported sheet from the protocol smartsheet columns
+    - TD project has site specific ones in this case
+  - [ ] deal with the embedded notes in the sheets now that Google Sheets v4
+    is out and available
+  - [x] Add Gio on github to datateam repo
+  - setup Gio for direct database access for his R code
+  - [ ] Rectifiy any CSCAP management changes since the copy to TD sheet
+  - Backend metadata sheet can not sort the updated date column, sigh
+  - International Drainage Symposium is in September
+  - Next meeting is 29 June
+
  28 Apr 2016
   Lori, Gio, Suresh, Katie
   - Lori reported on her Globus meeting, most of the folks there were HPC
