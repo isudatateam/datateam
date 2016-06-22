@@ -1,5 +1,3 @@
-import datetime
-import pytz
 import pyiem.cscap_utils as util
 from tqdm import tqdm
 import pandas as pd
@@ -31,12 +29,16 @@ for item in tqdm(res['items']):
         for griddata in sheet['data']:
             startcol = griddata.get('startColumn', 1)
             startrow = griddata.get('startRow', 1)
+            header = []
             for row, rowdata in enumerate(griddata['rowData']):
                 if 'values' not in rowdata:  # empty sheet
                     continue
                 for col, celldata in enumerate(rowdata['values']):
+                    if row == 0:
+                        header.append(celldata.get("formattedValue", "n/a"))
                     if celldata.get('note') is not None:
                         results.append({'title': title,
+                                        'header': header[col],
                                         'sheet_title': sheet_title,
                                         'row': row + startrow + 1,
                                         'col': col + startcol + 1,
