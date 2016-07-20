@@ -10,3 +10,5 @@ ALTER TABLE decagon_data RENAME d2temp_flag to d2temp_qcflag;
 ALTER TABLE decagon_data RENAME d3temp_flag to d3temp_qcflag;
 ALTER TABLE decagon_data RENAME d4temp_flag to d4temp_qcflag;
 ALTER TABLE decagon_data RENAME d5temp_flag to d5temp_qcflag;
+
+ALTER TABLE decagon_data RENAME d1ec_flag to d1ec_qcflag;

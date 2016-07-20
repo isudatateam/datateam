@@ -207,8 +207,8 @@ def database_save(uniqueid, plot, df):
           maxvalid.strftime("%Y-%m-%d %H:%M-"+tzoff)))
     if cursor.rowcount > 0:
         print("DELETED %s rows previously saved!" % (cursor.rowcount, ))
-        if minvalid.year < 2011 or maxvalid.year > 2015:
-            print("FIXME!")
+        if minvalid.year < 2011 or maxvalid.year > 2016:
+            print("Aborting, due to valid bounds outside of domain")
             sys.exit()
 
     def v(row, name):
