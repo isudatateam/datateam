@@ -35,7 +35,7 @@ def translate(df):
 
 
 def process1(fn, timefmt='%m/%d/%y %H:%M'):
-    df = pd.read_table(fn, sep='\t', index_col=False)
+    df = pd.read_table(fn, sep='\t', index_col=False, low_memory=False)
     df['valid'] = df['Measurement Time'].apply(
         lambda s: datetime.datetime.strptime(s.strip(), timefmt))
     df.drop('Measurement Time', axis=1, inplace=True)
@@ -271,7 +271,7 @@ def main(argv):
     if fmt == '1':
         df = process1(fn)
     elif fmt == '2':
-        df = process1(fn, '%m/%d/%y %H:%M %p')
+        df = process1(fn, '%m/%d/%y %I:%M %p')
     elif fmt == '3':
         df = process3(fn)
     elif fmt == '4':
