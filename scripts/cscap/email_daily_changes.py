@@ -6,12 +6,14 @@ import sys
 import pyiem.cscap_utils as util
 import datetime
 import pytz
+import json
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 config = util.get_config()
 FMIME = 'application/vnd.google-apps.folder'
+FORM_MTYPE = 'application/vnd.google-apps.form'
 CFG = {'cscap': dict(emails=config['cscap']['email_daily_list'],
                      title="Sustainable Corn"
                      ),
@@ -19,6 +21,12 @@ CFG = {'cscap': dict(emails=config['cscap']['email_daily_list'],
                   title='Transforming Drainage'
                   )
        }
+
+
+def pprint(mydict):
+    """pretty print JSON"""
+    return json.dumps(mydict, sort_keys=True, indent=4,
+                      separators=(',', ': '))
 
 
 def sites_changelog(regime, yesterday, html):
@@ -84,6 +92,8 @@ def drive_changelog(regime, yesterday, html):
         largestChangeId = response['largestChangeId']
         page_token = response.get('nextPageToken')
         for item in response['items']:
+            if item['file']['mimeType'] in [FMIME, FORM_MTYPE]:
+                continue
             changestamp = item['id']
             if item['deleted']:
                 continue
@@ -118,7 +128,7 @@ def drive_changelog(regime, yesterday, html):
 <td><a href="%s">%s</a></td></tr>
             """ % (pfolder, folders[pfolder]['title'], uri, title)
             hit = False
-            if 'version' in item['file'] and item['file']['mimeType'] != FMIME:
+            if 'version' in item['file']:
                 lastmsg = ""
                 try:
                     revisions = drive.revisions().list(
@@ -128,6 +138,7 @@ def drive_changelog(regime, yesterday, html):
                            ) % (regime, title, item['file']['mimeType']))
                     revisions = {'items': []}
                 for item2 in revisions['items']:
+                    # print pprint(item2)
                     md = datetime.datetime.strptime(
                                                     item2['modifiedDate'][:19],
                                                     '%Y-%m-%dT%H:%M:%S')
@@ -135,9 +146,10 @@ def drive_changelog(regime, yesterday, html):
                     if md < yesterday:
                         continue
                     localts = md.astimezone(pytz.timezone("America/Chicago"))
+                    # for some reason, some revisions have no user associated
+                    # with it.  So just skip for now
+                    # http://stackoverflow.com/questions/1519072
                     if 'lastModifyingUser' not in item2:
-                        print(('[%s] file: %s has no User? %s'
-                               ) % (regime, title, item2))
                         continue
                     luser = item2['lastModifyingUser']
                     hit = True
