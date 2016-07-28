@@ -1,3 +1,16 @@
+ 19 Jul 2016
+  Steph, Lori, Suresh, Gio
+  - `planthybrid` is a poor term for non-corn plants
+  - [x] duplicated cash crop entries in management tab will cause issues
+  - n/a for cashcrop for fall 2015 operations is OK
+  - [ ] consolidate the weather stations listed to collapse site ids
+  - [ ] do year comparisons of other soil variables
+  - Gio has new plot ids setup for NAEW sites, simplified things greatly
+  - [ ] write Gio and tell him that his NAEW work is awesomely awesome
+  - [ ] write and run script that checks units found on various pages
+  - [ ] create water retention plots
+  - next meeting 1 PM, 3 Aug
+ 
  10 Jun 2016
   Lori, Gio, Suresh
   - Gio's got a Google Form cronjob that is modifying the form each hour
