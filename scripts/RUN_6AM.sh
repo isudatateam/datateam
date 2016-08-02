@@ -25,6 +25,8 @@ python harvest_soil_bd.py 2013
 python harvest_soil_bd.py 2014
 python harvest_soil_bd.py 2015
 
+python harvest_soil_fertility.py
+
 python email_daily_changes.py cscap
 python email_daily_changes.py td
 
