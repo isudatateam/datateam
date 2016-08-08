@@ -20,13 +20,14 @@ res = drive_client.files().list(q=("title contains '%s'"
 # Load up current data, incase we need to do some deleting
 current = {}
 pcursor.execute("""
-    SELECT site, plotid, varname, depth, year, sampledate
+    SELECT site, plotid, varname, depth, year, sampledate, value
     from soil_data WHERE varname ~* 'SOIL19'
     """)
 for row in pcursor:
-    key = "|".join([str(s) for s in row])
-    current[key] = True
+    key = "|".join([str(s) for s in row[:-1]])
+    current[key] = row[-1]
 
+newvals = 0
 for item in res['items']:
     if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
         continue
@@ -74,6 +75,24 @@ for item in res['items']:
                 continue
             inval = worksheet.get_cell_value(row, col)
             val = util.cleanvalue(inval)
+            key = "%s|%s|%s|%s|%s|%s" % (siteid, plotid, varname, depth,
+                                         year, sampledate)
+            if key in current:
+                oldval = current[key]
+                del(current[key])
+                if oldval is None and val is None:
+                    continue
+                if val is not None:
+                    # Database storage is in string, so we can't easily
+                    # compare here with what was previously in the database
+                    val = str(val)
+                if oldval == val:
+                    continue
+                # Hacccccccckkkkkkkkkkk
+                if oldval is not None and oldval.startswith(val[:5]):
+                    continue
+                print(("new site: %s year: %s oldval: %s newval: %s"
+                       ) % (siteid, year, repr(oldval), repr(val)))
             try:
                 pcursor.execute("""
                     INSERT into soil_data(site, plotid, varname, year,
@@ -81,17 +100,15 @@ for item in res['items']:
                     values (%s, %s, %s, %s, %s, %s, %s)
                     """, (siteid, plotid, varname, year, depth, val,
                           sampledate))
+                newvals += 1
             except Exception, exp:
                 print 'HARVEST_SOIL_FERTILITY TRACEBACK'
                 print exp
                 print '%s %s %s %s %s %s' % (siteid, plotid, varname, depth,
                                              val, sampledate)
                 sys.exit()
-            key = "%s|%s|%s|%s|%s|%s" % (siteid, plotid, varname, depth,
-                                         year, sampledate)
-            if key in current:
-                del(current[key])
 
+deletedvals = 0
 for key in current:
     (siteid, plotid, varname, depth, year, sampledate) = key.split("|")
     print(('harvest_soil_fert rm %s %s %s %s %s %s'
@@ -99,7 +116,11 @@ for key in current:
     pcursor.execute("""DELETE from soil_data where site = %s and
     plotid = %s and varname = %s and year = %s and sampledate = %s
     """, (siteid, plotid, varname, year, sampledate))
+    deletedvals += 1
 
+if newvals > 0 or deletedvals > 0:
+    print("harvest_soil_fert, newvals: %s, deleted: %s" % (newvals,
+                                                           deletedvals))
 pcursor.close()
 pgconn.commit()
 pgconn.close()
