@@ -87,8 +87,8 @@ for item in res['items']:
                 print '%s %s %s %s %s %s' % (siteid, plotid, varname, depth,
                                              val, sampledate)
                 sys.exit()
-            key = "%s|%s|%s|%s|%s" % (siteid, plotid, varname, depth,
-                                      year)
+            key = "%s|%s|%s|%s|%s|%s" % (siteid, plotid, varname, depth,
+                                         year, sampledate)
             if key in current:
                 del(current[key])
 
