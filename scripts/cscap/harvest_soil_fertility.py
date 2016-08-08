@@ -20,7 +20,7 @@ res = drive_client.files().list(q=("title contains '%s'"
 # Load up current data, incase we need to do some deleting
 current = {}
 pcursor.execute("""
-    SELECT site, plotid, varname, depth, year
+    SELECT site, plotid, varname, depth, year, sampledate
     from soil_data WHERE varname ~* 'SOIL19'
     """)
 for row in pcursor:
@@ -57,7 +57,8 @@ for item in res['items']:
             siteid = "NAEW.WS%s" % (worksheet.get_cell_value(row, 6),)
         year = worksheet.get_cell_value(row, 1)
         depth = worksheet.get_cell_value(row, 5)
-        if plotid is None or depth is None or year is None:
+        sampledate = worksheet.get_cell_value(row, 3)
+        if None in [plotid, depth, year, sampledate]:
             continue
         year = year.replace("?", "")
         for col in range(6, worksheet.cols+1):
@@ -76,14 +77,15 @@ for item in res['items']:
             try:
                 pcursor.execute("""
                     INSERT into soil_data(site, plotid, varname, year,
-                    depth, value)
-                    values (%s, %s, %s, %s, %s, %s)
-                    """, (siteid, plotid, varname, year, depth, val))
+                    depth, value, sampledate)
+                    values (%s, %s, %s, %s, %s, %s, %s)
+                    """, (siteid, plotid, varname, year, depth, val,
+                          sampledate))
             except Exception, exp:
                 print 'HARVEST_SOIL_FERTILITY TRACEBACK'
                 print exp
-                print '%s %s %s %s %s' % (siteid, plotid, varname, depth,
-                                          val)
+                print '%s %s %s %s %s %s' % (siteid, plotid, varname, depth,
+                                             val, sampledate)
                 sys.exit()
             key = "%s|%s|%s|%s|%s" % (siteid, plotid, varname, depth,
                                       year)
@@ -91,12 +93,12 @@ for item in res['items']:
                 del(current[key])
 
 for key in current:
-    (siteid, plotid, varname, depth, year) = key.split("|")
-    print(('harvest_soil_fert rm %s %s %s %s %s'
-           ) % (year, siteid, plotid, varname, repr(depth)))
+    (siteid, plotid, varname, depth, year, sampledate) = key.split("|")
+    print(('harvest_soil_fert rm %s %s %s %s %s %s'
+           ) % (year, siteid, plotid, varname, repr(depth), sampledate))
     pcursor.execute("""DELETE from soil_data where site = %s and
-    plotid = %s and varname = %s and year = %s
-    """, (siteid, plotid, varname, year))
+    plotid = %s and varname = %s and year = %s and sampledate = %s
+    """, (siteid, plotid, varname, year, sampledate))
 
 pcursor.close()
 pgconn.commit()
