@@ -83,7 +83,8 @@ def make_plot(form):
             for i in range(1, 6):
                 df["d%s%s_f" % (n, i)] = '-'
     else:
-        df = read_sql("""SELECT date(valid at time zone %s) as v, plotid,
+        df = read_sql("""SELECT
+        date_trunc('day', valid at time zone %s) as v, plotid,
         avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
