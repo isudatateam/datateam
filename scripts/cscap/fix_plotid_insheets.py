@@ -59,5 +59,6 @@ for i, item in enumerate(res['items']):
             if new is None:
                 new = ''
             if old is None or old[:3] != new[:3]:
+                print("col: %s old: %s new: %s" % (col, old, new))
                 entry.set_value(col, new)
                 util.exponential_backoff(spr_client.update, entry)
