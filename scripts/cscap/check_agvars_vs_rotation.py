@@ -6,7 +6,7 @@ config = util.get_config()
 spr_client = util.get_spreadsheet_client(config)
 drive = util.get_driveclient(config)
 
-xref_plotids = util.get_xref_plotids(spr_client, config)
+xref_plotids = util.get_xref_plotids(drive)
 
 xref_feed = spr_client.get_list_feed(config['cscap']['xrefrot'], 'od6')
 rotations = {}

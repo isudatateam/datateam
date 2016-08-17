@@ -34,7 +34,10 @@ LKP = {'NIT1': '[1] No additional nitrogen fertilizer applied',
        'NIT2': '[2] MRTN application of N fertilizer in spring',
        'NIT3': '[3] Sensor based N application (mid-season) - MO/OH rec',
        'NIT4': '[4] Sensor based N application (mid-season) - OK rec'}
-col = 'nitrogen'
+LKP = {'LND1': '[1] Near-summit',
+       'LND2': '[2] Side slope',
+       'LND3': '[3] Toe slope'}
+col = 'landscape'
 
 sz = len(res['items'])
 for i, item in enumerate(res['items']):

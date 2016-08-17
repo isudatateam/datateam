@@ -9,7 +9,7 @@ config = util.get_config()
 spr_client = util.get_spreadsheet_client(config)
 drive = util.get_driveclient(config)
 
-xref_plotids = util.get_xref_plotids(spr_client, config)
+xref_plotids = util.get_xref_plotids(drive)
 
 xref_feed = spr_client.get_list_feed(config['cscap']['xrefrot'], 'od6')
 
@@ -48,16 +48,18 @@ for item in res['items']:
         worksheet.get_list_feed()
         for entry in worksheet.list_feed.entry:
             data = entry.to_dict()
-            if data['uniqueid'] is None:
+            if data['uniqueid'] is None or data['rotation'] is None:
                 continue
             code = data['rotation'].split(
                 )[0].replace("[", "").replace("]", "").replace("ROT", "")
-            newval = "ROT%s :: %s" % (code,  rotations["ROT"+code]["y"+yr])
-            if plotids[data['plotid']] != code:
-                print 'Plot:%s Rotation PlotIdSheet->%s AgSheet->%s' % (
-                        data['plotid'], plotids[data['plotid']], code)
+            plcode = plotids[data['plotid']]
+            newval = "ROT%s :: %s" % (plcode,  rotations["ROT"+plcode]["y"+yr])
+            if plcode != code:
+                print((' Conflict: Plot:%s Rotation PlotIdSheet->%s '
+                       'AgSheet->%s'
+                       ) % (data['plotid'], plotids[data['plotid']], code))
             if newval != data['rotation']:
-                print 'Plot:%s new:%s old:%s' % (data['plotid'], newval,
-                                                 data['rotation'])
+                print '+ Plot:%s new:%s old:%s' % (data['plotid'], newval,
+                                                   data['rotation'])
                 entry.set_value('rotation', newval)
                 spr_client.update(entry)
