@@ -11,16 +11,14 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-config = util.get_config()
+CONFIG = util.get_config()
 FMIME = 'application/vnd.google-apps.folder'
 FORM_MTYPE = 'application/vnd.google-apps.form'
-CFG = {'cscap': dict(emails=config['cscap']['email_daily_list'],
-                     title="Sustainable Corn"
-                     ),
-       'td': dict(emails=config['td']['email_daily_list'],
-                  title='Transforming Drainage'
-                  )
-       }
+CFG = {'cscap': dict(emails=CONFIG['cscap']['email_daily_list'],
+                     title="Sustainable Corn"),
+       'td': dict(emails=CONFIG['td']['email_daily_list'],
+                  title='Transforming Drainage')}
+LOCALTZ = pytz.timezone("America/Chicago")
 
 
 def pprint(mydict):
@@ -37,7 +35,7 @@ def sites_changelog(regime, yesterday, html):
     <tbody>""" % (CFG[regime]['title'],)
 
     site = 'sustainablecorn' if regime == 'cscap' else 'transformingdrainage'
-    s = util.get_sites_client(config, site)
+    s = util.get_sites_client(CONFIG, site)
     # Fetch more results for sites activity feed
     opt = {'max-results': 999}
     feed = s.get_activity_feed(**opt)
@@ -49,7 +47,7 @@ def sites_changelog(regime, yesterday, html):
         # print 'Sites ts: %s' % (ts,)
         if ts < yesterday:
             continue
-        updated = ts.astimezone(pytz.timezone("America/Chicago"))
+        updated = ts.astimezone(LOCALTZ)
         elem = entry.summary.html
         elem.namespace = ''
         elem.children[0].namespace = ''
@@ -67,9 +65,9 @@ def sites_changelog(regime, yesterday, html):
 
 def drive_changelog(regime, yesterday, html):
     """ Do something """
-    drive = util.get_driveclient(config, regime)
+    drive = util.get_driveclient(CONFIG, regime)
     folders = util.get_folders(drive)
-    start_change_id = config[regime]["changestamp"]
+    start_change_id = CONFIG[regime]["changestamp"]
 
     html += """<p><table border="1" cellpadding="3" cellspacing="0">
 <thead>
@@ -111,7 +109,7 @@ def drive_changelog(regime, yesterday, html):
                            ) % (regime, item['id'], parent['id']))
                     continue
                 if (folders[parent['id']]['basefolder'] ==
-                        config[regime]['basefolder']):
+                        CONFIG[regime]['basefolder']):
                     isproject = True
             if not isproject:
                 print(('[%s] %s skipped'
@@ -119,7 +117,7 @@ def drive_changelog(regime, yesterday, html):
                 continue
             uri = item['file']['alternateLink']
             title = item['file']['title'].encode('ascii', 'ignore')
-            localts = modifiedDate.astimezone(pytz.timezone("America/Chicago"))
+            localts = modifiedDate.astimezone(LOCALTZ)
             hits += 1
             pfolder = item['file']['parents'][0]['id']
             html += """
@@ -145,7 +143,7 @@ def drive_changelog(regime, yesterday, html):
                     md = md.replace(tzinfo=pytz.timezone("UTC"))
                     if md < yesterday:
                         continue
-                    localts = md.astimezone(pytz.timezone("America/Chicago"))
+                    localts = md.astimezone(LOCALTZ)
                     # for some reason, some revisions have no user associated
                     # with it.  So just skip for now
                     # http://stackoverflow.com/questions/1519072
@@ -155,7 +153,7 @@ def drive_changelog(regime, yesterday, html):
                     hit = True
                     display_name = luser['displayName']
                     email_address = luser['emailAddress']
-                    if display_name == config['service_account']:
+                    if display_name == CONFIG['service_account']:
                         display_name = "daryl's magic"
                         email_address = "akrherz@iastate.edu"
                     thismsg = """
@@ -180,13 +178,13 @@ def drive_changelog(regime, yesterday, html):
         if not page_token:
             break
 
-    config[regime]['changestamp'] = changestamp
+    CONFIG[regime]['changestamp'] = changestamp
     if hits == 0:
         html += """<tr><td colspan="5">No Changes Found...</td></tr>\n"""
 
     html += """</tbody></table>"""
 
-    util.save_config(config)
+    util.save_config(CONFIG)
     return html
 
 
@@ -198,7 +196,7 @@ def main(argv):
     today = today.replace(tzinfo=pytz.timezone("UTC"), hour=12,
                           minute=0, second=0, microsecond=0)
     yesterday = today - datetime.timedelta(days=1)
-    localts = yesterday.astimezone(pytz.timezone("America/Chicago"))
+    localts = yesterday.astimezone(LOCALTZ)
     html = """
 <h3>%s Cloud Data Changes</h3>
 <br />
