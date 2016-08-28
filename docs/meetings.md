@@ -6,7 +6,7 @@
   - [ ] consolidate the weather stations listed to collapse site ids
   - [ ] do year comparisons of other soil variables
   - Gio has new plot ids setup for NAEW sites, simplified things greatly
-  - [ ] write Gio and tell him that his NAEW work is awesomely awesome
+  - [x] write Gio and tell him that his NAEW work is awesomely awesome
   - [ ] write and run script that checks units found on various pages
   - [ ] create water retention plots
   - next meeting 1 PM, 3 Aug
