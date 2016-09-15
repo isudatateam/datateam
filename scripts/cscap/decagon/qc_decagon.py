@@ -1,11 +1,13 @@
 import psycopg2
+import sys
 
 
 def get_entries():
     """Return a list of entries for usage"""
     cursor = pgconn.cursor()
     cursor.execute("""SELECT distinct uniqueid, plotid from decagon_data
-    WHERE uniqueid = 'SEPAC' ORDER by uniqueid, plotid""")
+    WHERE uniqueid = %s ORDER by uniqueid, plotid
+    """, (sys.argv[1],))
     entries = []
     for row in cursor:
         entries.append([row[0], row[1]])
@@ -83,7 +85,8 @@ def replace999():
                 continue
             cursor = pgconn.cursor()
             cursor.execute("""UPDATE decagon_data SET
-            d%s%s_qcflag = 'M', d%s%s = null, d%s%s_qc = null WHERE d%s%s = -999
+            d%s%s_qcflag = 'M', d%s%s = null, d%s%s_qc = null
+            WHERE d%s%s = -999
             """ % (v, n, v, n, v, n, v, n))
             print "%s rows with -999 set to null for d%s%s" % (cursor.rowcount,
                                                                v, n)
