@@ -1,6 +1,8 @@
 import psycopg2
 import sys
 
+intervals = {'KELLOGG': 30, 'NAEW': 30, 'WATERMAN': 2}
+
 
 def get_entries():
     """Return a list of entries for usage"""
@@ -12,6 +14,30 @@ def get_entries():
     for row in cursor:
         entries.append([row[0], row[1]])
     return entries
+
+
+def fill_missing_timestamps():
+    """ Fill in any missing timestamps """
+    cursor = pgconn.cursor()
+    entries = get_entries()
+    for (uniqueid, plotid) in entries:
+        cursor.execute("""
+        with period as (
+            select generate_series(min(valid), max(valid),
+            '%s minute'::interval) as ts
+            from decagon_data where uniqueid = %s and plotid = %s),
+        obs as (
+            select valid from decagon_data where uniqueid = %s
+            and plotid = %s)
+        INSERT into decagon_data(uniqueid, plotid, valid)
+            select %s, %s, ts from period p LEFT JOIN obs d on
+                (p.ts = d.valid) WHERE d.valid is null
+        """, (intervals.get(uniqueid, 5),
+              uniqueid, plotid, uniqueid, plotid, uniqueid, plotid))
+        print("Added %s null rows for %s[%s]" % (cursor.rowcount, uniqueid,
+                                                 plotid))
+    cursor.close()
+    pgconn.commit()
 
 
 def bounds_check():
@@ -37,6 +63,8 @@ def bounds_check():
                        ) % (uniqueid, plotid, vname, cursor.rowcount))
                 # for row in cursor:
                 #    print vname, row[0].strftime("%Y%m%d%H%M"), row[1]
+    cursor.close()
+    pgconn.commit()
 
 
 def ticker_temp():
@@ -97,6 +125,7 @@ def replace999():
 if __name__ == '__main__':
     pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb')
 
+    fill_missing_timestamps()
     replace999()
     ticker_temp()
     bounds_check()
