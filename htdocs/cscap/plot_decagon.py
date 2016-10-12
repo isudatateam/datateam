@@ -2,6 +2,7 @@
 """Decagon SM Plot!"""
 import psycopg2
 import sys
+import pytz
 import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
@@ -50,7 +51,7 @@ def make_plot(form):
     if depth != 'all':
         plotid_limit = ""
     if ptype == '1':
-        df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
+        df = read_sql("""SELECT valid as v, plotid,
         d1temp_qc as d1t, coalesce(d1temp_qcflag, '') as d1t_f,
         d2temp_qc as d2t, coalesce(d2temp_qcflag, '') as d2t_f,
         d3temp_qc as d3t, coalesce(d3temp_qcflag, '') as d3t_f,
@@ -65,7 +66,7 @@ def make_plot(form):
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
         df['v'] = df['v'].apply(
-            lambda x: x.tz_localize('UTC').tz_convert(tzname))
+            lambda x: x.astimezone(pytz.timezone(tzname)))
 
     elif ptype in ['3', '4']:
         res = 'hour' if ptype == '3' else 'week'
@@ -100,7 +101,7 @@ def make_plot(form):
         send_error("No / Not Enough Data Found, sorry!")
     if ptype not in ['2', ]:
         df['v'] = df['v'].apply(
-            lambda x: x.tz_localize('UTC').tz_convert(tzname))
+            lambda x: x.tz_convert(tzname))
 
     if viewopt != 'js':
         df.rename(columns=dict(v='timestamp',
