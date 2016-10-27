@@ -1,6 +1,7 @@
 """Gio discovered a mismatch between AG codes and headers
 """
 import pyiem.cscap_utils as util
+import pandas as pd
 
 config = util.get_config()
 drive = util.get_driveclient(config, "cscap")
@@ -27,10 +28,12 @@ def build_xref():
 
 xref = build_xref()
 
+rows = []
 for item in res['items']:
     if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
         continue
     print("===> %s" % (item['title'],))
+    site = item['title'].split()[0]
     f = sheets.spreadsheets().get(spreadsheetId=item['id'],
                                   includeGridData=True)
     j = util.exponential_backoff(f.execute)
@@ -47,3 +50,11 @@ for item in res['items']:
                     print(("%s -> '%s'\n"
                            "        should be '%s'"
                            ) % (v1, v2, xref.get(v1)))
+                    rows.append(dict(uniqueid=site,
+                                     year=sheet_title,
+                                     sdchas=xref.get(v1, ''),
+                                     sheethas=v2))
+
+df = pd.DataFrame(rows)
+df.to_csv('report.csv', index=False, columns=['uniqueid', 'year', 'sheethas',
+                                              'sdchas'])
