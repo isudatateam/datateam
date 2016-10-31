@@ -59,8 +59,10 @@ def bounds_check():
                     where uniqueid = %s and plotid = %s and
                     ("""+vname+""" <= %s or """+vname+""" >= %s)
                 """, (uniqueid, plotid, lbound, ubound))
-                print(('Site: %s Plotid: %s Var: %-13s Hits: %s'
-                       ) % (uniqueid, plotid, vname, cursor.rowcount))
+                if cursor.rowcount > 0:
+                    print(("Site: %s Plotid: %s Var: %-13s "
+                           " bounds_check hits: %s"
+                           ) % (uniqueid, plotid, vname, cursor.rowcount))
                 # for row in cursor:
                 #    print vname, row[0].strftime("%Y%m%d%H%M"), row[1]
     cursor.close()
