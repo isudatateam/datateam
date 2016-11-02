@@ -1,3 +1,14 @@
+  2 Nov 2016
+  Gio, Lori
+  - I am on the TD modelling list, so I should get meeting announcements
+  - next TD team meeting is next wednesday at 2
+  - [ ] implement CSCAP's editing on the TD charts
+  - [ ] syncing between CSCAP to TD data stores
+  - [ ] take UAWC out of the TD water table plotting
+  - we should email around action items from workgroup calls
+  - [ ] need to bubble up the CSCAP weather observations!  Then TD too
+  - [x] send Gio TD database connection details
+
  19 Jul 2016
   Steph, Lori, Suresh, Gio
   - `planthybrid` is a poor term for non-corn plants
