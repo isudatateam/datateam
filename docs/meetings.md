@@ -4,7 +4,7 @@
   - next TD team meeting is next wednesday at 2
   - [ ] implement CSCAP's editing on the TD charts
   - [ ] syncing between CSCAP to TD data stores
-  - [ ] take UAWC out of the TD water table plotting
+  - [x] take UBWC out of the TD water table plotting
   - we should email around action items from workgroup calls
   - [ ] need to bubble up the CSCAP weather observations!  Then TD too
   - [x] send Gio TD database connection details
