@@ -1,4 +1,4 @@
-cd /mesonet/www/apps/datateam/scripts/cscap
+cd /opt/datateam/scripts/cscap
 
 python harvest_management.py
 python harvest_agronomic.py 2011

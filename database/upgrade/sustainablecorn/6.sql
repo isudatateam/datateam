@@ -14,7 +14,8 @@ CREATE TABLE weather_data_obs(
   tmpf real,
   dwpf real,
   drct real,
-  sknt real);
+  sknt real,
+  srad_mj real);
 GRANT SELECT on weather_data_obs to nobody,apache;
 CREATE INDEX weather_data_obs_idx on weather_data_obs(station, valid);
 
