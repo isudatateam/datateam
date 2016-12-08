@@ -64,7 +64,7 @@ for item in res['items']:
                        ) % (depth, siteid))
             continue
         sampledate = worksheet.get_cell_value(row, 3)
-        if None in [plotid, depth, year, sampledate]:
+        if None in [plotid, depth, year]:
             continue
         year = year.replace("?", "")
         for col in range(6, worksheet.cols+1):
@@ -118,9 +118,13 @@ for key in current:
     (siteid, plotid, varname, depth, year, sampledate) = key.split("|")
     print(('harvest_soil_fert rm %s %s %s %s %s %s'
            ) % (year, siteid, plotid, varname, repr(depth), sampledate))
+    if sampledate == 'None':
+        sql = "sampledate is null"
+    else:
+        sql = "sampledate = '%s'" % (sampledate,)
     pcursor.execute("""DELETE from soil_data where site = %s and
-    plotid = %s and varname = %s and year = %s and sampledate = %s
-    """, (siteid, plotid, varname, year, sampledate))
+    plotid = %s and varname = %s and year = %s and """ + sql + """
+    """, (siteid, plotid, varname, year))
     deletedvals += 1
 
 if newvals > 0 or deletedvals > 0:
