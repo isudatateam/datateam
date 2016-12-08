@@ -57,6 +57,10 @@ for item in res['items']:
     for row in range(4, worksheet.rows+1):
         plotid = worksheet.get_cell_value(row, 1)
         depth = worksheet.get_cell_value(row, 2)
+        if depth.find(" - ") == -1:
+            print(("harvest_soil_texture found invalid depth: %s %s %s"
+                   ) % (depth, siteid, YEAR))
+            continue
         # if depth not in allowed_depths:
         #    print 'site: %s year: %s has illegal depth: %s' % (siteid, YEAR,
         #                                                       depth)

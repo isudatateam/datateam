@@ -11,6 +11,7 @@ drive = util.get_driveclient(config)
 # Fake last conditional to make it easy to reprocess one site...
 res = drive.files().list(q=("(title contains 'Soil Bulk Density' or "
                             "title contains 'Soil Nitrate Data' or "
+                            "title contains 'Soil Fertility Analysis Data' or "
                             "title contains 'Soil Texture Data') and "
                             "title contains 'Soil'"),
                          maxResults=999).execute()

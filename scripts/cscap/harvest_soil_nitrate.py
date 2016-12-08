@@ -70,6 +70,10 @@ for item in res['items']:
     for row in range(3, worksheet.rows+1):
         plotid = worksheet.get_cell_value(row, 1)
         depth = worksheet.get_cell_value(row, depthcol)
+        if depth.find(" - ") == -1:
+            print(("harvest_soil_nitrate found invalid depth: %s %s %s"
+                   ) % (depth, siteid, YEAR))
+            continue
         if plotid is None or depth is None:
             continue
         subsample = "1"
