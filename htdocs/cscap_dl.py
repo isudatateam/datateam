@@ -345,9 +345,13 @@ def get_dl(form):
         writer.close()
         return open('/tmp/cscap.xlsx', 'rb').read()
     elif fmt == 'tab':
-        sys.stdout.write("Content-type: text/plain\n\n")
+        sys.stdout.write('Content-type: application/octet-stream\n')
+        sys.stdout.write('Content-Disposition: attachment; filename=%s\n\n' % (
+                         'cscap.txt',))
         return df2.to_csv(columns=cols, sep='\t', index=False)
-    sys.stdout.write("Content-type: text/plain\n\n")
+    sys.stdout.write('Content-type: application/octet-stream\n')
+    sys.stdout.write('Content-Disposition: attachment; filename=%s\n\n' % (
+                         'cscap.csv',))
     sys.stderr.write("5. %s\n" % (datetime.datetime.now(), ))
     return df2.to_csv(columns=cols, index=False)
 
