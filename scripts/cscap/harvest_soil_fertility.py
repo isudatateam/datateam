@@ -58,9 +58,10 @@ for item in res['items']:
             siteid = "NAEW.WS%s" % (worksheet.get_cell_value(row, 6),)
         year = worksheet.get_cell_value(row, 1)
         depth = worksheet.get_cell_value(row, 5)
-        if depth.find(" - ") == -1:
-            print(("harvest_soil_fertility found invalid depth: %s %s"
-                   ) % (depth, siteid))
+        if depth is None or depth.find(" - ") == -1:
+            if depth is not None:
+                print(("harvest_soil_fertility found invalid depth: %s %s"
+                       ) % (depth, siteid))
             continue
         sampledate = worksheet.get_cell_value(row, 3)
         if None in [plotid, depth, year, sampledate]:
