@@ -58,7 +58,7 @@ for item in res['items']:
             siteid = "NAEW.WS%s" % (worksheet.get_cell_value(row, 6),)
         year = worksheet.get_cell_value(row, 1)
         depth = worksheet.get_cell_value(row, 5)
-        if depth is None or depth.find(" - ") == -1:
+        if depth is None or depth.find(" to ") == -1:
             if depth is not None:
                 print(("harvest_soil_fertility found invalid depth: %s %s"
                        ) % (depth, siteid))

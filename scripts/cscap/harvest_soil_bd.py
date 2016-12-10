@@ -70,7 +70,7 @@ for item in res['items']:
         else:
             depth = worksheet.get_cell_value(row, 2)
             subsample = worksheet.get_cell_value(row, 3)
-        if depth.find(" - ") == -1:
+        if depth.find(" to ") == -1:
             print(("harvest_soil_bd found invalid depth: %s %s %s"
                    ) % (depth, siteid, YEAR))
             continue

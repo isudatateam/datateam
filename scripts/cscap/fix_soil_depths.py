@@ -1,6 +1,5 @@
 """Correct the labels used for soil depths in the sheets"""
 import pyiem.cscap_utils as util
-import sys
 
 ALLOWED = ['depth (cm)', 'cm']
 
@@ -27,19 +26,15 @@ for i, item in enumerate(res['items']):
         lf = spreadsheet.worksheets[year].get_list_feed()
         for entry in lf.entry:
             current = entry.get_value('depth')
-            if current is not None and current not in ALLOWED:
-                if (len(current.split(" - ")) != 2 or current.find("cm") > 0 or
-                        len(current) > 7):
-                    tokens = current.replace("cm", "").strip().split("-")
-                    if len(tokens) == 1:
-                        if current.find("/") > 0:
-                            tokens = current.split("/")[:2]
-                        if len(tokens) == 1:
-                            print('ERROR: "%s" %s' % (current, repr(tokens)))
-                            sys.exit()
-                    newval = '%s - %s' % (tokens[0].strip(),
-                                          tokens[1].strip())
-                    if newval != current:
-                        entry.set_value('depth', newval)
-                        print('    "%s" -> "%s"' % (current, newval))
-                        spr_client.update(entry)
+            if (current is None or current.find("-") == -1 or
+                    current in ALLOWED):
+                continue
+            tokens = [a.strip() for a in current.split("-")]
+            if len(tokens) != 2:
+                print("Unparsable %s" % (repr(current),))
+                continue
+            newval = "%s to %s" % (tokens[0], tokens[1])
+            if newval != current:
+                entry.set_value('depth', newval)
+                print('    "%s" -> "%s"' % (current, newval))
+                spr_client.update(entry)
