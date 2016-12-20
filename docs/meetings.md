@@ -1,3 +1,17 @@
+ 20 Dec 2016
+  Gio, Lori, Suresh, Katie
+  - This is Suresh's last meeting :(
+  - Lots of discussion about missing ICASA variables and how we can ask AgMIP
+    for guidance on what to do with the unknown variables
+  - Need to throw this all at AgMIP eventually with details on our protocols
+    and units, etc
+  - Dr Arbuckle will be adding some additional variables to the dictionary 
+    of the social-economic data, where appropriate
+  - TD data upload deadline looms and hopefully more data shows up soon
+  - Suggestion to implement more comments in the backend data sheets when data
+    is modified.  daryl can track this lifecycle
+  - [ ] convert all the DMS lat/lon values into decimal in the history sheet
+
   2 Nov 2016
   Gio, Lori
   - I am on the TD modelling list, so I should get meeting announcements
