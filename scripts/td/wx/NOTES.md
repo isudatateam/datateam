@@ -1,0 +1,34 @@
+ACRE       Saving 174336 entries 199607010500->201605210400
+AUGLA      None Found
+BATH_A     None Found
+BATH_R     None Found
+BEAR       Saving 39964 entries 201106061700->201601010500
+CLAY_C     None Found
+CLAY_R     None Found
+CLAY_U     None Found
+CRAWF      None Found
+DEFI_M     None Found
+DEFI_R     TODO: irregular times
+DPAC       Saving 87648 entries 200510010600->201510010500
+FAIRM      None Found
+FULTON     TODO: 30 minute
+HARDIN     None Found
+HENRY      None Found
+HICKS_B    None Found
+HICKS_P    None Found
+HICKS_R    None Found
+MAASS      Saving 20119 entries 201306062000->201601010500
+MUDS1      TODO: just daily
+MUDS2      TODO: just daily
+MUDS3_NEW  None Found
+MUDS3_OLD  TODO: just daily
+MUDS4      TODO: just daily
+SERF_IA    None Found
+SERF_SD    TODO: has 23:59 timestamps...
+STJOHNS    TODO: 30 minute
+STORY      TODO: just daily
+SWROC      None Found
+TIDE_NEW   None Found
+TIDE_OLD   Question: What is the julian date values?
+UBWC       TODO: just daily
+VANWERT    TODO: 30 minute
