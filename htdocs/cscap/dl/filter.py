@@ -30,7 +30,6 @@ def do_filter(form):
            'year': []}
     sites = agg(form.getlist('sites[]'))
     treatments = agg(form.getlist('treatments[]'))
-    treatments.append(None)
     agronomic = agg(form.getlist('agronomic[]'))
     soil = agg(form.getlist('soil[]'))
     year = agg(form.getlist('year[]'))
@@ -49,21 +48,56 @@ def do_filter(form):
 
     # build a list of agronomic data based on the plotids and sites
     a = {}
-    for l in ['TIL', 'ROT', 'DWM', 'NIT', 'LND']:
-        a[l] = [b for b in treatments if (b is None or b.startswith(l))]
+    sql = []
+    args = []
+    for l, col in zip(['TIL', 'ROT', 'DWM', 'NIT', 'LND'],
+                      ['tillage', 'rotation', 'drainage', 'nitrogen',
+                       'landscape']):
+        a[l] = [b for b in treatments if b.startswith(l)]
+        if len(a[l]) > 0:
+            sql.append(" %s in %%s" % (col,))
+            args.append(tuple(a[l]))
+    sql = " and ".join(sql)
+
     df = read_sql("""
     with myplotids as (
         SELECT uniqueid, plotid from plotids where
-        tillage in %s and rotation in %s and drainage in %s and nitrogen in %s
-        and landscape in %s
+        """ + sql + """
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.site = p.uniqueid and a.plotid = p.plotid
-    """, pgconn, params=(tuple(a['TIL']), tuple(a['ROT']),
-                         tuple(a['DWM']), tuple(a['NIT']),
-                         tuple(a['LND'])), index_col=None)
+    """, pgconn, params=args, index_col=None)
     if len(df.index) > 0:
         res['agronomic'] = df['varname'].values.tolist()
+
+    # build a list of soil data based on the plotids and sites
+    df = read_sql("""
+    with myplotids as (
+        SELECT uniqueid, plotid from plotids where
+        """ + sql + """
+    )
+    SELECT distinct varname from soil_data a, myplotids p
+    WHERE a.site = p.uniqueid and a.plotid = p.plotid
+    """, pgconn, params=args, index_col=None)
+    if len(df.index) > 0:
+        res['soil'] = df['varname'].values.tolist()
+
+    # Compute which years we have data for these locations
+    df = read_sql("""
+    WITH soil_years as (
+        SELECT distinct year from soil_data where varname in %s
+        and site in %s),
+    agronomic_years as (
+        SELECT distinct year from agronomic_data where varname in %s
+        and site in %s),
+    agg as (SELECT year from soil_years UNION select year from agronomic_years)
+
+    SELECT distinct year from agg ORDER by year
+    """, pgconn, params=(tuple(soil), tuple(sites), tuple(agronomic),
+                         tuple(sites)), index_col=None)
+    for _, row in df.iterrows():
+        res['year'].append(row['year'])
+
     return res
 
 

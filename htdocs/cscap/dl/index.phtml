@@ -2,45 +2,50 @@
 require_once "../../../include/require_auth.php";
 
 function build_treatments_ui(){
-	$opts = Array('TIL1', 'TIL2',
-	'ROT1','ROT2',
-'ROT3','ROT4',
-'ROT5','ROT54',
-'ROT6','ROT7',
-'ROT8','ROT9',
-'ROT10','ROT11',
-'ROT12','ROT13',
-'ROT14','ROT15',
-'ROT16','ROT17',
-'ROT37','ROT36',
-'ROT55','ROT38',
-'ROT39','ROT40',
-'ROT41','ROT42',
-'ROT43','ROT44',
-'ROT45','ROT46',
-'ROT47','ROT48',
-'ROT49','ROT50',
-'ROT51','ROT52',
-'ROT53','ROT56',
-'ROT57','ROT58',
-'ROT59','ROT60',
-'ROT61','ROT62',
-
-'HERB1','HERB2',
-
-'DWM1','DWM2',
-'DWM3','DWM4',
-'DWM5','DWM6',
-
-'NIT1','NIT2',
-'NIT3','NIT4',
-
-'LND1','LND2','LND3');
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
+	$rs = pg_query($pgconn, "select code_column_heading, short_description ".
+			"from cscap_data_dictionary where ".
+			"substr(code_column_heading, 1, 3) in ('ROT', 'TIL', 'HER',".
+			"'NIT', 'DWM', 'LND')".
+			"ORDER by short_description");
 	$s = '';
-	while (list($k, $v)=@each($opts)){
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 		$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
-				" data-treatment=\"%s\">%s\n",
-				$v, $v, $v);
+				" data-treatment=\"%s\" name=\"treatments[]\">%s\n",
+				$row['code_column_heading'],
+				$row['code_column_heading'], $row['short_description']);
+	}
+	return $s;
+}
+
+function build_agronomic_ui(){
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
+	$rs = pg_query($pgconn, "select code_column_heading, short_description ".
+			"from cscap_data_dictionary where ".
+			"substr(code_column_heading, 1, 3) = 'AGR' ".
+			"ORDER by short_description");
+	$s = '';
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+		$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
+				" data-agronomic=\"%s\" name=\"agronomic[]\">%s\n",
+				$row['code_column_heading'],
+				$row['code_column_heading'], $row['short_description']);
+	}
+	return $s;
+}
+
+function build_soil_ui(){
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
+	$rs = pg_query($pgconn, "select code_column_heading, short_description ".
+			"from cscap_data_dictionary where ".
+			"substr(code_column_heading, 1, 4) = 'SOIL' ".
+			"ORDER by short_description");
+	$s = '';
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+		$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
+				" data-soil=\"%s\" name=\"soil[]\">%s\n",
+				$row['code_column_heading'],
+				$row['code_column_heading'], $row['short_description']);
 	}
 	return $s;
 }
@@ -74,7 +79,7 @@ function build_sites_ui(){
 				" value=\"%s\">%s</h3>\n", $k, $states[$k]);
 		while (list($v2, $k2)=each($data[$k])){
 			$s .= sprintf("<br /><input type=\"checkbox\" value=\"%s\"".
-					" data-state=\"%s\" class=\"site-check\"".
+					" data-state=\"%s\" name=\"sites[]\" class=\"site-check\"".
 					">%s\n", $v2, $k, $k2);
 		}
 		if ($q % 3 == 2){
@@ -83,6 +88,17 @@ function build_sites_ui(){
 	}
 	if ($q % 3 != 2){
 		$s .= "</div>\n";
+	}
+	return $s;
+}
+
+function build_year_ui(){
+	$years = Array(2011, 2012, 2013, 2014, 2015);
+	$s = '';
+	while (list($k, $v)=@each($years)){
+		$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
+				" data-year=\"%s\" name=\"year[]\">%s\n",
+				$v, $v, $v);
 	}
 	return $s;
 }
@@ -101,19 +117,22 @@ EOF;
 
 $sitesui = build_sites_ui();
 $treatmentui = build_treatments_ui();
+$agronomicui = build_agronomic_ui();
+$soilui = build_soil_ui();
+$yearui = build_year_ui();
 
 $t->content = <<<EOF
 
 <h3>CSCAP Data Download</h3>
 
+<form method="POST" action="dl.py">
 <div class="btn-group" role="group" aria-label="Pages">
   <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
   <button type="button" class="btn btn-default" id="treatments-btn">Treatments</button>
   <button type="button" class="btn btn-default" id="agronomic-btn">Agronomic</button>
   <button type="button" class="btn btn-default" id="soil-btn">Soil</button>
   <button type="button" class="btn btn-default" id="year-btn">Year</button>
-  <button type="button" class="btn btn-default" id="management-btn">Management</button>
-  <button type="button" class="btn btn-default" id="option-btn">Options</button>
+  <button type="button" class="btn btn-default" id="option-btn">Final Options</button>
 </div>
 
 <div id="sites-ui" style="display: block;">
@@ -125,19 +144,22 @@ $t->content = <<<EOF
 </div>
 <div id="agronomic-ui" style="display: none;">
 	<h3>Agronomic</h3>
+{$agronomicui}
 </div>
 <div id="soil-ui" style="display: none;">
 	<h3>Soil</h3>
+{$soilui}
 </div>
 <div id="year-ui" style="display: none;">
 	<h3>Years</h3>
-</div>
-<div id="management-ui" style="display: none;">
-	<h3>Management</h3>
+{$yearui}
 </div>
 <div id="option-ui" style="display: none;">
-	<h3>Options</h3>
+	<h3>Final Options</h3>
+
+	<input type="submit" value="Proceed with Download">
 </div>
+</form>
 		
 		
 <br clear="both" />
