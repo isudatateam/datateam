@@ -59,7 +59,7 @@ $depthselect = make_select('depth', $depth, $ar);
 if ($view != 'plot'){
 	$imageurl = sprintf("plot_decagon.py?site=%s&date=%s&days=%s&ptype=%s&view=%s&depth=%s", 
 		$site, $date, $days, $ptype, $view, $depth);
-	$uri = sprintf("http://iem.local/cscap/%s", $imageurl);
+	$uri = sprintf("http://iem.local/td/%s", $imageurl);
 	if ($view == 'html'){
 		$data = file_get_contents($uri);
 		$interface = $data;
@@ -82,7 +82,7 @@ EOF;
 	
 }
 $t = new MyView();
-$t->thispage = "cscap-decagon";
+$t->thispage = "td-decagon";
 $t->title = "TD Decagon Data Plotting/Download";
 $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
