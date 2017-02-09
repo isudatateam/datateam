@@ -71,7 +71,7 @@ def make_plot(form):
 
     if viewopt not in ['plot', 'js']:
         df.rename(columns=dict(v='timestamp',
-                               discharge='Discharge (m3)'
+                               discharge='Discharge (mm)'
                                ),
                   inplace=True)
         if viewopt == 'html':
