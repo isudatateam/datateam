@@ -10,18 +10,30 @@ import sys
 import pandas as pd
 import psycopg2
 import datetime
+from pyiem.datatypes import speed
 import pyiem.cscap_utils as util
 
 XREF = {'precipmm': 'precip_mm',
+        'CLIM12': 'precip_mm',
         'Rain_mm_Tot': 'precip_mm',
         'radwm2': 'srad_wm2',
         'rh': 'relhum_percent',
+        'CLIM18': 'relhum_percent',
+        'CLIM19': 'srad_wms',
+        'CLIM16': 'winddir_deg',
+        'CLIM17': 'windgust_mps',
+        'CLIM15': 'windspeed_mps',
         'tmpc': 'airtemp_c',
+        'AIRTEMPC': 'airtemp_c',
         'AirTC_Avg': 'airtemp_c',
         'wmps': 'windspeed_mps',
+        'DATE&TIME': 'valid',
         'TIMESTAMP': 'valid'}
 TZREF = {'ACRE': 5,
          'DPAC': 5,
+         'DEFI_R': 5,
+         'FULTON': 5,
+         'VANWERT': 5,
          'MAASS': 6,
          'BEAR': 6}
 
@@ -59,6 +71,7 @@ def googlesheet(siteid, sheetkey):
                     data[header[col]] = fmt(celldata.get('formattedValue'))
                 rows.append(data)
     df = pd.DataFrame(rows)
+    print("googlesheet has columns: %s" % (repr(df.columns.values),))
     newcols = {}
     for k in df.columns:
         newcols[k] = XREF.get(k, k)
@@ -66,6 +79,27 @@ def googlesheet(siteid, sheetkey):
     df['valid'] = pd.to_datetime(df['valid'], errors='raise',
                                  format='%m/%d/%y %H:%M')
     df['valid'] = df['valid'] + datetime.timedelta(hours=TZREF[siteid])
+
+    # do some conversions
+    print("ALERT: doing windspeed unit conv")
+    df['windspeed_mps'] = speed(df['windspeed_mps'].values, 'KMH').value('MPS')
+    print("ALERT: doing windgustunit conv")
+    df['windgust_mps'] = speed(df['windgust_mps'].values, 'KMH').value('MPS')
+    return df
+
+
+def read_excel(siteid, fn):
+    df = pd.read_excel(fn, skiprows=[1, ])
+    newcols = {}
+    for k in df.columns:
+        newcols[k] = XREF.get(k, k)
+    df.rename(columns=newcols, inplace=True)
+    df['valid'] = df['valid'] + datetime.timedelta(hours=TZREF[siteid])
+    # do some conversions
+    print("ALERT: doing windspeed unit conv")
+    df['windspeed_mps'] = speed(df['windspeed_mps'].values, 'KMH').value('MPS')
+    print("ALERT: doing windgustunit conv")
+    df['windgust_mps'] = speed(df['windgust_mps'].values, 'KMH').value('MPS')
     return df
 
 
@@ -77,7 +111,7 @@ def save(siteid, df):
                 df['valid'].max().strftime("%Y%m%d%H%M")))
     cursor.execute("SET TIME ZONE 'UTC'")
     cursor.execute("""
-        DELETE from weather_hourly where siteid = %s
+        DELETE from weather_observations where siteid = %s
         and valid >= %s and valid <= %s
         """, (siteid, df['valid'].min(), df['valid'].max()))
     if cursor.rowcount > 0:
@@ -86,12 +120,15 @@ def save(siteid, df):
         if row['valid'] is pd.NaT:
             continue
         cursor.execute("""
-        INSERT into weather_hourly(siteid, valid, precip_mm, srad_wm2,
-        relhum_percent, airtemp_c, windspeed_mps) VALUES
-        (%s, %s, %s, %s, %s, %s, %s)
+        INSERT into weather_observations(siteid, valid, precip_mm, srad_wm2,
+        relhum_percent, airtemp_c, windspeed_mps, srad_wms,
+        winddir_deg, windgust_mps) VALUES
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (siteid, row['valid'], row.get('precip_mm'),
               row.get('srad_wm2'), row.get('relhum_percent'),
-              row.get('airtemp_c'), row.get('windspeed_mps')))
+              row.get('airtemp_c'), row.get('windspeed_mps'),
+              row.get('srad_wms'), row.get('winddir_deg'),
+              row.get('windgust_mps')))
 
     cursor.close()
     pgconn.commit()
@@ -116,6 +153,8 @@ def main(argv):
         df = read_csv(siteid, fn)
     elif fmt == "googlesheet":
         df = googlesheet(siteid, fn)
+    elif fmt == "excel":
+        df = read_excel(siteid, fn)
     save(siteid, df)
 
 if __name__ == '__main__':

@@ -8,10 +8,11 @@ CLAY_R     None Found
 CLAY_U     None Found
 CRAWF      None Found
 DEFI_M     None Found
-DEFI_R     TODO: irregular times
+DEFI_R     Saving 35806 entries 199904071500->200305282000
+           Saving 114428 entries 200305071530->200905220127
 DPAC       Saving 87648 entries 200510010600->201510010500
 FAIRM      None Found
-FULTON     TODO: 30 minute
+FULTON     Saving 147627 entries 200305071430->201103021605
 HARDIN     None Found
 HENRY      None Found
 HICKS_B    None Found
@@ -31,4 +32,4 @@ SWROC      None Found
 TIDE_NEW   None Found
 TIDE_OLD   Question: What is the julian date values?
 UBWC       TODO: just daily
-VANWERT    TODO: 30 minute
+VANWERT    Saving 105935 entries 200309131718->200911102307
