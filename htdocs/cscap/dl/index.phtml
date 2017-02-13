@@ -157,6 +157,14 @@ $t->content = <<<EOF
 <div id="option-ui" style="display: none;">
 	<h3>Final Options</h3>
 
+<p>How to handle values below detection limit:
+<select name="detectlimit">
+	<option value="1">Keep them as is, presented as "&lt; LOD"</option>
+	<option value="2">Divide the LOD value by two</option>
+	<option value="3">Divide the LOD value by square root of two</option>
+	<option value="4">Omit all occurrences and replace as missing</option>
+</select>
+		
 	<input type="submit" value="Proceed with Download">
 </div>
 </form>
