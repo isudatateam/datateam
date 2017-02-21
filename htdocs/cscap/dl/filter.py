@@ -57,12 +57,14 @@ def do_filter(form):
         if len(a[l]) > 0:
             sql.append(" %s in %%s" % (col,))
             args.append(tuple(a[l]))
-    sql = " and ".join(sql)
+    if len(sql) == 0:
+        sql = ""
+    else:
+        sql = "where " + " and ".join(sql)
 
     df = read_sql("""
     with myplotids as (
-        SELECT uniqueid, plotid from plotids where
-        """ + sql + """
+        SELECT uniqueid, plotid from plotids """ + sql + """
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.site = p.uniqueid and a.plotid = p.plotid
@@ -73,8 +75,7 @@ def do_filter(form):
     # build a list of soil data based on the plotids and sites
     df = read_sql("""
     with myplotids as (
-        SELECT uniqueid, plotid from plotids where
-        """ + sql + """
+        SELECT uniqueid, plotid from plotids """ + sql + """
     )
     SELECT distinct varname from soil_data a, myplotids p
     WHERE a.site = p.uniqueid and a.plotid = p.plotid

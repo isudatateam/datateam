@@ -8,7 +8,8 @@ pgconn = psycopg2.connect(database='sustainablecorn',
 ss = util.get_ssclient(config)
 
 JOB_LISTING = [
-    ["CSCAP Data Dictionary", 'cscap_data_dictionary'],
+    ["3879498232948612", 'cscap_data_dictionary'],
+    ["1292573529663364", 'refereed_journals'],
     ]
 
 
@@ -18,40 +19,37 @@ def cleaner(val):
     return val
 
 
-def do(title, tablename):
+def do(sheetid, tablename):
     """Process"""
     cursor = pgconn.cursor()
     cursor.execute("""DROP TABLE IF EXISTS %s""" % (tablename, ))
-    action = ss.Reports.list_reports(include_all=True)
-    for sheet in action.data:
-        if sheet.name != title:
-            continue
-        print("Processing '%s' id:%s" % (sheet.name, sheet.id))
-        sheet = ss.Reports.get_report(sheet.id, page_size=1000)
-        cols = []
-        for col in sheet.columns:
-            cols.append(cleaner(col.title))
-        cursor.execute(("""
-            CREATE TABLE """ + tablename + """ (%s)
-        """) % (",".join([' "%s" varchar' % (s,) for s in cols]), ))
-        cursor.execute("""
-            GRANT SELECT on """ + tablename + """ to nobody,apache
-        """)
-        for row in sheet.rows:
-            vals = []
-            for cell in row.cells:
-                vals.append(cell.value)
-            sql = "INSERT into %s (%s) VALUES (%s)" % (tablename, ",".join(['"%s"' % (s,) for s in cols]),
-                                                       ",".join(["%s"]*len(cols)))
-            cursor.execute(sql, vals)
+    sheet = ss.Reports.get_report(sheetid, page_size=1000)
+    cols = []
+    for col in sheet.columns:
+        cols.append(cleaner(col.title))
+    cursor.execute(("""
+        CREATE TABLE """ + tablename + """ (%s)
+    """) % (",".join([' "%s" varchar' % (s,) for s in cols]), ))
+    cursor.execute("""
+        GRANT SELECT on """ + tablename + """ to nobody,apache
+    """)
+    for row in sheet.rows:
+        vals = []
+        for cell in row.cells:
+            vals.append(cell.value)
+        sql = """
+        INSERT into %s (%s) VALUES (%s)
+        """ % (tablename, ",".join(['"%s"' % (s,) for s in cols]),
+               ",".join(["%s"]*len(cols)))
+        cursor.execute(sql, vals)
     cursor.close()
     pgconn.commit()
 
 
 def main():
     """Do Something"""
-    for (title, tablename) in JOB_LISTING:
-        do(title, tablename)
+    for (sheetid, tablename) in JOB_LISTING:
+        do(sheetid, tablename)
 
 if __name__ == '__main__':
     main()
