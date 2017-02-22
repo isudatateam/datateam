@@ -174,13 +174,14 @@ EOF;
 
 function build_publications(){
 	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
-	$rs = pg_query($pgconn, "select title, authors ".
-			"from refereed_journals ".
+	$rs = pg_query($pgconn, "select * from refereed_journals ".
 			"ORDER by authors");
-	$s = '<ul>\n';
+	$s = "<ul>\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$s .= sprintf("<li>%s %s</li>\n",
-				$row['authors'], $row['title']);
+		$s .= sprintf("<li>%s. %s. %s, %s; %s %s. <a href=\"%s\">%s</a></li>\n",
+				$row['authors'], $row['title'], $row["journal_or_source"],
+				$row["year"], $row["vol"], $row["pg_no."],
+				$row["online_source"], $row["online_source"]);
 	}
 	$s .= "</ul>\n";
 	return $s;
@@ -260,8 +261,19 @@ $publisting = build_publications();
 
 $t->content = <<<EOF
 
-<h3>CSCAP Data Download</h3>
 
+ <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Data</a></li>
+    <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
+    <li role="presentation"><a href="#soon" aria-controls="soon" role="tab" data-toggle="tab">And So On</a></li>
+  </ul>
+  
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="data">
+
+<h3>CSCAP Data Download</h3>
+    
 <form method="POST" action="dl.py">
 <div class="btn-group" role="group" aria-label="Pages">
   <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
@@ -304,13 +316,17 @@ $t->content = <<<EOF
 
 <p><input type="submit" value="Proceed with Download"></p>
 
-<h3>CSCAP Team Publications</h3>
-
-{$publisting}
 		
 </div>
 </form>
-		
+		</div>
+		<div role="tabpanel" class="tab-pane" id="pubs">
+<h3>CSCAP Team Publications</h3>
+
+{$publisting}
+		</div>
+		<div role="tabpanel" class="tab-pane" id="soon">...</div>
+		</div>
 		
 <br clear="both" />
 <div class="pull-right">
