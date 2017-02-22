@@ -25,6 +25,10 @@ for project in ['td', 'cscap']:
     perms = drive.permissions().list(
                 fileId=config[project]['basefolder']).execute()
     for item in perms.get('items', []):
+        # Unclear what type of permission this is that does not have this
+        # set, maybe a file with an allow for anybody that has the link to it
+        if 'emailAddress' not in item:
+            continue
         email = item['emailAddress'].lower()
         if email not in CURRENT:
             print(("Adding email: '%s' project: '%s' for datateam access"
