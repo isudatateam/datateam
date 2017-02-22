@@ -197,7 +197,7 @@ function build_sites_ui(){
 		"OH" => "Ohio");
 	$pgconn = pg_connect("dbname=mesosite host=iemdb user=nobody");
 	$rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
-			" ORDER by name ASC");
+			" and id !~* 'ONFARM' ORDER by name ASC");
 	$data = Array();
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 		$data[$row["state"]][$row["id"]] = $row["name"];
