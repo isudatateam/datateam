@@ -176,14 +176,17 @@ function build_publications(){
 	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
 	$rs = pg_query($pgconn, "select * from refereed_journals ".
 			"ORDER by authors");
-	$s = "<ul>\n";
+	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$s .= sprintf("<li>%s. %s. %s, %s; %s %s. <a href=\"%s\">%s</a></li>\n",
+		$strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
+		$endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
+		$s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\">%s</a>%s</p>\n",
+				$strong,
 				$row['authors'], $row['title'], $row["journal_or_source"],
 				$row["year"], $row["vol"], $row["pg_no."],
-				$row["online_source"], $row["online_source"]);
+				$row["online_source"], $row["online_source"], $endstrong);
 	}
-	$s .= "</ul>\n";
+	$s .= "\n";
 	return $s;
 }
 
@@ -322,6 +325,9 @@ $t->content = <<<EOF
 		</div>
 		<div role="tabpanel" class="tab-pane" id="pubs">
 <h3>CSCAP Team Publications</h3>
+
+<p>Articles with open access availability are <strong>in bold</strong>.
+These do not require a subscription to the journal to access.</p>
 
 {$publisting}
 		</div>
