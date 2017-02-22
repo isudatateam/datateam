@@ -30,5 +30,7 @@ python harvest_soil_fertility.py
 python email_daily_changes.py cscap
 python email_daily_changes.py td
 
+python ss2database.py
+
 cd ../auth
 python drive2webaccess.py
