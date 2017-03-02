@@ -1,3 +1,13 @@
+ 28 Feb 2017
+  Gio, Lori
+  - There is a pending three week deadline to get TD work done
+  - [ ] Gio has a Export Data Tool List doc with the groupings I need for dl
+  - Discussion on doing Gio's time shifting to fix the problems with timestamps
+  - [ ] Edit on the TD tools does not work :/
+  - [ ] There are examples of duplicated times in the water table data
+  - Gio's metadata sheets have per year drainage status by plot id
+  - [ ] work on drainflow first.
+
  20 Dec 2016
   Gio, Lori, Suresh, Katie
   - This is Suresh's last meeting :(
