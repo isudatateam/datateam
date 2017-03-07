@@ -7,6 +7,7 @@ $site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC::SW';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2014-01-10';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
+$group = isset($_GET["group"]) ? $_GET["group"]: '0';
 $errmsg = "";
 if (strlen($date) != 10){
 	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
@@ -54,8 +55,9 @@ $viewselect = make_select('view', $view, $ar);
 
 $jsextra = "";
 if ($view != 'plot'){
-	$imageurl = sprintf("plot_tileflow.py?site=%s&date=%s&days=%s&ptype=%s&view=%s", 
-		$site, $date, $days, $ptype, $view);
+	$imageurl = sprintf("plot_tileflow.py?site=%s&amp;date=%s&amp;days=%s".
+			"&amp;ptype=%s&amp;view=%s&amp;group=%s", 
+		$site, $date, $days, $ptype, $view, $group);
 	$uri = sprintf("http://iem.local/td/%s", $imageurl);
 	if ($view == 'html'){
 		$data = file_get_contents($uri);
@@ -65,8 +67,8 @@ if ($view != 'plot'){
 		die();
 	}
 } else {
-	$jsurl = sprintf("tileflow_%s_%s_%s_%s.js", 
-		$site, $date, $days, $ptype);
+	$jsurl = sprintf("tileflow_%s_%s_%s_%s_%s.js", 
+		$site, $date, $days, $ptype, $group);
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
 	$interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
@@ -82,9 +84,9 @@ $t->headextra = <<<EOF
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="/vendor/highcharts/4.2.4/highcharts.js"></script>
-<script src="/vendor/highcharts/4.2.4/highcharts-more.js"></script>
-<script src="/vendor/highcharts/4.2.4/modules/exporting.js"></script>
+<script src="/vendor/highcharts/4.2.7/highcharts.js"></script>
+<script src="/vendor/highcharts/4.2.7/highcharts-more.js"></script>
+<script src="/vendor/highcharts/4.2.7/modules/exporting.js"></script>
 {$jsextra}
 <script>
 $(document).ready(function(){
@@ -93,10 +95,11 @@ $(document).ready(function(){
 		changeMonth: true,
 		changeYear: true,
 		minDate: new Date(1990, 0, 1),
-		maxDate: new Date(2017, 0, 1)});		
+		maxDate: new Date(2018, 0, 1)});		
 });
 </script>
 EOF;
+$groupselected = ($group == "1") ? " checked=\"checked\"": "";
 $t->content =  <<<EOF
 <style>
 select {
@@ -115,10 +118,16 @@ USDA-NIFA funded project:
 
 <form method="GET" name="plot1">
 <table class="table table-bordered">
-<thead><tr><th>Select Site: (<i>currently, all plots at site are shown on the graph)</i></th><th>Select Start Date</th>
-</tr></thead>
-<tbody><tr><td>
+<thead>
+<tr>
+	<th>Select Site:</th><th>Select Start Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
 {$siteselect}
+<br /><input type="checkbox" name="group" value="1"${groupselected}> Average plot values by their drainage treatment
 </td>
 <td><input type="text" id="datepicker" name="date" value="{$date}" size="11" /></td>
 </tr></tbody></table>

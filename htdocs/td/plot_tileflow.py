@@ -8,16 +8,25 @@ import pandas as pd
 from pandas.io.sql import read_sql
 import cgi
 import datetime
-import pytz
 import os
 import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
-import matplotlib.dates as mdates  # NOPEP8
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
+
+CODES = {'UD': 'Undarined (No Drainage)',
+         'FD': 'Free Drainage (Conventional Drainage)',
+         'CD': 'Controlled Drainage (Managed Drainage)',
+         'SD': 'Surface Drainage',
+         'SH': 'Shallow Drainage',
+         'SI': 'Controlled Drainage with Subirrigation',
+         'CA': 'Automated Controlled Drainage',
+         'SB': 'Saturated Buffer',
+         'TBD': 'To Be Determined',
+         'n/a': 'Not Available or Not Applicable'}
 
 
 def send_error(viewopt, msg):
@@ -38,20 +47,19 @@ def send_error(viewopt, msg):
 
 def make_plot(form):
     """Make the plot"""
+    pgconn = psycopg2.connect(database='td', host='iemdb',
+                              user='nobody')
     (uniqueid, plotid) = form.getfirst('site', 'ISUAG::302E').split("::")
 
     sts = datetime.datetime.strptime(form.getfirst('date', '2014-01-01'),
                                      '%Y-%m-%d')
     days = int(form.getfirst('days', 1))
+    group = int(form.getfirst('group', 0))
     ets = sts + datetime.timedelta(days=days)
-    pgconn = psycopg2.connect(database='td', host='iemdb',
-                              user='nobody')
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
-    tz = pytz.timezone(tzname)
     viewopt = form.getfirst('view', 'plot')
     ptype = form.getfirst('ptype', '1')
-    plotid_limit = "and plotid = '%s'" % (plotid, )
     if ptype == '1':
         df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
         discharge_mm_qc as discharge,
@@ -69,6 +77,20 @@ def make_plot(form):
         df["discharge_f"] = '-'
     if len(df.index) < 3:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
+    linecol = 'plotid'
+    if group == 1:
+        # Generate the plotid lookup table
+        plotdf = read_sql("""
+            SELECT * from plotids where siteid = %s
+        """, pgconn, params=(uniqueid, ), index_col='plotid')
+
+        def lookup(row):
+            return plotdf.loc[row['plotid'], "y%s" % (row['v'].year, )]
+        df['treatment'] = df.apply(lambda row: lookup(row), axis=1)
+        del df['plotid']
+        df = df.groupby(['treatment', 'v']).mean()
+        df.reset_index(inplace=True)
+        linecol = 'treatment'
     if ptype not in ['2', ]:
         df['v'] = df['v'].apply(
             lambda x: x.tz_localize('UTC').tz_convert(tzname))
@@ -109,14 +131,14 @@ def make_plot(form):
              ) % (uniqueid, sts.strftime("%-d %b %Y"),
                   ets.strftime("%-d %b %Y"))
     s = []
-    plot_ids = df['plotid'].unique()
+    plot_ids = df[linecol].unique()
     plot_ids.sort()
     df['ticks'] = df['v'].astype(np.int64) // 10 ** 6
     seriestype = 'line' if ptype == '1' else 'column'
     for plotid in plot_ids:
-        df2 = df[df['plotid'] == plotid]
+        df2 = df[df[linecol] == plotid]
         s.append(("""{type: '""" + seriestype + """',
-            name: '"""+plotid+"""',
+            name: '""" + CODES.get(plotid, plotid) + """',
             data: """ + str([[a, b] for a, b in zip(df2['ticks'].values,
                                                     df2['discharge'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
