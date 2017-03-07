@@ -1,0 +1,179 @@
+<?php
+require_once "../../include/require_auth.php";
+include_once "../../include/forms.php";
+require_once "../../include/myview.php";
+
+$site = isset($_GET["site"]) ? $_GET["site"]: 'ACRE::Inlet_A';
+$date = isset($_GET["date"]) ? $_GET["date"]: '2014-01-10';
+$view = isset($_GET['view']) ? $_GET['view']: 'plot';
+$depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
+$group = isset($_GET["group"]) ? $_GET["group"]: '0';
+$errmsg = "";
+if (strlen($date) != 10){
+	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
+	$date = '2014-06-10';
+}
+$days = isset($_GET["days"]) ? intval($_GET["days"]): 1000;
+$ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
+
+/* with data as (select uniqueid, min(date(valid)),
+ max(date(valid)) from nitrateloss_data GROUP by uniqueid)
+ 
+ SELECT '"'||uniqueid || '::A"=>"' || uniqueid || '  ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
+ from data ORDER by d;
+*/
+$ar = Array(
+		"ACRE::A"=>"ACRE  (2007-08-20 to 2017-01-26) [3447 days]",
+		"BEAR::A"=>"BEAR  (2011-02-28 to 2016-12-09) [2111 days]",
+		"CLAY_C::A"=>"CLAY_C  (2015-06-24 to 2015-06-24) [0 days]",
+		"CLAY_R::A"=>"CLAY_R  (2015-04-27 to 2016-11-16) [569 days]",
+		"FAIRM::A"=>"FAIRM  (2012-05-09 to 2016-10-12) [1617 days]",
+		"MAASS::A"=>"MAASS  (2013-04-11 to 2016-12-08) [1337 days]",
+		"MUDS2::A"=>"MUDS2  (2010-07-04 to 2013-10-20) [1204 days]",
+		"MUDS3_OLD::A"=>"MUDS3_OLD  (2010-05-25 to 2013-09-29) [1223 days]",
+		"MUDS4::A"=>"MUDS4  (2010-07-06 to 2013-05-23) [1052 days]",
+		"SERF_IA::A"=>"SERF_IA  (2007-05-01 to 2015-09-21) [3065 days]",
+		"SERF_SD::A"=>"SERF_SD  (2015-05-13 to 2016-10-31) [537 days]",
+		"STORY::A"=>"STORY  (2006-03-29 to 2009-12-29) [1371 days]",
+		"TIDE_OLD::A"=>"TIDE_OLD  (2007-01-01 to 2011-12-31) [1825 days]",
+		"UBWC::A"=>"UBWC  (2005-01-01 to 2012-12-31) [2921 days]",
+		
+		
+		
+		
+		);
+$siteselect = make_select("site", $site, $ar);
+
+$ar = Array(
+		'1' => 'Observations (no aggregation)',
+		'2' => 'Monthly Totals',
+		);
+$ptypeselect = make_select("ptype", $ptype, $ar);
+
+$ar = Array(
+		'plot'=> 'View Plot',
+		'html' => 'View Raw Data in HTML Table',
+		'csv' => 'Download as CSV File',
+		'excel' => 'Download as Excel File'
+		);
+$viewselect = make_select('view', $view, $ar);
+
+$jsextra = "";
+if ($view != 'plot'){
+	$imageurl = sprintf("plot_nitrateloss.py?site=%s&amp;date=%s&amp;days=%s".
+			"&amp;ptype=%s&amp;view=%s&amp;group=%s", 
+		$site, $date, $days, $ptype, $view, $group);
+	$uri = sprintf("http://iem.local/td/%s", $imageurl);
+	if ($view == 'html'){
+		$data = file_get_contents($uri);
+		$interface = $data;
+	} else{
+		Header(sprintf("Location: /td/%s", $imageurl));
+		die();
+	}
+} else {
+	$jsurl = sprintf("nitrateloss_%s_%s_%s_%s_%s.js", 
+		$site, $date, $days, $ptype, $group);
+	$jsextra = "<script src=\"{$jsurl}\"></script>";
+	$interface = <<<EOF
+<div id="hc" style="width: 100%; height: 400px;"></div>
+EOF;
+}
+
+$t = new MyView();
+$t->thispage = "td-nitrateloss";
+$t->title = "TD Nitrate Loss Data Plotting/Download";
+$t->headextra = <<<EOF
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
+EOF;
+$t->jsextra = <<<EOF
+<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
+<script src="/vendor/highcharts/4.2.7/highcharts.js"></script>
+<script src="/vendor/highcharts/4.2.7/highcharts-more.js"></script>
+<script src="/vendor/highcharts/4.2.7/modules/exporting.js"></script>
+{$jsextra}
+<script>
+$(document).ready(function(){
+	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
+		defaultDate: "{$date}",
+		changeMonth: true,
+		changeYear: true,
+		minDate: new Date(1990, 0, 1),
+		maxDate: new Date(2018, 0, 1)});		
+});
+</script>
+EOF;
+$groupselected = ($group == "1") ? " checked=\"checked\"": "";
+$t->content =  <<<EOF
+<style>
+select {
+  color: #000;
+}
+</style>
+
+<h3>TD Nitrate Loss Data Plotting/Download</h3>
+
+<p>Tile Flow data included in this visualization and aggregation tool are associated with the
+USDA-NIFA funded project: 
+"Managing Water for Increased Resiliency of Drained Agricultural Landscapes" (Award No.
+2015-68007-23193).</p>
+
+{$errmsg}
+
+<form method="GET" name="plot1">
+<table class="table table-bordered">
+<thead>
+<tr>
+	<th>Select Site:</th><th>Select Start Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+{$siteselect}
+<br /><input type="checkbox" name="group" value="1"${groupselected}> Average plot values by their drainage treatment
+</td>
+<td><input type="text" id="datepicker" name="date" value="{$date}" size="11" /></td>
+</tr></tbody></table>
+
+<table class="table table-bordered">
+<thead><tr><th>Number of Days to Plot</th>
+<th>Timeseries Aggregation:</th><th>View Option</th></tr></thead>
+<tbody><tr>
+<td><input type="text" name="days" value="{$days}" size="4" /></td>
+<td>{$ptypeselect}</td>
+<td>{$viewselect}</td>
+</tr></tbody>
+</table>
+
+<input type="submit" value="Run">
+</form>
+
+<p>{$interface}</p>
+
+<p><i>Pro Tip:</i> You can click the legend name to toggle showing and hiding
+the data series.  You can also mouse click and drag on the plot to zoom it in.
+</p>
+
+<h3>Frequently Asked Questions</h3>
+
+<ol>
+<li><strong>How are timezones handled?</strong><br />
+The timestamps presented should be valid for the local time zone of the sensor
+and are daylight saving time aware.  The daily aggregates should compute the
+daily summaries in the time zone of the station.
+</li>
+</ol>
+
+<h3>Observation Site Collection Interval</h3>
+
+<p>This table lists the observation time interval at each site:
+<pre>
+ ST  SITE         INTERVAL
+
+</pre></p>
+
+EOF;
+$t->render('full.phtml');
+?>
