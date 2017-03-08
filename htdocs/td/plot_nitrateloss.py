@@ -69,7 +69,7 @@ def make_plot(form):
     elif ptype == '2':
         df = read_sql("""SELECT
         date_trunc('month', valid at time zone 'UTC') as v, plotid,
-        sum(loss) as loss
+        sum(wat20) as loss
         from nitrateloss_data WHERE uniqueid = %s
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
