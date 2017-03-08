@@ -15,11 +15,11 @@ def float2(val):
     return float(val)
 
 
-for entry in sheet.get_list_feed().entry:
-    d = entry.to_dict()
-    if d['operation'] != 'fertilizer_synthetic':
+for i, entry in enumerate(sheet.get_list_feed().entry):
+    if i == 0:
         continue
-    if d['productrate'] is None or d['productrate'] in ['-1.0', 'n/a']:
+    d = entry.to_dict()
+    if d['productrate'] is None or d['productrate'] in ['-1.0', 'n/a', '-1']:
         # Option B, values are in lb / ac
         n = float2(d['nitrogen']) / 1.12
         p = float2(d['phosphate']) / 1.12
