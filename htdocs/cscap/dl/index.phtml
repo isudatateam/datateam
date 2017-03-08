@@ -179,7 +179,7 @@ function build_theses(){
 	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 		$s .= sprintf("<p>%s %s %s %s <a href=\"%s\">%s</a></p>\n",
-				$row['authors'], $row['title'], $row["year"],
+				$row['authors'], $row["year"], $row['title'],
 				$row["journal_or_source"],
 				$row["online_source"], $row["online_source"]);
 	}
@@ -197,7 +197,7 @@ function build_publications(){
 		$endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
 		$s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\">%s</a>%s</p>\n",
 				$strong,
-				$row['authors'], $row['title'], $row["year"],
+				$row['authors'], $row["year"], $row['title'],
 				$row["journal_or_source"], $row["vol"], $row["pg_no."],
 				$row["online_source"], $row["online_source"], $endstrong);
 	}
