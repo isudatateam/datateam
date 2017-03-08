@@ -172,6 +172,21 @@ EOF;
 	return $s;
 }
 
+function build_theses(){
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
+	$rs = pg_query($pgconn, "select * from theses ".
+			"ORDER by authors");
+	$s = "\n";
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+		$s .= sprintf("<p>%s %s %s %s <a href=\"%s\">%s</a></p>\n",
+				$row['authors'], $row['title'], $row["year"],
+				$row["journal_or_source"],
+				$row["online_source"], $row["online_source"]);
+	}
+	$s .= "\n";
+	return $s;
+}
+
 function build_publications(){
 	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
 	$rs = pg_query($pgconn, "select * from refereed_journals ".
@@ -261,6 +276,7 @@ $agronomicui = build_agronomic_ui();
 $soilui = build_soil_ui();
 $yearui = build_year_ui();
 $publisting = build_publications();
+$theseslisting = build_theses();
 
 $t->content = <<<EOF
 
@@ -268,8 +284,8 @@ $t->content = <<<EOF
  <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Data</a></li>
-    <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
-    <li role="presentation"><a href="#soon" aria-controls="soon" role="tab" data-toggle="tab">And So On</a></li>
+    <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Refereed Journals</a></li>
+    <li role="presentation"><a href="#theses" aria-controls="theses" role="tab" data-toggle="tab">Theses and Dissertations</a></li>
   </ul>
   
 <div class="tab-content">
@@ -331,7 +347,9 @@ These do not require a subscription to the journal to access.</p>
 
 {$publisting}
 		</div>
-		<div role="tabpanel" class="tab-pane" id="soon">...</div>
+		<div role="tabpanel" class="tab-pane" id="theses">
+{$theseslisting}
+		</div>
 		</div>
 		
 <br clear="both" />
