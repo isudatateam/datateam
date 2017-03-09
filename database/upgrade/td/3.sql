@@ -1,5 +1,5 @@
 -- Storage of Nitrate Loss Data
-CREATE TABLE nitrateloss_data(
+CREATE TABLE nitrateload_data(
   uniqueid varchar(24),
   plotid varchar(24),
   valid timestamptz,
@@ -7,5 +7,5 @@ CREATE TABLE nitrateloss_data(
   wat9 real,
   wat20 real,
   wat26 real);
-CREATE INDEX nitrateloss_data_idx on nitrateloss_data(uniqueid, valid);
-GRANT SELECT on nitrateloss_data to nobody,apache;
+CREATE INDEX nitrateload_data_idx on nitrateload_data(uniqueid, valid);
+GRANT SELECT on nitrateload_data to nobody,apache;

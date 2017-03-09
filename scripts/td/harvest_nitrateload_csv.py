@@ -9,7 +9,7 @@ df = pd.read_csv(sys.argv[1])
 uniqueid = sys.argv[2]
 
 cursor.execute("""
-    DELETE from nitrateloss_data where uniqueid = %s and
+    DELETE from nitrateload_data where uniqueid = %s and
     valid between %s and %s
 """, (uniqueid, df['Date'].min(), df['Date'].max()))
 deleted = cursor.rowcount
@@ -36,7 +36,7 @@ for plotid in plotids:
         if vals[0] == ' ' or vals[0] is None:
             continue
         cursor.execute("""
-        INSERT into nitrateloss_data
+        INSERT into nitrateload_data
         (uniqueid, plotid, valid, wat2, wat9, wat20, wat26)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (uniqueid, plotid, vals[0], vals[1], vals[2], vals[3],

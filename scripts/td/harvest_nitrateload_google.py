@@ -13,14 +13,14 @@ spr_client = util.get_spreadsheet_client(config)
 drive_client = util.get_driveclient(config, "td")
 
 res = drive_client.files().list(
-    q="title contains 'Tile Nitrate-N Loss'").execute()
+    q="title contains 'Tile Nitrate-N Load'").execute()
 
 for item in res['items']:
     if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
         continue
     siteid = item['title'].split()[0]
     pcursor = pgconn.cursor()
-    pcursor.execute("""SELECT count(*) from nitrateloss_data
+    pcursor.execute("""SELECT count(*) from nitrateload_data
     WHERE uniqueid = %s""", (siteid,))
     if pcursor.fetchone()[0] > 0:
         print("Skipping %s" % (siteid,))
@@ -29,7 +29,7 @@ for item in res['items']:
     spreadsheet = util.Spreadsheet(spr_client, item['id'])
     spreadsheet.get_worksheets()
     pcursor.execute("""
-        DELETE from nitrateloss_data where uniqueid = %s
+        DELETE from nitrateload_data where uniqueid = %s
     """, (siteid,))
     deleted = pcursor.rowcount
     inserts = 0
@@ -86,7 +86,7 @@ for item in res['items']:
                 if vals[0] == ' ' or vals[0] is None:
                     continue
                 pcursor.execute("""
-                INSERT into nitrateloss_data
+                INSERT into nitrateload_data
                 (uniqueid, plotid, valid, wat2, wat9, wat20, wat26)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """, (siteid, plotid, vals[0], vals[1], vals[2], vals[3],

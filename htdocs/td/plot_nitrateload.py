@@ -62,15 +62,15 @@ def make_plot(form):
     ptype = form.getfirst('ptype', '1')
     if ptype == '1':
         df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
-        wat20 as loss
-        from nitrateloss_data WHERE uniqueid = %s
+        wat20 as load
+        from nitrateload_data WHERE uniqueid = %s
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     elif ptype == '2':
         df = read_sql("""SELECT
         date_trunc('month', valid at time zone 'UTC') as v, plotid,
-        sum(wat20) as loss
-        from nitrateloss_data WHERE uniqueid = %s
+        sum(wat20) as load
+        from nitrateload_data WHERE uniqueid = %s
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     if len(df.index) < 3:
@@ -95,7 +95,7 @@ def make_plot(form):
 
     if viewopt not in ['plot', 'js']:
         df.rename(columns=dict(v='timestamp',
-                               loss='Loss (kg ha-1)'
+                               load='Load (kg ha-1)'
                                ),
                   inplace=True)
         if viewopt == 'html':
@@ -125,7 +125,7 @@ def make_plot(form):
 
     # Begin highcharts output
     sys.stdout.write("Content-type: application/javascript\n\n")
-    title = ("Nitrate Loss for Site: %s (%s to %s)"
+    title = ("Nitrate Load for Site: %s (%s to %s)"
              ) % (uniqueid, sts.strftime("%-d %b %Y"),
                   ets.strftime("%-d %b %Y"))
     s = []
@@ -138,14 +138,14 @@ def make_plot(form):
         s.append(("""{type: '""" + seriestype + """',
             name: '""" + CODES.get(plotid, plotid) + """',
             data: """ + str([[a, b] for a, b in zip(df2['ticks'].values,
-                                                    df2['loss'].values)]) + """
+                                                    df2['load'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
     series = ",".join(s)
     sys.stdout.write("""
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
-    yAxis: {title: {text: 'Loss (kg ha-1)'}
+    yAxis: {title: {text: 'Load (kg ha-1)'}
     },
     plotOptions: {line: {turboThreshold: 0}},
     xAxis: {

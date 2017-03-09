@@ -17,7 +17,7 @@ $days = isset($_GET["days"]) ? intval($_GET["days"]): 1000;
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
 
 /* with data as (select uniqueid, min(date(valid)),
- max(date(valid)) from nitrateloss_data GROUP by uniqueid)
+ max(date(valid)) from nitrateload_data GROUP by uniqueid)
  
  SELECT '"'||uniqueid || '::A"=>"' || uniqueid || '  ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
@@ -60,7 +60,7 @@ $viewselect = make_select('view', $view, $ar);
 
 $jsextra = "";
 if ($view != 'plot'){
-	$imageurl = sprintf("plot_nitrateloss.py?site=%s&amp;date=%s&amp;days=%s".
+	$imageurl = sprintf("plot_nitrateload.py?site=%s&amp;date=%s&amp;days=%s".
 			"&amp;ptype=%s&amp;view=%s&amp;group=%s", 
 		$site, $date, $days, $ptype, $view, $group);
 	$uri = sprintf("http://datateam.local/td/%s", $imageurl);
@@ -72,7 +72,7 @@ if ($view != 'plot'){
 		die();
 	}
 } else {
-	$jsurl = sprintf("nitrateloss_%s_%s_%s_%s_%s.js", 
+	$jsurl = sprintf("nitrateload_%s_%s_%s_%s_%s.js", 
 		$site, $date, $days, $ptype, $group);
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
 	$interface = <<<EOF
@@ -81,8 +81,8 @@ EOF;
 }
 
 $t = new MyView();
-$t->thispage = "td-nitrateloss";
-$t->title = "TD Nitrate Loss Data Plotting/Download";
+$t->thispage = "td-nitrateload";
+$t->title = "TD Nitrate Load Data Plotting/Download";
 $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
@@ -112,7 +112,7 @@ select {
 }
 </style>
 
-<h3>TD Nitrate Loss Data Plotting/Download</h3>
+<h3>TD Nitrate Load Data Plotting/Download</h3>
 
 <p>Tile Flow data included in this visualization and aggregation tool are associated with the
 USDA-NIFA funded project: 
