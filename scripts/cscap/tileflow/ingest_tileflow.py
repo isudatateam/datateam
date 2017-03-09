@@ -51,6 +51,7 @@ def process3(fn):
 
 def process2(spreadsheetid):
     """ Ingest a google sheet of data """
+    raise Exception("BUG as plotids get 'T' added when starts with numeric value")
     config = get_config()
     sprclient = get_spreadsheet_client(config)
     ss = Spreadsheet(sprclient, spreadsheetid)
