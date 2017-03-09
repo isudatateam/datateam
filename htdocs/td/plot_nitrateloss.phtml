@@ -63,7 +63,7 @@ if ($view != 'plot'){
 	$imageurl = sprintf("plot_nitrateloss.py?site=%s&amp;date=%s&amp;days=%s".
 			"&amp;ptype=%s&amp;view=%s&amp;group=%s", 
 		$site, $date, $days, $ptype, $view, $group);
-	$uri = sprintf("http://iem.local/td/%s", $imageurl);
+	$uri = sprintf("http://datateam.local/td/%s", $imageurl);
 	if ($view == 'html'){
 		$data = file_get_contents($uri);
 		$interface = $data;
