@@ -1,15 +1,11 @@
 <?php 
-$title = array_key_exists('title', $this->vars)? 'IEM :: '. $this->title : 'ISU Data Team';
+$title = array_key_exists('title', $this->vars)? 'DataTeam :: '. $this->title : 'ISU Data Team';
 $refresh = array_key_exists('refresh', $this->vars)? $this->refresh : '';
 $headextra = array_key_exists('headextra', $this->vars)? $this->headextra : '';
-if (array_key_exists('iemss', $this->vars)){
-  $headextra .= <<<EOF
-<link rel="stylesheet" href="/vendor/openlayers/3.9.0/ol.css" type="text/css">
-EOF;
-}
+
 $bodyextra = array_key_exists('bodyextra', $this->vars)? ' '. $this->bodyextra : '';
 $twimage = array_key_exists('twitter_image', $this->vars) ? 
-				$this->twitter_image : 'http://mesonet.agron.iastate.edu/images/logo_small.png';
+				$this->twitter_image : 'https://datateam.agron.iastate.edu/images/logo_small.png';
 $twdescription = array_key_exists('twitter_description', $this->vars) ? 
 				$this->twitter_description : 'Data Team of Iowa State University';
 ?>
@@ -28,7 +24,7 @@ $twdescription = array_key_exists('twitter_description', $this->vars) ?
     <meta name="author" content="daryl herzmann akrherz@iastate.edu">
 
     <!-- Le styles -->
-    <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/vendor/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/bootstrap-override.css" rel="stylesheet">
  
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -40,7 +36,7 @@ $twdescription = array_key_exists('twitter_description', $this->vars) ?
 	<meta name="twitter:image:src" content="<?php echo $twimage; ?>">
 	<meta name="twitter:title" content="<?php echo $title; ?>">
 	<meta name="twitter:description" content="<?php echo $twdescription; ?>">
-	<meta name="twitter:url" content="http://mesonet.agron.iastate.edu">
+	<meta name="twitter:url" content="https://datateam.agron.iastate.edu">
 	<meta name="twitter:creator" content="@akrherz">
 	<meta name="twitter:image:width" content="85">
 	<meta name="twitter:image:height" content="65">

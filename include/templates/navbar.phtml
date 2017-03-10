@@ -32,6 +32,12 @@ $_pages = Array(
 		),
 	),
 );
+$ar = preg_split('/-/', $THISPAGE);
+$logo = "/images/logo_small.png";
+if ($ar[0] == 'td'){
+	$logo = "/images/td_logo.png";
+}
+
 ?>
 <div class="container" id="iem-header">
 <div class="navbar navbar-inverse">
@@ -41,7 +47,7 @@ $_pages = Array(
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/" style="padding:0px 5px 0px 0px;"><img alt="IEM" style="height: 50px;" class="img-responsive pull-left" src="/images/logo_small.png" /></a>
+        <a class="navbar-brand" href="/" style="padding:0px 5px 0px 0px;"><img alt="Data Team" style="height: 50px;" class="img-responsive pull-left" src="<?php echo $logo; ?>" /></a>
 	</div>
     <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
@@ -55,7 +61,6 @@ $_pages = Array(
 	</ul></li>
         
 <?php 
-$ar = preg_split('/-/', $THISPAGE);
 function get_title($page){
 	if (array_key_exists("icon", $page)){
 		return sprintf("<div class=\"hidden-sm\">%s<b class=\"caret\"></b></div>"
