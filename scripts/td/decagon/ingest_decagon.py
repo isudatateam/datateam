@@ -1,14 +1,10 @@
 """Process the decagon data"""
 import psycopg2
 import sys
-import os
-import glob
 import datetime
 import pandas as pd
-import numpy as np
 
-CENTRAL_TIME = ['ISUAG', 'ISUAG.USB', 'GILMORE', 'SERF_IA', 'HICKS.B',
-                'HICKS.G']
+CENTRAL_TIME = ['SERF_IA', 'BEAR', 'CLAY_U', 'FAIRM', 'MAASS']
 
 
 def translate(df):
@@ -34,38 +30,57 @@ def translate(df):
 
     df.rename(columns=x, inplace=True)
 
+def process1(fn):
+    df = pd.read_csv(fn, skiprows=[0, 1, 2, 3, 5], index_col=False)
+    df.columns = ['valid', 'bogus',
+                  'd1temp', 'd1moisture', 'd1ec',
+                  'd2temp', 'd2moisture', 'd2ec',
+                  'd3temp', 'd3moisture', 'd3ec',
+                  'd4temp', 'd4moisture', 'd4ec',
+                  'd5temp', 'd5moisture', 'd5ec',
+                  'd6temp', 'd6moisture', 'd6ec',
+                  'd7temp', 'd7moisture', 'd7ec',
+                  'd1temp_2', 'd1moisture_2', 'd1ec_2',
+                  'd2temp_2', 'd2moisture_2', 'd2ec_2',
+                  'd3temp_2', 'd3moisture_2', 'd3ec_2',
+                  'd4temp_2', 'd4moisture_2', 'd4ec_2',
+                  'd5temp_2', 'd5moisture_2', 'd5ec_2',
+                  'd6temp_2', 'd6moisture_2', 'd6ec_2',
+                  'd7temp_2', 'd7moisture_2', 'd7ec_2',
+                  'bogus', 'bogus', 'bogus', 'bogus', 'bogus', 'bogus'
+                  ]
+    df['valid'] = pd.to_datetime(df['valid'])
+    p1 = df[['valid',
+             'd1temp', 'd1moisture', 'd1ec',
+             'd2temp', 'd2moisture', 'd2ec',
+             'd3temp', 'd3moisture', 'd3ec',
+             'd4temp', 'd4moisture', 'd4ec',
+             'd5temp', 'd5moisture', 'd5ec',
+             'd6temp', 'd6moisture', 'd6ec',
+             'd7temp', 'd7moisture', 'd7ec']]
+    p2 = df[['valid',
+             'd1temp_2', 'd1moisture_2', 'd1ec_2',
+             'd2temp_2', 'd2moisture_2', 'd2ec_2',
+             'd3temp_2', 'd3moisture_2', 'd3ec_2',
+             'd4temp_2', 'd4moisture_2', 'd4ec_2',
+             'd5temp_2', 'd5moisture_2', 'd5ec_2',
+             'd6temp_2', 'd6moisture_2', 'd6ec_2',
+             'd7temp_2', 'd7moisture_2', 'd7ec_2']]
+    p2.columns = p1.columns
+    return {'1': p1, '2': p2}
 
-def process1(fn, timefmt='%m/%d/%y %I:%M %p'):
-    df = pd.read_table(fn, sep='\t', index_col=False, low_memory=False)
-    df['valid'] = df['Measurement Time'].apply(
-        lambda s: datetime.datetime.strptime(s.strip(), timefmt))
-    df.drop('Measurement Time', axis=1, inplace=True)
-    translate(df)
-    return df
-
-
-def process4(fn):
-    """See MASON for an example"""
-    df = pd.read_excel(fn, index_col=False, skiprows=[0, 1, 3, 4, 5])
-    x = {'20': 'd2', '40': 'd3', '60': 'd4', '80': 'd5'}
-    extract = {}
-    for col in df.columns[1:]:
-        plotid = col[:-3]
-        depth = col[-2:]
-        e = extract.setdefault(plotid, [df.columns[0]])
-        e.append(col)
-    print extract
-    mydict = {}
-    for plotid in extract.keys():
-        mydict[plotid] = df[extract[plotid]].copy()
-        rename = {df.columns[0]: 'valid'}
-        for col in mydict[plotid].columns[1:]:
-            depth = col[-2:]
-            rename[col] = "%smoisture" % (x[depth], )
-        mydict[plotid].rename(columns=rename, inplace=True)
-        print mydict[plotid].columns
-    return mydict
-
+def process2(fn):
+    mydict = pd.read_excel(fn, sheetname=None, index_col=False)
+    df = pd.concat(mydict.values())
+    gdf = df[['Date', 'grass 3"', 'grass 6"', 'grass 12"',
+              'grass 24"', 'grass 36"']]
+    gdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture', 'd4moisture',
+                   'd5moisture']
+    tdf = df[['Date', 'trees 3"', 'trees 6"', 'trees 12"',
+              'trees 24"', 'trees 36"']]
+    tdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture', 'd4moisture',
+                   'd5moisture']
+    return dict(trees=tdf, grass=gdf)
 
 def process3(fn):
     mydict = pd.read_excel(fn, sheetname=None, index_col=False)
@@ -82,118 +97,105 @@ def process3(fn):
         translate(df)
     return mydict
 
+def process4(fn):
+    df = pd.read_excel(fn, skiprows=[0, 2], sheetname='Data', index_col=False)
+    df.columns = ['valid', 'bogus',
+                  'd1temp', 'd1moisture', 'd1ec', 'd1ec2',
+                  'd2temp', 'd2moisture', 'd2ec', 'd2ec2',
+                  'd3temp', 'd3moisture', 'd3ec', 'd3ec2',
+                  'd4temp', 'd4moisture', 'd4ec', 'd4ec2',
+                  'd5temp', 'd5moisture', 'd5ec', 'd5ec2',
+                  'd6temp', 'd6moisture', 'd6ec', 'd6ec2',
+                  'd7temp', 'd7moisture', 'd7ec', 'd7ec2',
+                  'd1temp_2', 'd1moisture_2', 'd1ec_2', 'd1ec2_2',
+                  'd2temp_2', 'd2moisture_2', 'd2ec_2', 'd2ec2_2',
+                  'd3temp_2', 'd3moisture_2', 'd3ec_2', 'd3ec2_2',
+                  'd4temp_2', 'd4moisture_2', 'd4ec_2', 'd4ec2_2',
+                  'd5temp_2', 'd5moisture_2', 'd5ec_2', 'd5ec2_2',
+                  'd6temp_2', 'd6moisture_2', 'd6ec_2', 'd6ec2_2',
+                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2'
+                  ]
+    df['valid'] = pd.to_datetime(df['valid'])
+    p1 = df[['valid',
+             'd1temp', 'd1moisture', 'd1ec',
+             'd2temp', 'd2moisture', 'd2ec',
+             'd3temp', 'd3moisture', 'd3ec',
+             'd4temp', 'd4moisture', 'd4ec',
+             'd5temp', 'd5moisture', 'd5ec',
+             'd6temp', 'd6moisture', 'd6ec',
+             'd7temp', 'd7moisture', 'd7ec']]
+    p2 = df[['valid',
+             'd1temp_2', 'd1moisture_2', 'd1ec_2',
+             'd2temp_2', 'd2moisture_2', 'd2ec_2',
+             'd3temp_2', 'd3moisture_2', 'd3ec_2',
+             'd4temp_2', 'd4moisture_2', 'd4ec_2',
+             'd5temp_2', 'd5moisture_2', 'd5ec_2',
+             'd6temp_2', 'd6moisture_2', 'd6ec_2',
+             'd7temp_2', 'd7moisture_2', 'd7ec_2']]
+    p2.columns = p1.columns
+    return {'1': p1, '2': p2}
 
-def process5(uniqueid, dirname):
-    """Look through a directory of XL files"""
-    os.chdir(dirname)
-    files = glob.glob("*.xlsx")
-    files.sort()
-    for fn in files:
-        plotid = fn.split()[0]
-        df = pd.read_excel(fn, index_col=None)
-        row0 = df.iloc[0, :]
-        row1 = df.iloc[1, :]
-        reg = {df.columns[0]: 'valid'}
-        for c, r0, r1 in zip(df.columns, row0, row1):
-            reg[c] = "%s %s %s" % (c, r0, r1)
-        df.rename(columns=reg, inplace=True)
-        df.drop(df.head(2).index, inplace=True)
-        translate(df)
-        print(("File: %s[%s] found: %s lines for columns %s"
-               ) % (fn, plotid, len(df.index), df.columns))
-        if len(df.index) > 0:
-            database_save(uniqueid, plotid, df)
-    return {}
+def process5(fn):
+    df = pd.read_excel(fn, skiprows=range(6), sheetname='Data', index_col=False)
+    df.columns = ['valid', 'bogus',
+                  'd1temp', 'd1moisture', 'd1ec', 'd1ec2', 'b', 'b', 'b', 'b', 
+                  'd2temp', 'd2moisture', 'd2ec', 'd2ec2', 'b', 'b', 'b', 'b',
+                  'd3temp', 'd3moisture', 'd3ec', 'd3ec2', 'b', 'b', 'b', 'b',
+                  'd4temp', 'd4moisture', 'd4ec', 'd4ec2', 'b', 'b', 'b', 'b',
+                  'd5temp', 'd5moisture', 'd5ec', 'd5ec2', 'b', 'b', 'b', 'b',
+                  'd6temp', 'd6moisture', 'd6ec', 'd6ec2', 'b', 'b', 'b', 'b',
+                  'd7temp', 'd7moisture', 'd7ec', 'd7ec2', 'b', 'b', 'b', 'b',
+                  'd1temp_2', 'd1moisture_2', 'd1ec_2', 'd1ec2_2', 'b', 'b', 'b', 'b',
+                  'd2temp_2', 'd2moisture_2', 'd2ec_2', 'd2ec2_2', 'b', 'b', 'b', 'b',
+                  'd3temp_2', 'd3moisture_2', 'd3ec_2', 'd3ec2_2', 'b', 'b', 'b', 'b',
+                  'd4temp_2', 'd4moisture_2', 'd4ec_2', 'd4ec2_2', 'b', 'b', 'b', 'b',
+                  'd5temp_2', 'd5moisture_2', 'd5ec_2', 'd5ec2_2', 'b', 'b', 'b', 'b',
+                  'd6temp_2', 'd6moisture_2', 'd6ec_2', 'd6ec2_2', 'b', 'b', 'b', 'b',
+                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2', 'b', 'b', 'b', 'b',
+                  'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                  'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
+                  ]
+    df['valid'] = pd.to_datetime(df['valid'], errors='coerse')
+    p1 = df[['valid',
+             'd1temp', 'd1moisture', 'd1ec',
+             'd2temp', 'd2moisture', 'd2ec',
+             'd3temp', 'd3moisture', 'd3ec',
+             'd4temp', 'd4moisture', 'd4ec',
+             'd5temp', 'd5moisture', 'd5ec',
+             'd6temp', 'd6moisture', 'd6ec',
+             'd7temp', 'd7moisture', 'd7ec']]
+    p2 = df[['valid',
+             'd1temp_2', 'd1moisture_2', 'd1ec_2',
+             'd2temp_2', 'd2moisture_2', 'd2ec_2',
+             'd3temp_2', 'd3moisture_2', 'd3ec_2',
+             'd4temp_2', 'd4moisture_2', 'd4ec_2',
+             'd5temp_2', 'd5moisture_2', 'd5ec_2',
+             'd6temp_2', 'd6moisture_2', 'd6ec_2',
+             'd7temp_2', 'd7moisture_2', 'd7ec_2']]
+    p2.columns = p1.columns
+    return {'1': p1, '2': p2}
 
+def process6(fn):
+    sm = pd.read_excel('Maass soil moisture.xlsx', sheetname=None)
+    sm = pd.concat(sm.values())
+    sm.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
+                  'd4moisture', 'd5moisture']
+    sm = sm.set_index('valid')
 
-def process6(uniqueid, dirname):
-    """HICKS"""
-    os.chdir(dirname)
-    files = glob.glob("*2015.xlsx")
-    files.sort()
-    res = {}
-    rename = {'Port 1 VWC': 'd1moisture', 'Port 1 Temp': 'd1temp',
-              'Port 2 VWC': 'd2moisture', 'Port 2 Temp': 'd2temp',
-              'Port 3 VWC': 'd3moisture', 'Port 3 Temp': 'd3temp',
-              'Port 4 VWC': 'd4moisture', 'Port 4 Temp': 'd4temp',
-              'Port 5 VWC': 'd5moisture', 'Port 5 Temp': 'd5temp'}
-    for fn in files:
-        plotid = fn.split("_")[1].replace("Field", "")
-        thissite = "HICKS.%s" % (plotid[0], )
-        plotid = plotid[1]
-        print fn, thissite, plotid
-        df = pd.read_excel(fn, sheetname=None)
-        sheets = df.keys()
-        df[sheets[0]].set_index('valid', inplace=True)
-        df[sheets[1]].set_index('valid', inplace=True)
-        print df[sheets[0]].columns
-        print df[sheets[1]].columns
-        if 'Port 1 VWC' in df[sheets[0]].columns:
-            print 'Port 1 in sheet 0'
-            ldf = df[sheets[0]].copy()
-            two = 1
-        else:
-            ldf = df[sheets[1]].copy()
-            two = 0
-        for col in ['Port 3 VWC', 'Port 3 Temp',
-                    'Port 4 VWC', 'Port 4 Temp',
-                    'Port 5 VWC', 'Port 5 Temp']:
-            ldf[col] = df[sheets[two]][col]
-        ldf.reset_index(inplace=True)
-        ldf.rename(columns=rename, inplace=True)
-        ldf.fillna(method='bfill', inplace=True, limit=12)
-        ldf['valid'] = pd.to_datetime(ldf['valid'])
-        res[plotid] = ldf.copy()
-    return res
-
-
-def process7(uniqueid, fn):
-    """Kellogg"""
-    df = pd.read_excel(fn)
-    x = {}
-    plotids = []
-    for colname in df.columns:
-        if colname == 'valid':
-            continue
-        depth = colname.split("-")[-1]
-        if depth == "20":
-            port = 2
-        elif depth == '40':
-            port = 3
-        elif depth == '60':
-            port = 4
-        elif depth == '80':
-            port = 5
-        else:
-            print colname
-            sys.exit()
-        plotid = "-".join(colname.split("-")[:-1])
-        if plotid not in plotids:
-            plotids.append(plotid)
-        x[colname] = "%s_d%smoisture" % (plotid, port)
-
-    df.rename(columns=x, inplace=True)
-    df2 = {}
-    for plotid in plotids:
-        df2[plotid] = pd.DataFrame(
-            {'valid': df['valid'],
-             'd2moisture': df['%s_d2moisture' % (plotid, )],
-             'd3moisture': df['%s_d3moisture' % (plotid, )],
-             'd4moisture': (df['%s_d4moisture' % (plotid, )] if
-                            '%s_d4moisture' % (plotid, ) in df.columns else
-                            None),
-             'd5moisture': (df['%s_d5moisture' % (plotid, )] if
-                            '%s_d5moisture' % (plotid, ) in df.columns else
-                            None)})
-
-    return df2
-
+    st = pd.read_excel('Maass soil temperature.xlsx', skiprows=[1,], sheetname=None)
+    st = pd.concat(st.values())
+    st.columns = ['valid', 'd1temp', 'd2temp', 'd3temp',
+                  'd4temp', 'd5temp']
+    st = st.set_index('valid')
+    df = st.join(sm)
+    df = df.reset_index()
+    return {'1': df}
 
 def database_save(uniqueid, plot, df):
     pgconn = psycopg2.connect(database='td', host='iemdb')
     cursor = pgconn.cursor()
     for i, row in df.iterrows():
-        if not isinstance(row['valid'], datetime.datetime):
+        if not isinstance(row['valid'], datetime.datetime) or pd.isnull(row['valid']):
             print('Row df.index=%s, valid=%s, culling' % (i, row['valid']))
             df.drop(i, inplace=True)
     minvalid = df['valid'].min()
@@ -225,7 +227,7 @@ def database_save(uniqueid, plot, df):
         #    print row
         #    sys.exit()
         try:
-            if np.isnan(val):
+            if pd.isnull(val):
                 return 'null'
         except Exception, exp:
             print exp
@@ -241,11 +243,13 @@ def database_save(uniqueid, plot, df):
         d5moisture, d5temp, d1moisture_qc, d1temp_qc,
         d1ec_qc, d2moisture_qc, d2temp_qc, d3moisture_qc, d3temp_qc,
         d4moisture_qc, d4temp_qc,
-        d5moisture_qc, d5temp_qc) VALUES ('%s', '%s', '%s', %s, %s,
+        d5moisture_qc, d5temp_qc,
+        d6moisture_qc, d6temp_qc,
+        d7moisture_qc, d7temp_qc) VALUES ('%s', '%s', '%s', %s, %s,
         %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, %s,
         %s, %s, %s, %s, %s, %s, %s,
-        %s, %s)
+        %s, %s, %s, %s, %s, %s)
         """ % (uniqueid, plot, row['valid'].strftime("%Y-%m-%d %H:%M-"+tzoff),
                v(row, 'd1moisture'), v(row, 'd1temp'), v(row, 'd1ec'),
                v(row, 'd2moisture'), v(row, 'd2temp'),
@@ -256,7 +260,9 @@ def database_save(uniqueid, plot, df):
                v(row, 'd2moisture'), v(row, 'd2temp'),
                v(row, 'd3moisture'), v(row, 'd3temp'),
                v(row, 'd4moisture'), v(row, 'd4temp'),
-               v(row, 'd5moisture'), v(row, 'd5temp')))
+               v(row, 'd5moisture'), v(row, 'd5temp'),
+               v(row, 'd6moisture'), v(row, 'd6temp'),
+               v(row, 'd7moisture'), v(row, 'd7temp')))
 
     cursor.close()
     pgconn.commit()
@@ -272,17 +278,15 @@ def main(argv):
     if fmt == '1':
         df = process1(fn)
     elif fmt == '2':
-        df = process1(fn, '%m/%d/%y %I:%M %p')
+        df = process2(fn)
     elif fmt == '3':
         df = process3(fn)
     elif fmt == '4':
         df = process4(fn)
     elif fmt == '5':
-        df = process5(uniqueid, fn)
+        df = process5(fn)
     elif fmt == '6':
-        df = process6(uniqueid, fn)
-    elif fmt == '7':
-        df = process7(uniqueid, fn)
+        df = process6(fn)
     if isinstance(df, dict):
         for plot in df:
             print(("File: %s[%s] found: %s lines for columns %s"

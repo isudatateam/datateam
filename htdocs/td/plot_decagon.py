@@ -27,15 +27,18 @@ def send_error(msg):
 def make_plot(form):
     """Make the plot"""
     (uniqueid, plotid) = form.getfirst('site', 'ISUAG::302E').split("::")
-    if uniqueid in ['KELLOGG', 'MASON']:
-        DEPTHS[1] = '-'
-        DEPTHS[5] = '80 cm'
-    elif uniqueid == 'NAEW':
+    if uniqueid in ['CLAY_R', 'CLAY_U']:
         DEPTHS[1] = '5 cm'
-        DEPTHS[2] = '10 cm'
-        DEPTHS[3] = '20 cm'
-        DEPTHS[4] = '30 cm'
-        DEPTHS[5] = '50 cm'
+        DEPTHS[2] = '15 cm'
+        DEPTHS[3] = '30 cm'
+        DEPTHS[4] = '45 cm'
+        DEPTHS[5] = '60 cm'
+    elif uniqueid in ['BEAR', 'MAASS']:
+        DEPTHS[1] = '7 cm'
+        DEPTHS[2] = '15 cm'
+        DEPTHS[3] = '30 cm'
+        DEPTHS[4] = '60 cm'
+        DEPTHS[5] = '90 cm'
 
     sts = datetime.datetime.strptime(form.getfirst('date', '2014-06-10'),
                                      '%Y-%m-%d')

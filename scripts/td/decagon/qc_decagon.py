@@ -1,7 +1,7 @@
 import psycopg2
 import sys
 
-intervals = {'KELLOGG': 30, 'NAEW': 30, 'WATERMAN': 2}
+intervals = {'BEAR': 60, 'CLAY_U': 30, 'FAIRM': 30}
 
 
 def get_entries():
