@@ -4,7 +4,7 @@ import sys
 import datetime
 import pandas as pd
 
-CENTRAL_TIME = ['SERF_IA', 'BEAR', 'CLAY_U', 'FAIRM', 'MAASS']
+CENTRAL_TIME = ['SERF_IA', 'BEAR', 'CLAY_U', 'FAIRM', 'MAASS', 'SERF_SD']
 
 
 def translate(df):
@@ -31,7 +31,7 @@ def translate(df):
     df.rename(columns=x, inplace=True)
 
 def process1(fn):
-    df = pd.read_csv(fn, skiprows=[0, 1, 2, 3, 5], index_col=False)
+    df = pd.read_csv(fn, skiprows=[0, 1, 2, 3, 5, 6], index_col=False)
     df.columns = ['valid', 'bogus',
                   'd1temp', 'd1moisture', 'd1ec',
                   'd2temp', 'd2moisture', 'd2ec',
@@ -67,7 +67,7 @@ def process1(fn):
              'd6temp_2', 'd6moisture_2', 'd6ec_2',
              'd7temp_2', 'd7moisture_2', 'd7ec_2']]
     p2.columns = p1.columns
-    return {'1': p1, '2': p2}
+    return {'CD1': p1, 'CD2': p2}
 
 def process2(fn):
     mydict = pd.read_excel(fn, sheetname=None, index_col=False)
@@ -98,7 +98,8 @@ def process3(fn):
     return mydict
 
 def process4(fn):
-    df = pd.read_excel(fn, skiprows=[0, 2], sheetname='Data', index_col=False)
+    # df = pd.read_excel(fn, skiprows=[0, 2], sheetname='Data', index_col=False)
+    df = pd.read_csv(fn, skiprows=range(6), index_col=False)
     df.columns = ['valid', 'bogus',
                   'd1temp', 'd1moisture', 'd1ec', 'd1ec2',
                   'd2temp', 'd2moisture', 'd2ec', 'd2ec2',
@@ -133,7 +134,7 @@ def process4(fn):
              'd6temp_2', 'd6moisture_2', 'd6ec_2',
              'd7temp_2', 'd7moisture_2', 'd7ec_2']]
     p2.columns = p1.columns
-    return {'1': p1, '2': p2}
+    return {'SI1': p1, 'SI2': p2}
 
 def process5(fn):
     df = pd.read_excel(fn, skiprows=range(6), sheetname='Data', index_col=False)
@@ -190,6 +191,24 @@ def process6(fn):
     df = st.join(sm)
     df = df.reset_index()
     return {'1': df}
+
+def process7(fn):
+    df = pd.read_csv(fn, index_col=False)
+    p7 = df[df['plotID'] == 7]
+    p8 = df[df['plotID'] == 8]
+    p7 = pd.pivot_table(p7, values='SM', index='date', columns='depth')
+    p7.reset_index(inplace=True)
+    p7['date'] = pd.to_datetime(p7['date'])
+    p7.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
+                  'd4moisture', 'd5moisture']
+
+    p8 = pd.pivot_table(p8, values='SM', index='date', columns='depth')
+    p8.reset_index(inplace=True)
+    p8['date'] = pd.to_datetime(p8['date'])
+    p8.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
+                  'd4moisture', 'd5moisture']
+
+    return {'7': p7, '8': p8}
 
 def database_save(uniqueid, plot, df):
     pgconn = psycopg2.connect(database='td', host='iemdb')
@@ -287,6 +306,8 @@ def main(argv):
         df = process5(fn)
     elif fmt == '6':
         df = process6(fn)
+    elif fmt == '7':
+        df = process7(fn)
     if isinstance(df, dict):
         for plot in df:
             print(("File: %s[%s] found: %s lines for columns %s"
