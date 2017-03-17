@@ -45,6 +45,17 @@ def send_error(viewopt, msg):
     sys.exit()
 
 
+def get_weather(pgconn, uniqueid, sts, ets):
+    """Retreive the daily precipitation"""
+    df = read_sql("""SELECT valid, precip_mm from weather_daily
+    WHERE siteid = %s and valid >= %s and valid <= %s ORDER by valid ASC
+    """, pgconn, index_col=None, params=(uniqueid, sts.date(),
+                                         ets.date()))
+    df['ticks'] = df['valid'].astype('datetime64[ns]').astype(
+        np.int64) // 10 ** 6
+    return df
+
+
 def make_plot(form):
     """Make the plot"""
     pgconn = psycopg2.connect(database='td', host='iemdb',
@@ -56,6 +67,7 @@ def make_plot(form):
     days = int(form.getfirst('days', 1))
     group = int(form.getfirst('group', 0))
     ets = sts + datetime.timedelta(days=days)
+    wxdf = get_weather(pgconn, uniqueid, sts, ets)
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
     viewopt = form.getfirst('view', 'plot')
@@ -142,13 +154,24 @@ def make_plot(form):
             data: """ + str([[a, b] for a, b in zip(df2['ticks'].values,
                                                     df2['discharge'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
+    if len(wxdf.index) > 0:
+        s.append(("""{type: 'column',
+            name: 'Precip',
+            yAxis: 1,
+            data: """ + str([[a, b] for a, b in zip(wxdf['ticks'].values,
+                                                    wxdf['precip_mm'].values)]) + """
+        }""").replace("None", "null").replace("nan", "null"))
     series = ",".join(s)
     sys.stdout.write("""
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
-    yAxis: {title: {text: 'Discharge (mm)'}
-    },
+    yAxis: [
+        {title: {text: 'Discharge (mm)'}},
+        {title: {text: 'Daily Precipitation (mm)'},
+         reversed: true,
+         opposite: true},
+    ],
     plotOptions: {line: {turboThreshold: 0}},
     xAxis: {
         type: 'datetime'
