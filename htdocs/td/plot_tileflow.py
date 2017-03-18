@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Plot!"""
+import unittest
 import psycopg2
 import matplotlib
 import sys
@@ -53,9 +54,10 @@ def get_weather(pgconn, uniqueid, sts, ets):
         dbid = uniqueid.split("_")[0]
     df = read_sql("""SELECT valid, precip_mm from weather_daily
     WHERE siteid = %s and valid >= %s and valid <= %s ORDER by valid ASC
-    """, pgconn, index_col=None, params=(dbid, sts.date(),
-                                         ets.date()))
-    df['ticks'] = df['valid'].astype('datetime64[ns]').astype(
+    """, pgconn, index_col='valid', params=(dbid, sts.date(),
+                                            ets.date()))
+    df.index = pd.DatetimeIndex(df.index.values)
+    df['ticks'] = df.index.values.astype('datetime64[ns]').astype(
         np.int64) // 10 ** 6
     return df
 
@@ -84,6 +86,10 @@ def make_plot(form):
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     elif ptype == '2':
+        # resample the weather data
+        wxdf = wxdf.resample('M', loffset=datetime.timedelta(days=-27)).sum()
+        wxdf['ticks'] = wxdf.index.values.astype('datetime64[ns]').astype(
+            np.int64) // 10 ** 6
         df = read_sql("""SELECT
         date_trunc('month', valid at time zone 'UTC') as v, plotid,
         sum(discharge_mm_qc) as discharge
@@ -161,6 +167,7 @@ def make_plot(form):
     if len(wxdf.index) > 0:
         s.append(("""{type: 'column',
             name: 'Precip',
+            color: '#0000ff',
             yAxis: 1,
             data: """ + str([[a, b] for a, b in zip(wxdf['ticks'].values,
                                                     wxdf['precip_mm'].values)]) + """
@@ -174,6 +181,7 @@ $("#hc").highcharts({
         {title: {text: 'Discharge (mm)'}},
         {title: {text: 'Daily Precipitation (mm)'},
          reversed: true,
+         maxPadding: 1,
          opposite: true},
     ],
     plotOptions: {line: {turboThreshold: 0}},
@@ -201,3 +209,16 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+class TestCase(unittest.TestCase):
+
+    def test_wx(self):
+        pgconn = psycopg2.connect(database='td', host='iemdb',
+                                  user='nobody')
+        wxdf = get_weather(pgconn, 'SERF_IA',
+                           datetime.datetime(2015, 1, 1),
+                           datetime.datetime(2016, 1, 1))
+        print wxdf.resample('M', loffset=datetime.timedelta(days=15)).sum()
+        print wxdf.index
+        self.assertEquals(len(wxdf.index), 0)
