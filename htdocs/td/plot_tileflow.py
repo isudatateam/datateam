@@ -47,9 +47,13 @@ def send_error(viewopt, msg):
 
 def get_weather(pgconn, uniqueid, sts, ets):
     """Retreive the daily precipitation"""
+    # Convert ids
+    dbid = uniqueid
+    if uniqueid not in ['SERF_IA', 'SERF_SD', 'DEFI_R']:
+        dbid = uniqueid.split("_")[0]
     df = read_sql("""SELECT valid, precip_mm from weather_daily
     WHERE siteid = %s and valid >= %s and valid <= %s ORDER by valid ASC
-    """, pgconn, index_col=None, params=(uniqueid, sts.date(),
+    """, pgconn, index_col=None, params=(dbid, sts.date(),
                                          ets.date()))
     df['ticks'] = df['valid'].astype('datetime64[ns]').astype(
         np.int64) // 10 ** 6
