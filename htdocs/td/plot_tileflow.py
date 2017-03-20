@@ -97,6 +97,15 @@ def make_plot(form):
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
         df["discharge_f"] = '-'
+    elif ptype == '3':
+        # Daily Aggregate
+        df = read_sql("""SELECT
+        date_trunc('day', valid at time zone 'UTC') as v, plotid,
+        sum(discharge_mm_qc) as discharge
+        from tileflow_data WHERE uniqueid = %s
+        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
+        """, pgconn, params=(uniqueid, sts.date(), ets.date()))
+        df["discharge_f"] = '-'
     if len(df.index) < 3:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
     linecol = 'plotid'
@@ -113,7 +122,7 @@ def make_plot(form):
         df = df.groupby(['treatment', 'v']).mean()
         df.reset_index(inplace=True)
         linecol = 'treatment'
-    if ptype not in ['2', ]:
+    if ptype not in ['2', '3']:
         df['v'] = df['v'].apply(
             lambda x: x.tz_localize('UTC').tz_convert(tzname))
 
@@ -156,7 +165,7 @@ def make_plot(form):
     plot_ids = df[linecol].unique()
     plot_ids.sort()
     df['ticks'] = df['v'].astype(np.int64) // 10 ** 6
-    seriestype = 'line' if ptype == '1' else 'column'
+    seriestype = 'line' if ptype in ['1', '3'] else 'column'
     for plotid in plot_ids:
         df2 = df[df[linecol] == plotid]
         s.append(("""{type: '""" + seriestype + """',
