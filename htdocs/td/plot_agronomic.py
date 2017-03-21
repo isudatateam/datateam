@@ -135,6 +135,7 @@ $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     subtitle: {text: '""" + varlabel + """ (""" + varunits + """)'},
     chart: {zoomType: 'x'},
+    xAxis: {tickInterval: 1},
     yAxis: [
         {title: {text: '""" + varlabel + """ (""" + varunits + """)'}}
     ],
