@@ -8,7 +8,6 @@ import pandas as pd
 from pandas.io.sql import read_sql
 import cgi
 import os
-import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
 
@@ -67,10 +66,10 @@ def make_plot(form):
     group = int(form.getfirst('group', 0))
     viewopt = form.getfirst('view', 'plot')
     df = read_sql("""SELECT value, year, plotid from agronomic_data
-        WHERE site = %s and varname = %s
+        WHERE site = %s and varname = %s and value is not null
         ORDER by plotid, year ASC
         """, pgconn, params=(uniqueid, varname), index_col=None)
-    if len(df.index) < 3:
+    if len(df.index) < 1:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
     df['value'] = pd.to_numeric(df['value'], errors='coerse')
     linecol = 'plotid'
