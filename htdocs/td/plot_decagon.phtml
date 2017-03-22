@@ -37,6 +37,8 @@ $ar = Array(
 		"DPAC::SW"=>"DPAC SW (2011-07-01 to 2016-12-21) [2000 days]",
 		"FAIRM::1"=>"FAIRM 1 (2015-05-22 to 2016-11-22) [550 days]",
 		"FAIRM::2"=>"FAIRM 2 (2015-05-22 to 2016-11-22) [550 days]",
+		"HICKS_B::E"=>"HICKS_B E (2012-06-08 to 2016-02-17) [1349 days]",
+		"HICKS_B::W"=>"HICKS_B W (2012-06-08 to 2016-02-17) [1349 days]",
 		"MAASS::1"=>"MAASS 1 (2015-01-01 to 2017-01-03) [733 days]",
 		"SERF_IA::1"=>"SERF_IA 1 (2016-01-01 to 2016-05-20) [140 days]",
 		"SERF_IA::2"=>"SERF_IA 2 (2016-01-01 to 2016-05-20) [140 days]",
@@ -48,6 +50,12 @@ $ar = Array(
 		"SERF_IA::8"=>"SERF_IA 8 (2015-12-02 to 2016-05-20) [170 days]",
 		"SERF_SD::7"=>"SERF_SD 7 (2016-01-01 to 2016-12-31) [365 days]",
 		"SERF_SD::8"=>"SERF_SD 8 (2016-01-01 to 2016-12-31) [365 days]",
+		"STJOHNS::WN1"=>"STJOHNS WN1 (2011-12-14 to 2015-11-20) [1437 days]",
+		"STJOHNS::WN2"=>"STJOHNS WN2 (2011-12-14 to 2015-11-20) [1437 days]",
+		"STJOHNS::WN3"=>"STJOHNS WN3 (2011-12-15 to 2015-11-03) [1419 days]",
+		"STJOHNS::WS1"=>"STJOHNS WS1 (2011-12-15 to 2015-11-20) [1436 days]",
+		"STJOHNS::WS2"=>"STJOHNS WS2 (2011-09-20 to 2015-11-20) [1522 days]",
+		"STJOHNS::WS3"=>"STJOHNS WS3 (2011-12-15 to 2015-11-20) [1436 days]",
 		);
 $siteselect = make_select("site", $site, $ar);
 
@@ -183,14 +191,33 @@ daily summaries in the time zone of the station.
 Please see this <a href="https://docs.google.com/document/d/1K_FtA-nkhCVlkBULgwOpYb4FmMptaZDuEcaqaj7fS-U/edit">Google Drive Doc</a> for more details on this and the flags used
 to denote quality control.
 </li>
+<li><strong>How were data collected?</strong><br />
+Variations exist across research sites in methodology and frequency of 
+		measurements. Generalized site information is provided below in the table.
+		Detailed descriptions are available from the 
+		<a href="https://sites.google.com/site/transformingdrainage/database/export-sampling-methods">Transforming Drainage internal website</a>.</li>
 </ol>
 
 <h3>Observation Site Collection Interval</h3>
 
 <p>This table lists the observation time interval at each site:
 <pre>
- ST  SITE       INTERVAL  SAMPLING DEPTHS     PERIOD
-[IN] DPAC       5 minute  10 20 40 60 100 cm  
+ ST  SITE       INTERVAL  SAMPLING DEPTHS [CM]
+[IA] BEAR       60 minute  7, 15, 30, 60, 90
+[IA] MAASS      5 minute   7, 15, 30, 60, 90
+[IA] SERF_IA    5 minute  10, 20, 40, 60, 100
+[IN] ACRE       *data missing
+[IN] DPAC       5 minute  10, 20, 40, 60, 100
+[MN] HICKS_B    5 or 60   10, 20, 40, 60, 100
+[MN] HICKS.P    *data missing
+[MN] HICKS.S    *data missing
+[MN] SWROC      *data missing
+[ND] CLAY_C     *data missing
+[ND] CLAY_R     15 minute  5, 15, 30, 45, 60, 75, 90
+[ND] CLAY_U     30 minute  5, 15, 30, 45, 60, 75, 90
+[ND] FAIRM      30 minute  5, 15, 30, 45, 60, 75, 90
+[OH] STJOHNS    5 minute  10, 20, 40, 60, 100
+[SD] SERF_SD    daily     10, 20, 40, 60, 100
 </pre></p>
 
 <h3>Notes</h3>
@@ -201,6 +228,9 @@ to denote quality control.
 selected to be within the zone of influence of the control structure.  It most likely represents the upper end of field soil
 moisture.</li>
 
+		<li><strong>HICKS_B</strong> Soil moisture is measured at a single location within each management zone, midway between a pair of drainage lines, and reported to represent the entire zone.</li>
+		
+		<li><strong>STJOHNS</strong> Soil moisture data at 3 specific locations each in free and managed drainage areas.</li>
  
 </ul>
 

@@ -10,7 +10,7 @@ import cgi
 import datetime
 import os
 
-DEPTHS = [None, '10 cm', '20 cm', '40 cm', '60 cm', '100 cm']
+DEPTHS = [None, '10 cm', '20 cm', '40 cm', '60 cm', '100 cm', None, None]
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
@@ -33,6 +33,8 @@ def make_plot(form):
         DEPTHS[3] = '30 cm'
         DEPTHS[4] = '45 cm'
         DEPTHS[5] = '60 cm'
+        DEPTHS[6] = '75 cm'
+        DEPTHS[7] = '90 cm'
     elif uniqueid in ['BEAR', 'MAASS']:
         DEPTHS[1] = '7 cm'
         DEPTHS[2] = '15 cm'
@@ -60,11 +62,15 @@ def make_plot(form):
         d3temp_qc as d3t, coalesce(d3temp_qcflag, '') as d3t_f,
         d4temp_qc as d4t, coalesce(d4temp_qcflag, '') as d4t_f,
         d5temp_qc as d5t, coalesce(d5temp_qcflag, '') as d5t_f,
+        d6temp_qc as d6t, coalesce(d6temp_qcflag, '') as d6t_f,
+        d7temp_qc as d7t, coalesce(d7temp_qcflag, '') as d7t_f,
         d1moisture_qc as d1m, coalesce(d1moisture_qcflag, '') as d1m_f,
         d2moisture_qc as d2m, coalesce(d2moisture_qcflag, '') as d2m_f,
         d3moisture_qc as d3m, coalesce(d3moisture_qcflag, '') as d3m_f,
         d4moisture_qc as d4m, coalesce(d4moisture_qcflag, '') as d4m_f,
-        d5moisture_qc as d5m, coalesce(d5moisture_qcflag, '') as d5m_f
+        d5moisture_qc as d5m, coalesce(d5moisture_qcflag, '') as d5m_f,
+        d6moisture_qc as d6m, coalesce(d6moisture_qcflag, '') as d6m_f,
+        d7moisture_qc as d7m, coalesce(d7moisture_qcflag, '') as d7m_f
         from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
@@ -77,9 +83,11 @@ def make_plot(form):
         timezone('UTC', date_trunc('"""+res+"""', valid at time zone 'UTC')) as v, plotid,
         avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
+        avg(d6temp_qc) as d6t, avg(d7temp_qc) as d7t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
         avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
-        avg(d5moisture_qc) as d5m
+        avg(d5moisture_qc) as d5m, avg(d6moisture_qc) as d6m,
+        avg(d7moisture_qc) as d7m
         from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
@@ -91,9 +99,11 @@ def make_plot(form):
         timezone('UTC', date_trunc('day', valid at time zone %s)) as v, plotid,
         avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
+        avg(d6temp_qc) as d6t, avg(d7temp_qc) as d7t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
         avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
-        avg(d5moisture_qc) as d5m
+        avg(d5moisture_qc) as d5m, avg(d6moisture_qc) as d6m,
+        avg(d7moisture_qc) as d7m
         from decagon_data WHERE uniqueid = %s  """+plotid_limit+"""
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(tzname, uniqueid, sts.date(), ets.date()))
@@ -113,21 +123,29 @@ def make_plot(form):
                                d3t='%s Temp (C)' % (DEPTHS[3], ),
                                d4t='%s Temp (C)' % (DEPTHS[4], ),
                                d5t='%s Temp (C)' % (DEPTHS[5], ),
+                               d6t='%s Temp (C)' % (DEPTHS[6], ),
+                               d7t='%s Temp (C)' % (DEPTHS[7], ),
                                d1m='%s Moisture (cm3/cm3)' % (DEPTHS[1], ),
                                d2m='%s Moisture (cm3/cm3)' % (DEPTHS[2], ),
                                d3m='%s Moisture (cm3/cm3)' % (DEPTHS[3], ),
                                d4m='%s Moisture (cm3/cm3)' % (DEPTHS[4], ),
                                d5m='%s Moisture (cm3/cm3)' % (DEPTHS[5], ),
+                               d6m='%s Moisture (cm3/cm3)' % (DEPTHS[6], ),
+                               d7m='%s Moisture (cm3/cm3)' % (DEPTHS[7], ),
                                d1t_f='%s Temp Flag' % (DEPTHS[1], ),
                                d2t_f='%s Temp Flag' % (DEPTHS[2], ),
                                d3t_f='%s Temp Flag' % (DEPTHS[3], ),
                                d4t_f='%s Temp Flag' % (DEPTHS[4], ),
                                d5t_f='%s Temp Flag' % (DEPTHS[5], ),
+                               d6t_f='%s Temp Flag' % (DEPTHS[6], ),
+                               d7t_f='%s Temp Flag' % (DEPTHS[7], ),
                                d1m_f='%s Moisture Flag' % (DEPTHS[1], ),
                                d2m_f='%s Moisture Flag' % (DEPTHS[2], ),
                                d3m_f='%s Moisture Flag' % (DEPTHS[3], ),
                                d4m_f='%s Moisture Flag' % (DEPTHS[4], ),
                                d5m_f='%s Moisture Flag' % (DEPTHS[5], ),
+                               d6m_f='%s Moisture Flag' % (DEPTHS[6], ),
+                               d7m_f='%s Moisture Flag' % (DEPTHS[7], ),
                                ),
                   inplace=True)
         if viewopt == 'html':
@@ -241,7 +259,10 @@ options = {
     lines = []
     lines2 = []
     if depth == 'all':
-        for i, n in enumerate(['d1t', 'd2t', 'd3t', 'd4t', 'd5t']):
+        for i, n in enumerate(['d1t', 'd2t', 'd3t', 'd4t', 'd5t',
+                               'd6t', 'd7t']):
+            if df[n].isnull().all():
+                continue
             v = df[['ticks', n]].to_json(orient='values')
             lines.append("""{
             name: '"""+DEPTHS[i+1]+""" Temp',
@@ -250,7 +271,10 @@ options = {
             data: """+v+"""
             }
             """)
-        for i, n in enumerate(['d1m', 'd2m', 'd3m', 'd4m', 'd5m']):
+        for i, n in enumerate(['d1m', 'd2m', 'd3m', 'd4m', 'd5m', 'd6m',
+                               'd7m']):
+            if df[n].isnull().all():
+                continue
             v = df[['ticks', n]].to_json(orient='values')
             lines2.append("""{
             name: '"""+DEPTHS[i+1]+""" VSM',
