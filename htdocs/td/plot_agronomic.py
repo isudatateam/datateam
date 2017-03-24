@@ -45,11 +45,11 @@ def send_error(viewopt, msg):
 
 
 def get_vardesc(varname):
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
+    pgconn = psycopg2.connect(database='td', host='iemdb',
                               user='nobody')
     cursor = pgconn.cursor()
     cursor.execute("""
-    SELECT short_description, units from cscap_data_dictionary WHERE
+    SELECT short_description, units from td_data_dictionary WHERE
     code_column_heading = %s
     """, (varname, ))
     if cursor.rowcount == 0:

@@ -3,14 +3,12 @@ import psycopg2
 import pyiem.cscap_utils as util
 
 config = util.get_config()
-pgconn = psycopg2.connect(database='sustainablecorn',
+pgconn = psycopg2.connect(database='td',
                           host=config['database']['host'])
 ss = util.get_ssclient(config)
 
 JOB_LISTING = [
-    ["3879498232948612", 'cscap_data_dictionary'],
-    ["1292573529663364", 'refereed_journals'],
-    ["6868926064813956", "theses"],
+    ["4416033734846340", "td_data_dictionary"],
     ]
 
 
