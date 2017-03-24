@@ -66,7 +66,7 @@ def make_plot(form):
     """Make the plot"""
     pgconn = psycopg2.connect(database='td', host='iemdb',
                               user='nobody')
-    (uniqueid, plotid) = form.getfirst('site', 'ISUAG::302E').split("::")
+    uniqueid = form.getfirst('site', 'ISUAG')
 
     sts = datetime.datetime.strptime(form.getfirst('date', '2014-01-01'),
                                      '%Y-%m-%d')
@@ -138,16 +138,16 @@ def make_plot(form):
         if viewopt == 'csv':
             sys.stdout.write('Content-type: application/octet-stream\n')
             sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.csv\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                              'filename=%s_%s_%s.csv\n\n'
+                              ) % (uniqueid, sts.strftime("%Y%m%d"),
                                    ets.strftime("%Y%m%d")))
             sys.stdout.write(df.to_csv(index=False))
             return
         if viewopt == 'excel':
             sys.stdout.write('Content-type: application/octet-stream\n')
             sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.xlsx\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                              'filename=%s_%s_%s.xlsx\n\n'
+                              ) % (uniqueid, sts.strftime("%Y%m%d"),
                                    ets.strftime("%Y%m%d")))
             writer = pd.ExcelWriter('/tmp/ss.xlsx')
             df.to_excel(writer, 'Data', index=False)
@@ -215,6 +215,7 @@ def main():
     """Do Something"""
     form = cgi.FieldStorage()
     make_plot(form)
+
 
 if __name__ == '__main__':
     main()
