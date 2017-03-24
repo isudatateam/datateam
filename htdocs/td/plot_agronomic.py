@@ -15,10 +15,11 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
 
-CODES = {'UD': 'Undarined (No Drainage)',
+CODES = {'UD': 'Undrained (No Drainage)',
          'FD': 'Free Drainage (Conventional Drainage)',
          'CD': 'Controlled Drainage (Managed Drainage)',
          'SD': 'Surface Drainage',
+         'ND': 'No Drainage',
          'SH': 'Shallow Drainage',
          'SI': 'Controlled Drainage with Subirrigation',
          'CA': 'Automated Controlled Drainage',
@@ -67,6 +68,7 @@ def make_plot(form):
     viewopt = form.getfirst('view', 'plot')
     df = read_sql("""SELECT value, year, plotid from agronomic_data
         WHERE site = %s and varname = %s and value is not null
+        and value not in ('did not collect')
         ORDER by plotid, year ASC
         """, pgconn, params=(uniqueid, varname), index_col=None)
     if len(df.index) < 1:
