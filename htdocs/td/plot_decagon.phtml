@@ -111,8 +111,8 @@ EOF;
 	
 }
 $t = new MyView();
-$t->thispage = "td-decagon";
-$t->title = "TD Decagon Data Plotting/Download";
+$t->thispage = "td-soilmoisture";
+$t->title = "TD Soil Moisture Data Plotting/Download";
 $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
@@ -145,9 +145,9 @@ select {
 }
 </style>
 
-<h3>Decagon Data Plotting/Download</h3>
+<h3>Soil Moisture Data Plotting/Download</h3>
 
-<p>Decagon data included in this visualization and aggregation tool are associated with the
+<p>Soil Moisture data included in this visualization and aggregation tool are associated with the
 USDA-NIFA funded project: 
 "Managing Water for Increased Resiliency of Drained Agricultural Landscapes" (Award No.
 2015-68007-23193).</p>
@@ -200,20 +200,22 @@ Variations exist across research sites in methodology and frequency of
 
 <h3>Observation Site Collection Interval</h3>
 
-<p>This table lists the observation time interval at each site:
+<p>This table lists the observation time interval at each site. If details are
+not provided below, the site does not have data entered yet or has issues that need 
+to be resolved first relative to quality concerns.</p>
 <pre>
  ST  SITE       INTERVAL  SAMPLING DEPTHS [CM]
 [IA] BEAR       60 minute  7, 15, 30, 60, 90
 [IA] MAASS      5 minute   7, 15, 30, 60, 90
 [IA] SERF_IA    5 minute  10, 20, 40, 60, 100
-[IN] ACRE       *data missing
+[IN] ACRE       
 [IN] DPAC       5 minute  10, 20, 40, 60, 100
 [MN] HICKS_B    5 or 60   10, 20, 40, 60, 100
-[MN] HICKS.P    *data missing
-[MN] HICKS.S    *data missing
-[MN] SWROC      *data missing
-[ND] CLAY_C     *data missing
-[ND] CLAY_R     15 minute  5, 15, 30, 45, 60, 75, 90
+[MN] HICKS.P    
+[MN] HICKS.S    
+[MN] SWROC      
+[ND] CLAY_C     
+[ND] CLAY_R     30 minute  5, 15, 30, 45, 60, 75, 90
 [ND] CLAY_U     30 minute  5, 15, 30, 45, 60, 75, 90
 [ND] FAIRM      30 minute  5, 15, 30, 45, 60, 75, 90
 [OH] STJOHNS    5 minute  10, 20, 40, 60, 100

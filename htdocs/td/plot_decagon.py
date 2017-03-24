@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Decagon SM Plot!"""
+"""SM Plot!"""
 import psycopg2
 import sys
 import pytz
@@ -177,7 +177,7 @@ def make_plot(form):
     lbl = "Plot:%s" % (plotid,)
     if depth != 'all':
         lbl = "Depth:%s" % (DEPTHS[int(depth)],)
-    title = ("Decagon Temperature + Moisture for "
+    title = ("Soil Temperature + Moisture for "
              "Site:%s %s Period:%s to %s"
              ) % (uniqueid, lbl, sts.date(), ets.date())
     sys.stdout.write("Content-type: application/javascript\n\n")
