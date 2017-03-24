@@ -117,7 +117,7 @@ select {
 
 <form method="GET" name="plot1">
 <table class="table table-bordered">
-<thead><tr><th>Select Site: (<i>currently, all plots at site are shown on the graph)</i></th><th>Select Start Date</th>
+<thead><tr><th>Select Site:</i></th><th>Select Start Date</th>
 </tr></thead>
 <tbody><tr><td>
 {$siteselect}
@@ -156,9 +156,30 @@ daily summaries in the time zone of the station.
 
 <h3>Observation Site Collection Interval</h3>
 
-<p>This table lists the observation time interval at each site:
+<p>This table lists the observation time interval at each site. If
+details are not provided below, the site does not have data entered yet
+or has issues that need to be resolved first relative to quality
+concerns.</p>
 <pre>
- ST  SITE       INTERVAL  
+ ST  SITE       INTERVAL
+[IA] SERF_IA    60 MIN
+[IA] BEAR       DAILY
+[IA] MAASS      DAILY
+[IN] ACRE       
+[IN] DPAC       60 MIN
+[IN] HICKS_B    60 MIN
+[IN] HICKS_P 
+[MN] SWROC      
+[NC] BATH_A  
+[NC] TIDE_OLD   60 MIN
+[ND] CLAY_C     60 MIN
+[ND] CLAY_R     60 MIN
+[ND] CLAY_U     60 MIN
+[NC] FAIRM      30 MIN
+[OH] DEFI_R     15 MIN
+[OH] STJOHNS    15 MIN
+[SD] SERF_SD    15 MIN
+
 </pre></p>
 EOF;
 $t->render('full.phtml');
