@@ -16,6 +16,16 @@ import matplotlib.pyplot as plt  # NOPEP8
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
+CODES = {'UD': 'Undarined (No Drainage)',
+         'FD': 'Free Drainage (Conventional Drainage)',
+         'CD': 'Controlled Drainage (Managed Drainage)',
+         'SD': 'Surface Drainage',
+         'SH': 'Shallow Drainage',
+         'SI': 'Controlled Drainage with Subirrigation',
+         'CA': 'Automated Controlled Drainage',
+         'SB': 'Saturated Buffer',
+         'TBD': 'To Be Determined',
+         'n/a': 'Not Available or Not Applicable'}
 
 
 def send_error(viewopt, msg):
@@ -48,6 +58,7 @@ def make_plot(form):
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
     viewopt = form.getfirst('view', 'plot')
     ptype = form.getfirst('ptype', '1')
+    group = int(form.getfirst('group', 0))
     if ptype == '1':
         df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
         depth_mm_qc as depth, coalesce(depth_mm_qcflag, '') as depth_f
@@ -72,6 +83,20 @@ def make_plot(form):
         df["depth_f"] = '-'
     if len(df.index) < 3:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
+    linecol = 'plotid'
+    if group == 1:
+        # Generate the plotid lookup table
+        plotdf = read_sql("""
+            SELECT * from plotids where siteid = %s
+        """, pgconn, params=(uniqueid, ), index_col='plotid')
+
+        def lookup(row):
+            return plotdf.loc[row['plotid'], "y%s" % (row['v'].year, )]
+        df['treatment'] = df.apply(lambda row: lookup(row), axis=1)
+        del df['plotid']
+        df = df.groupby(['treatment', 'v']).mean()
+        df.reset_index(inplace=True)
+        linecol = 'treatment'
     if ptype not in ['2', ]:
         df['v'] = df['v'].apply(
             lambda x: x.tz_localize('UTC').tz_convert(tzname))
@@ -112,14 +137,14 @@ def make_plot(form):
              ) % (uniqueid, sts.strftime("%-d %b %Y"),
                   ets.strftime("%-d %b %Y"))
     s = []
-    plot_ids = df['plotid'].unique()
+    plot_ids = df[linecol].unique()
     plot_ids.sort()
     df['ticks'] = pd.to_datetime(df['v']).astype(np.int64) // 10 ** 6
     for plotid in plot_ids:
-        df2 = df[df['plotid'] == plotid]
+        df2 = df[df[linecol] == plotid]
         v = df2[['ticks', 'depth']].to_json(orient='values')
         s.append("""{
-            name: '"""+plotid+"""',
+            name: '""" + CODES.get(plotid, plotid) + """',
             data: """ + v + """
         }""")
     series = ",".join(s)
