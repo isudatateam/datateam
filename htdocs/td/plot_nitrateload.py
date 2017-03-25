@@ -83,7 +83,10 @@ def make_plot(form):
         """, pgconn, params=(uniqueid, ), index_col='plotid')
 
         def lookup(row):
-            return plotdf.loc[row['plotid'], "y%s" % (row['v'].year, )]
+            try:
+                return plotdf.loc[row['plotid'], "y%s" % (row['v'].year, )]
+            except KeyError:
+                return row['plotid']
         df['treatment'] = df.apply(lambda row: lookup(row), axis=1)
         del df['plotid']
         df = df.groupby(['treatment', 'v']).mean()
@@ -169,6 +172,7 @@ def main():
     """Do Something"""
     form = cgi.FieldStorage()
     make_plot(form)
+
 
 if __name__ == '__main__':
     main()
