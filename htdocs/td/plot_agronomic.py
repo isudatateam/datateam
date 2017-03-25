@@ -7,6 +7,7 @@ import cStringIO
 import pandas as pd
 from pandas.io.sql import read_sql
 import cgi
+from common import CODES, getColor
 import os
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
@@ -14,18 +15,6 @@ import matplotlib.pyplot as plt  # NOPEP8
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
-
-CODES = {'UD': 'Undrained (No Drainage)',
-         'FD': 'Free Drainage (Conventional Drainage)',
-         'CD': 'Controlled Drainage (Managed Drainage)',
-         'SD': 'Surface Drainage',
-         'ND': 'No Drainage',
-         'SH': 'Shallow Drainage',
-         'SI': 'Controlled Drainage with Subirrigation',
-         'CA': 'Automated Controlled Drainage',
-         'SB': 'Saturated Buffer',
-         'TBD': 'To Be Determined',
-         'n/a': 'Not Available or Not Applicable'}
 
 
 def send_error(viewopt, msg):
@@ -126,9 +115,10 @@ def make_plot(form):
     s = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
-    for plotid in plot_ids:
+    for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
         s.append(("""{type: 'column',
+            """ + getColor(plotid, i) + """,
             name: '""" + CODES.get(plotid, plotid) + """',
             data: """ + str([[a, b] for a, b in zip(df2['year'].values,
                                                     df2['value'].values)]) + """

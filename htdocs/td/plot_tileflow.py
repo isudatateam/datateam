@@ -10,6 +10,7 @@ from pandas.io.sql import read_sql
 import cgi
 import datetime
 import os
+from common import CODES, getColor
 import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
@@ -17,17 +18,6 @@ import matplotlib.pyplot as plt  # NOPEP8
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
-
-CODES = {'UD': 'Undrained (No Drainage)',
-         'FD': 'Free Drainage (Conventional Drainage)',
-         'CD': 'Controlled Drainage (Managed Drainage)',
-         'SD': 'Surface Drainage',
-         'SH': 'Shallow Drainage',
-         'SI': 'Controlled Drainage with Subirrigation',
-         'CA': 'Automated Controlled Drainage',
-         'SB': 'Saturated Buffer',
-         'TBD': 'To Be Determined',
-         'n/a': 'Not Available or Not Applicable'}
 
 
 def send_error(viewopt, msg):
@@ -169,9 +159,10 @@ def make_plot(form):
     plot_ids.sort()
     df['ticks'] = df['v'].astype(np.int64) // 10 ** 6
     seriestype = 'line' if ptype in ['1', '3'] else 'column'
-    for plotid in plot_ids:
+    for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
         s.append(("""{type: '""" + seriestype + """',
+            """ + getColor(plotid, i) + """,
             name: '""" + CODES.get(plotid, plotid) + """',
             data: """ + str([[a, b] for a, b in zip(df2['ticks'].values,
                                                     df2['discharge'].values)]) + """
