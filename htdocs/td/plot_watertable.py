@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt  # NOPEP8
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
-CODES = {'UD': 'Undarined (No Drainage)',
+CODES = {'UD': 'Undrained (No Drainage)',
          'FD': 'Free Drainage (Conventional Drainage)',
          'CD': 'Controlled Drainage (Managed Drainage)',
          'SD': 'Surface Drainage',
