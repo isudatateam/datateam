@@ -77,9 +77,11 @@ def make_plot(form):
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     elif ptype == '2':
         # resample the weather data
-        wxdf = wxdf.resample('M', loffset=datetime.timedelta(days=-27)).sum()
-        wxdf['ticks'] = wxdf.index.values.astype('datetime64[ns]').astype(
-            np.int64) // 10 ** 6
+        if len(wxdf.index) > 0:
+            wxdf = wxdf.resample('M',
+                                 loffset=datetime.timedelta(days=-27)).sum()
+            wxdf['ticks'] = wxdf.index.values.astype('datetime64[ns]').astype(
+                np.int64) // 10 ** 6
         df = read_sql("""SELECT
         date_trunc('month', valid at time zone 'UTC') as v, plotid,
         sum(discharge_mm_qc) as discharge
@@ -220,9 +222,9 @@ class TestCase(unittest.TestCase):
     def test_wx(self):
         pgconn = psycopg2.connect(database='td', host='iemdb',
                                   user='nobody')
-        wxdf = get_weather(pgconn, 'SERF_IA',
-                           datetime.datetime(2015, 1, 1),
+        wxdf = get_weather(pgconn, 'CLAY_C',
+                           datetime.datetime(2015, 4, 20),
                            datetime.datetime(2016, 1, 1))
-        print wxdf.resample('M', loffset=datetime.timedelta(days=15)).sum()
+        print wxdf.resample('M', loffset=datetime.timedelta(days=-29)).sum()
         print wxdf.index
         self.assertEquals(len(wxdf.index), 0)
