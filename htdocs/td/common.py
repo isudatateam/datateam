@@ -1,4 +1,5 @@
 COLORS = {'UD': '#36454F',
+          'ND': '#36454F',
           'FD': '#FFDF00',
           'CD': '#000080',
           'SD': '#ff0000',
@@ -11,6 +12,7 @@ COLORS = {'UD': '#36454F',
           }
 
 CODES = {'UD': 'Undrained (No Drainage)',
+         'ND': 'No Drainage',
          'FD': 'Free Drainage (Conventional Drainage)',
          'CD': 'Controlled Drainage (Managed Drainage)',
          'SD': 'Surface Drainage',
