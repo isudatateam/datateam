@@ -78,12 +78,12 @@ def make_plot(form):
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql("""
-            SELECT * from plotids where siteid = %s
-        """, pgconn, params=(uniqueid, ), index_col='plotid')
+            SELECT * from wellids where siteid = %s
+        """, pgconn, params=(uniqueid, ), index_col='wellid')
 
         def lookup(row):
             try:
-                return plotdf.loc[row['plotid'], "y%s" % (row['v'].year, )]
+                return plotdf.loc[row['plotid'], "dwtreatment"]
             except KeyError:
                 return row['plotid']
         df['treatment'] = df.apply(lambda row: lookup(row), axis=1)

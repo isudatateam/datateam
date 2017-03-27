@@ -9,6 +9,8 @@ spr_client = util.get_spreadsheet_client(config)
 
 # Listing of keys, sheet label, postgres table, columns to grab
 JOB_LISTING = [
+    ["1wM8123Ag5U1Hl7Y8KMRaT6SV0J8Up6TbG_AiSKY-UbQ", 'Well ID', 'wellids',
+     ['siteid', 'wellid', 'plotid', 'dwtreatment']],
     ["1wM8123Ag5U1Hl7Y8KMRaT6SV0J8Up6TbG_AiSKY-UbQ", 'Plot IDs', 'plotids',
      ['siteid', 'plotid', 'y1996', 'y1997', 'y1998', 'y1999',
       'y2000', 'y2001', 'y2002', 'y2003', 'y2004', 'y2005', 'y2006',
@@ -42,7 +44,10 @@ def do(spreadkey, sheetlabel, tablename, cols):
             """ % (tablename, ))
         values = []
         for key in cols:
-            values.append(row[cleankey(key)].strip())
+            val = row[cleankey(key)]
+            if val is None:
+                val = "Unknown"
+            values.append(val.strip())
         sql = "INSERT into %s (%s) VALUES (%s)" % (tablename, ",".join(cols),
                                                    ",".join(["%s"]*len(cols)))
         cursor.execute(sql, values)
@@ -54,6 +59,7 @@ def main():
     """Do Something"""
     for (spreadkey, sheetlabel, tablename, cols) in JOB_LISTING:
         do(spreadkey, sheetlabel, tablename, cols)
+
 
 if __name__ == '__main__':
     main()
