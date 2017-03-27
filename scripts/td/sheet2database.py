@@ -9,8 +9,11 @@ spr_client = util.get_spreadsheet_client(config)
 
 # Listing of keys, sheet label, postgres table, columns to grab
 JOB_LISTING = [
-    ["1wM8123Ag5U1Hl7Y8KMRaT6SV0J8Up6TbG_AiSKY-UbQ", 'Well ID', 'wellids',
-     ['siteid', 'wellid', 'plotid', 'dwtreatment']],
+    ["1wM8123Ag5U1Hl7Y8KMRaT6SV0J8Up6TbG_AiSKY-UbQ", 'new Well IDs', 'wellids',
+     ['siteid', 'wellid', 'plotid', 'y1996', 'y1997', 'y1998', 'y1999',
+      'y2000', 'y2001', 'y2002', 'y2003', 'y2004', 'y2005', 'y2006',
+      'y2007', 'y2008', 'y2009', 'y2010', 'y2011', 'y2012', 'y2013', 'y2014',
+      'y2015', 'y2016', 'y2017', 'y2018']],
     ["1wM8123Ag5U1Hl7Y8KMRaT6SV0J8Up6TbG_AiSKY-UbQ", 'Plot IDs', 'plotids',
      ['siteid', 'plotid', 'y1996', 'y1997', 'y1998', 'y1999',
       'y2000', 'y2001', 'y2002', 'y2003', 'y2004', 'y2005', 'y2006',

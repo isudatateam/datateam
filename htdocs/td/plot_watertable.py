@@ -83,7 +83,7 @@ def make_plot(form):
 
         def lookup(row):
             try:
-                return plotdf.loc[row['plotid'], "dwtreatment"]
+                return plotdf.loc[row['plotid'], "y%s" % (row['v'].year, )]
             except KeyError:
                 return row['plotid']
         df['treatment'] = df.apply(lambda row: lookup(row), axis=1)
