@@ -26,8 +26,18 @@ def conv(value, detectlimit):
         return value
     try:
         return float(value)
-    except:
+    except Exception as _:
         return value
+
+
+def do_dictionary(writer):
+    """Add Data Dictionary to the spreadsheet"""
+    df = read_sql("""
+    SELECT * from cscap_data_dictionary ORDER by code_column_heading
+    """, pgconn, index_col=None)
+    for col in df.columns:
+        df[col] = df[col].str.decode('ascii', 'ignore')
+    df.to_excel(writer, 'Data Dictionary', index=False)
 
 
 def do_agronomic(writer, sites, agronomic, years, detectlimit):
@@ -62,7 +72,7 @@ def do_soil(writer, sites, soil, years, detectlimit):
 
 def do(form):
     sites = form.getlist('sites[]')
-    treatments = form.getlist('treatments[]')
+    # treatments = form.getlist('treatments[]')
     agronomic = form.getlist('agronomic[]')
     soil = form.getlist('soil[]')
     years = form.getlist('year[]')
@@ -81,6 +91,7 @@ def do(form):
         do_agronomic(writer, sites, agronomic, years, detectlimit)
     if len(soil) > 0:
         do_soil(writer, sites, soil, years, detectlimit)
+    do_dictionary(writer)
 
     # Send to client
     writer.close()
@@ -94,6 +105,7 @@ def main():
     """Do Stuff"""
     form = cgi.FieldStorage()
     do(form)
+
 
 if __name__ == '__main__':
     main()
