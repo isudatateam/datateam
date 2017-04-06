@@ -1,3 +1,14 @@
+  4 Apr 2017
+  Gio, Lori, Katie
+  - Katie's last day with our group is next week, so we shall do lunch
+  - [ ] Add windspeed and RH% values to climodat
+  - [ ] make free drainage always appear first on plots
+  - [ ] Merge CLAY sites on the plotting, retain uniqueids in legend
+  - [ ] repurpose the CSCAP export for TD
+  - [ ] aggregate nitrogen application by year to get totals by crop
+  - [ ] generate a report of missing data within TD database
+  - [ ] plot of percentage of time drainage is in a certain mode
+
  28 Feb 2017
   Gio, Lori
   - There is a pending three week deadline to get TD work done
