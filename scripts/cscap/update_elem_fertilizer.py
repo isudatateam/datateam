@@ -29,9 +29,17 @@ def main():
                 row['productrate'] == ''):
             option = 'B'
             # Option B, values are in lbs per acre
+            phosphoruse = 0.
+            potassium = 0.
             nitrogen = float2(row['nitrogen']) * KGHA_LBA
-            phosphoruse = float2(row['phosphate']) * KGHA_LBA
-            potassium = float2(row['potash']) * KGHA_LBA
+            if row['phosphorus'] is not None and float2(row['phosphorus']) > 0:
+                phosphoruse = float2(row['phosphorus']) * KGHA_LBA
+            if row['phosphate'] is not None and float2(row['phosphate']) > 0:
+                phosphoruse = float2(row['phosphate']) * KGHA_LBA * 0.437
+            if row['potassium'] is not None and float2(row['potassium']) > 0:
+                potassium = float2(row['potassium']) * KGHA_LBA
+            if row['potash'] is not None and float2(row['potash']) > 0:
+                potassium = float(row['potash']) * KGHA_LBA * 0.830
             sulfur = float2(row['sulfur']) * KGHA_LBA
             zinc = float2(row['zinc']) * KGHA_LBA
             magnesium = float2(row['magnesium']) * KGHA_LBA
@@ -68,7 +76,8 @@ def main():
         entry.set_value('magnesiumelem', "%.2f" % (magnesium, ))
         entry.set_value('calciumelem', "%.2f" % (calcium, ))
         entry.set_value('ironelem', "%.2f" % (iron, ))
-        sprclient.update(entry)
+        # if option == 'B':
+        util.exponential_backoff(sprclient.update, entry)
 
 
 if __name__ == '__main__':
