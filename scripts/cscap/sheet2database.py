@@ -9,7 +9,13 @@ spr_client = util.get_spreadsheet_client(config)
 
 JOB_LISTING = [
     ["15AjRh7dvwleWqJviz53JqQm8wxNru4bsgn16Ad_MtUU", 'xref_rotation'],
+    ["1tQvw-TQFtBI6xcsbZpaCHtYF7oKZEXNXy-CZHBr8Lh8", 'metadata_master'],
     ]
+
+
+def cleankey(val):
+    """Remove bad chars from column name"""
+    return val.replace("-", "_")
 
 
 def do(spreadkey, tablename):
@@ -23,7 +29,7 @@ def do(spreadkey, tablename):
             # Create the table
             sql = "CREATE TABLE %s (" % (tablename, )
             for key in row.keys():
-                sql += "%s varchar," % (key, )
+                sql += "%s varchar," % (cleankey(key), )
             sql = sql[:-1] + ")"
             cursor.execute(sql)
             cursor.execute("""
@@ -32,8 +38,8 @@ def do(spreadkey, tablename):
         values = []
         cols = []
         for key in row.keys():
-            cols.append(key)
-            values.append(row[key].strip())
+            cols.append(cleankey(key))
+            values.append((row[key] or "").strip())
         sql = "INSERT into %s (%s) VALUES (%s)" % (tablename, ",".join(cols),
                                                    ",".join(["%s"]*len(cols)))
         cursor.execute(sql, values)
@@ -45,6 +51,7 @@ def main():
     """Do Something"""
     for (spreadkey, tablename) in JOB_LISTING:
         do(spreadkey, tablename)
+
 
 if __name__ == '__main__':
     main()

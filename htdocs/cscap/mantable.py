@@ -1,11 +1,14 @@
 #!/usr/bin/env python
-
+"""Management Table used by cover crop paper"""
 import sys
-import psycopg2
 import cgi
 import subprocess
 import datetime
 import os
+
+import psycopg2
+from pandas.io.sql import read_sql
+
 DBCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
                           user='nobody')
 cursor = DBCONN.cursor()
@@ -23,16 +26,17 @@ D7 = datetime.timedelta(days=7)
 def reload_data():
     """ Run the sync script to download data from Google """
     os.chdir("/opt/datateam/scripts/cscap")
-    p = subprocess.Popen("python harvest_management.py", shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen("python harvest_management.py", shell=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     return """<div class="alert alert-info">
     Here is the result of sync process<br />
     <pre>%s %s</pre>
-    </div>""" % (p.stdout.read(), p.stderr.read())
+    </div>""" % (proc.stdout.read(), proc.stderr.read())
 
 
 def main():
+    """Go Main"""
     sys.stdout.write('Content-type: text/html\n\n')
 
     form = cgi.FieldStorage()
@@ -126,6 +130,29 @@ def main():
         else:
             data[site][cropyear][operation] = valid
 
+    table0 = ""
+    df = read_sql("""
+    WITH sites as (
+        SELECT uniqueid, latitude, longitude, officialfarmname
+        from metadata_master),
+    plots as (
+        SELECT uniqueid, soilseriesname1, soiltaxonomicclass1,
+        row_number() OVER (PARTITION by uniqueid)
+        from plotids),
+    plots2 as (select * from plots where row_number = 1)
+    SELECT s.uniqueid, s.latitude, s.longitude, s.officialfarmname,
+    p.soilseriesname1, p.soiltaxonomicclass1 from sites s JOIN plots2 p
+    on (s.uniqueid = p.uniqueid) ORDER by s.uniqueid ASC
+    """, DBCONN, index_col='uniqueid')
+    for uniqueid, row in df.iterrows():
+        if uniqueid not in COVER_SITES:
+            continue
+        table0 += ("<tr><td>%s</td><td>%s</td><td>%s</td>"
+                   "<td>%s</td><td>%s</td><td>%s</td></tr>"
+                   ) % (uniqueid, row['officialfarmname'],
+                        row['latitude'], row['longitude'],
+                        row['soilseriesname1'], row['soiltaxonomicclass1'])
+
     table = ""
     for site in COVER_SITES:  # data.keys():
         table += "<tr><td>%s</td>" % (site,)
@@ -213,6 +240,21 @@ Google Data to the ISU Database Server.  You can <br />
  Request Sync of Google Data</a>
  <br />and a script will run to sync the database.
 %s
+
+<h3>Sites</h3>
+<table class="table table-striped table-bordered">
+<thead>
+ <tr>
+  <th>Site</th>
+  <th>Name</th>
+  <th>Latitude</th>
+  <th>Longitude</th>
+  <th>Soil Series</th>
+  <th>Soil Taxonomic Class</th>
+ </tr>
+ </thead>
+ %s
+ </table>
 
 <h3>Sub Table 1</h3>
 
@@ -383,7 +425,8 @@ Google Data to the ISU Database Server.  You can <br />
 
 </body>
 </html>
-    """ % (reloadres, table, table2, table3, table4, table5))
+    """ % (reloadres, table0, table, table2, table3, table4, table5))
+
 
 if __name__ == '__main__':
     main()
