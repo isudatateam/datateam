@@ -137,7 +137,7 @@ def main():
         from metadata_master),
     plots as (
         SELECT uniqueid, soilseriesname1, soiltaxonomicclass1,
-        row_number() OVER (PARTITION by uniqueid)
+        row_number() OVER (PARTITION by uniqueid ORDER by soiltaxonomicclass1)
         from plotids),
     plots2 as (select * from plots where row_number = 1)
     SELECT s.uniqueid, s.latitude, s.longitude, s.officialfarmname,
@@ -249,8 +249,8 @@ Google Data to the ISU Database Server.  You can <br />
   <th>Name</th>
   <th>Latitude</th>
   <th>Longitude</th>
-  <th>Soil Series</th>
-  <th>Soil Taxonomic Class</th>
+  <th>Primary Soil Series</th>
+  <th>Primary Soil Taxonomic Class</th>
  </tr>
  </thead>
  %s
