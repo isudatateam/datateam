@@ -137,21 +137,26 @@ def main():
         from metadata_master),
     plots as (
         SELECT uniqueid, soilseriesname1, soiltaxonomicclass1,
+        soilseriesname2, soiltaxonomicclass2,
         row_number() OVER (PARTITION by uniqueid ORDER by soiltaxonomicclass1)
         from plotids),
     plots2 as (select * from plots where row_number = 1)
     SELECT s.uniqueid, s.latitude, s.longitude, s.officialfarmname,
-    p.soilseriesname1, p.soiltaxonomicclass1 from sites s JOIN plots2 p
+    p.soilseriesname1, p.soiltaxonomicclass1,
+    p.soilseriesname2, p.soiltaxonomicclass2 from sites s JOIN plots2 p
     on (s.uniqueid = p.uniqueid) ORDER by s.uniqueid ASC
     """, DBCONN, index_col='uniqueid')
     for uniqueid, row in df.iterrows():
         if uniqueid not in COVER_SITES:
             continue
         table0 += ("<tr><td>%s</td><td>%s</td><td>%s</td>"
-                   "<td>%s</td><td>%s</td><td>%s</td></tr>"
+                   "<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>"
+                   "</tr>"
                    ) % (uniqueid, row['officialfarmname'],
                         row['latitude'], row['longitude'],
-                        row['soilseriesname1'], row['soiltaxonomicclass1'])
+                        row['soilseriesname1'], row['soiltaxonomicclass1'],
+                        row['soilseriesname2'] or '--',
+                        row['soiltaxonomicclass2'] or '--')
 
     table = ""
     for site in COVER_SITES:  # data.keys():
@@ -251,6 +256,8 @@ Google Data to the ISU Database Server.  You can <br />
   <th>Longitude</th>
   <th>Primary Soil Series</th>
   <th>Primary Soil Taxonomic Class</th>
+  <th>Secondary Soil Series</th>
+  <th>Secondary Soil Taxonomic Class</th>
  </tr>
  </thead>
  %s
