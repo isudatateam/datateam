@@ -269,11 +269,11 @@ Google Data to the ISU Database Server.  You can <br />
 <thead>
  <tr>
   <th rowspan="3">Site</th>
-  <th colspan="4">2011-2012</th>
-  <th colspan="4">2012-2013</th>
-  <th colspan="4">2013-2014</th>
-  <th colspan="4">2014-2015</th>
-  <th colspan="2">2015-2016</th>
+  <th colspan="4">Fall 2011</th>
+  <th colspan="4">Fall 2012</th>
+  <th colspan="4">Fall 2013</th>
+  <th colspan="4">Fall 2014</th>
+  <th colspan="2">Fall 2015</th>
  </tr>
  <tr>
   <th colspan="2">cash harvest</th>
