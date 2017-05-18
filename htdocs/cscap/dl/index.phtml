@@ -216,7 +216,7 @@ function build_sites_ui(){
 		"OH" => "Ohio");
 	$pgconn = pg_connect("dbname=mesosite host=iemdb user=nobody");
 	$rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
-			" and id !~* 'ONFARM' ORDER by name ASC");
+			" and id !~* 'ONFARM' and id != 'VICMS' ORDER by name ASC");
 	$data = Array();
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 		$data[$row["state"]][$row["id"]] = $row["name"];
@@ -337,13 +337,18 @@ $t->content = <<<EOF
 
 		
 </div>
+<br clear="both" />
+<div class="pull-right">
+<button id="prev-btn" type="button" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i> Previous</button>
+<button id="next-btn" type="button" class="btn btn-default">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
+</div>
 </form>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="pubs">
 <h3>CSCAP Team Publications</h3>
 
-<p>Articles with open access availability are <strong>in bold</strong>.
-These do not require a subscription to the journal to access.</p>
+<p><blockquote>Articles with open access availability are <strong>in bold</strong>.
+These do not require a subscription to the journal to access.</blockquote></p>
 
 {$publisting}
 		</div>
@@ -352,11 +357,6 @@ These do not require a subscription to the journal to access.</p>
 		</div>
 		</div>
 		
-<br clear="both" />
-<div class="pull-right">
-<button id="prev-btn" type="button" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i> Previous</button>
-<button id="next-btn" type="button" class="btn btn-default">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
-</div>
 EOF;
 $t->render('single.phtml');
 
