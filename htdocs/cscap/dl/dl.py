@@ -2,14 +2,20 @@
 """This is our fancy pants download function"""
 import sys
 import cgi
+
 import psycopg2
 import pandas as pd
 from pandas.io.sql import read_sql
-pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
+
+PGCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
                           user='nobody')
+FERTELEM = ['nitrogen', 'phosphorus', 'phosphate', 'potassium',
+            'potash', 'sulfur', 'calcium', 'magnesium', 'zinc', 'iron']
+KGH_LBA = 1.12085
 
 
 def conv(value, detectlimit):
+    """Convert a value into something that gets returned"""
     if value is None or value == '':
         return "M"
     if value.startswith("<"):
@@ -34,7 +40,7 @@ def do_dictionary(writer):
     """Add Data Dictionary to the spreadsheet"""
     df = read_sql("""
     SELECT * from cscap_data_dictionary ORDER by code_column_heading
-    """, pgconn, index_col=None)
+    """, PGCONN, index_col=None)
     for col in df.columns:
         df[col] = df[col].str.decode('ascii', 'ignore')
     df.to_excel(writer, 'Data Dictionary', index=False)
@@ -44,7 +50,7 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit):
     df = read_sql("""
     SELECT site, plotid, varname, year, value from agronomic_data
     WHERE site in %s and year in %s and varname in %s ORDER by site, year
-    """, pgconn, params=(tuple(sites), tuple(years),
+    """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(agronomic)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
     df = pd.pivot_table(df, index=('site', 'plotid', 'year'),
@@ -59,7 +65,7 @@ def do_soil(writer, sites, soil, years, detectlimit):
     SELECT site, plotid, depth, subsample, varname, year, value
     from soil_data
     WHERE site in %s and year in %s and varname in %s ORDER by site, year
-    """, pgconn, params=(tuple(sites), tuple(years),
+    """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
     df = pd.pivot_table(df, index=('site', 'plotid', 'depth', 'subsample',
@@ -68,6 +74,33 @@ def do_soil(writer, sites, soil, years, detectlimit):
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     df.reset_index(inplace=True)
     df.to_excel(writer, 'Soil', index=False)
+
+
+def get_operations(sites, years):
+    """Return a DataFrame for the operations"""
+    opdf = read_sql("""
+    SELECT * from operations where uniqueid in %s and cropyear in %s
+    ORDER by valid ASC
+    """, PGCONN, params=(tuple(sites), tuple(years)))
+    opdf['productrate'] = pd.to_numeric(opdf['productrate'],
+                                        errors='coerse')
+    for fert in FERTELEM:
+        opdf[fert] = pd.to_numeric(opdf[fert], errors='coerse')
+
+    # __________________________________________________________
+    # case 1, values are > 0, so columns are in %
+    df = opdf[opdf['productrate'] > 0]
+    for elem in FERTELEM:
+        opdf.loc[df.index, elem] = df['productrate'] * KGH_LBA * df[elem] / 100.
+    opdf.loc[df.index, 'productrate'] = df['productrate'] * KGH_LBA
+
+    # ________________________________________________________
+    # case 2, value is -1 and so columns are in lbs / acre
+    df = opdf[opdf['productrate'] < 0]
+    opdf.loc[df.index, 'productrate'] = None
+    for elem in FERTELEM:
+        opdf.loc[df.index, elem] = df[elem] * KGH_LBA
+    return opdf
 
 
 def do(form):
@@ -81,10 +114,7 @@ def do(form):
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
 
     # Sheet one are operations
-    opdf = read_sql("""
-    SELECT * from operations where uniqueid in %s and cropyear in %s
-    ORDER by valid ASC
-    """, pgconn, params=(tuple(sites), tuple(years)))
+    opdf = get_operations(sites, years)
     opdf.to_excel(writer, 'Operations', index=False)
 
     if len(agronomic) > 0:
