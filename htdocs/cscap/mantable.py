@@ -46,7 +46,7 @@ def main():
 
     cursor.execute("""
         SELECT uniqueid, valid, cropyear, operation, biomassdate1,
-        biomassdate2, fertilizercrop from operations
+        biomassdate2, fertilizercrop, cashcrop from operations
         WHERE operation in ('harvest_corn', 'harvest_soy', 'plant_rye',
         'plant_rye-corn-res', 'plant_rye-soy-res', 'sample_soilnitrate',
         'sample_covercrop', 'termination_rye_corn', 'termination_rye_soy',
@@ -63,6 +63,7 @@ def main():
         biomassdate1 = row[4]
         # biomassdate2 = row[5]
         fertilizercrop = row[6]
+        # cashcrop = row[7]
         if site not in data:
             data[site] = {}
             for cy in ['2011', '2012', '2013', '2014', '2015']:
@@ -100,9 +101,9 @@ def main():
         elif (operation == 'fertilizer_synthetic' and
                 fertilizercrop in [None, 'multiple', 'corn', 'other']):
             plantcorndate = _d['plant_corn']
-            sys.stderr.write("%s %s %s %s %s\n" % (plantcorndate, valid,
-                                                   fertilizercrop, site,
-                                                   cropyear))
+            # sys.stderr.write("%s %s %s %s %s\n" % (plantcorndate, valid,
+            #                                       fertilizercrop, site,
+            #                                       cropyear))
             if plantcorndate is None:
                 sys.stderr.write(("ERROR! No plant corn for %s %s\n"
                                   ) % (site, cropyear))
@@ -307,11 +308,11 @@ Google Data to the ISU Database Server.  You can <br />
 <thead>
  <tr>
   <th rowspan="3">Site</th>
-  <th colspan="4">2011-2012</th>
-  <th colspan="4">2012-2013</th>
-  <th colspan="4">2013-2014</th>
-  <th colspan="4">2014-2015</th>
-  <th colspan="4">2015-2016</th>
+  <th colspan="4">Fall 2011</th>
+  <th colspan="4">Fall 2012</th>
+  <th colspan="4">Fall 2013</th>
+  <th colspan="4">Fall 2014</th>
+  <th colspan="4">Fall 2015</th>
  </tr>
  <tr>
   <th colspan="2">Fall Soil Nitrate</th>
