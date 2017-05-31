@@ -4,58 +4,67 @@ require_once "../../../include/require_auth.php";
 function build_treatments_ui(){
 	$s = <<<EOF
 <div class="row"><div class="col-md-4">
-	<input type="checkbox" value="ROT1" data-treatment="ROT1" name="treatments[]">continuous corn
-	<br /><input type="checkbox" value="ROT38" data-treatment="ROT38" name="treatments[]">continuous corn with rye cover
-	<br /><input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]">continuous soybean
-	<br /><input type="checkbox" value="ROT39" data-treatment="ROT39" name="treatments[]">continuous soybean with rye cover
-	<br /><input type="checkbox" value="ROT3" data-treatment="ROT3" name="treatments[]">continuous wheat
-	<br /><input type="checkbox" value="DWM3" data-treatment="DWM3" name="treatments[]">Controlled drainage ("managed")
-	<br /><input type="checkbox" value="DWM2" data-treatment="DWM2" name="treatments[]">Conventional drainage ("free")
-	<br /><input type="checkbox" value="TIL4" data-treatment="TIL4" name="treatments[]">Conventional Tillage (2011), No Tillage (2012-2015)
-	<br /><input type="checkbox" value="TIL2" data-treatment="TIL2" name="treatments[]">Conventional Tillage (CT)
-	<br /><input type="checkbox" value="ROT61" data-treatment="ROT61" name="treatments[]">CORN-corn-corn-corn-soybean
-	<br /><input type="checkbox" value="ROT57" data-treatment="ROT57" name="treatments[]">CORN-corn-corn-corn-soybean with rye cover early kill
-	<br /><input type="checkbox" value="ROT58" data-treatment="ROT58" name="treatments[]">CORN-corn-corn-corn-soybean with rye cover late kill
-	<br /><input type="checkbox" value="ROT41" data-treatment="ROT41" name="treatments[]">CORN-corn-soybean-corn-soybean
-	<br /><input type="checkbox" value="ROT5" data-treatment="ROT5" name="treatments[]">corn-SOYBEAN
-	<br /><input type="checkbox" value="ROT4" data-treatment="ROT4" name="treatments[]">CORN-soybean
-	<br /><input type="checkbox" value="ROT54" data-treatment="ROT54" name="treatments[]">corn-SOYBEAN, 2011 was corn
-	<br /><input type="checkbox" value="ROT49" data-treatment="ROT49" name="treatments[]">corn-soybean-oats/alfalfa-ALFALFA (conventional)
-	<br /><input type="checkbox" value="ROT48" data-treatment="ROT48" name="treatments[]">corn-soybean-OATS/ALFALFA-alfalfa (conventional)
-	<br /><input type="checkbox" value="ROT47" data-treatment="ROT47" name="treatments[]">corn-SOYBEAN-oats/alfalfa-alfalfa (conventional)
+<h4>Continuous Corn</h4>
+<input type="checkbox" value="ROT1" data-treatment="ROT1" name="treatments[]">continuous corn
+<br /><input type="checkbox" value="ROT38" data-treatment="ROT38" name="treatments[]">continuous corn with rye cover
+
+<h4>Continuous Soybean</h4>
+<input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]">continuous soybean
+<br /><input type="checkbox" value="ROT39" data-treatment="ROT39" name="treatments[]">continuous soybean with rye cover
+
+<h4>Corn-Soybean</h4>
+<input type="checkbox" value="ROT61" data-treatment="ROT61" name="treatments[]">CORN-corn-corn-corn-soybean
+<br /><input type="checkbox" value="ROT57" data-treatment="ROT57" name="treatments[]">CORN-corn-corn-corn-soybean with rye cover early kill
+<br /><input type="checkbox" value="ROT58" data-treatment="ROT58" name="treatments[]">CORN-corn-corn-corn-soybean with rye cover late kill
+<br /><input type="checkbox" value="ROT41" data-treatment="ROT41" name="treatments[]">CORN-corn-soybean-corn-soybean
+<br /><input type="checkbox" value="ROT5" data-treatment="ROT5" name="treatments[]">corn-SOYBEAN
+<br /><input type="checkbox" value="ROT4" data-treatment="ROT4" name="treatments[]">CORN-soybean
+<br /><input type="checkbox" value="ROT54" data-treatment="ROT54" name="treatments[]">corn-SOYBEAN, 2011 was corn
+<br /><input type="checkbox" value="ROT8" data-treatment="ROT8" name="treatments[]">corn-soybean-WHEAT
+<br /><input type="checkbox" value="ROT7" data-treatment="ROT7" name="treatments[]">corn-SOYBEAN-wheat
+<br /><input type="checkbox" value="ROT6" data-treatment="ROT6" name="treatments[]">CORN-soybean-wheat
+<br /><input type="checkbox" value="ROT17" data-treatment="ROT17" name="treatments[]">corn-soybean-WHEAT/RED CLOVER or mixed cover crop (conventional)
+<br /><input type="checkbox" value="ROT16" data-treatment="ROT16" name="treatments[]">corn-SOYBEAN-wheat/red clover or mixed cover crop (conventional)
+<br /><input type="checkbox" value="ROT15" data-treatment="ROT15" name="treatments[]">CORN-soybean-wheat/red clover or mixed cover crop (conventional)
+<br /><input type="checkbox" value="ROT37" data-treatment="ROT37" name="treatments[]">corn-SOYBEAN with rye cover
+<br /><input type="checkbox" value="ROT36" data-treatment="ROT36" name="treatments[]">CORN-soybean with rye cover
+<br /><input type="checkbox" value="ROT55" data-treatment="ROT55" name="treatments[]">corn-SOYBEAN with rye cover, 2011 was corn
+<br /><input type="checkbox" value="ROT56" data-treatment="ROT56" name="treatments[]">SOYBEAN-corn-corn-corn-corn
+<br /><input type="checkbox" value="ROT59" data-treatment="ROT59" name="treatments[]">soybean-CORN with rye cover early kill
+<br /><input type="checkbox" value="ROT60" data-treatment="ROT60" name="treatments[]">soybean-CORN with rye cover late kill
+
 </div><div class="col-md-4">
-	<input type="checkbox" value="ROT46" data-treatment="ROT46" name="treatments[]">CORN-soybean-oats/alfalfa-alfalfa (conventional)
-	<br /><input type="checkbox" value="ROT8" data-treatment="ROT8" name="treatments[]">corn-soybean-WHEAT
-	<br /><input type="checkbox" value="ROT7" data-treatment="ROT7" name="treatments[]">corn-SOYBEAN-wheat
-	<br /><input type="checkbox" value="ROT6" data-treatment="ROT6" name="treatments[]">CORN-soybean-wheat
-	<br /><input type="checkbox" value="ROT11" data-treatment="ROT11" name="treatments[]">corn-soybean-WHEAT (biomass removed)
-	<br /><input type="checkbox" value="ROT10" data-treatment="ROT10" name="treatments[]">corn-SOYBEAN-wheat (biomass removed)
-	<br /><input type="checkbox" value="ROT9" data-treatment="ROT9" name="treatments[]">CORN-soybean-wheat (biomass removed)
-	<br /><input type="checkbox" value="ROT17" data-treatment="ROT17" name="treatments[]">corn-soybean-WHEAT/RED CLOVER or mixed cover crop (conventional)
-	<br /><input type="checkbox" value="ROT16" data-treatment="ROT16" name="treatments[]">corn-SOYBEAN-wheat/red clover or mixed cover crop (conventional)
-	<br /><input type="checkbox" value="ROT15" data-treatment="ROT15" name="treatments[]">CORN-soybean-wheat/red clover or mixed cover crop (conventional)
-	<br /><input type="checkbox" value="ROT37" data-treatment="ROT37" name="treatments[]">corn-SOYBEAN with rye cover
-	<br /><input type="checkbox" value="ROT36" data-treatment="ROT36" name="treatments[]">CORN-soybean with rye cover
-	<br /><input type="checkbox" value="ROT55" data-treatment="ROT55" name="treatments[]">corn-SOYBEAN with rye cover, 2011 was corn
-	<br /><input type="checkbox" value="DWM5" data-treatment="DWM5" name="treatments[]">Drainage with subirrigation
-	<br /><input type="checkbox" value="HERB1" data-treatment="HERB1" name="treatments[]">Glyphosate
-	<br /><input type="checkbox" value="NIT2" data-treatment="NIT2" name="treatments[]">MRTN application of N fertilizer
-	<br /><input type="checkbox" value="LND1" data-treatment="LND1" name="treatments[]">Near-summit
-	<br /><input type="checkbox" value="DWM1" data-treatment="DWM1" name="treatments[]">No drainage
-	<br /><input type="checkbox" value="NIT1" data-treatment="NIT1" name="treatments[]">No nitrogen fertilizer applied
-	<br /><input type="checkbox" value="TIL1" data-treatment="TIL1" name="treatments[]">No Tillage (NT)
+
+<h4>Prairie</h4>
+<input type="checkbox" value="ROT40" data-treatment="ROT40" name="treatments[]">prairie (managed by cutting 2+/year)
+<br /><input type="checkbox" value="ROT50" data-treatment="ROT50" name="treatments[]">Prairie (occasional burning)
+
+<h4>Drainage</h4>
+<input type="checkbox" value="DWM3" data-treatment="DWM3" name="treatments[]">Controlled drainage ("managed")
+<br /><input type="checkbox" value="DWM2" data-treatment="DWM2" name="treatments[]">Conventional drainage ("free")
+<br /><input type="checkbox" value="DWM5" data-treatment="DWM5" name="treatments[]">Drainage with subirrigation
+<br /><input type="checkbox" value="DWM1" data-treatment="DWM1" name="treatments[]">No drainage
+<br /><input type="checkbox" value="DWM4" data-treatment="DWM4" name="treatments[]">Shallow drainage
+
+<h4>Tillage</h4>
+<input type="checkbox" value="TIL4" data-treatment="TIL4" name="treatments[]">Conventional Tillage (2011), No Tillage (2012-2015)
+<br /><input type="checkbox" value="TIL2" data-treatment="TIL2" name="treatments[]">Conventional Tillage (CT)
+<br /><input type="checkbox" value="TIL1" data-treatment="TIL1" name="treatments[]">No Tillage (NT)
+
 </div><div class="col-md-4">
-	<input type="checkbox" value="HERB2" data-treatment="HERB2" name="treatments[]">Parquat
-	<br /><input type="checkbox" value="ROT40" data-treatment="ROT40" name="treatments[]">prairie (managed by cutting 2+/year)
-	<br /><input type="checkbox" value="ROT50" data-treatment="ROT50" name="treatments[]">Prairie (occasional burning)
-	<br /><input type="checkbox" value="NIT3" data-treatment="NIT3" name="treatments[]">Sensor based N application (mid-season) - MO/OH rec
-	<br /><input type="checkbox" value="NIT4" data-treatment="NIT4" name="treatments[]">Sensor based N application (mid-season) - OK rec
-	<br /><input type="checkbox" value="DWM4" data-treatment="DWM4" name="treatments[]">Shallow drainage
-	<br /><input type="checkbox" value="LND2" data-treatment="LND2" name="treatments[]">Side slope
-	<br /><input type="checkbox" value="ROT56" data-treatment="ROT56" name="treatments[]">SOYBEAN-corn-corn-corn-corn
-	<br /><input type="checkbox" value="ROT59" data-treatment="ROT59" name="treatments[]">soybean-CORN with rye cover early kill
-	<br /><input type="checkbox" value="ROT60" data-treatment="ROT60" name="treatments[]">soybean-CORN with rye cover late kill
-	<br /><input type="checkbox" value="LND3" data-treatment="LND3" name="treatments[]">Toe slope
+
+<h4>Nitrogen</h4>
+<input type="checkbox" value="NIT2" data-treatment="NIT2" name="treatments[]">MRTN application of N fertilizer
+<br /><input type="checkbox" value="NIT1" data-treatment="NIT1" name="treatments[]">No nitrogen fertilizer applied
+<br /><input type="checkbox" value="NIT3" data-treatment="NIT3" name="treatments[]">Sensor based N application (mid-season) - MO/OH rec
+<br /><input type="checkbox" value="NIT4" data-treatment="NIT4" name="treatments[]">Sensor based N application (mid-season) - OK rec
+
+<h4>Landscape</h4>
+<input type="checkbox" value="LND1" data-treatment="LND1" name="treatments[]">Near-summit
+<br /><input type="checkbox" value="LND2" data-treatment="LND2" name="treatments[]">Side slope
+<br /><input type="checkbox" value="LND3" data-treatment="LND3" name="treatments[]">Toe slope
+
+
 </div></div>
 EOF;
 	return $s;

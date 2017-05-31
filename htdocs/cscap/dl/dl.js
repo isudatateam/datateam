@@ -2,7 +2,7 @@ var TABS = ['sites', 'treatments', 'agronomic', 'soil', 'year', 'option'];
 var CURRENTTAB = 0;
 
 function applyFilter(data){
-	console.log(data);
+	//console.log(data);
 	$('#treatments-ui input').prop('disabled', true);
 	$.each(data.treatments, function(idx, v){
 		console.log("TREAT: " + v);
@@ -11,19 +11,19 @@ function applyFilter(data){
 		
 	$('#agronomic-ui input').prop('disabled', true);
 	$.each(data.agronomic, function(idx, v){
-		console.log("AG: " + v);
+		//console.log("AG: " + v);
 		$("#agronomic-ui input[data-agronomic='"+v+"']").prop('disabled', false);
 	});
 		
 	$('#soil-ui input').prop('disabled', true);
 	$.each(data.soil, function(idx, v){
-		console.log("SOIL: " + v);
+		//console.log("SOIL: " + v);
 		$("#soil-ui input[data-soil='"+v+"']").prop('disabled', false);
 	});
 
 	$('#year-ui input').prop('disabled', true);
 	$.each(data.year, function(idx, v){
-		console.log("YEAR: " + v);
+		//console.log("YEAR: " + v);
 		$("#year-ui input[data-year='"+v+"']").prop('disabled', false);
 	});
 		
