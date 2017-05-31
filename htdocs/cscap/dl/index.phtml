@@ -5,64 +5,103 @@ function build_treatments_ui(){
 	$s = <<<EOF
 <div class="row"><div class="col-md-4">
 <h4>Continuous Corn</h4>
-<input type="checkbox" value="ROT1" data-treatment="ROT1" name="treatments[]">continuous corn
-<br /><input type="checkbox" value="ROT38" data-treatment="ROT38" name="treatments[]">continuous corn with rye cover
+<input type="checkbox" value="ROT1" data-treatment="ROT1" name="treatments[]" id="ROT1">
+<label for="ROT1" class="control-label">continuous corn</label>
+<br /><input type="checkbox" value="ROT38" data-treatment="ROT38" name="treatments[]" id="ROT38">
+<label for="ROT38" class="control-label">continuous corn with rye cover</label>
 
 <h4>Continuous Soybean</h4>
-<input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]">continuous soybean
-<br /><input type="checkbox" value="ROT39" data-treatment="ROT39" name="treatments[]">continuous soybean with rye cover
+<input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]" id="ROT2">
+<label for="ROT2" class="control-label">continuous soybean</label>
+<br /><input type="checkbox" value="ROT39" data-treatment="ROT39" name="treatments[]" id="ROT39">
+<label for="ROT39" class="control-label">continuous soybean with rye cover</label>
 
 <h4>Corn-Soybean</h4>
-<input type="checkbox" value="ROT61" data-treatment="ROT61" name="treatments[]">CORN-corn-corn-corn-soybean
-<br /><input type="checkbox" value="ROT57" data-treatment="ROT57" name="treatments[]">CORN-corn-corn-corn-soybean with rye cover early kill
-<br /><input type="checkbox" value="ROT58" data-treatment="ROT58" name="treatments[]">CORN-corn-corn-corn-soybean with rye cover late kill
-<br /><input type="checkbox" value="ROT41" data-treatment="ROT41" name="treatments[]">CORN-corn-soybean-corn-soybean
-<br /><input type="checkbox" value="ROT5" data-treatment="ROT5" name="treatments[]">corn-SOYBEAN
-<br /><input type="checkbox" value="ROT4" data-treatment="ROT4" name="treatments[]">CORN-soybean
-<br /><input type="checkbox" value="ROT54" data-treatment="ROT54" name="treatments[]">corn-SOYBEAN, 2011 was corn
-<br /><input type="checkbox" value="ROT8" data-treatment="ROT8" name="treatments[]">corn-soybean-WHEAT
-<br /><input type="checkbox" value="ROT7" data-treatment="ROT7" name="treatments[]">corn-SOYBEAN-wheat
-<br /><input type="checkbox" value="ROT6" data-treatment="ROT6" name="treatments[]">CORN-soybean-wheat
-<br /><input type="checkbox" value="ROT17" data-treatment="ROT17" name="treatments[]">corn-soybean-WHEAT/RED CLOVER or mixed cover crop (conventional)
-<br /><input type="checkbox" value="ROT16" data-treatment="ROT16" name="treatments[]">corn-SOYBEAN-wheat/red clover or mixed cover crop (conventional)
-<br /><input type="checkbox" value="ROT15" data-treatment="ROT15" name="treatments[]">CORN-soybean-wheat/red clover or mixed cover crop (conventional)
-<br /><input type="checkbox" value="ROT37" data-treatment="ROT37" name="treatments[]">corn-SOYBEAN with rye cover
-<br /><input type="checkbox" value="ROT36" data-treatment="ROT36" name="treatments[]">CORN-soybean with rye cover
-<br /><input type="checkbox" value="ROT55" data-treatment="ROT55" name="treatments[]">corn-SOYBEAN with rye cover, 2011 was corn
-<br /><input type="checkbox" value="ROT56" data-treatment="ROT56" name="treatments[]">SOYBEAN-corn-corn-corn-corn
-<br /><input type="checkbox" value="ROT59" data-treatment="ROT59" name="treatments[]">soybean-CORN with rye cover early kill
-<br /><input type="checkbox" value="ROT60" data-treatment="ROT60" name="treatments[]">soybean-CORN with rye cover late kill
+<input type="checkbox" value="ROT61" data-treatment="ROT61" name="treatments[]" id="ROT61"><label for="ROT38" class="control-label">CORN-corn-corn-corn-soybean</label>
+<br /><input type="checkbox" value="ROT57" data-treatment="ROT57" name="treatments[]" id="ROT57">
+<label for="ROT57" class="control-label">CORN-corn-corn-corn-soybean with rye cover early kill</label>
+<br /><input type="checkbox" value="ROT58" data-treatment="ROT58" name="treatments[]" id="ROT58">
+<label for="ROT58" class="control-label">CORN-corn-corn-corn-soybean with rye cover late kill</label>
+<br /><input type="checkbox" value="ROT41" data-treatment="ROT41" name="treatments[]" id="ROT41">
+<label for="ROT41" class="control-label">CORN-corn-soybean-corn-soybean</label>
+<br /><input type="checkbox" value="ROT5" data-treatment="ROT5" name="treatments[]" id="ROT5">
+<label for="ROT5" class="control-label">corn-SOYBEAN</label>
+<br /><input type="checkbox" value="ROT4" data-treatment="ROT4" name="treatments[]" id="ROT4">
+<label for="ROT4" class="control-label">CORN-soybean</label>
+<br /><input type="checkbox" value="ROT54" data-treatment="ROT54" name="treatments[]" id="ROT54">
+<label for="ROT54" class="control-label">corn-SOYBEAN, 2011 was corn</label>
+<br /><input type="checkbox" value="ROT8" data-treatment="ROT8" name="treatments[]" id="ROT8">
+<label for="ROT8" class="control-label">corn-soybean-WHEAT</label>
+<br /><input type="checkbox" value="ROT7" data-treatment="ROT7" name="treatments[]" id="ROT7">
+<label for="ROT7" class="control-label">corn-SOYBEAN-wheat</label>
+<br /><input type="checkbox" value="ROT6" data-treatment="ROT6" name="treatments[]" id="ROT6">
+<label for="ROT6" class="control-label">CORN-soybean-wheat</label>
+<br /><input type="checkbox" value="ROT17" data-treatment="ROT17" name="treatments[]" id="ROT17">
+<label for="ROT17" class="control-label">corn-soybean-WHEAT/RED CLOVER or mixed cover crop (conventional)</label>
+<br /><input type="checkbox" value="ROT16" data-treatment="ROT16" name="treatments[]" id="ROT16">
+<label for="ROT16" class="control-label">corn-SOYBEAN-wheat/red clover or mixed cover crop (conventional)</label>
+<br /><input type="checkbox" value="ROT15" data-treatment="ROT15" name="treatments[]" id="ROT15">
+<label for="ROT15" class="control-label">CORN-soybean-wheat/red clover or mixed cover crop (conventional)</label>
+<br /><input type="checkbox" value="ROT37" data-treatment="ROT37" name="treatments[]" id="ROT37">
+<label for="ROT37" class="control-label">corn-SOYBEAN with rye cover</label>
+<br /><input type="checkbox" value="ROT36" data-treatment="ROT36" name="treatments[]" id="ROT36">
+<label for="ROT36" class="control-label">CORN-soybean with rye cover</label>
+<br /><input type="checkbox" value="ROT55" data-treatment="ROT55" name="treatments[]" id="ROT55">
+<label for="ROT55" class="control-label">corn-SOYBEAN with rye cover, 2011 was corn</label>
+<br /><input type="checkbox" value="ROT56" data-treatment="ROT56" name="treatments[]" id="ROT56">
+<label for="ROT56" class="control-label">SOYBEAN-corn-corn-corn-corn</label>
+<br /><input type="checkbox" value="ROT59" data-treatment="ROT59" name="treatments[]" id="ROT59">
+<label for="ROT59" class="control-label">soybean-CORN with rye cover early kill</label>
+<br /><input type="checkbox" value="ROT60" data-treatment="ROT60" name="treatments[]" id="ROT60">
+<label for="ROT60" class="control-label">soybean-CORN with rye cover late kill</label>
 
 </div><div class="col-md-4">
 
 <h4>Prairie</h4>
-<input type="checkbox" value="ROT40" data-treatment="ROT40" name="treatments[]">prairie (managed by cutting 2+/year)
-<br /><input type="checkbox" value="ROT50" data-treatment="ROT50" name="treatments[]">Prairie (occasional burning)
+<input type="checkbox" value="ROT40" data-treatment="ROT40" name="treatments[]" id="ROT40">
+<label for="ROT40" class="control-label">prairie (managed by cutting 2+/year)</label>
+<br /><input type="checkbox" value="ROT50" data-treatment="ROT50" name="treatments[]" id="ROT50">
+<label for="ROT50" class="control-label">Prairie (occasional burning)</label>
 
 <h4>Drainage</h4>
-<input type="checkbox" value="DWM3" data-treatment="DWM3" name="treatments[]">Controlled drainage ("managed")
-<br /><input type="checkbox" value="DWM2" data-treatment="DWM2" name="treatments[]">Conventional drainage ("free")
-<br /><input type="checkbox" value="DWM5" data-treatment="DWM5" name="treatments[]">Drainage with subirrigation
-<br /><input type="checkbox" value="DWM1" data-treatment="DWM1" name="treatments[]">No drainage
-<br /><input type="checkbox" value="DWM4" data-treatment="DWM4" name="treatments[]">Shallow drainage
+<input type="checkbox" value="DWM3" data-treatment="DWM3" name="treatments[]" id="DWM3">
+<label for="DWM3" class="control-label">Controlled drainage ("managed")</label>
+<br /><input type="checkbox" value="DWM2" data-treatment="DWM2" name="treatments[]" id="DWM2">
+<label for="DWM2" class="control-label">Conventional drainage ("free")</label>
+<br /><input type="checkbox" value="DWM5" data-treatment="DWM5" name="treatments[]" id="DWM5">
+<label for="DWM5" class="control-label">Drainage with subirrigation</label>
+<br /><input type="checkbox" value="DWM1" data-treatment="DWM1" name="treatments[]" id="DWM1">
+<label for="DWM1" class="control-label">No drainage</label>
+<br /><input type="checkbox" value="DWM4" data-treatment="DWM4" name="treatments[]" id="DWM4">
+<label for="DWM4" class="control-label">Shallow drainage</label>
 
 <h4>Tillage</h4>
-<input type="checkbox" value="TIL4" data-treatment="TIL4" name="treatments[]">Conventional Tillage (2011), No Tillage (2012-2015)
-<br /><input type="checkbox" value="TIL2" data-treatment="TIL2" name="treatments[]">Conventional Tillage (CT)
-<br /><input type="checkbox" value="TIL1" data-treatment="TIL1" name="treatments[]">No Tillage (NT)
+<input type="checkbox" value="TIL4" data-treatment="TIL4" name="treatments[]" id="TIL4">
+<label for="TIL4" class="control-label">Conventional Tillage (2011), No Tillage (2012-2015)</label>
+<br /><input type="checkbox" value="TIL2" data-treatment="TIL2" name="treatments[]" id="TIL2">
+<label for="TIL2" class="control-label">Conventional Tillage (CT)</label>
+<br /><input type="checkbox" value="TIL1" data-treatment="TIL1" name="treatments[]" id="TIL1">
+<label for="TIL1" class="control-label">No Tillage (NT)</label>
 
 </div><div class="col-md-4">
 
 <h4>Nitrogen</h4>
-<input type="checkbox" value="NIT2" data-treatment="NIT2" name="treatments[]">MRTN application of N fertilizer
-<br /><input type="checkbox" value="NIT1" data-treatment="NIT1" name="treatments[]">No nitrogen fertilizer applied
-<br /><input type="checkbox" value="NIT3" data-treatment="NIT3" name="treatments[]">Sensor based N application (mid-season) - MO/OH rec
-<br /><input type="checkbox" value="NIT4" data-treatment="NIT4" name="treatments[]">Sensor based N application (mid-season) - OK rec
+<input type="checkbox" value="NIT2" data-treatment="NIT2" name="treatments[]" id="NIT2">
+<label for="NIT2" class="control-label">MRTN application of N fertilizer</label>
+<br /><input type="checkbox" value="NIT1" data-treatment="NIT1" name="treatments[]" id="NIT1">
+<label for="NIT1" class="control-label">No nitrogen fertilizer applied</label>
+<br /><input type="checkbox" value="NIT3" data-treatment="NIT3" name="treatments[]" id="NIT3">
+<label for="NIT3" class="control-label">Sensor based N application (mid-season) - MO/OH rec</label>
+<br /><input type="checkbox" value="NIT4" data-treatment="NIT4" name="treatments[]" id="NIT4">
+<label for="NIT4" class="control-label">Sensor based N application (mid-season) - OK rec</label>
 
 <h4>Landscape</h4>
-<input type="checkbox" value="LND1" data-treatment="LND1" name="treatments[]">Near-summit
-<br /><input type="checkbox" value="LND2" data-treatment="LND2" name="treatments[]">Side slope
-<br /><input type="checkbox" value="LND3" data-treatment="LND3" name="treatments[]">Toe slope
+<input type="checkbox" value="LND1" data-treatment="LND1" name="treatments[]" id="LND1">
+<label for="LDN1" class="control-label">Near-summit</label>
+<br /><input type="checkbox" value="LND2" data-treatment="LND2" name="treatments[]" id="LND2">
+<label for="LDN2" class="control-label">Side slope</label>
+<br /><input type="checkbox" value="LND3" data-treatment="LND3" name="treatments[]" id="LND3">
+<label for="LND3" class="control-label">Toe slope</label>
 
 
 </div></div>
@@ -73,58 +112,108 @@ EOF;
 function build_agronomic_ui(){
 	$s = <<<EOF
 <div class="row"><div class="col-md-4">
-	<input type="checkbox" value="AGR32" data-agronomic="AGR32" name="agronomic[]">Corn cob biomass at R6 (dry)
-	<br /><input type="checkbox" value="AGR24" data-agronomic="AGR24" name="agronomic[]">Corn cob total carbon at R6
-	<br /><input type="checkbox" value="AGR26" data-agronomic="AGR26" name="agronomic[]">Corn cob total nitrogen at R6
-	<br /><input type="checkbox" value="AGR1" data-agronomic="AGR1" name="agronomic[]">Corn final plant population
-	<br /><input type="checkbox" value="AGR33" data-agronomic="AGR33" name="agronomic[]">Corn grain biomass at R6 (dry)
-	<br /><input type="checkbox" value="AGR18" data-agronomic="AGR18" name="agronomic[]">Corn grain moisture
-	<br /><input type="checkbox" value="AGR23" data-agronomic="AGR23" name="agronomic[]">Corn grain total carbon at R6
-	<br /><input type="checkbox" value="AGR25" data-agronomic="AGR25" name="agronomic[]">Corn grain total nitrogen at R6
-	<br /><input type="checkbox" value="AGR17" data-agronomic="AGR17" name="agronomic[]">Corn grain yield at 15.5% MB
+	<input type="checkbox" value="AGR32" data-agronomic="AGR32" name="agronomic[]" id="AGR32">
+<label for="AGR32" class="control-label">Corn cob biomass at R6 (dry)</label>
+	<br /><input type="checkbox" value="AGR24" data-agronomic="AGR24" name="agronomic[]" id="AGR24">
+<label for="AGR24" class="control-label">Corn cob total carbon at R6</label>
+	<br /><input type="checkbox" value="AGR26" data-agronomic="AGR26" name="agronomic[]" id="AGR26">
+<label for="AGR26" class="control-label">Corn cob total nitrogen at R6</label>
+	<br /><input type="checkbox" value="AGR1" data-agronomic="AGR1" name="agronomic[]" id="AGR1">
+<label for="AGR1" class="control-label">Corn final plant population</label>
+	<br /><input type="checkbox" value="AGR33" data-agronomic="AGR33" name="agronomic[]" id="AGR33">
+<label for="AGR33" class="control-label">Corn grain biomass at R6 (dry)</label>
+	<br /><input type="checkbox" value="AGR18" data-agronomic="AGR18" name="agronomic[]" id="AGR18">
+<label for="AGR18" class="control-label">Corn grain moisture</label>
+	<br /><input type="checkbox" value="AGR23" data-agronomic="AGR23" name="agronomic[]" id="AGR23">
+<label for="AGR23" class="control-label">Corn grain total carbon at R6</label>
+	<br /><input type="checkbox" value="AGR25" data-agronomic="AGR25" name="agronomic[]" id="AGR25">
+<label for="AGR25" class="control-label">Corn grain total nitrogen at R6</label>
+	<br /><input type="checkbox" value="AGR17" data-agronomic="AGR17" name="agronomic[]" id="AGR17">
+<label for="AGR17" class="control-label">Corn grain yield at 15.5% MB</label>
 </div><div class="col-md-4">
-	<input type="checkbox" value="AGR31" data-agronomic="AGR31" name="agronomic[]">Corn stalk nitrate samples
-	<br /><input type="checkbox" value="AGR4" data-agronomic="AGR4" name="agronomic[]">Corn vegetative biomass at R6 (dry)
-	<br /><input type="checkbox" value="AGR9" data-agronomic="AGR9" name="agronomic[]">Corn vegetative biomass total carbon at R6
-	<br /><input type="checkbox" value="AGR10" data-agronomic="AGR10" name="agronomic[]">Corn vegetative biomass total nitrogen at R6
-	<br /><input type="checkbox" value="AGR39" data-agronomic="AGR39" name="agronomic[]">Cover crop (rye) and weedy biomass at termination (spring)
-	<br /><input type="checkbox" value="AGR37" data-agronomic="AGR37" name="agronomic[]">Cover crop (rye) and weedy biomass in late fall
-	<br /><input type="checkbox" value="AGR7" data-agronomic="AGR7" name="agronomic[]">Cover crop (rye) biomass at termination (spring) (no significant weeds)
-	<br /><input type="checkbox" value="AGR6" data-agronomic="AGR6" name="agronomic[]">Cover crop (rye) biomass in late fall (no significant weeds)
-	<br /><input type="checkbox" value="AGR3" data-agronomic="AGR3" name="agronomic[]">Mid-season canopy N sensing
-	<br /><input type="checkbox" value="AGR41" data-agronomic="AGR41" name="agronomic[]">Red clover or mixed cover crop biomass in late fall of previous year
-	<br /><input type="checkbox" value="AGR44" data-agronomic="AGR44" name="agronomic[]">Red clover or mixed cover crop biomass in spring of spreadsheet year
-	<br /><input type="checkbox" value="AGR43" data-agronomic="AGR43" name="agronomic[]">Red clover or mixed cover crop total carbon in late fall of previous year
-	<br /><input type="checkbox" value="AGR46" data-agronomic="AGR46" name="agronomic[]">Red clover or mixed cover crop total carbon in spring of spreadsheet year
-	<br /><input type="checkbox" value="AGR42" data-agronomic="AGR42" name="agronomic[]">Red clover or mixed cover crop total nitrogen in late fall of previous year
-	<br /><input type="checkbox" value="AGR45" data-agronomic="AGR45" name="agronomic[]">Red clover or mixed cover crop total nitrogen in spring of spreadsheet year
-	<br /><input type="checkbox" value="AGR13" data-agronomic="AGR13" name="agronomic[]">Rye biomass total carbon at fall
-	<br /><input type="checkbox" value="AGR15" data-agronomic="AGR15" name="agronomic[]">Rye biomass total carbon at spring
-	<br /><input type="checkbox" value="AGR14" data-agronomic="AGR14" name="agronomic[]">Rye biomass total nitrogen at fall
-	<br /><input type="checkbox" value="AGR16" data-agronomic="AGR16" name="agronomic[]">Rye biomass total nitrogen at spring
-	<br /><input type="checkbox" value="AGR2" data-agronomic="AGR2" name="agronomic[]">Soybean final plant population
-	<br /><input type="checkbox" value="AGR34" data-agronomic="AGR34" name="agronomic[]">Soybean grain biomass at R8 (dry)
-	<br /><input type="checkbox" value="AGR20" data-agronomic="AGR20" name="agronomic[]">Soybean grain moisture
-	<br /><input type="checkbox" value="AGR27" data-agronomic="AGR27" name="agronomic[]">Soybean grain total carbon at R8
-	<br /><input type="checkbox" value="AGR28" data-agronomic="AGR28" name="agronomic[]">Soybean grain total nitrogen at R8
-	<br /><input type="checkbox" value="AGR19" data-agronomic="AGR19" name="agronomic[]">Soybean grain yield at 13.0% MB
+	<input type="checkbox" value="AGR31" data-agronomic="AGR31" name="agronomic[]" id="AGR31">
+<label for="AGR31`" class="control-label">Corn stalk nitrate samples</label>
+	<br /><input type="checkbox" value="AGR4" data-agronomic="AGR4" name="agronomic[]" id="AGR4">
+<label for="AGR4" class="control-label">Corn vegetative biomass at R6 (dry)</label>
+	<br /><input type="checkbox" value="AGR9" data-agronomic="AGR9" name="agronomic[]" id="AGR9">
+<label for="AGR9" class="control-label">Corn vegetative biomass total carbon at R6</label>
+	<br /><input type="checkbox" value="AGR10" data-agronomic="AGR10" name="agronomic[]" id="AGR10">
+<label for="AGR10" class="control-label">Corn vegetative biomass total nitrogen at R6</label>
+	<br /><input type="checkbox" value="AGR39" data-agronomic="AGR39" name="agronomic[]" id="AGR39">
+<label for="AGR39" class="control-label">Cover crop (rye) and weedy biomass at termination (spring)</label>
+	<br /><input type="checkbox" value="AGR37" data-agronomic="AGR37" name="agronomic[]" id="AGR37">
+<label for="AGR37" class="control-label">Cover crop (rye) and weedy biomass in late fall</label>
+	<br /><input type="checkbox" value="AGR7" data-agronomic="AGR7" name="agronomic[]" id="AGR7">
+<label for="AGR7" class="control-label">Cover crop (rye) biomass at termination (spring) (no significant weeds)</label>
+	<br /><input type="checkbox" value="AGR6" data-agronomic="AGR6" name="agronomic[]" id="AGR6">
+<label for="AGR6" class="control-label">Cover crop (rye) biomass in late fall (no significant weeds)</label>
+	<br /><input type="checkbox" value="AGR3" data-agronomic="AGR3" name="agronomic[]" id="AGR3">
+<label for="AGR3" class="control-label">Mid-season canopy N sensing</label>
+	<br /><input type="checkbox" value="AGR41" data-agronomic="AGR41" name="agronomic[]" id="AGR41">
+<label for="AGR41" class="control-label">Red clover or mixed cover crop biomass in late fall of previous year</label>
+	<br /><input type="checkbox" value="AGR44" data-agronomic="AGR44" name="agronomic[]" id="AGR44">
+<label for="AGR44" class="control-label">Red clover or mixed cover crop biomass in spring of spreadsheet year</label>
+	<br /><input type="checkbox" value="AGR43" data-agronomic="AGR43" name="agronomic[]" id="AGR43">
+<label for="AGR43" class="control-label">Red clover or mixed cover crop total carbon in late fall of previous year</label>
+	<br /><input type="checkbox" value="AGR46" data-agronomic="AGR46" name="agronomic[]" id="AGR46">
+<label for="AGR46" class="control-label">Red clover or mixed cover crop total carbon in spring of spreadsheet year</label>
+	<br /><input type="checkbox" value="AGR42" data-agronomic="AGR42" name="agronomic[]" id="AGR42">
+<label for="AGR42" class="control-label">Red clover or mixed cover crop total nitrogen in late fall of previous year</label>
+	<br /><input type="checkbox" value="AGR45" data-agronomic="AGR45" name="agronomic[]" id="AGR45">
+<label for="AGR45" class="control-label">Red clover or mixed cover crop total nitrogen in spring of spreadsheet year</label>
+	<br /><input type="checkbox" value="AGR13" data-agronomic="AGR13" name="agronomic[]" id="AGR13">
+<label for="AGR13" class="control-label">Rye biomass total carbon at fall</label>
+	<br /><input type="checkbox" value="AGR15" data-agronomic="AGR15" name="agronomic[]" id="AGR15">
+<label for="AGR15" class="control-label">Rye biomass total carbon at spring</label>
+	<br /><input type="checkbox" value="AGR14" data-agronomic="AGR14" name="agronomic[]" id="AGR14">
+<label for="AGR14" class="control-label">Rye biomass total nitrogen at fall</label>
+	<br /><input type="checkbox" value="AGR16" data-agronomic="AGR16" name="agronomic[]" id="AGR16">
+<label for="AGR6" class="control-label">Rye biomass total nitrogen at spring</label>
+	<br /><input type="checkbox" value="AGR2" data-agronomic="AGR2" name="agronomic[]" id="AGR2">
+<label for="AGR2" class="control-label">Soybean final plant population</label>
+	<br /><input type="checkbox" value="AGR34" data-agronomic="AGR34" name="agronomic[]" id="AGR34">
+<label for="AGR34" class="control-label">Soybean grain biomass at R8 (dry)</label>
+	<br /><input type="checkbox" value="AGR20" data-agronomic="AGR20" name="agronomic[]" id="AGR20">
+<label for="AGR20" class="control-label">Soybean grain moisture</label>
+	<br /><input type="checkbox" value="AGR27" data-agronomic="AGR27" name="agronomic[]" id="AGR27">
+<label for="AGR27" class="control-label">Soybean grain total carbon at R8</label>
+	<br /><input type="checkbox" value="AGR28" data-agronomic="AGR28" name="agronomic[]" id="AGR28">
+<label for="AGR28" class="control-label">Soybean grain total nitrogen at R8</label>
+	<br /><input type="checkbox" value="AGR19" data-agronomic="AGR19" name="agronomic[]" id="AGR19">
+<label for="AGR19" class="control-label">Soybean grain yield at 13.0% MB</label>
 </div><div class="col-md-4">
-	<input type="checkbox" value="AGR5" data-agronomic="AGR5" name="agronomic[]">Soybean vegetative biomass at R8 (stems and pods only; no leaves)
-	<br /><input type="checkbox" value="AGR11" data-agronomic="AGR11" name="agronomic[]">Soybean vegetative biomass total carbon at R8
-	<br /><input type="checkbox" value="AGR12" data-agronomic="AGR12" name="agronomic[]">Soybean vegetative biomass total nitrogen at R8
-	<br /><input type="checkbox" value="AGR40" data-agronomic="AGR40" name="agronomic[]">Weedy biomass (only) at termination (spring)
-	<br /><input type="checkbox" value="AGR38" data-agronomic="AGR38" name="agronomic[]">Weedy biomass (only) in late fall
-	<br /><input type="checkbox" value="AGR52" data-agronomic="AGR52" name="agronomic[]">Weedy biomass (only) total carbon at fall
-	<br /><input type="checkbox" value="AGR50" data-agronomic="AGR50" name="agronomic[]">Weedy biomass (only) total carbon at spring
-	<br /><input type="checkbox" value="AGR51" data-agronomic="AGR51" name="agronomic[]">Weedy biomass (only) total nitrogen at fall
-	<br /><input type="checkbox" value="AGR47" data-agronomic="AGR47" name="agronomic[]">Weedy biomass (only) total nitrogen at spring
-	<br /><input type="checkbox" value="AGR22" data-agronomic="AGR22" name="agronomic[]">Wheat grain moisture
-	<br /><input type="checkbox" value="AGR29" data-agronomic="AGR29" name="agronomic[]">Wheat grain total carbon at maturity
-	<br /><input type="checkbox" value="AGR30" data-agronomic="AGR30" name="agronomic[]">Wheat grain total nitrogen at maturity
-	<br /><input type="checkbox" value="AGR21" data-agronomic="AGR21" name="agronomic[]">Wheat grain yield at 13.5% MB
-	<br /><input type="checkbox" value="AGR8" data-agronomic="AGR8" name="agronomic[]">Wheat plant biomass at maturity
-	<br /><input type="checkbox" value="AGR48" data-agronomic="AGR48" name="agronomic[]">Wheat plant biomass total carbon at maturity
-	<br /><input type="checkbox" value="AGR49" data-agronomic="AGR49" name="agronomic[]">Wheat plant biomass total nitrogen at maturity
+	<input type="checkbox" value="AGR5" data-agronomic="AGR5" name="agronomic[]" id="AGR5">
+<label for="AGR5" class="control-label">Soybean vegetative biomass at R8 (stems and pods only; no leaves)</label>
+	<br /><input type="checkbox" value="AGR11" data-agronomic="AGR11" name="agronomic[]" id="AGR11">
+<label for="AGR11" class="control-label">Soybean vegetative biomass total carbon at R8</label>
+	<br /><input type="checkbox" value="AGR12" data-agronomic="AGR12" name="agronomic[]" id="AGR12">
+<label for="AGR12" class="control-label">Soybean vegetative biomass total nitrogen at R8</label>
+	<br /><input type="checkbox" value="AGR40" data-agronomic="AGR40" name="agronomic[]" id="AGR40">
+<label for="AGR40" class="control-label">Weedy biomass (only) at termination (spring)</label>
+	<br /><input type="checkbox" value="AGR38" data-agronomic="AGR38" name="agronomic[]" id="AGR38">
+<label for="AGR38" class="control-label">Weedy biomass (only) in late fall</label>
+	<br /><input type="checkbox" value="AGR52" data-agronomic="AGR52" name="agronomic[]" id="AGR52">
+<label for="AGR52" class="control-label">Weedy biomass (only) total carbon at fall</label>
+	<br /><input type="checkbox" value="AGR50" data-agronomic="AGR50" name="agronomic[]" id="AGR50">
+<label for="AGR50" class="control-label">Weedy biomass (only) total carbon at spring</label>
+	<br /><input type="checkbox" value="AGR51" data-agronomic="AGR51" name="agronomic[]" id="AGR51">
+<label for="AGR51" class="control-label">Weedy biomass (only) total nitrogen at fall</label>
+	<br /><input type="checkbox" value="AGR47" data-agronomic="AGR47" name="agronomic[]" id="AGR47">
+<label for="AGR47" class="control-label">Weedy biomass (only) total nitrogen at spring</label>
+	<br /><input type="checkbox" value="AGR22" data-agronomic="AGR22" name="agronomic[]" id="AGR22">
+<label for="AGR22" class="control-label">Wheat grain moisture</label>
+	<br /><input type="checkbox" value="AGR29" data-agronomic="AGR29" name="agronomic[]" id="AGR29">
+<label for="AGR29" class="control-label">Wheat grain total carbon at maturity</label>
+	<br /><input type="checkbox" value="AGR30" data-agronomic="AGR30" name="agronomic[]" id="AGR30">
+<label for="AGR30" class="control-label">Wheat grain total nitrogen at maturity</label>
+	<br /><input type="checkbox" value="AGR21" data-agronomic="AGR21" name="agronomic[]" id="AGR21">
+<label for="AGR21" class="control-label">Wheat grain yield at 13.5% MB</label>
+	<br /><input type="checkbox" value="AGR8" data-agronomic="AGR8" name="agronomic[]" id="AGR8">
+<label for="AGR8" class="control-label">Wheat plant biomass at maturity</label>
+	<br /><input type="checkbox" value="AGR48" data-agronomic="AGR48" name="agronomic[]" id="AGR48">
+<label for="AGR48" class="control-label">Wheat plant biomass total carbon at maturity</label>
+	<br /><input type="checkbox" value="AGR49" data-agronomic="AGR49" name="agronomic[]" id="AGR49">
+<label for="AGR49" class="control-label">Wheat plant biomass total nitrogen at maturity</label>
 </div></div>
 EOF;
 	return $s;
@@ -133,39 +222,70 @@ EOF;
 function build_soil_ui(){
 	$s = <<<EOF
 <div class="row"><div class="col-md-4">
-	<input type="checkbox" value="SOIL7" data-soil="SOIL7" name="soil[]">Aggregate stability
-	<br /><input type="checkbox" value="SOIL12" data-soil="SOIL12" name="soil[]">Cation Exchange Capacity (CEC)
-	<br /><input type="checkbox" value="SOIL1" data-soil="SOIL1" name="soil[]">Dry bulk density (BD)
-	<br /><input type="checkbox" value="SOIL3" data-soil="SOIL3" name="soil[]">Infiltration rate
-	<br /><input type="checkbox" value="SOIL18" data-soil="SOIL18" name="soil[]">Particulate organic matter (POM)
-	<br /><input type="checkbox" value="SOIL8" data-soil="SOIL8" name="soil[]">Penetration resistance
-	<br /><input type="checkbox" value="SOIL28" data-soil="SOIL28" name="soil[]">Percent Clay
-	<br /><input type="checkbox" value="SOIL26" data-soil="SOIL26" name="soil[]">Percent Sand
-	<br /><input type="checkbox" value="SOIL27" data-soil="SOIL27" name="soil[]">Percent Silt
+	<input type="checkbox" value="SOIL7" data-soil="SOIL7" name="soil[]" id="SOIL7">
+<label for="SOIL7" class="control-label">Aggregate stability</label>
+	<br /><input type="checkbox" value="SOIL12" data-soil="SOIL12" name="soil[]" id="SOIL12">
+<label for="SOIL12" class="control-label">Cation Exchange Capacity (CEC)</label>
+	<br /><input type="checkbox" value="SOIL1" data-soil="SOIL1" name="soil[]" id="SOIL1">
+<label for="SOIL1" class="control-label">Dry bulk density (BD)</label>
+	<br /><input type="checkbox" value="SOIL3" data-soil="SOIL3" name="soil[]" id="SOIL3">
+<label for="SOIL3" class="control-label">Infiltration rate</label>
+	<br /><input type="checkbox" value="SOIL18" data-soil="SOIL18" name="soil[]" id="SOIL18">
+<label for="SOIL18" class="control-label">Particulate organic matter (POM)</label>
+	<br /><input type="checkbox" value="SOIL8" data-soil="SOIL8" name="soil[]" id="SOIL8">
+<label for="SOIL8" class="control-label">Penetration resistance</label>
+	<br /><input type="checkbox" value="SOIL28" data-soil="SOIL28" name="soil[]" id="SOIL28">
+<label for="SOIL28" class="control-label">Percent Clay</label>
+	<br /><input type="checkbox" value="SOIL26" data-soil="SOIL26" name="soil[]" id="SOIL26">
+<label for="SOIL26" class="control-label">Percent Sand</label>
+	<br /><input type="checkbox" value="SOIL27" data-soil="SOIL27" name="soil[]" id="SOIL27">
+<label for="SOIL27" class="control-label">Percent Silt</label>
 </div><div class="col-md-4">
-	<input type="checkbox" value="SOIL22" data-soil="SOIL22" name="soil[]">Soil Ammonium
-	<br /><input type="checkbox" value="SOIL99" data-soil="SOIL99" name="soil[]">Soil Inorganic N
-	<br /><input type="checkbox" value="SOIL5" data-soil="SOIL5" name="soil[]">Soil moisture using sensors
-	<br /><input type="checkbox" value="SOIL15" data-soil="SOIL15" name="soil[]">Soil Nitrate
-	<br /><input type="checkbox" value="SOIL13" data-soil="SOIL13" name="soil[]">Soil Organic Carbon (SOC)
-	<br /><input type="checkbox" value="SOIL11" data-soil="SOIL11" name="soil[]">Soil pH
-	<br /><input type="checkbox" value="SOIL20" data-soil="SOIL20" name="soil[]">Soil Salinity
-	<br /><input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]">Soil texture
-	<br /><input type="checkbox" value="SOIL40" data-soil="SOIL40" name="soil[]">Soil Total Aggregation
-	<br /><input type="checkbox" value="SOIL19" data-soil="SOIL19" name="soil[]">Standard soil fertility routine analysis
-	<br /><input type="checkbox" value="SOIL14" data-soil="SOIL14" name="soil[]">Total N
+	<input type="checkbox" value="SOIL22" data-soil="SOIL22" name="soil[]" id="SOIL22">
+<label for="SOIL22" class="control-label">Soil Ammonium</label>
+	<br /><input type="checkbox" value="SOIL99" data-soil="SOIL99" name="soil[]" id="SOIL99">
+<label for="SOIL99" class="control-label">Soil Inorganic N</label>
+	<br /><input type="checkbox" value="SOIL5" data-soil="SOIL5" name="soil[]" id="SOIL5">
+<label for="SOIL5" class="control-label">Soil moisture using sensors</label>
+	<br /><input type="checkbox" value="SOIL15" data-soil="SOIL15" name="soil[]" id="SOIL15">
+<label for="SOIL15" class="control-label">Soil Nitrate</label>
+	<br /><input type="checkbox" value="SOIL13" data-soil="SOIL13" name="soil[]" id="SOIL13">
+<label for="SOIL13" class="control-label">Soil Organic Carbon (SOC)</label>
+	<br /><input type="checkbox" value="SOIL11" data-soil="SOIL11" name="soil[]" id="SOIL11">
+<label for="SOIL11" class="control-label">Soil pH</label>
+	<br /><input type="checkbox" value="SOIL20" data-soil="SOIL20" name="soil[]" id="SOIL20">
+<label for="SOIL20" class="control-label">Soil Salinity</label>
+	<br /><input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
+<label for="SOIL6" class="control-label">Soil texture</label>
+	<br /><input type="checkbox" value="SOIL40" data-soil="SOIL40" name="soil[]" id="SOIL40">
+<label for="SOIL40" class="control-label">Soil Total Aggregation</label>
+	<br /><input type="checkbox" value="SOIL19" data-soil="SOIL19" name="soil[]" id="SOIL19">
+<label for="SOIL19" class="control-label">Standard soil fertility routine analysis</label>
+	<br /><input type="checkbox" value="SOIL14" data-soil="SOIL14" name="soil[]" id="SOIL14">
+<label for="SOIL14" class="control-label">Total N</label>
 </div><div class="col-md-4">
-	<input type="checkbox" value="SOIL41" data-soil="SOIL41" name="soil[]">Water retention at 0.01 bar
-	<br /><input type="checkbox" value="SOIL34" data-soil="SOIL34" name="soil[]">Water retention at 0.03 bar
-	<br /><input type="checkbox" value="SOIL29" data-soil="SOIL29" name="soil[]">Water retention at 0.05 bar
-	<br /><input type="checkbox" value="SOIL30" data-soil="SOIL30" name="soil[]">Water retention at 0.1 bar
-	<br /><input type="checkbox" value="SOIL31" data-soil="SOIL31" name="soil[]">Water retention at 0.33 bar
-	<br /><input type="checkbox" value="SOIL2" data-soil="SOIL2" name="soil[]">Water retention at 0 bar
-	<br /><input type="checkbox" value="SOIL35" data-soil="SOIL35" name="soil[]">Water retention at 1.0 bar
-	<br /><input type="checkbox" value="SOIL32" data-soil="SOIL32" name="soil[]">Water retention at 15 bar
-	<br /><input type="checkbox" value="SOIL42" data-soil="SOIL42" name="soil[]">Water retention at 3.9 bar
-	<br /><input type="checkbox" value="SOIL33" data-soil="SOIL33" name="soil[]">Water retention at 3 bar
-	<br /><input type="checkbox" value="SOIL39" data-soil="SOIL39" name="soil[]">Water retention at "freely drained" (near 0.003 bar)
+	<input type="checkbox" value="SOIL41" data-soil="SOIL41" name="soil[]" id="SOIL41">
+<label for="SOIL41" class="control-label">Water retention at 0.01 bar</label>
+	<br /><input type="checkbox" value="SOIL34" data-soil="SOIL34" name="soil[]" id="SOIL34">
+<label for="SOIL34" class="control-label">Water retention at 0.03 bar</label>
+	<br /><input type="checkbox" value="SOIL29" data-soil="SOIL29" name="soil[]" id="SOIL29">
+<label for="SOIL29" class="control-label">Water retention at 0.05 bar</label>
+	<br /><input type="checkbox" value="SOIL30" data-soil="SOIL30" name="soil[]" id="SOIL30">
+<label for="SOIL30" class="control-label">Water retention at 0.1 bar</label>
+	<br /><input type="checkbox" value="SOIL31" data-soil="SOIL31" name="soil[]" id="SOIL31">
+<label for="SOIL31" class="control-label">Water retention at 0.33 bar</label>
+	<br /><input type="checkbox" value="SOIL2" data-soil="SOIL2" name="soil[]" id="SOIL2">
+<label for="SOIL2" class="control-label">Water retention at 0 bar</label>
+	<br /><input type="checkbox" value="SOIL35" data-soil="SOIL35" name="soil[]" id="SOIL35">
+<label for="SOIL35" class="control-label">Water retention at 1.0 bar</label>
+	<br /><input type="checkbox" value="SOIL32" data-soil="SOIL32" name="soil[]" id="SOIL32">
+<label for="SOIL32" class="control-label">Water retention at 15 bar</label>
+	<br /><input type="checkbox" value="SOIL42" data-soil="SOIL42" name="soil[]" id="SOIL42">
+<label for="SOIL42" class="control-label">Water retention at 3.9 bar</label>
+	<br /><input type="checkbox" value="SOIL33" data-soil="SOIL33" name="soil[]" id="SOIL33">
+<label for="SOIL33" class="control-label">Water retention at 3 bar</label>
+	<br /><input type="checkbox" value="SOIL39" data-soil="SOIL39" name="soil[]" id="SOIL39">
+<label for="SOIL39" class="control-label">Water retention at "freely drained" (near 0.003 bar)</label>
 </div></div>
 EOF;
 	return $s;
@@ -253,8 +373,9 @@ function build_year_ui(){
 	$s = '';
 	while (list($k, $v)=@each($years)){
 		$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
-				" data-year=\"%s\" name=\"year[]\">%s\n",
-				$v, $v, $v);
+				" data-year=\"%s\" name=\"year[]\" id=\"Y%s\">".
+				"<label for=\"Y%s\" class=\"control-label\">%s</label>\n",
+				$v, $v, $v, $v, $v);
 	}
 	return $s;
 }
@@ -265,6 +386,11 @@ $t->title = "CSCAP Project Data Download";
 $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
+<style>
+input[type=checkbox][disabled] + label {
+    color: #ccc;
+}
+</style>
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>

@@ -5,7 +5,7 @@ function applyFilter(data){
 	//console.log(data);
 	$('#treatments-ui input').prop('disabled', true);
 	$.each(data.treatments, function(idx, v){
-		console.log("TREAT: " + v);
+		//console.log("TREAT: " + v);
 		$("#treatments-ui input[data-treatment='"+v+"']").prop('disabled', false);
 	});
 		
@@ -64,8 +64,7 @@ function runfilter(){
 	});
 };
 
-$(document).ready(function(){
-
+function build_ui(){
 	$(".site-check").click(function(){
 		var state = $(this).attr('data-state');
 		if (! this.checked){
@@ -97,4 +96,9 @@ $(document).ready(function(){
 		$('#prev-btn').prop('disabled', (CURRENTTAB  == 0));
 		
 	});
+	
+};
+
+$(document).ready(function(){
+	build_ui();
 });
