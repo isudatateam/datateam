@@ -245,8 +245,6 @@ function build_soil_ui(){
 <label for="SOIL22" class="control-label">Soil Ammonium</label>
 	<br /><input type="checkbox" value="SOIL99" data-soil="SOIL99" name="soil[]" id="SOIL99">
 <label for="SOIL99" class="control-label">Soil Inorganic N</label>
-	<br /><input type="checkbox" value="SOIL5" data-soil="SOIL5" name="soil[]" id="SOIL5">
-<label for="SOIL5" class="control-label">Soil moisture using sensors</label>
 	<br /><input type="checkbox" value="SOIL15" data-soil="SOIL15" name="soil[]" id="SOIL15">
 <label for="SOIL15" class="control-label">Soil Nitrate</label>
 	<br /><input type="checkbox" value="SOIL13" data-soil="SOIL13" name="soil[]" id="SOIL13">
@@ -259,8 +257,6 @@ function build_soil_ui(){
 <label for="SOIL6" class="control-label">Soil texture</label>
 	<br /><input type="checkbox" value="SOIL40" data-soil="SOIL40" name="soil[]" id="SOIL40">
 <label for="SOIL40" class="control-label">Soil Total Aggregation</label>
-	<br /><input type="checkbox" value="SOIL19" data-soil="SOIL19" name="soil[]" id="SOIL19">
-<label for="SOIL19" class="control-label">Standard soil fertility routine analysis</label>
 	<br /><input type="checkbox" value="SOIL14" data-soil="SOIL14" name="soil[]" id="SOIL14">
 <label for="SOIL14" class="control-label">Total N</label>
 </div><div class="col-md-4">
@@ -372,7 +368,7 @@ function build_year_ui(){
 	$years = Array(2011, 2012, 2013, 2014, 2015);
 	$s = '';
 	while (list($k, $v)=@each($years)){
-		$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
+		$s .= sprintf("<br /><input type=\"checkbox\" value=\"%s\"".
 				" data-year=\"%s\" name=\"year[]\" id=\"Y%s\">".
 				"<label for=\"Y%s\" class=\"control-label\">%s</label>\n",
 				$v, $v, $v, $v, $v);
@@ -447,7 +443,7 @@ $t->content = <<<EOF
 {$soilui}
 </div>
 <div id="year-ui" style="display: none;">
-	<h3>Years</h3>
+	<h3>Available Crop Years with Data</h3>
 {$yearui}
 </div>
 <div id="option-ui" style="display: none;">
