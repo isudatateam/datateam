@@ -32,5 +32,8 @@ python email_daily_changes.py td
 
 python ss2database.py
 
+cd ../td
+python harvest_management.py
+
 cd ../auth
 python drive2webaccess.py
