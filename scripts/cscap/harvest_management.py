@@ -32,9 +32,6 @@ def main():
             if rownum == 0:
                 continue
             d = entry.to_dict()
-            # Units row has n/a as the date, so skip it
-            if d.get('date') in ['mm/dd/yyyy', '', None]:
-                continue
             cols = []
             vals = []
             for key in d.keys():
