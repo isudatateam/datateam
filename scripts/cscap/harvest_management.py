@@ -37,7 +37,7 @@ def main():
             for key in d.keys():
                 if key.startswith('gio'):
                     continue
-                vals.append(d[key])
+                vals.append(d[key] if d[key] != 'unknown' else None)
                 cols.append(translate.get(key, key))
 
             sql = """
@@ -46,10 +46,11 @@ def main():
             try:
                 pcursor.execute(sql, vals)
             except Exception as exp:
-                print("harvest_management traceback")
+                print("CSCAP harvest_management traceback")
                 print(exp)
                 for a, b in zip(cols, vals):
                     print("   |%s| -> |%s|" % (a, b))
+                return
             added += 1
 
         print(("harvest_management %16s added:%4s deleted:%4s"
