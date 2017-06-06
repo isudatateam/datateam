@@ -11,21 +11,49 @@ We end up return a JSON document that lists out what is possible
 import json
 import sys
 import cgi
+
 import psycopg2
 from pandas.io.sql import read_sql
-pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                          user='nobody')
-cursor = pgconn.cursor()
+
+# NOTE: filter.py is upstream for this table, copy to dl.py
+AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
+       "_T2": ["ROT8", 'ROT7', 'ROT6'],
+       "_T3": ["ROT16", "ROT15", "ROT17"],
+       "_T4": ["ROT37", "ROT36", "ROT55", "ROT59", "ROT60"],
+       "_T5": ["ROT61", "ROT56"],
+       "_T6": ["ROT57", "ROT58"],
+       "_T7": ["ROT40", "ROT50"]}
+
+
+def redup(arr):
+    """Replace any codes that are collapsed by the above"""
+    additional = []
+    for key, vals in AGG.iteritems():
+        for val in vals:
+            if val in arr and key not in additional:
+                additional.append(key)
+    sys.stderr.write("dedup added %s to %s\n" % (str(additional), str(arr)))
+    return arr + additional
 
 
 def agg(arr):
-    if len(arr) > 0:
-        return arr
-    arr.append('ZZZ')
+    """Make listish and apply dedup logic"""
+    if len(arr) == 0:
+        arr.append('ZZZ')
+    additional = []
+    for val in arr:
+        if val in AGG:
+            additional += AGG[val]
+    if len(additional) > 0:
+        arr += additional
+    sys.stderr.write("agg added %s to %s\n" % (str(additional), str(arr)))
     return arr
 
 
 def do_filter(form):
+    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
+                              user='nobody')
+    cursor = pgconn.cursor()
     res = {'treatments': [], 'agronomic': [], 'soil': [],
            'year': []}
     sites = agg(form.getlist('sites[]'))
@@ -39,12 +67,14 @@ def do_filter(form):
         SELECT distinct tillage, rotation, drainage, nitrogen,
         landscape from plotids where uniqueid in %s
         """, pgconn, params=(tuple(sites),), index_col=None)
+    arr = []
     for col in ['tillage', 'rotation', 'drainage', 'nitrogen',
                 'landscape']:
         for v in df[col].unique():
             if v is None:
                 continue
-            res['treatments'].append(v)
+            arr.append(v)
+    res['treatments'] = redup(arr)
 
     # build a list of agronomic data based on the plotids and sites
     a = {}
@@ -70,7 +100,7 @@ def do_filter(form):
     WHERE a.site = p.uniqueid and a.plotid = p.plotid
     """, pgconn, params=args, index_col=None)
     if len(df.index) > 0:
-        res['agronomic'] = df['varname'].values.tolist()
+        res['agronomic'] = redup(df['varname'].values.tolist())
 
     # build a list of soil data based on the plotids and sites
     df = read_sql("""
@@ -81,7 +111,7 @@ def do_filter(form):
     WHERE a.site = p.uniqueid and a.plotid = p.plotid
     """, pgconn, params=args, index_col=None)
     if len(df.index) > 0:
-        res['soil'] = df['varname'].values.tolist()
+        res['soil'] = redup(df['varname'].values.tolist())
 
     # Compute which years we have data for these locations
     df = read_sql("""
@@ -108,6 +138,7 @@ def main():
     form = cgi.FieldStorage()
     res = do_filter(form)
     sys.stdout.write(json.dumps(res))
+
 
 if __name__ == '__main__':
     main()

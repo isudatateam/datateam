@@ -12,6 +12,26 @@ PGCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
 FERTELEM = ['nitrogen', 'phosphorus', 'phosphate', 'potassium',
             'potash', 'sulfur', 'calcium', 'magnesium', 'zinc', 'iron']
 KGH_LBA = 1.12085
+# -----------------------------------------------------------------------------
+# NOTE: filter.py is upstream for this table, copy to dl.py
+AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
+       "_T2": ["ROT8", 'ROT7', 'ROT6'],
+       "_T3": ["ROT16", "ROT15", "ROT17"],
+       "_T4": ["ROT37", "ROT36", "ROT55", "ROT59", "ROT60"],
+       "_T5": ["ROT61", "ROT56"],
+       "_T6": ["ROT57", "ROT58"],
+       "_T7": ["ROT40", "ROT50"]}
+
+
+def redup(arr):
+    """Replace any codes that are collapsed by the above"""
+    additional = []
+    for key, vals in AGG.iteritems():
+        for val in vals:
+            if val in arr and key not in additional:
+                additional.append(key)
+    sys.stderr.write("dedup added %s to %s\n" % (str(additional), str(arr)))
+    return arr + additional
 
 
 def conv(value, detectlimit):
@@ -106,9 +126,9 @@ def get_operations(sites, years):
 def do(form):
     sites = form.getlist('sites[]')
     # treatments = form.getlist('treatments[]')
-    agronomic = form.getlist('agronomic[]')
-    soil = form.getlist('soil[]')
-    years = form.getlist('year[]')
+    agronomic = redup(form.getlist('agronomic[]'))
+    soil = redup(form.getlist('soil[]'))
+    years = redup(form.getlist('year[]'))
     detectlimit = form.getfirst('detectlimit', "1")
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
