@@ -96,7 +96,24 @@ function build_ui(){
 		$('#prev-btn').prop('disabled', (CURRENTTAB  == 0));
 		
 	});
-	
+	$(".fauxtabs button").click(function() {
+		runfilter();
+		var tabtitle = $(this).attr("id").replace("-btn", "")
+		var currentdiv = TABS[CURRENTTAB] +"-ui";
+		$("#"+currentdiv).css("display", "none");
+		var btndiv = TABS[CURRENTTAB] +"-btn";
+		$("#"+btndiv).removeClass().addClass("btn btn-default");
+		CURRENTTAB = TABS.indexOf(tabtitle);
+
+		var currentdiv = TABS[CURRENTTAB] +"-ui";
+		$("#"+currentdiv).css("display", "block");
+		var btndiv = TABS[CURRENTTAB] +"-btn";
+		$("#"+btndiv).removeClass().addClass("btn btn-primary");
+
+		$('#next-btn').prop('disabled', ((CURRENTTAB + 1) == TABS.length));
+		$('#prev-btn').prop('disabled', (CURRENTTAB  == 0));
+		
+	});
 };
 
 $(document).ready(function(){
