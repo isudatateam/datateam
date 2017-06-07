@@ -37,7 +37,8 @@ def main():
             for key in d.keys():
                 if key.startswith('gio'):
                     continue
-                vals.append(d[key] if d[key] != 'unknown' else None)
+                vals.append((d[key] if d[key] not in ['unknown', 'N/A']
+                             else None))
                 cols.append(translate.get(key, key))
 
             sql = """
