@@ -378,19 +378,22 @@ function build_sites_ui(){
 	$keys = array_keys($data);
 	asort($keys);
 	$s = '';
-	$q = -1;
+	$q = -1;	
 	while (list($v,$k)=each($keys)){
 		$q += 1;
 		if ($q % 3 == 0){
 			$s .= "<div class=\"col-md-4\">\n";
 		}
-		$s .= sprintf("<h4><input type=\"checkbox\" class=\"state-check\"".
-				" value=\"%s\">%s</h4>\n", $k, $states[$k]);
+		$s .= sprintf("<div class=\"panel panel-default\">".
+  "<div class=\"panel-heading\">".
+  "<input type=\"checkbox\" class=\"state-check\" value=\"%s\">%s</div>".
+  "<div class=\"panel-body\">\n", $k, $states[$k]);
 		while (list($v2, $k2)=each($data[$k])){
 			$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
 					" data-state=\"%s\" name=\"sites[]\" class=\"site-check\"".
 					">%s</br >\n", $v2, $k, $k2);
 		}
+		$s .= "</div></div>\n";
 		if ($q % 3 == 2){
 			$s .= "</div>\n";
 		}
@@ -427,7 +430,7 @@ input[type=checkbox][disabled] + label {
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="dl.js?v=2"></script>
+<script src="dl.js?v=3"></script>
 EOF;
 
 $sitesui = build_sites_ui();
@@ -465,21 +468,38 @@ $t->content = <<<EOF
 </div>
 
 <div id="sites-ui" style="display: block;">
+<div class="pull-right">
+<button id="sites-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
+<h3>Available Research Sites</h3>
 {$sitesui}
 </div>
 <div id="treatments-ui" style="display: none;">
+<div class="pull-right">
+  <button id="treatments-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
 	<h3>Treatments</h3>
 {$treatmentui}
 </div>
 <div id="agronomic-ui" style="display: none;">
+<div class="pull-right">
+  <button id="agronomic-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
 	<h3>Agronomic</h3>
 {$agronomicui}
 </div>
 <div id="soil-ui" style="display: none;">
+<div class="pull-right">
+  <button id="soil-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
 	<h3>Soil</h3>
 {$soilui}
 </div>
 <div id="year-ui" style="display: none;">
+<div class="pull-right">
+  <button id="year-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
+
 	<h3>Available Crop Years with Data</h3>
 {$yearui}
 </div>

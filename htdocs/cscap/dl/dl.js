@@ -98,7 +98,7 @@ function build_ui(){
 	});
 	$(".fauxtabs button").click(function() {
 		runfilter();
-		var tabtitle = $(this).attr("id").replace("-btn", "")
+		var tabtitle = $(this).attr("id").replace("-btn", "");
 		var currentdiv = TABS[CURRENTTAB] +"-ui";
 		$("#"+currentdiv).css("display", "none");
 		var btndiv = TABS[CURRENTTAB] +"-btn";
@@ -113,6 +113,10 @@ function build_ui(){
 		$('#next-btn').prop('disabled', ((CURRENTTAB + 1) == TABS.length));
 		$('#prev-btn').prop('disabled', (CURRENTTAB  == 0));
 		
+	});
+	$(".sa").click(function(){
+		var tabtitle = $(this).attr("id").replace("-selectall", "");
+		$("#" + tabtitle +"-ui input:enabled[type='checkbox']").prop('checked', true);
 	});
 };
 
