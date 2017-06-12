@@ -1,7 +1,10 @@
-import pandas as pd
-import psycopg2
+"""Tileflow ingest"""
+from __future__ import print_function
 import sys
 import datetime
+
+import pandas as pd
+import psycopg2
 import numpy as np
 from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
 
@@ -26,7 +29,7 @@ def process5(spreadsheetid):
     bigdf['valid'] = pd.to_datetime(bigdf['date'] + " " + bigdf['time'],
                                     format='%m/%d/%Y %H:%M',
                                     errors='coerce')
-    print bigdf.columns
+    print(bigdf.columns)
     for col in bigdf.columns:
         if col.find('wat1tileflow') == -1:
             print("Skipping column: %s" % (repr(col,)))
@@ -38,20 +41,23 @@ def process5(spreadsheetid):
     return df
 
 
-def process3(fn):
+def process3(filename):
     """ SERF"""
-    df = pd.read_excel(fn, sheetname=None)
-    for plotid in df:
-        df[plotid]['valid'] = pd.to_datetime(df[plotid]['valid'],
-                                             format='%m/%d/%Y %H:%M',
-                                             errors='coerce')
-        df[plotid]['discharge_mm'] = df[plotid]['WAT1']
-    return df
+    retdf = {}
+    for p in range(1, 7):
+        retdf['S%s' % (p, )] = pd.DataFrame()
+    df = pd.read_excel(filename, na_values=['NA'])
+    for p in range(1, 7):
+        plot = "S%s" % (p,)
+        retdf[plot]['valid'] = df['Date&Time']
+        retdf[plot]['discharge_mm'] = df['WAT1 Plot%s' % (p, )]
+    return retdf
 
 
 def process2(spreadsheetid):
     """ Ingest a google sheet of data """
-    raise Exception("BUG as plotids get 'T' added when starts with numeric value")
+    # raise Exception(
+    #    "BUG as plotids get 'T' added when starts with numeric value")
     config = get_config()
     sprclient = get_spreadsheet_client(config)
     ss = Spreadsheet(sprclient, spreadsheetid)
@@ -73,17 +79,23 @@ def process2(spreadsheetid):
     return df
 
 
-def process1(fn):
+def process1(filename):
     """Format 1, DPAC"""
     df2 = {'NW': pd.DataFrame(), 'NE': pd.DataFrame(),
            'SW': pd.DataFrame(), 'SE': pd.DataFrame()}
-    df = pd.read_excel(fn, sheetname=None, na_values=['NaN'])
+    df = pd.read_excel(filename, sheetname=None, na_values=['NaN'],
+                       skiprows=[1, ])
+    bigdf = pd.concat(df)
+
+    bigdf['valid'] = pd.to_datetime(
+        (bigdf['Date'].dt.strftime("%m/%d/%Y") + " " +
+         bigdf['Time'].astype('str')),
+        format='%m/%d/%Y %H:%M:%S', errors='coerce')
+
     for sector in ['NW', 'NE', 'SE', 'SW']:
-        df2[sector]['valid'] = df['Drainage Flow']['Date&Time']
+        df2[sector]['valid'] = bigdf['valid']
         df2[sector]['discharge_mm'] = (
-            df['Drainage Flow']['%s_Discharge(mm)' % (sector,)])
-        df2[sector]['discharge_m3'] = (
-            df['Tile Net Discharge']['%s_Discharge(m3)' % (sector,)])
+            bigdf['%s WAT1 Tile Flow' % (sector,)])
     return df2
 
 
@@ -117,7 +129,7 @@ def database_save(df, uniqueid, plotid, project):
 
     def v(row, name):
         val = row.get(name)
-        if val is None or isinstance(val, pd.tslib.NaTType):
+        if val is None or val is pd.NaT:
             return 'null'
         if isinstance(val, (unicode, str)):
             if val.strip().lower() in ['nan', 'did not collect', '#ref!',
@@ -132,7 +144,7 @@ def database_save(df, uniqueid, plotid, project):
             if np.isnan(val):
                 return 'null'
         except Exception, exp:
-            print exp
+            print(exp)
             print(('Plot: %s Val: %s[%s] Name: %s Valid: %s'
                    ) % (plotid, val, type(val), name, row['valid']))
             return 'null'
@@ -154,6 +166,7 @@ def database_save(df, uniqueid, plotid, project):
 
 
 def main(argv):
+    """Go Main"""
     fn = argv[1]
     fmt = argv[2]
     uniqueid = argv[3]

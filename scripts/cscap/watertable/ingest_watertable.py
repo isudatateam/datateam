@@ -1,7 +1,10 @@
-import pandas as pd
-import psycopg2
+"""Water table ingest"""
+from __future__ import print_function
 import sys
 import datetime
+
+import pandas as pd
+import psycopg2
 import numpy as np
 import pyiem.cscap_utils as util
 
@@ -21,7 +24,7 @@ def process6(spreadkey):
     df = pd.DataFrame(rows)
     df['valid'] = pd.to_datetime(df['date'], format='%m/%d/%Y %H:%M:%S')
     res = {}
-    print df.columns
+    print(df.columns)
     for col in df.columns:
         if col.find('wat4') == -1:
             print('skipping column %s' % (repr(col), ))
@@ -59,15 +62,16 @@ def process3(fn):
     """ Format 3, STJOHNS"""
     df = pd.read_excel(fn, sheetname=None)
     for plotid in df:
-        print plotid, df[plotid].columns
+        print("%s %s" % (plotid, df[plotid].columns))
         df[plotid].dropna(inplace=True)
         df[plotid]['valid'] = df[plotid][['Date', 'Time']].apply(
             lambda x: datetime.datetime.strptime("%s/%s/%s %s" % (x[0].month,
-                                                            x[0].day,
-                                                            x[0].year, x[1]),
-                                                 '%m/%d/%Y %H:%M:%S'),
-                                                                 axis=1)
-        df[plotid]['depth'] = df[plotid]['Water Table Depth below Ground'] * 10.
+                                                                  x[0].day,
+                                                                  x[0].year,
+                                                                  x[1]),
+                                                 '%m/%d/%Y %H:%M:%S'), axis=1)
+        df[plotid]['depth'] = (df[plotid]['Water Table Depth below Ground'] *
+                               10.)
     return df
 
 
@@ -75,7 +79,7 @@ def process2(fn):
     """ Format 2, SERF"""
     df = pd.read_excel(fn, sheetname=None, skiprows=[0, ], parse_cols="H,I")
     for plotid in df:
-        print plotid, df[plotid].columns
+        print("%s %s" % (plotid, df[plotid].columns))
         df[plotid].dropna(inplace=True)
         df[plotid]['valid'] = df[plotid]['Date-Time']
         df[plotid]['depth'] = df[plotid]['Level below ground'] * 0.3048 * 1000.
@@ -94,17 +98,20 @@ def process1(fn):
     return df
 
 
-def process4(fn):
+def process4(filename):
     """ DPAC, round 2"""
-    df = pd.read_excel(fn, na_values=['NaN', ])
-    # Unknown Excel issue here.
-    df['valid'] = df.valid + datetime.timedelta(seconds=1)
+    df = pd.read_excel(filename, na_values=['NaN', ], skiprows=[1, ])
+    df['valid'] = df['Date']
     res = {}
     for plotid in ['SW', 'SE', 'NW', 'NE']:
-        res[plotid] = df[['valid', plotid]].copy()
-        res[plotid].rename(columns={plotid: 'depth'}, inplace=True)
+        res[plotid] = df[['valid',
+                          '%s WAT4 Water Table Depth' % (plotid, )]].copy()
+        res[plotid].columns = ['valid', 'depth']
+        # shrug/sigh
+        res[plotid]['valid'] = (res[plotid]['valid'] +
+                                datetime.timedelta(seconds=1))
         res[plotid]['depth'] = pd.to_numeric(res[plotid]['depth'],
-                                             errors='coerse')
+                                             errors='coerse') * 10.
     return res
 
 
@@ -146,7 +153,7 @@ def database_save(df, uniqueid, plotid, project):
             if pd.isnull(val):
                 return 'null'
         except Exception, exp:
-            print exp
+            print(exp)
             print(('Plot: %s Val: %s[%s] Name: %s Valid: %s'
                    ) % (plotid, val, type(val), name, row['valid']))
             return 'null'
