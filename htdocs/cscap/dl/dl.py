@@ -25,6 +25,12 @@ AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
                "SOIL35", "SOIL32", "SOIL42", "SOIL33", "SOIL39"]}
 
 
+def valid2date(df):
+    """If dataframe has valid in columns, rename it to date"""
+    if 'valid' in df.columns:
+        df.rename(columns={'valid': 'date'}, inplace=True)
+
+
 def redup(arr):
     """Replace any codes that are collapsed by the above"""
     additional = []
@@ -69,6 +75,7 @@ def do_dictionary(writer):
 
 
 def do_agronomic(writer, sites, agronomic, years, detectlimit):
+    """get agronomic data"""
     df = read_sql("""
     SELECT site, plotid, varname, year, value from agronomic_data
     WHERE site in %s and year in %s and varname in %s ORDER by site, year
@@ -79,10 +86,12 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit):
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     df.reset_index(inplace=True)
+    valid2date(df)
     df.to_excel(writer, 'Agronomic', index=False)
 
 
 def do_soil(writer, sites, soil, years, detectlimit):
+    """get soil data"""
     df = read_sql("""
     SELECT site, plotid, depth, subsample, varname, year, value
     from soil_data
@@ -95,10 +104,11 @@ def do_soil(writer, sites, soil, years, detectlimit):
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     df.reset_index(inplace=True)
+    valid2date(df)
     df.to_excel(writer, 'Soil', index=False)
 
 
-def get_operations(sites, years):
+def do_operations(writer, sites, years):
     """Return a DataFrame for the operations"""
     opdf = read_sql("""
     SELECT * from operations where uniqueid in %s and cropyear in %s
@@ -113,7 +123,8 @@ def get_operations(sites, years):
     # case 1, values are > 0, so columns are in %
     df = opdf[opdf['productrate'] > 0]
     for elem in FERTELEM:
-        opdf.loc[df.index, elem] = df['productrate'] * KGH_LBA * df[elem] / 100.
+        opdf.loc[df.index, elem] = (df['productrate'] * KGH_LBA *
+                                    df[elem] / 100.)
     opdf.loc[df.index, 'productrate'] = df['productrate'] * KGH_LBA
 
     # ________________________________________________________
@@ -122,10 +133,31 @@ def get_operations(sites, years):
     opdf.loc[df.index, 'productrate'] = None
     for elem in FERTELEM:
         opdf.loc[df.index, elem] = df[elem] * KGH_LBA
-    return opdf
+    valid2date(opdf)
+    opdf.to_excel(writer, 'Operations', index=False)
 
 
-def do(form):
+def do_management(writer, sites, years):
+    """Return a DataFrame for the management"""
+    opdf = read_sql("""
+    SELECT * from management where uniqueid in %s and cropyear in %s
+    ORDER by cropyear ASC
+    """, PGCONN, params=(tuple(sites), tuple(years)))
+    opdf.to_excel(writer, 'Management', index=False)
+
+
+def do_pesticides(writer, sites, years):
+    """Return a DataFrame for the pesticides"""
+    opdf = read_sql("""
+    SELECT * from pesticides where uniqueid in %s and cropyear in %s
+    ORDER by cropyear ASC
+    """, PGCONN, params=(tuple(sites), tuple(years)))
+    valid2date(opdf)
+    opdf.to_excel(writer, 'Pesticides', index=False)
+
+
+def do_work(form):
+    """do great things"""
     sites = form.getlist('sites[]')
     # treatments = form.getlist('treatments[]')
     agronomic = redup(form.getlist('agronomic[]'))
@@ -136,13 +168,19 @@ def do(form):
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
 
     # Sheet one are operations
-    opdf = get_operations(sites, years)
-    opdf.to_excel(writer, 'Operations', index=False)
+    do_operations(writer, sites, years)
 
     if len(agronomic) > 0:
         do_agronomic(writer, sites, agronomic, years, detectlimit)
     if len(soil) > 0:
         do_soil(writer, sites, soil, years, detectlimit)
+
+    # Management
+    do_management(writer, sites, years)
+
+    # Management
+    do_pesticides(writer, sites, years)
+
     do_dictionary(writer)
 
     # Send to client
@@ -156,7 +194,7 @@ def do(form):
 def main():
     """Do Stuff"""
     form = cgi.FieldStorage()
-    do(form)
+    do_work(form)
 
 
 if __name__ == '__main__':
