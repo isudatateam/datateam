@@ -24,7 +24,7 @@ function applyFilter(data){
 
 	$('#ghg-ui input').prop('disabled', true);
 	$.each(data.ghg, function(idx, v){
-		//console.log("SOIL: " + v);
+		//console.log("GHG: " + v);
 		$("#ghg-ui input[data-ghg='"+v+"']").prop('disabled', false);
 	});
 

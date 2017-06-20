@@ -118,6 +118,21 @@ def do_filter(form):
     if len(df.index) > 0:
         res['soil'] = redup(df['varname'].values.tolist())
 
+    # Figure out which GHG variables we have
+    df = read_sql("""
+    with myplotids as (
+        SELECT uniqueid, plotid from plotids
+        WHERE uniqueid in %s
+    )
+    SELECT * from ghg_data a, myplotids p
+    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
+    """, pgconn, params=(tuple(sites), ), index_col=None)
+    if len(df.index) > 0:
+        for i in range(1, 17):
+            col = "ghg%02i" % (i, )
+            if len(df[df[col].notnull()].index) > 0:
+                res['ghg'].append(col.upper())
+
     # Compute which years we have data for these locations
     df = read_sql("""
     WITH soil_years as (
@@ -126,11 +141,14 @@ def do_filter(form):
     agronomic_years as (
         SELECT distinct year from agronomic_data where varname in %s
         and site in %s),
-    agg as (SELECT year from soil_years UNION select year from agronomic_years)
+    ghg_years as (
+        SELECT distinct year from ghg_data where uniqueid in %s),
+    agg as (SELECT year from soil_years UNION select year from agronomic_years
+        UNION select year from ghg_years)
 
     SELECT distinct year from agg ORDER by year
     """, pgconn, params=(tuple(soil), tuple(sites), tuple(agronomic),
-                         tuple(sites)), index_col=None)
+                         tuple(sites), tuple(sites)), index_col=None)
     for _, row in df.iterrows():
         res['year'].append(row['year'])
 
