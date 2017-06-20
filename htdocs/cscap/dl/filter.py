@@ -57,11 +57,14 @@ def do_filter(form):
                               user='nobody')
     cursor = pgconn.cursor()
     res = {'treatments': [], 'agronomic': [], 'soil': [],
-           'year': []}
+           'ghg': [], 'water': [], 'ipm': [], 'year': []}
     sites = agg(form.getlist('sites[]'))
     treatments = agg(form.getlist('treatments[]'))
     agronomic = agg(form.getlist('agronomic[]'))
     soil = agg(form.getlist('soil[]'))
+    ghg = agg(form.getlist('ghg[]'))
+    water = agg(form.getlist('water[]'))
+    ipm = agg(form.getlist('ipm[]'))
     year = agg(form.getlist('year[]'))
 
     # build a list of treatments based on the sites selected

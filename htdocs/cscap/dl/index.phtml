@@ -469,6 +469,9 @@ $soilui = build_soil_ui();
 $yearui = build_year_ui();
 $publisting = build_publications();
 $theseslisting = build_theses();
+$ghgui = "";
+$waterui = "";
+$ipmui = "";
 
 $t->content = <<<EOF
 
@@ -492,6 +495,9 @@ $t->content = <<<EOF
   <button type="button" class="btn btn-default" id="treatments-btn">Treatments</button>
   <button type="button" class="btn btn-default" id="agronomic-btn">Agronomic</button>
   <button type="button" class="btn btn-default" id="soil-btn">Soil</button>
+  <button type="button" class="btn btn-default" id="ghg-btn">GHG</button>
+  <button type="button" class="btn btn-default" id="water-btn">Water</button>
+  <button type="button" class="btn btn-default" id="ipm-btn">IPM</button>
   <button type="button" class="btn btn-default" id="year-btn">Year</button>
   <button type="button" class="btn btn-default" id="option-btn">Final Options</button>
 </div>
@@ -523,6 +529,27 @@ $t->content = <<<EOF
 </div>
 	<h3>Soil</h3>
 {$soilui}
+</div>
+<div id="ghg-ui" style="display: none;">
+<div class="pull-right">
+  <button id="ghg-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
+	<h3>Green House Gases (GHG)</h3>
+{$ghgui}
+</div>
+<div id="water-ui" style="display: none;">
+<div class="pull-right">
+  <button id="water-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
+	<h3>Water</h3>
+{$waterui}
+</div>
+<div id="ipm-ui" style="display: none;">
+<div class="pull-right">
+  <button id="ipm-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
+	<h3>Integrated Pest Management (IPM)</h3>
+{$ipmui}
 </div>
 <div id="year-ui" style="display: none;">
 <div class="pull-right">

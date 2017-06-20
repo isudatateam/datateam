@@ -162,6 +162,9 @@ def do_work(form):
     # treatments = form.getlist('treatments[]')
     agronomic = redup(form.getlist('agronomic[]'))
     soil = redup(form.getlist('soil[]'))
+    ghg = redup(form.getlist('ghg[]'))
+    water = redup(form.getlist('water[]'))
+    ipm = redup(form.getlist('ipm[]'))
     years = redup(form.getlist('year[]'))
     detectlimit = form.getfirst('detectlimit', "1")
 

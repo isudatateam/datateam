@@ -1,4 +1,5 @@
-var TABS = ['sites', 'treatments', 'agronomic', 'soil', 'year', 'option'];
+var TABS = ['sites', 'treatments', 'agronomic', 'soil', 'ghg', 'water', 'ipm',
+	'year', 'option'];
 var CURRENTTAB = 0;
 
 function applyFilter(data){
@@ -21,6 +22,25 @@ function applyFilter(data){
 		$("#soil-ui input[data-soil='"+v+"']").prop('disabled', false);
 	});
 
+	$('#ghg-ui input').prop('disabled', true);
+	$.each(data.ghg, function(idx, v){
+		//console.log("SOIL: " + v);
+		$("#ghg-ui input[data-ghg='"+v+"']").prop('disabled', false);
+	});
+
+	$('#water-ui input').prop('disabled', true);
+	$.each(data.water, function(idx, v){
+		//console.log("SOIL: " + v);
+		$("#water-ui input[data-water='"+v+"']").prop('disabled', false);
+	});
+
+	$('#ipm-ui input').prop('disabled', true);
+	$.each(data.ipm, function(idx, v){
+		//console.log("SOIL: " + v);
+		$("#ipm-ui input[data-ipm='"+v+"']").prop('disabled', false);
+	});
+
+	
 	$('#year-ui input').prop('disabled', true);
 	$.each(data.year, function(idx, v){
 		//console.log("YEAR: " + v);
@@ -32,6 +52,7 @@ function applyFilter(data){
 
 function build_data(){
 	var data = {sites: [], treatments: [], agronomic: [], soil: [],
+			ghg: [], water: [], ipm: [],
 			year: [], management: [], option: []};
 
 	// Which sites are checked
@@ -49,6 +70,15 @@ function build_data(){
 	// Which soil are checked
 	$('#soil-ui input:checked').each(function(idx, elem){
 		data.soil.push($(elem).val());
+	});
+	$('#ghg-ui input:checked').each(function(idx, elem){
+		data.ghg.push($(elem).val());
+	});
+	$('#water-ui input:checked').each(function(idx, elem){
+		data.water.push($(elem).val());
+	});
+	$('#ipm-ui input:checked').each(function(idx, elem){
+		data.ipm.push($(elem).val());
 	});
 	return data;
 }
