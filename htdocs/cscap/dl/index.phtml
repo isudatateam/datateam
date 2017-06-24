@@ -490,6 +490,48 @@ EOF;
 	return $s;
 }
 
+function build_ipm_ui(){
+	$s = <<<EOF
+	<div class="panel panel-default">
+	<div class="panel-heading">Available Variables</div>
+	<div class="panel-body">
+
+	<input type="checkbox" value="IPM01" data-ipm="IPM01" name="ipm[]" id="IPM01">
+	<label for="IPM01" class="control-label">Insect Sampling Methods</label>
+	<br /><input type="checkbox" value="IPM02" data-ipm="IPM02" name="ipm[]" id="IPM02">
+	<label for="IPM02" class="control-label">Insect Common Name</label>
+	<br /><input type="checkbox" value="IPM03" data-ipm="IPM03" name="ipm[]" id="IPM03">
+	<label for="IPM03" class="control-label">Insect Class</label>
+	<br /><input type="checkbox" value="IPM04" data-ipm="IPM04" name="ipm[]" id="IPM04">
+	<label for="IPM04" class="control-label">Insect Order</label>
+	<br /><input type="checkbox" value="IPM05" data-ipm="IPM05" name="ipm[]" id="IPM05">
+	<label for="IPM05" class="control-label">Insect Family</label>
+	<br /><input type="checkbox" value="IPM06" data-ipm="IPM06" name="ipm[]" id="IPM06">
+	<label for="IPM06" class="control-label">Insect Species</label>
+	<br /><input type="checkbox" value="IPM07" data-ipm="IPM07" name="ipm[]" id="IPM07">
+	<label for="IPM07" class="control-label">Insect Population</label>
+	<br /><input type="checkbox" value="IPM08" data-ipm="IPM08" name="ipm[]" id="IPM08">
+	<label for="IPM08" class="control-label">Insect population measurement unit</label>
+	<br /><input type="checkbox" value="IPM09" data-ipm="IPM09" name="ipm[]" id="IPM09">
+	<label for="IPM09" class="control-label">Plant Sample Number</label>
+	<br /><input type="checkbox" value="IPM10" data-ipm="IPM10" name="ipm[]" id="IPM10">
+	<label for="IPM10" class="control-label">Plant sampled</label>
+	<br /><input type="checkbox" value="IPM11" data-ipm="IPM11" name="ipm[]" id="IPM11">
+	<label for="IPM11" class="control-label">Plant component assessed for damage</label>
+	<br /><input type="checkbox" value="IPM12" data-ipm="IPM12" name="ipm[]" id="IPM12">
+	<label for="IPM12" class="control-label">Disease/Damage type</label>
+	<br /><input type="checkbox" value="IPM13" data-ipm="IPM13" name="ipm[]" id="IPM13">
+	<label for="IPM13" class="control-label">Position assessed</label>
+	<br /><input type="checkbox" value="IPM14" data-ipm="IPM14" name="ipm[]" id="IPM14">
+	<label for="IPM14" class="control-label">Visual rating of damage due to disease or insect</label>
+			
+	</div>
+	</div>
+EOF;
+	return $s;
+}
+
+
 require_once "../../../include/myview.php";
 $t = new MyView();
 $t->title = "CSCAP Project Data Download";
@@ -516,7 +558,7 @@ $publisting = build_publications();
 $theseslisting = build_theses();
 $ghgui = build_ghg_ui();
 $waterui = "";
-$ipmui = "";
+$ipmui = build_ipm_ui();
 
 $t->content = <<<EOF
 

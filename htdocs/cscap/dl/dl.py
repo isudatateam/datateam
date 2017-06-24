@@ -84,6 +84,16 @@ def do_ghg(writer, sites, ghg, years):
     df.to_excel(writer, 'GHG', index=False)
 
 
+def do_ipm(writer, sites, ipm, years):
+    """get IPM data"""
+    cols = ", ".join(ipm)
+    df = read_sql("""
+    SELECT uniqueid, plotid, date, year, """ + cols + """ from ipm_data
+    WHERE uniqueid in %s and year in %s ORDER by uniqueid, year
+    """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
+    df.to_excel(writer, 'IPM', index=False)
+
+
 def do_agronomic(writer, sites, agronomic, years, detectlimit):
     """get agronomic data"""
     df = read_sql("""
@@ -189,6 +199,8 @@ def do_work(form):
         do_soil(writer, sites, soil, years, detectlimit)
     if len(ghg) > 0:
         do_ghg(writer, sites, ghg, years)
+    if len(ipm) > 0:
+        do_ipm(writer, sites, ipm, years)
 
     # Management
     do_management(writer, sites, years)

@@ -133,6 +133,21 @@ def do_filter(form):
             if len(df[df[col].notnull()].index) > 0:
                 res['ghg'].append(col.upper())
 
+    # Figure out which IPM variables we have
+    df = read_sql("""
+    with myplotids as (
+        SELECT uniqueid, plotid from plotids
+        WHERE uniqueid in %s
+    )
+    SELECT * from ipm_data a, myplotids p
+    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
+    """, pgconn, params=(tuple(sites), ), index_col=None)
+    if len(df.index) > 0:
+        for i in range(1, 15):
+            col = "ipm%02i" % (i, )
+            if len(df[df[col].notnull()].index) > 0:
+                res['ipm'].append(col.upper())
+
     # Compute which years we have data for these locations
     df = read_sql("""
     WITH soil_years as (
