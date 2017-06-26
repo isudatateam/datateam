@@ -95,9 +95,8 @@ def do_filter(form):
     if len(arsql) == 0:
         sql = ""
     else:
-        sql = " and ".join(arsql)
-        if len(arsql) == 1:
-            sql = " and " + sql
+        sql = " and "
+        sql = sql + " and ".join(arsql)
 
     df = read_sql("""
     with myplotids as (
