@@ -9,36 +9,42 @@ function applyFilter(data){
 		//console.log("TREAT: " + v);
 		$("#treatments-ui input[data-treatment='"+v+"']").prop('disabled', false);
 	});
+	$("#treatments-ui input[type=checkbox]:disabled").prop('checked', false);
 		
 	$('#agronomic-ui input').prop('disabled', true);
 	$.each(data.agronomic, function(idx, v){
 		//console.log("AG: " + v);
 		$("#agronomic-ui input[data-agronomic='"+v+"']").prop('disabled', false);
 	});
+	$("#agronomic-ui input[type=checkbox]:disabled").prop('checked', false);
 		
 	$('#soil-ui input').prop('disabled', true);
 	$.each(data.soil, function(idx, v){
 		//console.log("SOIL: " + v);
 		$("#soil-ui input[data-soil='"+v+"']").prop('disabled', false);
 	});
+	$("#soil-ui input[type=checkbox]:disabled").prop('checked', false);
 
 	$('#ghg-ui input').prop('disabled', true);
 	$.each(data.ghg, function(idx, v){
 		//console.log("GHG: " + v);
 		$("#ghg-ui input[data-ghg='"+v+"']").prop('disabled', false);
 	});
+	$("#ghg-ui input[type=checkbox]:disabled").prop('checked', false);
 
 	$('#water-ui input').prop('disabled', true);
 	$.each(data.water, function(idx, v){
 		//console.log("SOIL: " + v);
 		$("#water-ui input[data-water='"+v+"']").prop('disabled', false);
 	});
+	$("#water-ui input[type=checkbox]:disabled").prop('checked', false);
 
 	$('#ipm-ui input').prop('disabled', true);
 	$.each(data.ipm, function(idx, v){
 		//console.log("SOIL: " + v);
 		$("#ipm-ui input[data-ipm='"+v+"']").prop('disabled', false);
 	});
+	$("#ipm-ui input[type=checkbox]:disabled").prop('checked', false);
 
 	
 	$('#year-ui input').prop('disabled', true);
@@ -46,6 +52,7 @@ function applyFilter(data){
 		//console.log("YEAR: " + v);
 		$("#year-ui input[data-year='"+v+"']").prop('disabled', false);
 	});
+	$("#year-ui input[type=checkbox]:disabled").prop('checked', false);
 		
 	
 }
