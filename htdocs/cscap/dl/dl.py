@@ -42,10 +42,10 @@ def redup(arr):
     return arr + additional
 
 
-def conv(value, detectlimit):
+def conv(value, detectlimit, missing):
     """Convert a value into something that gets returned"""
     if value is None or value == '':
-        return "M"
+        return missing
     if value.startswith("<"):
         if detectlimit == "1":
             return value
@@ -57,7 +57,7 @@ def conv(value, detectlimit):
         if detectlimit == "4":
             return "M"
     if value in ['n/a', 'did not collect']:
-        return value
+        return missing
     try:
         return float(value)
     except Exception as _:
@@ -94,14 +94,14 @@ def do_ipm(writer, sites, ipm, years):
     df.to_excel(writer, 'IPM', index=False)
 
 
-def do_agronomic(writer, sites, agronomic, years, detectlimit):
+def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     """get agronomic data"""
     df = read_sql("""
     SELECT site, plotid, varname, year, value from agronomic_data
     WHERE site in %s and year in %s and varname in %s ORDER by site, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(agronomic)), index_col=None)
-    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
+    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
     df = pd.pivot_table(df, index=('site', 'plotid', 'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
@@ -110,7 +110,7 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit):
     df.to_excel(writer, 'Agronomic', index=False)
 
 
-def do_soil(writer, sites, soil, years, detectlimit):
+def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
     df = read_sql("""
     SELECT site, plotid, depth, subsample, varname, year, value
@@ -118,7 +118,7 @@ def do_soil(writer, sites, soil, years, detectlimit):
     WHERE site in %s and year in %s and varname in %s ORDER by site, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
-    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
+    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
     df = pd.pivot_table(df, index=('site', 'plotid', 'depth', 'subsample',
                                    'year'),
                         values='value', columns=('varname',),
@@ -196,6 +196,7 @@ def do_work(form):
     ipm = redup(form.getlist('ipm[]'))
     years = redup(form.getlist('year[]'))
     shm = redup(form.getlist('shm[]'))
+    missing = form.getfirst('missing', "M")
     if len(years) == 0:
         years = [str(s) for s in range(2011, 2016)]
     detectlimit = form.getfirst('detectlimit', "1")
@@ -207,9 +208,9 @@ def do_work(form):
         do_operations(writer, sites, years)
 
     if len(agronomic) > 0:
-        do_agronomic(writer, sites, agronomic, years, detectlimit)
+        do_agronomic(writer, sites, agronomic, years, detectlimit, missing)
     if len(soil) > 0:
-        do_soil(writer, sites, soil, years, detectlimit)
+        do_soil(writer, sites, soil, years, detectlimit, missing)
     if len(ghg) > 0:
         do_ghg(writer, sites, ghg, years)
     if len(ipm) > 0:
