@@ -176,6 +176,15 @@ def do_pesticides(writer, sites, years):
     opdf.to_excel(writer, 'Pesticides', index=False)
 
 
+def do_plotids(writer, sites):
+    """Write plotids to the spreadsheet"""
+    opdf = read_sql("""
+        SELECT * from plotids where uniqueid in %s
+        ORDER by uniqueid, plotid ASC
+    """, PGCONN, params=(tuple(sites), ))
+    opdf[opdf.columns[:30]].to_excel(writer, 'Plot IDs', index=False)
+
+
 def do_work(form):
     """do great things"""
     sites = form.getlist('sites[]')
@@ -186,6 +195,8 @@ def do_work(form):
     water = redup(form.getlist('water[]'))
     ipm = redup(form.getlist('ipm[]'))
     years = redup(form.getlist('year[]'))
+    if len(years) == 0:
+        years = [str(s) for s in range(2011, 2016)]
     detectlimit = form.getfirst('detectlimit', "1")
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
@@ -205,8 +216,11 @@ def do_work(form):
     # Management
     do_management(writer, sites, years)
 
-    # Management
+    # Pesticides
     do_pesticides(writer, sites, years)
+
+    # Plot IDs
+    do_plotids(writer, sites)
 
     do_dictionary(writer)
 
