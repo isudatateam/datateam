@@ -1,5 +1,5 @@
 var TABS = ['sites', 'treatments', 'agronomic', 'soil', 'ghg', 'water', 'ipm',
-	'year', 'option'];
+	'year', 'shm', 'option'];
 var CURRENTTAB = 0;
 
 function applyFilter(data){

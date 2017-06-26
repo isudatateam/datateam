@@ -195,6 +195,7 @@ def do_work(form):
     water = redup(form.getlist('water[]'))
     ipm = redup(form.getlist('ipm[]'))
     years = redup(form.getlist('year[]'))
+    shm = redup(form.getlist('shm[]'))
     if len(years) == 0:
         years = [str(s) for s in range(2011, 2016)]
     detectlimit = form.getfirst('detectlimit', "1")
@@ -202,7 +203,8 @@ def do_work(form):
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
 
     # Sheet one are operations
-    do_operations(writer, sites, years)
+    if "SHM1" in shm:
+        do_operations(writer, sites, years)
 
     if len(agronomic) > 0:
         do_agronomic(writer, sites, agronomic, years, detectlimit)
@@ -214,10 +216,14 @@ def do_work(form):
         do_ipm(writer, sites, ipm, years)
 
     # Management
-    do_management(writer, sites, years)
+    if 'SHM3' in shm:
+        do_management(writer, sites, years)
 
     # Pesticides
-    do_pesticides(writer, sites, years)
+    if 'SHM2' in shm:
+        do_pesticides(writer, sites, years)
+
+    # DWM SHM4 is a TODO
 
     # Plot IDs
     do_plotids(writer, sites)

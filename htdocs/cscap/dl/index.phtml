@@ -531,6 +531,26 @@ EOF;
 	return $s;
 }
 
+function build_shm_ui(){
+	$s = <<<EOF
+	<div class="panel panel-default">
+	<div class="panel-heading">Available Variables</div>
+	<div class="panel-body">
+			
+	<input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1">
+	<label for="SHM1" class="control-label">Field Operations</label>
+	<br /><input type="checkbox" value="SHM2" data-ipm="SHM2" name="shm[]" id="SHM2">
+	<label for="SHM2" class="control-label">Pesticides</label>
+	<br /><input type="checkbox" value="SHM3" data-ipm="SHM3" name="shm[]" id="SHM3">
+	<label for="SHM3" class="control-label">Residue, Irrigation</label>
+	<br /><input type="checkbox" value="SHM4" data-ipm="SHM4" name="shm[]" id="SHM4">
+	<label for="SHM4" class="control-label">Drainage Control Structure Management</label>
+			
+	</div>
+	</div>
+EOF;
+	return $s;
+}
 
 require_once "../../../include/myview.php";
 $t = new MyView();
@@ -554,6 +574,7 @@ $treatmentui = build_treatments_ui();
 $agronomicui = build_agronomic_ui();
 $soilui = build_soil_ui();
 $yearui = build_year_ui();
+$shmui = build_shm_ui();
 $publisting = build_publications();
 $theseslisting = build_theses();
 $ghgui = build_ghg_ui();
@@ -586,6 +607,7 @@ $t->content = <<<EOF
   <button type="button" class="btn btn-default" id="water-btn">Water</button>
   <button type="button" class="btn btn-default" id="ipm-btn">IPM</button>
   <button type="button" class="btn btn-default" id="year-btn">Year</button>
+  <button type="button" class="btn btn-default" id="shm-btn">Site History, Management</button>
   <button type="button" class="btn btn-default" id="option-btn">Final Options</button>
 </div>
 
@@ -646,6 +668,15 @@ $t->content = <<<EOF
 	<h3>Available Crop Years with Data</h3>
 {$yearui}
 </div>
+
+<div id="shm-ui" style="display: none;">
+<div class="pull-right">
+  <button id="shm-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
+</div>
+
+{$shmui}
+</div>
+
 <div id="option-ui" style="display: none;">
 	<h3>Final Options</h3>
 
