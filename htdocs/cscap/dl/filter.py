@@ -83,23 +83,26 @@ def do_filter(form):
 
     # build a list of agronomic data based on the plotids and sites
     a = {}
-    sql = []
-    args = []
+    arsql = []
+    args = [tuple(sites), ]
     for l, col in zip(['TIL', 'ROT', 'DWM', 'NIT', 'LND'],
                       ['tillage', 'rotation', 'drainage', 'nitrogen',
                        'landscape']):
         a[l] = [b for b in treatments if b.startswith(l)]
         if len(a[l]) > 0:
-            sql.append(" %s in %%s" % (col,))
+            arsql.append(" %s in %%s" % (col,))
             args.append(tuple(a[l]))
-    if len(sql) == 0:
+    if len(arsql) == 0:
         sql = ""
     else:
-        sql = "where " + " and ".join(sql)
+        sql = " and ".join(arsql)
+        if len(arsql) == 1:
+            sql = " and " + sql
 
     df = read_sql("""
     with myplotids as (
-        SELECT uniqueid, plotid from plotids """ + sql + """
+        SELECT uniqueid, plotid from plotids
+        WHERE uniqueid in %s """ + sql + """
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.site = p.uniqueid and a.plotid = p.plotid
@@ -110,7 +113,8 @@ def do_filter(form):
     # build a list of soil data based on the plotids and sites
     df = read_sql("""
     with myplotids as (
-        SELECT uniqueid, plotid from plotids """ + sql + """
+        SELECT uniqueid, plotid from plotids
+        WHERE uniqueid in %s """ + sql + """
     )
     SELECT distinct varname from soil_data a, myplotids p
     WHERE a.site = p.uniqueid and a.plotid = p.plotid
