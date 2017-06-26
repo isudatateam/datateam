@@ -104,7 +104,8 @@ def do_filter(form):
         WHERE uniqueid in %s """ + sql + """
     )
     SELECT distinct varname from agronomic_data a, myplotids p
-    WHERE a.site = p.uniqueid and a.plotid = p.plotid
+    WHERE a.site = p.uniqueid and a.plotid = p.plotid and
+    a.value not in ('n/a')
     """, pgconn, params=args, index_col=None)
     if len(df.index) > 0:
         res['agronomic'] = redup(df['varname'].values.tolist())
