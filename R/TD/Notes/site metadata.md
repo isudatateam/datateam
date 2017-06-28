@@ -1,8 +1,8 @@
 # TD Site Measurement & Instrumentation
 ## DWM IDs
-- DWM IDs are assigned to units (plots) based on drainage water management treatment. DWM IDs does not neccesary match with AGRONOMIC PLOT or other ids (for example, see HICKS_B ids). 
-- DWM units do not have to be croplands. Prairie and saturatd buffer zones are regarded as DWM units. DWM unit generally incompases a single plot, but it can also be a collection of mltiple plots (for example ACRE and VANWERT). 
-- Each drainage treatments has its unique code. First two latters of the code defines general drainage ptractice, the third letter is used to specify deviation from the general practices when applicable (see BATH_A). Based on dwm research need one can use only frist two letters of the code or complete string to destinguish different dwm practices during analyses. 
+- DWM IDs are assigned to units (plots) based on drainage water management treatment. DWM IDs does not necessary match with AGRONOMIC PLOT or other ids (for example, see HICKS_B ids). 
+- DWM units do not have to be croplands. Prairie and saturated buffer zones are regarded as DWM units. DWM unit generally encompasses a single plot, but it can also be a collection of multiple plots (for example ACRE and VANWERT). 
+- Each drainage treatments has its unique code. First two letters of the code defines general drainage practice, the third letter is used to specify deviation from the general practices when applicable (see BATH_A). Based on dwm research need one can use only first two letters of the code or complete string to distinguish different dwm practices during analyses. 
 
 CD  - Controlled Drainage
 CDA - Controlled Drainage Automated
