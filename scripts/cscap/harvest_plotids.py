@@ -77,6 +77,14 @@ def main():
                 print(cols)
                 sys.exit()
             added += 1
+            # One-time correction of missing nitrogen entries
+            # if data['nitrogen'] is None or data['nitrogen'] == '':
+            #    print("Updating %s %s for nitrogen" % (data['uniqueid'],
+            #                                           data['plotid']))
+            #    entry2.set_value('nitrogen',
+            #                     ('[2] MRTN application of N '
+            #                      'fertilizer in spring'))
+            #    spr_client.update(entry2)
 
     print(("harvest_plotids, removed: %s, added: %s, sheets: %s"
            ) % (removed, added, sheets))
