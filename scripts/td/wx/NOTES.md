@@ -11,7 +11,7 @@ DEFI_M     None Found
 DEFI_R     Saving 35806 entries 199904071500->200305282000
            Saving 114428 entries 200305071530->200905220127
 DPAC       Saving 87648 entries 200510010600->201510010500
-FAIRM      None Found
+FAIRM      None Found https://ndawn.ndsu.nodak.edu/ use Wahpeton 6N
 FULTON     Saving 147627 entries 200305071430->201103021605
 HARDIN     None Found
 HENRY      None Found

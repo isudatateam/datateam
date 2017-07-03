@@ -5,6 +5,7 @@ pgconn = psycopg2.connect(database='td')
 cursor = pgconn.cursor()
 
 df = pd.read_csv(sys.argv[1])
+df['Date'] = pd.to_datetime(df['Date'])
 uniqueid = sys.argv[2]
 
 cursor.execute("""
@@ -17,13 +18,14 @@ if deleted > 0:
 
 inserts = 0
 for idx, row in df.iterrows():
-    if row['Date'] == ' ' or row['Date'] is None:
+    if (row['Date'] == ' ' or row['Date'] is None or
+            pd.isnull(row['WAT1'])):
         continue
     cursor.execute("""
     INSERT into tileflow_data
     (uniqueid, plotid, valid, discharge_mm_qc, discharge_mm)
     VALUES (%s, %s, %s, %s, %s)
-    """, (uniqueid, row['plot'], row['Date'], row.get('WAT1'), row.get('WAT1')
+    """, (uniqueid, row['id'], row['Date'], row.get('WAT1'), row.get('WAT1')
           ))
     inserts += 1
 print("Inserted %s, Deleted %s entries for %s" % (inserts, deleted,

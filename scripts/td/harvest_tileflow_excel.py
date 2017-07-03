@@ -12,14 +12,18 @@ for sheetname in dfs.keys():
     if len(sheetname) != 4:
         print("Skipping sheet %s" % (sheetname, ))
         continue
+    print("Processing sheet: %s" % (sheetname, ))
     df = dfs[sheetname]
+    #for i, row in df.iterrows():
+    #    print row
+    #    _ = pd.to_datetime(row['Date'].strftime("%Y-%m-%d") +
+    #                       ' ' + row['Time'].strftime("%H:%M:%S"))
     # print df
-    #print df['Date']
-    #df['Date'] = pd.to_datetime(df['Date'], errors='coerse')
-    # df['Date'] = pd.to_datetime(df['Date'].astype(str) +
-    #                            ' ' + df['Time'].astype(str), errors='coerse')
-    df.columns = ['Date', 'Time', 'PLOT7', 'PLOT8', 'bogus', 'bogus',
-                  'bogus', 'bogus']
+    # print df['Time'].astype(str)
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerse')
+    df['Time'] = pd.to_datetime(df['Time'], errors='coerse')
+    df['Date'] = df['Date'] + df['Time']
+    df.columns = ['Date', 'Time', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6']
     cursor.execute("""
         DELETE from tileflow_data where uniqueid = %s and
         valid between %s and %s
@@ -29,10 +33,11 @@ for sheetname in dfs.keys():
         print("Removed %s" % (deleted,))
 
     inserts = 0
-    for plotid in ['PLOT7', 'PLOT8']:
+    for plotid in ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']:
         ldf = df[['Date', plotid]]
         for idx, row in ldf.iterrows():
-            if row['Date'] == ' ' or row['Date'] is None or pd.isnull(row[plotid]):
+            if (row['Date'] == ' ' or row['Date'] is None or
+                    pd.isnull(row[plotid])):
                 continue
             print row
             cursor.execute("""

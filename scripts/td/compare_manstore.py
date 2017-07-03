@@ -8,6 +8,17 @@ CSCAPSITES = ['DPAC', 'HICKS.B', 'SERF', 'STJOHNS']
 IGNORECOLS = ['editedby', 'cropyear']
 
 
+def print_df(df):
+    """Make it look nice in HTML"""
+    res = ""
+    for _, row in df.iterrows():
+        for col in df.columns:
+            if row[col] is not None and row[col] not in [0, '0']:
+                res += "[%s] %s<br />" % (col, row[col])
+        res += "<hr>"
+    return res
+
+
 def diff(csrow, tdrow):
     """Difference two rows"""
     for col, val in csrow.iteritems():
@@ -40,6 +51,24 @@ def cmp_fertilizer(cscapdf, tddf):
         #       ) % (tdrow['uniqueid'], tdrow['valid'], tdrow['updated']))
 
 
+def list_fertilizer(cscapdf, tddf):
+    """Attempt to create a listing of fert operations"""
+    print("<table border=\"1\" cellspacing=\"3\">")
+    for uniqueid in CSCAPSITES:
+        for year in range(2011, 2016):
+            print("<tr><th colspan=\"2\">%s %s</th></tr>" % (year, uniqueid))
+            print("<tr><th>CSCAP</th><th>TD</th></tr>")
+            cdf = cscapdf[(cscapdf['cropyear'] == year) &
+                          (cscapdf['uniqueid'] == uniqueid) &
+                          (cscapdf['operation'] == 'fertilizer_synthetic')]
+            tdf = tddf[(tddf['cropyear'] == str(year)) &
+                       (tddf['uniqueid'] == uniqueid)]
+            print(("<tr><td valign=\"top\">%s</td>"
+                   "<td valign=\"top\">%s</td></tr>"
+                   ) % (print_df(cdf), print_df(tdf)))
+    print("</table>")
+
+
 def get_dfs():
     """Return the dataframes"""
     pgconn_cscap = psycopg2.connect(database='sustainablecorn')
@@ -63,7 +92,8 @@ def get_dfs():
 def main():
     """Go Main"""
     cscap, td = get_dfs()
-    cmp_fertilizer(cscap['operations'], td['soil_fert'])
+    # cmp_fertilizer(cscap['operations'], td['soil_fert'])
+    list_fertilizer(cscap['operations'], td['soil_fert'])
 
 
 if __name__ == '__main__':
