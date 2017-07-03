@@ -227,9 +227,11 @@ def do_work(form):
     # DWM SHM4 is a TODO
 
     # Plot IDs
-    do_plotids(writer, sites)
+    if 'SHM4' in shm:
+        do_plotids(writer, sites)
 
-    do_dictionary(writer)
+    if 'SHM5' in shm:
+        do_dictionary(writer)
 
     # Send to client
     writer.close()
