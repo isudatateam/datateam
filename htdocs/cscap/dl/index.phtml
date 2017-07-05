@@ -575,7 +575,7 @@ input[type=checkbox][disabled] + label {
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="dl.js?v=3"></script>
+<script src="dl.js?v=4"></script>
 EOF;
 
 $sitesui = build_sites_ui();
@@ -698,14 +698,19 @@ $t->content = <<<EOF
 </select></p>
 
 <p>How to represent missing values:
-<select name="missing">
+<select name="missing" id="missingvalue">
 	<option value="M">M</option>
 	<option value="N/A">N/A</option>
 	<option value="NaN">NaN</option>
 	<option value="NULL">NULL</option>
 	<option value=" ">((blank space))</option>
 	<option value=".">.</option>
-</select></p>
+    <option value="__custom__">Custom Value</option>
+</select>
+<div id="missingvalue_opt" style="display: none;">
+&nbsp; Enter Custom Value: &nbsp; <input type="text" name="custom_missing" size="8">
+</div>
+</p>
 
 <p><input type="submit" value="Proceed with Download"></p>
 

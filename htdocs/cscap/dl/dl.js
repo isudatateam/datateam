@@ -155,6 +155,13 @@ function build_ui(){
 		var tabtitle = $(this).attr("id").replace("-selectall", "");
 		$("#" + tabtitle +"-ui input:enabled[type='checkbox']").prop('checked', true);
 	});
+	$("#missingvalue").change(function(){
+		if ($(this).val() == '__custom__'){
+			$("#missingvalue_opt").css('display', 'block');			
+		} else {
+			$("#missingvalue_opt").css('display', 'none');
+		}
+	});
 };
 
 $(document).ready(function(){

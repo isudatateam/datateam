@@ -197,6 +197,9 @@ def do_work(form):
     years = redup(form.getlist('year[]'))
     shm = redup(form.getlist('shm[]'))
     missing = form.getfirst('missing', "M")
+    if missing == '__custom__':
+        missing = form.getfirst('custom_missing', 'M')
+    sys.stderr.write("Missing is %s\n" % (missing, ))
     if len(years) == 0:
         years = [str(s) for s in range(2011, 2016)]
     detectlimit = form.getfirst('detectlimit', "1")
