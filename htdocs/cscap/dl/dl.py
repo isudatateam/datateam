@@ -179,7 +179,15 @@ def do_pesticides(writer, sites, years):
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = read_sql("""
-        SELECT * from plotids where uniqueid in %s
+        SELECT uniqueid, plotid, rep, tillage, rotation, drainage, nitrogen,
+        landscape, herbicide, soilseriesname2, soiltextureseries2,
+        soilseriesname1,
+        soiltextureseries1, soilseriesdescription1, soiltaxonomicclass1,
+        soilseriesdescription2, soiltaxonomicclass2, soiltextureseries3,
+        soiltaxonomicclass3, soilseriesdescription3, soilseriesname3,
+        soiltaxonomicclass4, soilseriesdescription4, soilseriesname4,
+        soiltextureseries4, notes, agro, soil, ghg, ipmcscap, ipmusb
+        from plotids where uniqueid in %s
         ORDER by uniqueid, plotid ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns[:30]].to_excel(writer, 'Plot IDs', index=False)
