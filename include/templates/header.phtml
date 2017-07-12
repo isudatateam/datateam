@@ -1,13 +1,19 @@
 <?php 
-$title = array_key_exists('title', $this->vars)? 'DataTeam :: '. $this->title : 'ISU Data Team';
+$title = array_key_exists('title', $this->vars)? 'Data Team :: '. $this->title : 'ISU Data Team';
 $refresh = array_key_exists('refresh', $this->vars)? $this->refresh : '';
 $headextra = array_key_exists('headextra', $this->vars)? $this->headextra : '';
-
+if (array_key_exists('iemss', $this->vars)){
+  $headextra .= <<<EOF
+<link rel="stylesheet" href="/vendor/openlayers/3.9.0/ol.css" type="text/css">
+EOF;
+}
 $bodyextra = array_key_exists('bodyextra', $this->vars)? ' '. $this->bodyextra : '';
 $twimage = array_key_exists('twitter_image', $this->vars) ? 
-				$this->twitter_image : 'https://datateam.agron.iastate.edu/images/logo_small.png';
+				$this->twitter_image : '/images/logo_small.png';
+$twcard = array_key_exists('twitter_card', $this->vars) ? 
+				$this->twitter_card : 'summary';
 $twdescription = array_key_exists('twitter_description', $this->vars) ? 
-				$this->twitter_description : 'Data Team of Iowa State University';
+				$this->twitter_description : 'ISU Data Team of Iowa State University';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,11 +26,12 @@ $twdescription = array_key_exists('twitter_description', $this->vars) ?
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $title; ?></title>
-    <meta name="description" content="Iowa State University, Data Team">
+    <meta name="description" content="Iowa State University, ISU Data Team">
     <meta name="author" content="daryl herzmann akrherz@iastate.edu">
 
     <!-- Le styles -->
-    <link href="/vendor/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/vendor/fa/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/vendor/iastate-v2.0.1/css/iastate.min.css" rel="stylesheet">
     <link href="/css/bootstrap-override.css" rel="stylesheet">
  
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -32,15 +39,9 @@ $twdescription = array_key_exists('twitter_description', $this->vars) ?
       <script src="/js/html5shiv.js"></script>
       <script src="/js/respond.min.js"></script>
     <![endif]-->
-    <meta name="twitter:card" content="summary">
-	<meta name="twitter:image:src" content="<?php echo $twimage; ?>">
-	<meta name="twitter:title" content="<?php echo $title; ?>">
-	<meta name="twitter:description" content="<?php echo $twdescription; ?>">
-	<meta name="twitter:url" content="https://datateam.agron.iastate.edu">
-	<meta name="twitter:creator" content="@akrherz">
-	<meta name="twitter:image:width" content="85">
-	<meta name="twitter:image:height" content="65">
 
+	<!-- Non-essential -->
+	<meta name="twitter:creator" content="@akrherz">
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png">
