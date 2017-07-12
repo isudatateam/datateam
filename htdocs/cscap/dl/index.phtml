@@ -356,10 +356,10 @@ EOF;
 function build_theses(){
 	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
 	$rs = pg_query($pgconn, "select * from theses ".
-			"ORDER by authors");
+			"WHERE online_source != 'N/A' ORDER by authors");
 	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$s .= sprintf("<p>%s %s %s %s <a href=\"%s\">%s</a></p>\n",
+		$s .= sprintf("<p>%s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a></p>\n",
 				$row['authors'], $row["year"], $row['title'],
 				$row["journal_or_source"],
 				$row["online_source"], $row["online_source"]);
@@ -376,7 +376,7 @@ function build_publications(){
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 		$strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
 		$endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
-		$s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\">%s</a>%s</p>\n",
+		$s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a>%s</p>\n",
 				$strong,
 				$row['authors'], $row["year"], $row['title'],
 				$row["journal_or_source"], $row["vol"], $row["pg_no."],
@@ -596,9 +596,8 @@ $t->content = <<<EOF
  <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Data</a></li>
-    <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Refereed Journals</a></li>
     <li role="presentation"><a href="#sites" aria-controls="sites" role="tab" data-toggle="tab">Research Sites</a></li>
-    <li role="presentation"><a href="#theses" aria-controls="theses" role="tab" data-toggle="tab">Theses and Dissertations</a></li>
+    <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
   </ul>
   
 <div class="tab-content">
@@ -724,6 +723,9 @@ $t->content = <<<EOF
 </div>
 </form>
 		</div>
+		<div role="tabpanel" class="tab-pane" id="sites">
+<iframe src="https://www.google.com/maps/d/embed?mid=1VQuDqTRkO5RPvIgWMODYvBLWU1A" width="640" height="480"></iframe>
+		</div>
 		<div role="tabpanel" class="tab-pane" id="pubs">
 <h3>CSCAP Team Publications</h3>
 
@@ -731,12 +733,12 @@ $t->content = <<<EOF
 These do not require a subscription to the journal to access.</blockquote></p>
 
 {$publisting}
-		</div>
-		<div role="tabpanel" class="tab-pane" id="theses">
+
+<hr />
+<h3>CSCAP Theses and Dissertations</h3>
+
 {$theseslisting}
-		</div>
-		<div role="tabpanel" class="tab-pane" id="sites">
-<iframe src="https://www.google.com/maps/d/embed?mid=1VQuDqTRkO5RPvIgWMODYvBLWU1A" width="640" height="480"></iframe>
+
 		</div>
 		</div>
 		
