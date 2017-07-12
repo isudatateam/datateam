@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-"""This is our fancy pants download function"""
+"""This is our fancy pants download function
+
+select string_agg(column_name, ', ') from
+    (select column_name, ordinal_position from information_schema.columns where
+    table_name='management' ORDER by ordinal_position) as foo;
+"""
 import sys
 import cgi
 
@@ -131,7 +136,20 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
 def do_operations(writer, sites, years):
     """Return a DataFrame for the operations"""
     opdf = read_sql("""
-    SELECT * from operations where uniqueid in %s and cropyear in %s
+    SELECT valid, uniqueid, operation, stabilizername,
+    stabilizerused, manuremethod, productrate, manurerateunits, fertilizerform,
+    manurerate, limerate, planthybrid, comments,
+    plantrate, manurecomposition, manuresource, terminatemethod,
+    stabilizer, cropyear, fertilizerformulation,
+    fertilizerapptype, plantrateunits, depth,
+    biomassdate2, biomassdate1, plantryemethod, plantmaturity,
+    fertilizercrop, hybridtrait,
+    nitrogenelem, phosphoruselem, potassiumelem, sulfurelem,
+    zincelem, magnesiumelem, ironelem, calciumelem, cashcrop, croprot,
+    -- These are deleted below
+    nitrogen, phosphorus, phosphate, potassium,
+    potash, sulfur, calcium, magnesium, zinc, iron
+    from operations where uniqueid in %s and cropyear in %s
     ORDER by valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     opdf['productrate'] = pd.to_numeric(opdf['productrate'],
@@ -153,14 +171,21 @@ def do_operations(writer, sites, years):
     opdf.loc[df.index, 'productrate'] = None
     for elem in FERTELEM:
         opdf.loc[df.index, elem] = df[elem] * KGH_LBA
+        del opdf[elem]
     valid2date(opdf)
+    del opdf['productrate']
     opdf.to_excel(writer, 'Operations', index=False)
 
 
 def do_management(writer, sites, years):
     """Return a DataFrame for the management"""
     opdf = read_sql("""
-    SELECT * from management where uniqueid in %s and cropyear in %s
+    SELECT uniqueid, irrigationmethod, residuebiomassmoisture,
+    cropyear, irrigation, comments,
+    residueplantingpercentage, residueremoval, residuetype, residuehow,
+    residuebiomassweight, limeyear,
+    irrigationamount, notill
+    from management where uniqueid in %s and cropyear in %s
     ORDER by cropyear ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     opdf.to_excel(writer, 'Management', index=False)
@@ -169,7 +194,13 @@ def do_management(writer, sites, years):
 def do_pesticides(writer, sites, years):
     """Return a DataFrame for the pesticides"""
     opdf = read_sql("""
-    SELECT * from pesticides where uniqueid in %s and cropyear in %s
+    SELECT uniqueid, crop, valid, operation, comments,
+    adjuvant1, product4, product3, product2, product1,
+    method, cropyear, pressure, timing,
+    totalrate, target6_2,
+    rate4, rate3, rate2, rate1, rateunit4, rateunit1, rateunit3,
+    rateunit2, cashcrop, adjuvant2, croprot
+    from pesticides where uniqueid in %s and cropyear in %s
     ORDER by cropyear ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     valid2date(opdf)
