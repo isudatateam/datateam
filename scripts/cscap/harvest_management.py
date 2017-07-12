@@ -19,8 +19,8 @@ def main():
 
     translate = {'date': 'valid'}
 
-    tabs = ['Field Operations', 'Management', 'Pesticides']
-    tablenames = ['operations', 'management', 'pesticides']
+    tabs = ['Field Operations', 'Management', 'Pesticides', 'DWM', 'Notes']
+    tablenames = ['operations', 'management', 'pesticides', 'dwm', 'notes']
     for sheetkey, table in zip(tabs, tablenames):
         pcursor.execute("""DELETE from """ + table)
         deleted = pcursor.rowcount

@@ -136,16 +136,14 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
 def do_operations(writer, sites, years):
     """Return a DataFrame for the operations"""
     opdf = read_sql("""
-    SELECT valid, uniqueid, operation, stabilizername,
-    stabilizerused, manuremethod, productrate, manurerateunits, fertilizerform,
-    manurerate, limerate, planthybrid, comments,
-    plantrate, manurecomposition, manuresource, terminatemethod,
-    stabilizer, cropyear, fertilizerformulation,
-    fertilizerapptype, plantrateunits, depth,
-    biomassdate2, biomassdate1, plantryemethod, plantmaturity,
-    fertilizercrop, hybridtrait,
-    nitrogenelem, phosphoruselem, potassiumelem, sulfurelem,
-    zincelem, magnesiumelem, ironelem, calciumelem, cashcrop, croprot,
+    SELECT uniqueid, cropyear, operation, valid, cashcrop, croprot,
+    plantryemethod, planthybrid, plantmaturity, plantrate, plantrateunits,
+    terminatemethod, biomassdate1, biomassdate2, depth, limerate,
+    manuresource, manurecomposition, manuremethod, manurerate,
+    manurerateunits, fertilizerform, fertilizercrop, fertilizerapptype,
+    fertilizerformulation, productrate, nitrogenelem, phosphoruselem,
+    potassiumelem, sulfurelem, zincelem, magnesiumelem, ironelem, calciumelem,
+    stabilizer, stabilizerused, stabilizername, comments,
     -- These are deleted below
     nitrogen, phosphorus, phosphate, potassium,
     potash, sulfur, calcium, magnesium, zinc, iron
@@ -180,11 +178,10 @@ def do_operations(writer, sites, years):
 def do_management(writer, sites, years):
     """Return a DataFrame for the management"""
     opdf = read_sql("""
-    SELECT uniqueid, irrigationmethod, residuebiomassmoisture,
-    cropyear, irrigation, comments,
-    residueplantingpercentage, residueremoval, residuetype, residuehow,
-    residuebiomassweight, limeyear,
-    irrigationamount, notill
+    SELECT uniqueid, cropyear, notill, irrigation, irrigationamount,
+    irrigationmethod, residueremoval, residuehow, residuebiomassweight,
+    residuebiomassmoisture, residueplantingpercentage, residuetype,
+    limeyear, comments
     from management where uniqueid in %s and cropyear in %s
     ORDER by cropyear ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
@@ -194,12 +191,13 @@ def do_management(writer, sites, years):
 def do_pesticides(writer, sites, years):
     """Return a DataFrame for the pesticides"""
     opdf = read_sql("""
-    SELECT uniqueid, crop, valid, operation, comments,
-    adjuvant1, product4, product3, product2, product1,
-    method, cropyear, pressure, timing,
-    totalrate, target6_2,
-    rate4, rate3, rate2, rate1, rateunit4, rateunit1, rateunit3,
-    rateunit2, cashcrop, adjuvant2, croprot
+    SELECT uniqueid, cropyear, operation, valid, timing, method, crop,
+    cashcrop, croprot, totalrate, pressure,
+    product1, rate1, rateunit1,
+    product2, rate2, rateunit2,
+    product3, rate3, rateunit3,
+    product4, rate4, rateunit4,
+    adjuvant1, adjuvant2, comments
     from pesticides where uniqueid in %s and cropyear in %s
     ORDER by cropyear ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
@@ -221,7 +219,26 @@ def do_plotids(writer, sites):
         from plotids where uniqueid in %s
         ORDER by uniqueid, plotid ASC
     """, PGCONN, params=(tuple(sites), ))
-    opdf[opdf.columns[:30]].to_excel(writer, 'Plot IDs', index=False)
+    opdf[opdf.columns].to_excel(writer, 'Plot IDs', index=False)
+
+
+def do_notes(writer, sites):
+    """Write notes to the spreadsheet"""
+    opdf = read_sql("""
+        SELECT uniqueid, calendaryear, cropyear, notes
+        from notes where uniqueid in %s
+    """, PGCONN, params=(tuple(sites), ))
+    opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
+
+
+def do_dwm(writer, sites):
+    """Write dwm to the spreadsheet"""
+    opdf = read_sql("""
+        SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
+        outletdepth, outletdate, comments
+        from dwm where uniqueid in %s
+    """, PGCONN, params=(tuple(sites), ))
+    opdf[opdf.columns].to_excel(writer, 'DWM', index=False)
 
 
 def do_work(form):
@@ -266,14 +283,18 @@ def do_work(form):
     if 'SHM2' in shm:
         do_pesticides(writer, sites, years)
 
-    # DWM SHM4 is a TODO
-
     # Plot IDs
     if 'SHM4' in shm:
         do_plotids(writer, sites)
 
     if 'SHM5' in shm:
         do_dictionary(writer)
+
+    if 'SHM7' in shm:
+        do_dwm(writer, sites)
+
+    if 'SHM6' in shm:
+        do_notes(writer, sites)
 
     # Send to client
     writer.close()
