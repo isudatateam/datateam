@@ -101,7 +101,8 @@ def make_plot(form):
             sys.stdout.write(('Content-Disposition: attachment; '
                               'filename=%s_%s.xlsx\n\n'
                               ) % (uniqueid, varname))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx')
+            writer = pd.ExcelWriter('/tmp/ss.xlsx',
+                                    options={'remove_timezone': True})
             df.to_excel(writer, 'Data', index=False)
             writer.save()
             sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())

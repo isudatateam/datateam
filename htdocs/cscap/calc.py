@@ -46,7 +46,8 @@ def main():
                           'filename=cscap_%s.xlsx\n\n'
                           ) % (datetime.datetime.now().strftime("%Y%m%d%H%M"),
                                ))
-        writer = pd.ExcelWriter('/tmp/ss.xlsx')
+        writer = pd.ExcelWriter('/tmp/ss.xlsx',
+                                options={'remove_timezone': True})
         df.to_excel(writer, 'Data', index=False)
         writer.save()
         sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
