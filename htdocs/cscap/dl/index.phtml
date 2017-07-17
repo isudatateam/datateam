@@ -371,7 +371,7 @@ function build_theses(){
 function build_publications(){
 	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
 	$rs = pg_query($pgconn, "select * from refereed_journals ".
-			"ORDER by authors");
+			"WHERE vol != 'N/A' ORDER by authors");
 	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 		$strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
