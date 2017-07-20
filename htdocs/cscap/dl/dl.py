@@ -172,7 +172,7 @@ def do_operations(writer, sites, years):
         del opdf[elem]
     valid2date(opdf)
     del opdf['productrate']
-    opdf.to_excel(writer, 'Operations', index=False)
+    opdf.to_excel(writer, 'Field Operations', index=False)
 
 
 def do_management(writer, sites, years):
@@ -185,7 +185,7 @@ def do_management(writer, sites, years):
     from management where uniqueid in %s and cropyear in %s
     ORDER by cropyear ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
-    opdf.to_excel(writer, 'Management', index=False)
+    opdf.to_excel(writer, 'Residue, Irrigation', index=False)
 
 
 def do_pesticides(writer, sites, years):
@@ -219,7 +219,7 @@ def do_plotids(writer, sites):
         from plotids where uniqueid in %s
         ORDER by uniqueid, plotid ASC
     """, PGCONN, params=(tuple(sites), ))
-    opdf[opdf.columns].to_excel(writer, 'Plot IDs', index=False)
+    opdf[opdf.columns].to_excel(writer, 'Plot Identifiers', index=False)
 
 
 def do_notes(writer, sites):
@@ -238,7 +238,9 @@ def do_dwm(writer, sites):
         outletdepth, outletdate, comments
         from dwm where uniqueid in %s
     """, PGCONN, params=(tuple(sites), ))
-    opdf[opdf.columns].to_excel(writer, 'DWM', index=False)
+    opdf[opdf.columns].to_excel(writer,
+                                'Drainage Control Structure',
+                                index=False)
 
 
 def do_work(form):
