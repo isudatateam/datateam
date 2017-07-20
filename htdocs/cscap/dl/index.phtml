@@ -591,6 +591,7 @@ $theseslisting = build_theses();
 $ghgui = build_ghg_ui();
 $waterui = "";
 $ipmui = build_ipm_ui();
+$sitestable = file_get_contents('sites.html');
 
 $t->content = <<<EOF
 
@@ -728,6 +729,10 @@ $t->content = <<<EOF
 		</div>
 		<div role="tabpanel" class="tab-pane" id="sites">
 <iframe src="https://www.google.com/maps/d/embed?mid=1VQuDqTRkO5RPvIgWMODYvBLWU1A&amp;z=5&amp;ll=49.62%2C-100.72" width="640" height="480"></iframe>
+
+    {$sitestable}
+
+
 		</div>
 		<div role="tabpanel" class="tab-pane" id="pubs">
 
