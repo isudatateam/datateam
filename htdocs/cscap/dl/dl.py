@@ -72,7 +72,7 @@ def conv(value, detectlimit, missing):
 def do_dictionary(writer):
     """Add Data Dictionary to the spreadsheet"""
     df = read_sql("""
-    SELECT * from cscap_data_dictionary ORDER by code_column_heading
+    SELECT * from data_dictionary_export ORDER by code_column_heading
     """, PGCONN, index_col=None)
     for col in df.columns:
         df[col] = df[col].str.decode('ascii', 'ignore')
