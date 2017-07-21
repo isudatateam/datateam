@@ -2,14 +2,16 @@
   My purpose in life is to send an email each day with changes found
   on the Google Drive
 """
+from __future__ import print_function
 import sys
-import pyiem.cscap_utils as util
 import datetime
-import pytz
 import json
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+import pytz
+import pyiem.cscap_utils as util
 
 CONFIG = util.get_config()
 FMIME = 'application/vnd.google-apps.folder'
@@ -28,6 +30,7 @@ def pprint(mydict):
 
 
 def sites_changelog(regime, yesterday, html):
+    """Do Sites Changelog"""
     html += """
     <h4>%s Internal Website Changes</h4>
     <table border="1" cellpadding="3" cellspacing="0">
@@ -55,7 +58,7 @@ def sites_changelog(regime, yesterday, html):
                           ) % (updated.strftime("%-d %b %-I:%M %P"),
                                elem.text, str(elem.children[0])))
 
-    if len(tablerows) == 0:
+    if tablerows:
         tablerows.append("<tr><td colspan='2'>No Changes Found</td></tr>")
 
     html += "".join(tablerows)
@@ -131,7 +134,7 @@ def drive_changelog(regime, yesterday, html):
                 try:
                     revisions = drive.revisions().list(
                         fileId=item['file']['id']).execute()
-                except:
+                except Exception as exp:
                     print(('[%s] file %s (%s) failed revisions'
                            ) % (regime, title, item['file']['mimeType']))
                     revisions = {'items': []}
@@ -213,9 +216,9 @@ def main(argv):
     html += """<p>That is all...</p>"""
     # debugging
     if len(sys.argv) == 3:
-        o = open('/tmp/out.html', 'w')
-        o.write(html)
-        o.close()
+        ofp = open('/tmp/out.html', 'w')
+        ofp.write(html)
+        ofp.close()
     msg = MIMEMultipart('alternative')
     msg['Subject'] = "%s %s Data ChangeLog" % (yesterday.strftime("%-d %b"),
                                                CFG[regime]['title'])
@@ -226,9 +229,10 @@ def main(argv):
 
     msg.attach(part2)
 
-    s = smtplib.SMTP('mailhub.iastate.edu')
-    s.sendmail(msg['From'], CFG[regime]['emails'], msg.as_string())
-    s.quit()
+    p25 = smtplib.SMTP('mailhub.iastate.edu')
+    p25.sendmail(msg['From'], CFG[regime]['emails'], msg.as_string())
+    p25.quit()
+
 
 if __name__ == '__main__':
     main(sys.argv)
