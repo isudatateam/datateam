@@ -238,8 +238,7 @@ def do_dwm(writer, sites):
         outletdepth, outletdate, comments
         from dwm where uniqueid in %s
     """, PGCONN, params=(tuple(sites), ))
-    opdf[opdf.columns].to_excel(writer,
-                                'Drainage Control Structure',
+    opdf[opdf.columns].to_excel(writer, 'Drainage Control Structure Mngt',
                                 index=False)
 
 
