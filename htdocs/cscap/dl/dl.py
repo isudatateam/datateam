@@ -27,7 +27,10 @@ AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
        "_T6": ["ROT57", "ROT58"],
        "_T7": ["ROT40", "ROT50"],
        "_S1": ["SOIL41", "SOIL34", "SOIL29", "SOIL30", "SOIL31", "SOIL2",
-               "SOIL35", "SOIL32", "SOIL42", "SOIL33", "SOIL39"]}
+               "SOIL35", "SOIL32", "SOIL42", "SOIL33", "SOIL39"],
+       "_S19": ["SOIL19.8", "SOIL19.11", "SOIL19.12", "SOIL19.1",
+                "SOIL19.10", "SOIL19.2", "SOIL19.5", "SOIL19.7", "SOIL19.6",
+                "SOIL19.13"]}
 
 
 def valid2date(df):
