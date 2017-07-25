@@ -417,14 +417,25 @@ function build_sites_ui(){
 }
 
 function build_year_ui(){
-	$years = Array(2011, 2012, 2013, 2014, 2015);
-	$s = '';
-	while (list($k, $v)=@each($years)){
-		$s .= sprintf("<br /><input type=\"checkbox\" value=\"%s\"".
-				" data-year=\"%s\" name=\"year[]\" id=\"Y%s\">".
-				"<label for=\"Y%s\" class=\"control-label\">%s</label>\n",
-				$v, $v, $v, $v, $v);
-	}
+	$s = <<<EOF
+	<div class="panel panel-default">
+	<div class="panel-heading">Available Years</div>
+	<div class="panel-body">
+	
+	<br /><input type="checkbox" value="2011" data-year="2011" name="year[]" id="Y2011">
+	<label for="Y2011" class="control-label">2011</label>
+	<br /><input type="checkbox" value="2012" data-year="2012" name="year[]" id="Y2012">
+	<label for="Y2012" class="control-label">2012</label>
+	<br /><input type="checkbox" value="2013" data-year="2013" name="year[]" id="Y2013">
+	<label for="Y2013" class="control-label">2013</label>
+	<br /><input type="checkbox" value="2014" data-year="2014" name="year[]" id="Y2014">
+	<label for="Y2014" class="control-label">2014</label>
+	<br /><input type="checkbox" value="2015" data-year="2015" name="year[]" id="Y2015">
+	<label for="Y2015" class="control-label">2015</label>
+	
+	</div>
+	</div>
+EOF;
 	return $s;
 }
 
