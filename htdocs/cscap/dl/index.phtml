@@ -402,7 +402,7 @@ function build_sites_ui(){
 		while (list($v2, $k2)=each($data[$k])){
 			$s .= sprintf("<input type=\"checkbox\" value=\"%s\"".
 					" data-state=\"%s\" name=\"sites[]\" class=\"site-check\"".
-					">%s</br >\n", $v2, $k, $k2);
+					">%s</br >\n", $v2, $k, $v2);
 		}
 		$s .= "</div></div>\n";
 		if ($q % 3 == 2){
