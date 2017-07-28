@@ -247,6 +247,11 @@ def do_dwm(writer, sites):
 
 def do_work(form):
     """do great things"""
+    agree = form.getfirst('agree')
+    if agree != 'AGREE':
+        sys.stdout.write("Content-type: text/plain\n\n")
+        sys.stdout.write("You did not agree to download terms.")
+        return
     sites = form.getlist('sites[]')
     # treatments = form.getlist('treatments[]')
     agronomic = redup(form.getlist('agronomic[]'))
