@@ -225,13 +225,13 @@ def do_plotids(writer, sites):
     opdf[opdf.columns].to_excel(writer, 'Plot Identifiers', index=False)
 
 
-def do_notes(writer, sites):
-    """Write notes to the spreadsheet"""
-    opdf = read_sql("""
-        SELECT uniqueid, calendaryear, cropyear, notes
-        from notes where uniqueid in %s
-    """, PGCONN, params=(tuple(sites), ))
-    opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
+#def do_notes(writer, sites):
+#    """Write notes to the spreadsheet"""
+#    opdf = read_sql("""
+#        SELECT uniqueid, calendaryear, cropyear, notes
+#        from notes where uniqueid in %s
+#    """, PGCONN, params=(tuple(sites), ))
+#    opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
 
 
 def do_dwm(writer, sites):
@@ -302,8 +302,8 @@ def do_work(form):
     if 'SHM7' in shm:
         do_dwm(writer, sites)
 
-    if 'SHM6' in shm:
-        do_notes(writer, sites)
+#    if 'SHM6' in shm:
+#        do_notes(writer, sites)
 
     # Send to client
     writer.close()
