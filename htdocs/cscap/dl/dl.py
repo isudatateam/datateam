@@ -42,10 +42,9 @@ def valid2date(df):
 def redup(arr):
     """Replace any codes that are collapsed by the above"""
     additional = []
-    for key, vals in AGG.iteritems():
-        for val in vals:
-            if val in arr and key not in additional:
-                additional.append(key)
+    for key in arr:
+        if key in AGG:
+            additional.extend(AGG[key])
     sys.stderr.write("dedup added %s to %s\n" % (str(additional), str(arr)))
     return arr + additional
 
@@ -120,8 +119,12 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
 
 def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
+    sys.stderr.write("do_soil: " + str(soil) + "\n")
+    sys.stderr.write("do_soil: " + str(sites) + "\n")
+    sys.stderr.write("do_soil: " + str(years) + "\n")
     df = read_sql("""
-    SELECT site, plotid, depth, subsample, varname, year, value
+    SELECT site, plotid, depth,
+    coalesce(subsample, '1') as subsample, varname, year, value
     from soil_data
     WHERE site in %s and year in %s and varname in %s ORDER by site, year
     """, PGCONN, params=(tuple(sites), tuple(years),
@@ -229,11 +232,15 @@ def do_notes(writer, sites):
     """Write notes to the spreadsheet"""
     opdf = read_sql("""
         SELECT "primary" as uniqueid, overarching_data_category, data_type,
-        growing_season, additional_comments_by_data_team,
+        replace(growing_season, '.0', '') as growing_season,
+        "edit review_needed", additional_comments_by_data_team,
         comments_by_site_personnel
         from highvalue_notes where "primary" in %s
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
+    # Increase column width
+    worksheet = writer.sheets['Notes']
+    worksheet.set_column('B:G', 36)
 
 
 def do_dwm(writer, sites):
@@ -269,7 +276,7 @@ def do_work(form):
     if missing == '__custom__':
         missing = form.getfirst('custom_missing', 'M')
     sys.stderr.write("Missing is %s\n" % (missing, ))
-    if len(years) == 0:
+    if years:
         years = [str(s) for s in range(2011, 2016)]
     detectlimit = form.getfirst('detectlimit', "1")
 
@@ -325,4 +332,8 @@ def main():
 
 
 if __name__ == '__main__':
+    # do_soil(None, ['ISUAG', 'SERF'],
+    #        ['SOIL19.8', 'SOIL19.11', 'SOIL19.12', 'SOIL19.1', 'SOIL19.10',
+    #         'SOIL19.2', 'SOIL19.5', 'SOIL19.7', 'SOIL19.6', 'SOIL19.13'],
+    #        ['2011', '2012', '2013', '2014', '2015'], '', '')
     main()
