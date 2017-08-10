@@ -226,6 +226,11 @@ def do_plotids(writer, sites):
         ORDER by uniqueid, plotid ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Plot Identifiers', index=False)
+    # Make plotids as strings and not something that goes to dates
+    workbook = writer.book
+    format1 = workbook.add_format({'num_format': '0'})
+    worksheet = writer.sheets['Plot Identifiers']
+    worksheet.set_column('B:B', 12, format1)
 
 
 def do_notes(writer, sites):
