@@ -273,7 +273,7 @@ def do_work(form):
 
     # Sheet one is plot IDs
     if 'SHM4' in shm:
-    do_plotids(writer, sites)
+        do_plotids(writer, sites)
     
     # Measurement Data
     if len(agronomic) > 0:
