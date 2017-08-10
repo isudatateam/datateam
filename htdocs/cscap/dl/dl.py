@@ -228,8 +228,10 @@ def do_plotids(writer, sites):
 def do_notes(writer, sites):
     """Write notes to the spreadsheet"""
     opdf = read_sql("""
-        SELECT uniqueid, calendaryear, cropyear, notes
-        from notes where uniqueid in %s
+        SELECT "primary" as uniqueid, overarching_data_category, data_type,
+        growing_season, additional_comments_by_data_team,
+        comments_by_site_personnel
+        from highvalue_notes where "primary" in %s
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
 
@@ -274,7 +276,7 @@ def do_work(form):
     # Sheet one is plot IDs
     if 'SHM4' in shm:
         do_plotids(writer, sites)
-    
+
     # Measurement Data
     if len(agronomic) > 0:
         do_agronomic(writer, sites, agronomic, years, detectlimit, missing)
@@ -287,7 +289,7 @@ def do_work(form):
 
     # Management
     # Field Operations
-     if "SHM1" in shm:
+    if "SHM1" in shm:
         do_operations(writer, sites, years)
     # Pesticides
     if 'SHM2' in shm:
@@ -301,7 +303,7 @@ def do_work(form):
     # Notes
     if 'SHM6' in shm:
         do_notes(writer, sites)
-    
+
     # Last sheet is Data Dictionary
     if 'SHM5' in shm:
         do_dictionary(writer)

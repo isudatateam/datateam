@@ -1,6 +1,7 @@
 """A direct copy of a Google Spreadsheet to a postgresql database"""
 import psycopg2
 import pyiem.cscap_utils as util
+from unidecode import unidecode
 
 config = util.get_config()
 pgconn = psycopg2.connect(database='sustainablecorn',
@@ -12,6 +13,7 @@ JOB_LISTING = [
     ["1292573529663364", 'refereed_journals'],
     ["6868926064813956", "theses"],
     ["3644715322107780", "data_dictionary_export"],
+    ["6669830439888772", "highvalue_notes"],
     ]
 
 
@@ -38,7 +40,9 @@ def do(sheetid, tablename):
     for row in sheet.rows:
         vals = []
         for cell in row.cells:
-            vals.append(cell.value)
+            vals.append((None
+                         if cell.value is None
+                         else unidecode(cell.value)))
         sql = """
         INSERT into %s (%s) VALUES (%s)
         """ % (tablename, ",".join(['"%s"' % (s,) for s in cols]),
