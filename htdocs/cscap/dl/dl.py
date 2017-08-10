@@ -271,10 +271,11 @@ def do_work(form):
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
 
-    # Sheet one are operations
-    if "SHM1" in shm:
-        do_operations(writer, sites, years)
-
+    # Sheet one is plot IDs
+    if 'SHM4' in shm:
+        do_plotids(writer, sites)
+    
+    # Measurement Data
     if len(agronomic) > 0:
         do_agronomic(writer, sites, agronomic, years, detectlimit, missing)
     if len(soil) > 0:
@@ -285,25 +286,25 @@ def do_work(form):
         do_ipm(writer, sites, ipm, years)
 
     # Management
-    if 'SHM3' in shm:
-        do_management(writer, sites, years)
-
+    # Field Operations
+     if "SHM1" in shm:
+        do_operations(writer, sites, years)
     # Pesticides
     if 'SHM2' in shm:
         do_pesticides(writer, sites, years)
-
-    # Plot IDs
-    if 'SHM4' in shm:
-        do_plotids(writer, sites)
-
-    if 'SHM5' in shm:
-        do_dictionary(writer)
-
+    # Residue and Irrigation
+    if 'SHM3' in shm:
+        do_management(writer, sites, years)
+    # Drainage Management
     if 'SHM7' in shm:
         do_dwm(writer, sites)
-
+    # Notes
     if 'SHM6' in shm:
         do_notes(writer, sites)
+    
+    # Last sheet is Data Dictionary
+    if 'SHM5' in shm:
+        do_dictionary(writer)
 
     # Send to client
     writer.close()
