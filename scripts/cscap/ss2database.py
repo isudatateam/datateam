@@ -2,6 +2,7 @@
 import psycopg2
 import pyiem.cscap_utils as util
 from unidecode import unidecode
+from six import string_types
 
 config = util.get_config()
 pgconn = psycopg2.connect(database='sustainablecorn',
@@ -18,12 +19,13 @@ JOB_LISTING = [
 
 
 def cleaner(val):
+    """Clean this value"""
     val = val.lower().replace(" ", "_").replace("(", "").replace(")", "")
     val = val.replace("/", " ")
     return val
 
 
-def do(sheetid, tablename):
+def workflow(sheetid, tablename):
     """Process"""
     cursor = pgconn.cursor()
     cursor.execute("""DROP TABLE IF EXISTS %s""" % (tablename, ))
@@ -40,9 +42,10 @@ def do(sheetid, tablename):
     for row in sheet.rows:
         vals = []
         for cell in row.cells:
-            vals.append((None
-                         if cell.value is None
-                         else unidecode(cell.value)))
+            val = cell.value
+            if isinstance(val, string_types):
+                val = unidecode(val)
+            vals.append(val)
         sql = """
         INSERT into %s (%s) VALUES (%s)
         """ % (tablename, ",".join(['"%s"' % (s,) for s in cols]),
@@ -55,7 +58,7 @@ def do(sheetid, tablename):
 def main():
     """Do Something"""
     for (sheetid, tablename) in JOB_LISTING:
-        do(sheetid, tablename)
+        workflow(sheetid, tablename)
 
 
 if __name__ == '__main__':

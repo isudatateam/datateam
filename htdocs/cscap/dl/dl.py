@@ -255,11 +255,13 @@ def do_work(form):
         sys.stdout.write("You did not agree to download terms.")
         return
     sites = form.getlist('sites[]')
+    if not sites:
+        sites.append("XXX")
     # treatments = form.getlist('treatments[]')
     agronomic = redup(form.getlist('agronomic[]'))
     soil = redup(form.getlist('soil[]'))
     ghg = redup(form.getlist('ghg[]'))
-    water = redup(form.getlist('water[]'))
+    # water = redup(form.getlist('water[]'))
     ipm = redup(form.getlist('ipm[]'))
     years = redup(form.getlist('year[]'))
     shm = redup(form.getlist('shm[]'))
@@ -278,13 +280,13 @@ def do_work(form):
         do_plotids(writer, sites)
 
     # Measurement Data
-    if len(agronomic) > 0:
+    if agronomic:
         do_agronomic(writer, sites, agronomic, years, detectlimit, missing)
-    if len(soil) > 0:
+    if soil:
         do_soil(writer, sites, soil, years, detectlimit, missing)
-    if len(ghg) > 0:
+    if ghg:
         do_ghg(writer, sites, ghg, years)
-    if len(ipm) > 0:
+    if ipm:
         do_ipm(writer, sites, ipm, years)
 
     # Management
