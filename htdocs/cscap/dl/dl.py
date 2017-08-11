@@ -6,11 +6,27 @@ select string_agg(column_name, ', ') from
     table_name='management' ORDER by ordinal_position) as foo;
 """
 import sys
+import os
 import cgi
+import smtplib
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 import psycopg2
 import pandas as pd
 from pandas.io.sql import read_sql
+
+EMAILTEXT = """
+Your Sustainable Corn CAP data is attached.
+
+Website: https://datateam.agron.iastate.edu/cscap/dl/
+
+Reference: TODO
+
+"""
 
 PGCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
                           user='nobody')
@@ -273,6 +289,7 @@ def do_work(form):
         sys.stdout.write("Content-type: text/plain\n\n")
         sys.stdout.write("You did not agree to download terms.")
         return
+    email = form.getfirst('email')
     sites = form.getlist('sites[]')
     if not sites:
         sites.append("XXX")
@@ -283,6 +300,8 @@ def do_work(form):
     # water = redup(form.getlist('water[]'))
     ipm = redup(form.getlist('ipm[]'))
     years = redup(form.getlist('year[]'))
+    if not years:
+        years = ['2011', '2012', '2013', '2014', '2015']
     shm = redup(form.getlist('shm[]'))
     missing = form.getfirst('missing', "M")
     if missing == '__custom__':
@@ -331,10 +350,28 @@ def do_work(form):
 
     # Send to client
     writer.close()
-    sys.stdout.write("Content-type: application/vnd.ms-excel\n")
-    sys.stdout.write((
-        "Content-Disposition: attachment;Filename=cscap.xlsx\n\n"))
-    sys.stdout.write(open('/tmp/cscap.xlsx', 'rb').read())
+    msg = MIMEMultipart()
+    msg['Subject'] = "Sustainable Corn CAP Dataset"
+    msg['From'] = 'daryl herzmann <akrherz@iastate.edu>'
+    msg["To"] = email
+    msg.preamble = 'Data'
+    msg.attach(MIMEText(EMAILTEXT))
+    part = MIMEBase('application', "octet-stream")
+    part.set_payload(open('/tmp/cscap.xlsx', 'rb').read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', 'attachment; filename="cscap.xlsx"')
+    msg.attach(part)
+    _s = smtplib.SMTP('localhost')
+    _s.sendmail(msg['From'], msg['To'], msg.as_string())
+    _s.quit()
+    os.unlink('/tmp/cscap.xlsx')
+    sys.stdout.write("Content-type: text/plain\n\n")
+    sys.stdout.write("Email Delivered!")
+    cursor = PGCONN.cursor()
+    cursor.execute("""INSERT into website_downloads(email) values (%s)
+    """, (email, ))
+    cursor.close()
+    PGCONN.commit()
 
 
 def main():

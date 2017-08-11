@@ -693,18 +693,22 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 </div>
 
 <div id="option-ui" style="display: none;">
-	<h3>Available Export Options</h3>
 
-<p>How to handle values below detection limit:
-<select name="detectlimit">
+<h4>Available Export Options</h4>
+
+<div class="form-group">
+    <label for="dlimit">How to handle values below detection limit:</label>
+<select name="detectlimit" class="form-control" id="dlimit">
 	<option value="1">Keep them as is, presented as "&lt; LOD"</option>
 	<option value="2">Divide the LOD value by two</option>
 	<option value="3">Divide the LOD value by square root of two</option>
 	<option value="4">Omit all occurrences and replace as missing</option>
-</select></p>
+</select>
+</div>
 
-<p>How to represent missing values:
-<select name="missing" id="missingvalue">
+<div class="form-group">
+    <label for="missingvalue">How to represent missing values:</label>
+<select name="missing" class="form-control" id="missingvalue">
 	<option value="M">M</option>
 	<option value="N/A">N/A</option>
 	<option value="NaN">NaN</option>
@@ -714,11 +718,22 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 	<option value="-999">-999</option>
     <option value="__custom__">Custom Value</option>
 </select>
-<div id="missingvalue_opt" style="display: none;">
-&nbsp; Enter Custom Value: &nbsp; <input type="text" name="custom_missing" size="8">
 </div>
-</p>
 
+<div class="form-group" id="missingvalue_opt" style="display: none;">
+    <label for="missingcustom">Enter Custom Missing Value:</label>
+    <input type="text" name="custom_missing" id="missingcustom" class="form-control">
+</div>
+
+<div class="form-group">
+    <label for="myemail">Enter Email Address:</label>
+    <input type="text" name="email" id="myemail" placeholder="joeuser@iastate.edu" class="form-control" aria-describedby="helpEmailBlock">
+<span id="helpEmailBlock" class="help-block">You will be emailed the exported data file once generated.</span>
+</div>
+<br class="clearfix" />
+
+<h4>Data Usage Agreement</h4>
+<blockquote>
 <p><strong>By using the datasets, you acknowledge and agree to cite the data in any publications or presentations in the following format: 
 Sustainable Corn CAP, http://dx.doi.org/___ (2017). You are encouraged to contact the original content providers to get assistance 
 in data interpretation, and may consider co-authoring with them. You shall have no claim of ownership to any intellectual property 
@@ -736,6 +751,7 @@ Sustainable Corn CAP personnel regarding data quality and other issues concernin
 	<option value="NOTAGREE">I do NOT agree</option>
 </select>
 </p>
+</blockquote>
 
 <p><input type="submit" value="Proceed with Download"></p>
 
