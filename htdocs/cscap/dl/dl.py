@@ -79,6 +79,9 @@ def do_dictionary(writer):
     for col in df.columns:
         df[col] = df[col].str.decode('ascii', 'ignore')
     df.to_excel(writer, 'Data Dictionary', index=False)
+    # Increase column width
+    worksheet = writer.sheets['Data Dictionary']
+    worksheet.set_column('A:J', 36)
 
 
 def do_ghg(writer, sites, ghg, years):
@@ -137,6 +140,10 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     df.reset_index(inplace=True)
     valid2date(df)
     df.to_excel(writer, 'Soil', index=False)
+    workbook = writer.book
+    format1 = workbook.add_format({'num_format': '@'})
+    worksheet = writer.sheets['Soil']
+    worksheet.set_column('B:B', 12, format1)
 
 
 def do_operations(writer, sites, years):
