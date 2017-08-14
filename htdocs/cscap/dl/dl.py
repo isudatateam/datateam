@@ -8,6 +8,8 @@ select string_agg(column_name, ', ') from
 import sys
 import os
 import cgi
+import datetime
+import shutil
 import smtplib
 from email import encoders
 from email.mime.base import MIMEBase
@@ -355,12 +357,25 @@ def do_work(form):
     msg['From'] = 'ISU Data Team <isudatateam@iastate.edu>'
     msg["To"] = email
     msg.preamble = 'Data'
-    msg.attach(MIMEText(EMAILTEXT))
-    part = MIMEBase('application', "octet-stream")
-    part.set_payload(open('/tmp/cscap.xlsx', 'rb').read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="cscap.xlsx"')
-    msg.attach(part)
+    # conservative limit of 8 MB
+    if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
+        tmpfn = ('cscap_%s.xlsx'
+                 ) % (datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), )
+        shutil.copyfile('/tmp/cscap.xlsx', '/var/webtmp/%s' % (tmpfn, ))
+        text = EMAILTEXT + ("Your spreadsheet file is too large to be attached"
+                            " to this email.  Instead, you can directly "
+                            "download it here.\n\n"
+                            "https://datateam.agron.iastate.edu/tmp/%s"
+                            ) % (tmpfn, )
+        msg.attach(MIMEText(text))
+    else:
+        msg.attach(MIMEText(EMAILTEXT))
+        part = MIMEBase('application', "octet-stream")
+        part.set_payload(open('/tmp/cscap.xlsx', 'rb').read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition',
+                        'attachment; filename="cscap.xlsx"')
+        msg.attach(part)
     _s = smtplib.SMTP('localhost')
     _s.sendmail(msg['From'], msg['To'], msg.as_string())
     _s.quit()
