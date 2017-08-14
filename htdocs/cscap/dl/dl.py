@@ -49,6 +49,16 @@ AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
        "_S19": ["SOIL19.8", "SOIL19.11", "SOIL19.12", "SOIL19.1",
                 "SOIL19.10", "SOIL19.2", "SOIL19.5", "SOIL19.7", "SOIL19.6",
                 "SOIL19.13"]}
+# runtime storage
+MEMORY = dict(stamp=datetime.datetime.utcnow())
+
+
+def pprint(msg):
+    """log a pretty message for my debugging fun"""
+    utcnow = datetime.datetime.utcnow()
+    delta = (utcnow - MEMORY['stamp']).total_seconds()
+    MEMORY['stamp'] = utcnow
+    sys.stderr.write("timedelta: %.3f %s\n" % (delta, msg))
 
 
 def valid2date(df):
@@ -63,7 +73,7 @@ def redup(arr):
     for key in arr:
         if key in AGG:
             additional.extend(AGG[key])
-    sys.stderr.write("dedup added %s to %s\n" % (str(additional), str(arr)))
+    pprint("dedup added %s to %s" % (str(additional), str(arr)))
     return arr + additional
 
 
@@ -140,9 +150,9 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
 
 def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
-    sys.stderr.write("do_soil: " + str(soil) + "\n")
-    sys.stderr.write("do_soil: " + str(sites) + "\n")
-    sys.stderr.write("do_soil: " + str(years) + "\n")
+    pprint("do_soil: " + str(soil))
+    pprint("do_soil: " + str(sites))
+    pprint("do_soil: " + str(years))
     df = read_sql("""
     SELECT site, plotid, depth,
     coalesce(subsample, '1') as subsample, varname, year, value
@@ -308,7 +318,7 @@ def do_work(form):
     missing = form.getfirst('missing', "M")
     if missing == '__custom__':
         missing = form.getfirst('custom_missing', 'M')
-    sys.stderr.write("Missing is %s\n" % (missing, ))
+    pprint("Missing is %s" % (missing, ))
     if years:
         years = [str(s) for s in range(2011, 2016)]
     detectlimit = form.getfirst('detectlimit', "1")
@@ -318,37 +328,48 @@ def do_work(form):
     # Sheet one is plot IDs
     if 'SHM4' in shm:
         do_plotids(writer, sites)
+        pprint("do_plotids() is done")
 
     # Measurement Data
     if agronomic:
         do_agronomic(writer, sites, agronomic, years, detectlimit, missing)
+        pprint("do_agronomic() is done")
     if soil:
         do_soil(writer, sites, soil, years, detectlimit, missing)
+        pprint("do_soil() is done")
     if ghg:
         do_ghg(writer, sites, ghg, years)
+        pprint("do_ghg() is done")
     if ipm:
         do_ipm(writer, sites, ipm, years)
+        pprint("do_ipm() is done")
 
     # Management
     # Field Operations
     if "SHM1" in shm:
         do_operations(writer, sites, years)
+        pprint("do_operations() is done")
     # Pesticides
     if 'SHM2' in shm:
         do_pesticides(writer, sites, years)
+        pprint("do_pesticides() is done")
     # Residue and Irrigation
     if 'SHM3' in shm:
         do_management(writer, sites, years)
+        pprint("do_management() is done")
     # Drainage Management
     if 'SHM7' in shm:
         do_dwm(writer, sites)
+        pprint("do_dwm() is done")
     # Notes
     if 'SHM6' in shm:
         do_notes(writer, sites)
+        pprint("do_notes() is done")
 
     # Last sheet is Data Dictionary
     if 'SHM5' in shm:
         do_dictionary(writer)
+        pprint("do_dictionary() is done")
 
     # Send to client
     writer.close()
@@ -387,6 +408,7 @@ def do_work(form):
     """, (email, ))
     cursor.close()
     PGCONN.commit()
+    pprint("is done!!!")
 
 
 def main():
