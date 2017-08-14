@@ -352,7 +352,7 @@ def do_work(form):
     writer.close()
     msg = MIMEMultipart()
     msg['Subject'] = "Sustainable Corn CAP Dataset"
-    msg['From'] = 'daryl herzmann <akrherz@iastate.edu>'
+    msg['From'] = 'ISU Data Team <isudatateam@iastate.edu>'
     msg["To"] = email
     msg.preamble = 'Data'
     msg.attach(MIMEText(EMAILTEXT))
