@@ -116,8 +116,11 @@ def do_ghg(writer, sites, ghg, years):
     """get GHG data"""
     cols = ", ".join(ghg)
     df = read_sql("""
-    SELECT uniqueid, plotid, date, year, """ + cols + """ from ghg_data
-    WHERE uniqueid in %s and year in %s ORDER by uniqueid, year
+    SELECT d.uniqueid, d.plotid, d.date, d.year, """ + cols + """
+    from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
+    d.plotid = p.plotid)
+    WHERE p.herbicide != 'HERB2'
+    and d.uniqueid in %s and d.year in %s ORDER by d.uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
     df.to_excel(writer, 'GHG', index=False)
 
@@ -126,8 +129,11 @@ def do_ipm(writer, sites, ipm, years):
     """get IPM data"""
     cols = ", ".join(ipm)
     df = read_sql("""
-    SELECT uniqueid, plotid, date, year, """ + cols + """ from ipm_data
-    WHERE uniqueid in %s and year in %s ORDER by uniqueid, year
+    SELECT d.uniqueid, d.plotid, d.date, d.year, """ + cols + """
+    from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
+    d.plotid = p.plotid)
+    WHERE p.herbicide != 'HERB2' and
+    d.uniqueid in %s and d.year in %s ORDER by d.uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
     df.to_excel(writer, 'IPM', index=False)
 
@@ -135,8 +141,11 @@ def do_ipm(writer, sites, ipm, years):
 def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     """get agronomic data"""
     df = read_sql("""
-    SELECT site, plotid, varname, year, value from agronomic_data
-    WHERE site in %s and year in %s and varname in %s ORDER by site, year
+    SELECT d.site, d.plotid, d.varname, d.year, d.value
+    from agronomic_data d JOIN plotids p on (d.site = p.uniqueid and
+    d.plotid = p.plotid)
+    WHERE p.herbicide != 'HERB2' and
+    site in %s and year in %s and varname in %s ORDER by site, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(agronomic)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
@@ -154,10 +163,12 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     pprint("do_soil: " + str(sites))
     pprint("do_soil: " + str(years))
     df = read_sql("""
-    SELECT site, plotid, depth,
-    coalesce(subsample, '1') as subsample, varname, year, value
-    from soil_data
-    WHERE site in %s and year in %s and varname in %s ORDER by site, year
+    SELECT d.site, d.plotid, d.depth,
+    coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value
+    from soil_data d JOIN plotids p ON (d.site = p.uniqueid and
+    d.plotid = p.plotid)
+    WHERE p.herbicide != 'HERB2' and
+    site in %s and year in %s and varname in %s ORDER by site, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
@@ -257,7 +268,7 @@ def do_plotids(writer, sites):
         soiltaxonomicclass3, soilseriesdescription3, soilseriesname3,
         soiltaxonomicclass4, soilseriesdescription4, soilseriesname4,
         soiltextureseries4, notes, agro, soil, ghg, ipmcscap, ipmusb
-        from plotids where uniqueid in %s
+        from plotids where uniqueid in %s and herbicide != 'HERB2'
         ORDER by uniqueid, plotid ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Plot Identifiers', index=False)
