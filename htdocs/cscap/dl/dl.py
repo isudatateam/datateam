@@ -141,15 +141,15 @@ def do_ipm(writer, sites, ipm, years):
 def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     """get agronomic data"""
     df = read_sql("""
-    SELECT d.site, d.plotid, d.varname, d.year, d.value
+    SELECT d.site as uniqueid, d.plotid, d.varname, d.year, d.value
     from agronomic_data d JOIN plotids p on (d.site = p.uniqueid and
     d.plotid = p.plotid)
     WHERE p.herbicide != 'HERB2' and
-    site in %s and year in %s and varname in %s ORDER by site, year
+    site in %s and year in %s and varname in %s ORDER by uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(agronomic)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
-    df = pd.pivot_table(df, index=('site', 'plotid', 'year'),
+    df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     df.reset_index(inplace=True)
@@ -163,16 +163,16 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     pprint("do_soil: " + str(sites))
     pprint("do_soil: " + str(years))
     df = read_sql("""
-    SELECT d.site, d.plotid, d.depth,
+    SELECT d.site as uniqueid, d.plotid, d.depth,
     coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value
     from soil_data d JOIN plotids p ON (d.site = p.uniqueid and
     d.plotid = p.plotid)
     WHERE p.herbicide != 'HERB2' and
-    site in %s and year in %s and varname in %s ORDER by site, year
+    site in %s and year in %s and varname in %s ORDER by uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
-    df = pd.pivot_table(df, index=('site', 'plotid', 'depth', 'subsample',
+    df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'depth', 'subsample',
                                    'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
