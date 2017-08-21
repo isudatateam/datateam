@@ -22,11 +22,32 @@ import pandas as pd
 from pandas.io.sql import read_sql
 
 EMAILTEXT = """
-Your Sustainable Corn CAP data is attached.
-
+Sustainable Corn CAP - Research and Management Data
+Requested: %s UTC
 Website: https://datateam.agron.iastate.edu/cscap/dl/
+Contact: isudatateam@iastate.edu
 
-Reference: TODO
+Please click here to download your spreadsheet file.
+
+    %s
+
+By using the datasets, you acknowledge and agree to cite the data in any 
+publications or presentations in the following format: Sustainable Corn CAP, 
+http://dx.doi.org/___ (2017). You are encouraged to contact the original 
+content providers to get assistance in data interpretation, and may consider 
+co-authoring with them. You shall have no claim of ownership to any 
+intellectual property rights in any part of data, content, functions, 
+features, code, data exploration tools, logos or other intellectual 
+property comprising this database. Sustainable Corn CAP personnel is 
+available to address any questions or concerns regarding usage and 
+application of the data that is made available to you on this site.
+
+Sustainable Corn CAP shall NOT be responsible or liable for the accuracy, 
+reliability and completeness of any information included in the database 
+as well as for the suitability of its application for any particular 
+purpose. Data users are encouraged to notify Sustainable Corn CAP personnel 
+regarding data quality and other issues concerning data shared through this 
+website.
 
 """
 
@@ -390,24 +411,24 @@ def do_work(form):
     msg["To"] = email
     msg.preamble = 'Data'
     # conservative limit of 8 MB
-    if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
-        tmpfn = ('cscap_%s.xlsx'
-                 ) % (datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), )
-        shutil.copyfile('/tmp/cscap.xlsx', '/var/webtmp/%s' % (tmpfn, ))
-        text = EMAILTEXT + ("Your spreadsheet file is too large to be attached"
-                            " to this email.  Instead, you can directly "
-                            "download it here.\n\n"
-                            "https://datateam.agron.iastate.edu/tmp/%s"
-                            ) % (tmpfn, )
-        msg.attach(MIMEText(text))
-    else:
-        msg.attach(MIMEText(EMAILTEXT))
-        part = MIMEBase('application', "octet-stream")
-        part.set_payload(open('/tmp/cscap.xlsx', 'rb').read())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition',
-                        'attachment; filename="cscap.xlsx"')
-        msg.attach(part)
+    # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
+    tmpfn = ('cscap_%s.xlsx'
+             ) % (datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), )
+    shutil.copyfile('/tmp/cscap.xlsx', '/var/webtmp/%s' % (tmpfn, ))
+    uri = "https://datateam.agron.iastate.edu/tmp/%s" % (tmpfn, )
+    text = EMAILTEXT % (datetime.datetime.utcnow(
+        ).strftime("%d %B %Y %H:%M:%S"),
+                        uri)
+
+    msg.attach(MIMEText(text))
+    # else:
+    #    msg.attach(MIMEText(EMAILTEXT))
+    #    part = MIMEBase('application', "octet-stream")
+    #    part.set_payload(open('/tmp/cscap.xlsx', 'rb').read())
+    #    encoders.encode_base64(part)
+    #    part.add_header('Content-Disposition',
+    #                    'attachment; filename="cscap.xlsx"')
+    #    msg.attach(part)
     _s = smtplib.SMTP('localhost')
     _s.sendmail(msg['From'], msg['To'], msg.as_string())
     _s.quit()
