@@ -102,6 +102,27 @@ function runfilter(){
 };
 
 function build_ui(){
+	// Prevent submit
+	$('#mainform').submit(function(e){
+		  e.preventDefault();
+	      $("#dlmsg2").hide();
+		  $("#dlmsg").show();
+		  $.ajax({
+		    url: 'dl.py',
+		    data: $(this).serialize(),
+		    success: function(data)
+		    {
+		    	$("#dlmsg2").show();
+		    	$("#dlmsg").hide();
+		    },
+		    error: function(data)
+		    {
+		    	alert("Sorry, script failure occurred :(");
+		    	$("#dlmsg").hide();
+		    }
+		  });
+	});
+
 	$(".site-check").click(function(){
 		var state = $(this).attr('data-state');
 		if (! this.checked){

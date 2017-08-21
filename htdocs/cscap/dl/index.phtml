@@ -610,7 +610,7 @@ $t->content = <<<EOF
 
 <h2>Sustainable Corn CAP Data Download</h2>
     
-<form method="POST" action="dl.py">
+<form method="POST" action="dl.py" id="mainform">
 <div class="btn-group fauxtabs" role="group" aria-label="Pages">
   <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
   <button type="button" class="btn btn-default" id="treatments-btn">Treatments</button>
@@ -752,6 +752,9 @@ Sustainable Corn CAP personnel regarding data quality and other issues concernin
 </select>
 </p>
 </blockquote>
+
+<div class="alert alert-info" role="alert" id="dlmsg" style="display: none;"><strong>Thank you</strong>: Your request is now being processed!</div>
+<div class="alert alert-info" role="alert" id="dlmsg2" style="display: none;"><strong>Completed</strong>: Please check your email for download information.</div>
 
 <p><input type="submit" value="Proceed with Download"></p>
 
