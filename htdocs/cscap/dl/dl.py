@@ -281,7 +281,10 @@ def do_pesticides(writer, sites, years):
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = read_sql("""
-        SELECT uniqueid, plotid, rep, tillage, rotation, drainage, nitrogen,
+        SELECT uniqueid, plotid, rep, tillage, rotation,
+        y2011 as "2011 Crop", y2012 as "2012 Crop", y2013 as "2013 Crop",
+        y2014 as "2014 Crop", y2015 as "2015 Crop",
+        drainage, nitrogen,
         landscape, herbicide, soilseriesname2, soiltextureseries2,
         soilseriesname1,
         soiltextureseries1, soilseriesdescription1, soiltaxonomicclass1,
@@ -289,7 +292,8 @@ def do_plotids(writer, sites):
         soiltaxonomicclass3, soilseriesdescription3, soilseriesname3,
         soiltaxonomicclass4, soilseriesdescription4, soilseriesname4,
         soiltextureseries4, notes, agro, soil, ghg, ipmcscap, ipmusb
-        from plotids where uniqueid in %s and
+        from plotids p LEFT JOIN xref_rotation x on (p.rotation = x.code)
+        where uniqueid in %s and
         (herbicide != 'HERB2' or herbicide is null)
         ORDER by uniqueid, plotid ASC
     """, PGCONN, params=(tuple(sites), ))
