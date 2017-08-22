@@ -37,8 +37,12 @@ def main():
             for key in d.keys():
                 if key.startswith('gio'):
                     continue
-                vals.append((d[key] if d[key] not in ['unknown', 'N/A', 'n/a']
-                             else None))
+                val = d[key]
+                if key in ['date', 'biomassdate1', 'biomassdate2',
+                           'outletdate']:
+                    val = (val if val not in ['unknown', 'N/A', 'n/a']
+                           else None)
+                vals.append(val)
                 cols.append(translate.get(key, key))
 
             sql = """
