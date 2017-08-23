@@ -39,7 +39,7 @@ def do(spreadkey, tablename):
         cols = []
         for key in row.keys():
             cols.append(cleankey(key))
-            values.append((row[key] or "").strip())
+            values.append((row[key] or "").strip().encode('ascii', 'ignore'))
         sql = "INSERT into %s (%s) VALUES (%s)" % (tablename, ",".join(cols),
                                                    ",".join(["%s"]*len(cols)))
         cursor.execute(sql, values)

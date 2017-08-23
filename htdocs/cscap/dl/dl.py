@@ -133,6 +133,24 @@ def do_dictionary(writer):
     worksheet.set_column('A:J', 36)
 
 
+def do_metadata_master(writer, sites):
+    """get Metadata master data"""
+    df = read_sql("""
+    SELECT officialfarmname as "Official Farm Name",
+    uniqueid,
+    nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
+    selon as "SE Lon", selat as "SE Lat", nelon as "NE Lon", nelat as "NE Lat",
+    rawlonlat as "Raw LonLat", state, county, citynearest as "City (nearest)",
+    landscapeslope as "Landscape Slope (%%)",
+    depthoftilem as "Depth of Tile (m)", tilespacingm as "Tile Spacing (m)",
+    siteareaha as "Site Area (ha)",
+    numberofplotssubplots as "Number of Plots/ Subplots"
+    from metadata_master
+    WHERE uniqueid in %s ORDER by uniqueid
+    """, PGCONN, params=(tuple(sites), ), index_col=None)
+    df.to_excel(writer, 'Site Metadata', index=False)
+
+
 def do_ghg(writer, sites, ghg, years):
     """get GHG data"""
     cols = ", ".join(ghg)
@@ -394,6 +412,10 @@ def do_work(form):
     if 'SHM3' in shm:
         do_management(writer, sites, years)
         pprint("do_management() is done")
+    # Site Metadata
+    if 'SHM8' in shm:
+        do_metadata_master(writer, sites)
+        pprint("do_metadata_master() is done")
     # Drainage Management
     if 'SHM7' in shm:
         do_dwm(writer, sites)
