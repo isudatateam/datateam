@@ -875,7 +875,7 @@ values that are reprocessed into this archive.</p>
 <table><tr><th></th><th>Year</th><th>Month</th><th>Day</th></tr>
 <tr><td>Start:</td>
 <td><select id="year1" name="year1">
-<option value='1951' >1951</option><option value='1952' >1952</option><option value='1953' >1953</option>
+<option value='1951' selected="selected">1951</option><option value='1952' >1952</option><option value='1953' >1953</option>
 <option value='1954' >1954</option><option value='1955' >1955</option><option value='1956' >1956</option>
 <option value='1957' >1957</option><option value='1958' >1958</option><option value='1959' >1959</option>
 <option value='1960' >1960</option><option value='1961' >1961</option><option value='1962' >1962</option>
@@ -898,7 +898,8 @@ values that are reprocessed into this archive.</p>
 <option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
 <option value='2014'>2014</option>
 <option value='2015'>2015</option>
-<option value='2016' selected="selected">2016</option>
+<option value='2016'>2016</option>
+<option value='2017'>2017</option>
 </select></td>
 <td><select id="month1" name="month1">
 <option value='1' selected="selected">January</option>
@@ -954,7 +955,7 @@ values that are reprocessed into this archive.</p>
 <option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
 <option value='2014'>2014</option>
 <option value='2015'>2015</option>
-<option value='2016' selected="selected">2016</option>
+<option value='2016'>2016</option><option value='2017' selected="selected">2017</option>
 </select></td>
 <td><select id="month2" name="month2">
 <option value='1' selected="selected">January</option>
@@ -997,11 +998,19 @@ values that are reprocessed into this archive.</p>
   <option value="precipmm">Variable: Precipitation (rain+melted snow) [mm]</option>
   <option value="merra_srad">Variable: Solar Radiation from MERRA (shortwave down at ground) [MJ m-2 dy-1]</option>
   <option value="gdd_50_86">Computed: Growing Degree Days (base=50,max=86) [F]</option>
+</select></p>
+
+<p><strong>Specialized Data/Model Formats</strong>:
+<br /><i>When you select a given data format, it will override any selected variables
+above and formats below.  These are specialized formats typically used for modelling and
+their choice dictates the variables to be included.</i>
+<br />
+<select size="5" name="model">
   <option value="apsim">Model: APSIM MET File</option> 
+  <option value="century">Model: Century (Monthly Format)</option> 
   <option value="daycent">Model: DailyDayCent (no extra drivers)</option> 
-  <option value="dndc">Model: DNDC</option>
-  <option value="century">Model: Century</option>
-  <option value="salus">Model: SALUS (using MERRA Solar Estimates)</option>
+  <option value="dndc">Model: DNDC</option> 
+  <option value="salus">Model: SALUS</option> 
 </select></p>
 
 <input type="hidden" name="what" value="download" />
