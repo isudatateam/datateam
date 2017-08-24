@@ -602,9 +602,10 @@ $t->content = <<<EOF
 
  <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Data</a></li>
+    <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Research Data</a></li>
     <li role="presentation"><a href="#sites" aria-controls="sites" role="tab" data-toggle="tab">Research Sites</a></li>
     <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
+    <li role="presentation"><a href="#wxdata" aria-controls="data" role="tab" data-toggle="tab">Weather Data</a></li>
   </ul>
   
 <div class="tab-content">
@@ -808,10 +809,216 @@ These do not require a subscription to the journal to access.</blockquote></p>
 <h3>CSCAP Theses and Dissertations</h3>
 
 {$theseslisting}
-</div></div>
+    </div></div>
 
 		</div>
-		</div>
+    <div role="tabpanel" class="tab-pane" id="wxdata">
+    <h3>Daily Weather Data</h3>
+
+<p>Supplementary weather data are available for Sustainable Corn research sites. 
+This dataset is provided from nearby weather networks and curated by 
+Sustainable Corn personnel. It is most representative and accurate for pairing 
+with these research sites. The data is collected from a variety of sources, 
+including the National Climatic Data Center, National Weather Service, and 
+State Climatologists. These entities revise their data and will produce updated 
+values that are reprocessed into this archive.</p>
+
+<p>Documentation on this dataset can be found 
+<a href="https://mesonet.agron.iastate.edu/info/datasets/climodat.html" target="_blank">here</a></p>
+
+<form method="GET" id="wxform" action="https://mesonet.agron.iastate.edu/cgi-bin/request/coop.py">
+<input type="hidden" name="network" value="IACLIMATE" id="network" />
+
+<p><strong>Select Research Site(s):</strong></p>
+<br />
+<select id="station" name="station[]" size="5" multiple="" class="select">
+ <option value="invalid">Select From List</option>
+<option value="WI4961">ARL [Arlington, WI] -- WI4961 MADISON DANE RGNL AP</option>
+<option value="MO1791">BRADFORD.A [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="MO1791">BRADFORD.B1 [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="MO1791">BRADFORD.B2 [Columba, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="MO1791">BRADFORD.C [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="IN2825">DPAC [Farmland, IN] -- IN2825 FARMLAND 5 NNW</option>
+<option value="MO4271">FREEMAN [Jefferson City, MO] -- MO4271 JEFFERSON CITY WTP</option>
+<option value="IA6719">GILMORE [Gilmore City, IA] -- IA6719 POCAHONTAS</option>
+<option value="MN8323">HICKS.B [Tracy, MN] -- MN8323 TRACY</option>
+<option value="MN8323">HICKS.G [Tracy, MN] -- MN8323 TRACY</option>
+<option value="MN8323">HICKS.P [Tracy, MN] -- MN8323 TRACY</option>
+<option value="OH3874">HOYTVILLE.LTR [Custar, OH] -- OH3874 HOYTVILLE 2 NE</option>
+<option value="IA0200">ISUAG [Boone, IA] -- IA0200 AMES-8-WSW</option>
+<option value="IA0200">ISUAG.USB [Boone, IA] -- IA0200 AMES-8-WSW</option>
+<option value="MI3504">KELLOGG [Hickory Corners, MI] -- MI3504 Gull Lake Biological Station</option>
+<option value="WI4546">LAN [Lancaster, WI] -- WI4546 LANCASTER 4 WSW</option>
+<option value="WI8241">MAR [Marshfield, WI] -- WI8241 STRATFORD 1 NW</option>
+<option value="MI2395">MASON [East Lansing, MI] -- MI2395 EAST LANSING 4 S</option>
+<option value="OH1905">NAEW.WS109 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS111 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS113 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS115 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS118 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS123 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS127 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.Y102 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.Y103 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="IL5768">NWREC [Monmouth, IL] -- IL5768 MONMOUTH</option>
+<option value="IL3717">ORR [Perry, IL] -- IL3717 Griggsville</option>
+<option value="IN6435">SEPAC [Butlerville, IN] -- IN6435 NORTH VERNON 2 ESE</option>
+<option value="IA8688">SERF [Crawfordsville, IA] -- IA8688 WASHINGTON</option>
+<option value="OH4551">STJOHNS [St. Johns, OH] -- OH4551 LIMA WWTP</option>
+<option value="OH8951">WATERMAN [Columbus, OH] -- OH8951 WESTERVILLE</option>
+<option value="OH9312">WOOSTER.COV [Wooster, OH] -- OH9312 WOOSTER EXP STN</option>
+<option value="OH9312">WOOSTER.LTR [Wooster, OH] -- OH9312 WOOSTER EXP STN</option>
+</select>
+
+<p><strong>Select Time Period:</strong></p>
+
+<table><tr><th></th><th>Year</th><th>Month</th><th>Day</th></tr>
+<tr><td>Start:</td>
+<td><select id="year1" name="year1">
+<option value='1951' >1951</option><option value='1952' >1952</option><option value='1953' >1953</option>
+<option value='1954' >1954</option><option value='1955' >1955</option><option value='1956' >1956</option>
+<option value='1957' >1957</option><option value='1958' >1958</option><option value='1959' >1959</option>
+<option value='1960' >1960</option><option value='1961' >1961</option><option value='1962' >1962</option>
+<option value='1963' >1963</option><option value='1964' >1964</option><option value='1965' >1965</option>
+<option value='1966' >1966</option><option value='1967' >1967</option><option value='1968' >1968</option>
+<option value='1969' >1969</option><option value='1970' >1970</option><option value='1971' >1971</option>
+<option value='1972' >1972</option><option value='1973' >1973</option><option value='1974' >1974</option>
+<option value='1975' >1975</option><option value='1976' >1976</option><option value='1977' >1977</option>
+<option value='1978' >1978</option><option value='1979' >1979</option><option value='1980' >1980</option>
+<option value='1981' >1981</option><option value='1982' >1982</option><option value='1983' >1983</option>
+<option value='1984' >1984</option><option value='1985' >1985</option><option value='1986' >1986</option>
+<option value='1987' >1987</option><option value='1988' >1988</option><option value='1989' >1989</option>
+<option value='1990' >1990</option><option value='1991' >1991</option><option value='1992' >1992</option>
+<option value='1993' >1993</option><option value='1994' >1994</option><option value='1995' >1995</option>
+<option value='1996' >1996</option><option value='1997' >1997</option><option value='1998' >1998</option>
+<option value='1999' >1999</option><option value='2000' >2000</option><option value='2001' >2001</option>
+<option value='2002' >2002</option><option value='2003' >2003</option><option value='2004' >2004</option>
+<option value='2005' >2005</option><option value='2006' >2006</option><option value='2007' >2007</option>
+<option value='2008' >2008</option><option value='2009' >2009</option><option value='2010' >2010</option>
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015'>2015</option>
+<option value='2016' selected="selected">2016</option>
+</select></td>
+<td><select id="month1" name="month1">
+<option value='1' selected="selected">January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' >December</option>
+</select>
+</td>
+<td><select id="day1" name="day1">
+<option value="1" selected="selected">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" >31</option>
+</select></td>
+</tr>
+<tr><td>End:</td>
+<td><select id="year2" name="year2">
+<option value='1951' >1951</option><option value='1952' >1952</option><option value='1953' >1953</option>
+<option value='1954' >1954</option><option value='1955' >1955</option><option value='1956' >1956</option>
+<option value='1957' >1957</option><option value='1958' >1958</option><option value='1959' >1959</option>
+<option value='1960' >1960</option><option value='1961' >1961</option><option value='1962' >1962</option>
+<option value='1963' >1963</option><option value='1964' >1964</option><option value='1965' >1965</option>
+<option value='1966' >1966</option><option value='1967' >1967</option><option value='1968' >1968</option>
+<option value='1969' >1969</option><option value='1970' >1970</option><option value='1971' >1971</option>
+<option value='1972' >1972</option><option value='1973' >1973</option><option value='1974' >1974</option>
+<option value='1975' >1975</option><option value='1976' >1976</option><option value='1977' >1977</option>
+<option value='1978' >1978</option><option value='1979' >1979</option><option value='1980' >1980</option>
+<option value='1981' >1981</option><option value='1982' >1982</option><option value='1983' >1983</option>
+<option value='1984' >1984</option><option value='1985' >1985</option><option value='1986' >1986</option>
+<option value='1987' >1987</option><option value='1988' >1988</option><option value='1989' >1989</option>
+<option value='1990' >1990</option><option value='1991' >1991</option><option value='1992' >1992</option>
+<option value='1993' >1993</option><option value='1994' >1994</option><option value='1995' >1995</option>
+<option value='1996' >1996</option><option value='1997' >1997</option><option value='1998' >1998</option>
+<option value='1999' >1999</option><option value='2000' >2000</option><option value='2001' >2001</option>
+<option value='2002' >2002</option><option value='2003' >2003</option><option value='2004' >2004</option>
+<option value='2005' >2005</option><option value='2006' >2006</option><option value='2007' >2007</option>
+<option value='2008' >2008</option><option value='2009' >2009</option><option value='2010' >2010</option>
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015'>2015</option>
+<option value='2016' selected="selected">2016</option>
+</select></td>
+<td><select id="month2" name="month2">
+<option value='1' selected="selected">January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' >December</option>
+</select></td>
+<td><select id="day2" name="day2">
+<option value="1" selected="selected">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" >31</option>
+</select></td>
+</tr>
+</table>
+
+<p><strong>Select Data Variables</strong>:
+<br /><i>Date and Julian Day are included automatically</i>
+<br /><select size=5 name="vars[]" MULTIPLE class="select">
+  <option value="high">Variable: High Air Temperature [F]</option>
+  <option value="highc">Variable: High Air Temperature [C]</option>
+  <option value="low">Variable: Low Air Temperature [F]</option>
+  <option value="lowc">Variable: Low Air Temperature [C]</option>
+  <option value="precip">Variable: Precipitation (rain+melted snow) [inch]</option>
+  <option value="precipmm">Variable: Precipitation (rain+melted snow) [mm]</option>
+  <option value="merra_srad">Variable: Solar Radiation from MERRA (shortwave down at ground) [MJ m-2 dy-1]</option>
+  <option value="gdd_50_86">Computed: Growing Degree Days (base=50,max=86) [F]</option>
+  <option value="apsim">Model: APSIM MET File</option> 
+  <option value="daycent">Model: DailyDayCent (no extra drivers)</option> 
+  <option value="dndc">Model: DNDC</option>
+  <option value="century">Model: Century</option>
+  <option value="salus">Model: SALUS (using MERRA Solar Estimates)</option>
+</select></p>
+
+<input type="hidden" name="what" value="download" />
+
+<p><strong>Data Delimitation:</strong>
+<br />How shall the output values be seperated?
+<br><select name="delim">
+    <option value="comma">Comma
+    <option value="space">Space
+    <option value="tab">Tab
+   </select></p>
+
+<p><input type="submit" value="Request Data" /></p>
+</form>
+
+    </div>
+</div>
 <div class="clearfix"></div>
 <p>&nbsp;</p>
 <img src="/images/logos/web_logos.png" class="img img-responsive">
