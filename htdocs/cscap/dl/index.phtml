@@ -578,7 +578,7 @@ label { display: block !important; margin-left: 1.5em;}
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="dl.js?v=4"></script>
+<script src="dl.js?v=5"></script>
 EOF;
 
 $sitesui = build_sites_ui();
@@ -590,7 +590,6 @@ $shmui = build_shm_ui();
 $publisting = build_publications();
 $theseslisting = build_theses();
 $ghgui = build_ghg_ui();
-$waterui = "";
 $ipmui = build_ipm_ui();
 $sitestable = file_get_contents('sites.html');
 
@@ -619,7 +618,6 @@ $t->content = <<<EOF
   <button type="button" class="btn btn-default" id="agronomic-btn">Agronomic</button>
   <button type="button" class="btn btn-default" id="soil-btn">Soil</button>
   <button type="button" class="btn btn-default" id="ghg-btn">GHG</button>
-  <button type="button" class="btn btn-default" id="water-btn">Water</button>
   <button type="button" class="btn btn-default" id="ipm-btn">IPM</button>
   <button type="button" class="btn btn-default" id="year-btn">Year</button>
   <button type="button" class="btn btn-default" id="shm-btn">Management and Metadata</button>
@@ -663,13 +661,7 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 	<h3>Green House Gases (GHG)</h3>
 {$ghgui}
 </div>
-<div id="water-ui" style="display: none;">
-<div class="pull-right">
-  <button id="water-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>
-</div>
-	<h3>Water</h3>
-{$waterui}
-</div>
+
 <div id="ipm-ui" style="display: none;">
 <div class="pull-right">
   <button id="ipm-selectall" type="button" class="btn btn-default sa"><i class="glyphicon glyphicon-ok"></i> Select All</button>

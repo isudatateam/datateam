@@ -1,4 +1,4 @@
-var TABS = ['sites', 'treatments', 'agronomic', 'soil', 'ghg', 'water', 'ipm',
+var TABS = ['sites', 'treatments', 'agronomic', 'soil', 'ghg', 'ipm',
 	'year', 'shm', 'option'];
 var CURRENTTAB = 0;
 
@@ -31,13 +31,6 @@ function applyFilter(data){
 		$("#ghg-ui input[data-ghg='"+v+"']").prop('disabled', false);
 	});
 	$("#ghg-ui input[type=checkbox]:disabled").prop('checked', false);
-
-	$('#water-ui input').prop('disabled', true);
-	$.each(data.water, function(idx, v){
-		//console.log("SOIL: " + v);
-		$("#water-ui input[data-water='"+v+"']").prop('disabled', false);
-	});
-	$("#water-ui input[type=checkbox]:disabled").prop('checked', false);
 
 	$('#ipm-ui input').prop('disabled', true);
 	$.each(data.ipm, function(idx, v){
@@ -81,9 +74,7 @@ function build_data(){
 	$('#ghg-ui input:checked').each(function(idx, elem){
 		data.ghg.push($(elem).val());
 	});
-	$('#water-ui input:checked').each(function(idx, elem){
-		data.water.push($(elem).val());
-	});
+
 	$('#ipm-ui input:checked').each(function(idx, elem){
 		data.ipm.push($(elem).val());
 	});
