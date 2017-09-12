@@ -207,8 +207,8 @@ def main(argv):
 
 <h4>Google Drive File Changes</h4>
 """ % (CFG[regime]['title'],
-       (localts - datetime.timedelta(hours=24)).strftime("%-I %p %-d %B %Y"),
-       localts.strftime("%-I %p %-d %B %Y"))
+       localts.strftime("%-I %p %-d %B %Y"),
+       (localts + datetime.timedelta(hours=24)).strftime("%-I %p %-d %B %Y"))
 
     html = drive_changelog(regime, yesterday, html)
     html = sites_changelog(regime, yesterday, html)
