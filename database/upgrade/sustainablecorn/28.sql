@@ -1,0 +1,1 @@
+ALTER TABLE pesticides RENAME crop to cropapplied;
