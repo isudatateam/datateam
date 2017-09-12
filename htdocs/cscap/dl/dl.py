@@ -286,7 +286,7 @@ def do_pesticides(writer, sites, years):
     opdf = read_sql("""
     SELECT uniqueid, cropyear, operation, valid, timing, method,
     cropapplied,
-    cashcrop, croprot, totalrate, pressure,
+    cashcrop, totalrate, pressure,
     product1, rate1, rateunit1,
     product2, rate2, rateunit2,
     product3, rate3, rateunit3,
