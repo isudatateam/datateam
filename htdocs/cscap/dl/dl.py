@@ -282,7 +282,8 @@ def do_management(writer, sites, years):
 def do_pesticides(writer, sites, years):
     """Return a DataFrame for the pesticides"""
     opdf = read_sql("""
-    SELECT uniqueid, cropyear, operation, valid, timing, method, crop,
+    SELECT uniqueid, cropyear, operation, valid, timing, method,
+    cropapplied,
     cashcrop, croprot, totalrate, pressure,
     product1, rate1, rateunit1,
     product2, rate2, rateunit2,
