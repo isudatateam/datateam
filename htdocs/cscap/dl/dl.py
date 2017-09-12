@@ -174,6 +174,8 @@ def do_ipm(writer, sites, ipm, years):
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
     d.uniqueid in %s and d.year in %s ORDER by d.uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
+    df.columns = [s.upper() if s.startswith("ipm") else s
+                  for s in df.columns]
     df.to_excel(writer, 'IPM', index=False)
 
 
