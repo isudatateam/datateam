@@ -39,7 +39,8 @@ def main():
             for key in data.keys():
                 if key.startswith('gio'):
                     continue
-                vals.append(data[key])
+                val = data[key] if data[key] not in ['n/a',] else None
+                vals.append(val)
                 cols.append(translate.get(key, key))
 
             sql = """
