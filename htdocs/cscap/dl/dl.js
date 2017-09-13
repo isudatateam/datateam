@@ -96,6 +96,10 @@ function build_ui(){
 	// Prevent submit
 	$('#mainform').submit(function(e){
 		  e.preventDefault();
+		  if ($("#myemail").val() != $("#myemail2").val()){
+			  alert("Entered emails do not match, please correct.");
+			  return;
+		  }
 	      $("#dlmsg2").hide();
 		  $("#dlmsg").show();
 		  $.ajax({
@@ -173,6 +177,13 @@ function build_ui(){
 		} else {
 			$("#missingvalue_opt").css('display', 'none');
 		}
+	});
+	$("#agreewithterm").change(function(){
+		if ($(this).val() == 'AGREE'){
+			$("#proceed").css('display', 'block');			
+		} else {
+			$("#proceed").css('display', 'none');
+		}		
 	});
 };
 

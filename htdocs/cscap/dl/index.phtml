@@ -578,7 +578,7 @@ label { display: block !important; margin-left: 1.5em;}
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="dl.js?v=5"></script>
+<script src="dl.js?v=6"></script>
 EOF;
 
 $sitesui = build_sites_ui();
@@ -723,6 +723,8 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 <div class="form-group">
     <label for="myemail">Enter Email Address:</label>
     <input type="text" name="email" id="myemail" placeholder="joeuser@iastate.edu" class="form-control" aria-describedby="helpEmailBlock">
+    <label for="myemail2">Verify Email Address:</label>
+    <input type="text" name="email2" id="myemail2" placeholder="joeuser@iastate.edu" class="form-control" aria-describedby="helpEmailBlock">
 <span id="helpEmailBlock" class="help-block">You will be emailed the exported data file once generated.</span>
 </div>
 <br class="clearfix" />
@@ -743,7 +745,7 @@ Sustainable Corn CAP personnel regarding data quality and other issues concernin
 <p>
 <select name="agree" id="agreewithterm">
 	<option value="AGREE">I agree</option>
-	<option value="NOTAGREE">I do NOT agree</option>
+	<option value="NOTAGREE" selected="selected">I do NOT agree</option>
 </select>
 </p>
 </blockquote>
@@ -751,7 +753,9 @@ Sustainable Corn CAP personnel regarding data quality and other issues concernin
 <div class="alert alert-info" role="alert" id="dlmsg" style="display: none;"><strong>Thank you</strong>: Your request is now being processed!</div>
 <div class="alert alert-info" role="alert" id="dlmsg2" style="display: none;"><strong>Completed</strong>: Please check your email for download information.</div>
 
-<p><input type="submit" value="Proceed with Download"></p>	
+<div id="proceed" style="display: none;">
+  <p><input type="submit" value="Proceed with Download"></p>
+</div>
 	
 </div>
 <br clear="both" />
@@ -781,7 +785,9 @@ Sustainable Corn CAP personnel regarding data quality and other issues concernin
     <div role="tabpanel" class="tab-pane active" id="p1">
 
 <p><blockquote>Articles with open access availability are <strong>in bold</strong>.
-These do not require a subscription to the journal to access.</blockquote></p>
+These do not require a subscription to the journal to access. For individuals 
+without accessibility to certain journals, contact sustainablecorn@iastate.edu 
+for requests to articles below that are subscription-only.</blockquote></p>
 
 {$publisting}
 

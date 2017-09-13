@@ -136,8 +136,7 @@ def do_dictionary(writer):
 def do_metadata_master(writer, sites):
     """get Metadata master data"""
     df = read_sql("""
-    SELECT officialfarmname as "Official Farm Name",
-    uniqueid,
+    SELECT uniqueid, officialfarmname as "Official Farm Name",
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
     selon as "SE Lon", selat as "SE Lat", nelon as "NE Lon", nelat as "NE Lat",
     rawlonlat as "Raw LonLat", state, county, citynearest as "City (nearest)",
@@ -241,7 +240,7 @@ def do_operations(writer, sites, years):
     nitrogen, phosphorus, phosphate, potassium,
     potash, sulfur, calcium, magnesium, zinc, iron
     from operations where uniqueid in %s and cropyear in %s
-    ORDER by valid ASC
+    ORDER by uniqueid ASC, valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     opdf['productrate'] = pd.to_numeric(opdf['productrate'],
                                         errors='coerse')
@@ -293,7 +292,7 @@ def do_pesticides(writer, sites, years):
     product4, rate4, rateunit4,
     adjuvant1, adjuvant2, comments
     from pesticides where uniqueid in %s and cropyear in %s
-    ORDER by cropyear ASC
+    ORDER by uniqueid ASC, cropyear ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     valid2date(opdf)
     opdf.to_excel(writer, 'Pesticides', index=False)
@@ -302,11 +301,11 @@ def do_pesticides(writer, sites, years):
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = read_sql("""
-        SELECT uniqueid, plotid, rep, tillage, rotation,
+        SELECT uniqueid, rep, plotid, tillage, rotation,
         y2011 as "2011 Crop", y2012 as "2012 Crop", y2013 as "2013 Crop",
         y2014 as "2014 Crop", y2015 as "2015 Crop",
         drainage, nitrogen,
-        landscape, herbicide, soilseriesname2, soiltextureseries2,
+        landscape, soilseriesname2, soiltextureseries2,
         soilseriesname1,
         soiltextureseries1, soilseriesdescription1, soiltaxonomicclass1,
         soilseriesdescription2, soiltaxonomicclass2, soiltextureseries3,
@@ -334,6 +333,7 @@ def do_notes(writer, sites):
         "edit review_needed", additional_comments_by_data_team,
         comments_by_site_personnel
         from highvalue_notes where "primary" in %s
+        ORDER by "primary" ASC, growing_season ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
     # Increase column width
@@ -346,7 +346,7 @@ def do_dwm(writer, sites):
     opdf = read_sql("""
         SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
         outletdepth, outletdate, comments
-        from dwm where uniqueid in %s
+        from dwm where uniqueid in %s ORDER by uniqueid ASC, cropyear ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Drainage Control Structure Mngt',
                                 index=False)
@@ -383,7 +383,12 @@ def do_work(form):
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
 
-    # Sheet one is plot IDs
+    # First sheet is Data Dictionary
+    if 'SHM5' in shm:
+        do_dictionary(writer)
+        pprint("do_dictionary() is done")
+
+    # Sheet two is plot IDs
     if 'SHM4' in shm:
         do_plotids(writer, sites)
         pprint("do_plotids() is done")
@@ -428,10 +433,6 @@ def do_work(form):
         do_notes(writer, sites)
         pprint("do_notes() is done")
 
-    # Last sheet is Data Dictionary
-    if 'SHM5' in shm:
-        do_dictionary(writer)
-        pprint("do_dictionary() is done")
 
     # Send to client
     writer.close()
