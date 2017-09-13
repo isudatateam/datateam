@@ -240,7 +240,7 @@ def do_operations(writer, sites, years):
     nitrogen, phosphorus, phosphate, potassium,
     potash, sulfur, calcium, magnesium, zinc, iron
     from operations where uniqueid in %s and cropyear in %s
-    ORDER by uniqueid ASC, valid ASC
+    ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     opdf['productrate'] = pd.to_numeric(opdf['productrate'],
                                         errors='coerse')
@@ -292,7 +292,7 @@ def do_pesticides(writer, sites, years):
     product4, rate4, rateunit4,
     adjuvant1, adjuvant2, comments
     from pesticides where uniqueid in %s and cropyear in %s
-    ORDER by uniqueid ASC, cropyear ASC
+    ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     valid2date(opdf)
     opdf.to_excel(writer, 'Pesticides', index=False)
@@ -346,7 +346,8 @@ def do_dwm(writer, sites):
     opdf = read_sql("""
         SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
         outletdepth, outletdate, comments
-        from dwm where uniqueid in %s ORDER by uniqueid ASC, cropyear ASC
+        from dwm where uniqueid in %s
+        ORDER by uniqueid ASC, cropyear ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Drainage Control Structure Mngt',
                                 index=False)
