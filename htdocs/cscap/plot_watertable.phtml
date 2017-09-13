@@ -16,14 +16,14 @@ $days = isset($_GET["days"]) ? intval($_GET["days"]): 1;
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
 
 /* with data as (select uniqueid, min(date(valid)),
- max(date(valid)) from watertable_data GROUP by uniqueid)
- 
- SELECT '"'||uniqueid || '"=>"' || uniqueid || ' '||
- plotid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
+ max(date(valid)) from watertable_data 
+ WHERE valid >= '2011-01-01' GROUP by uniqueid)
+ SELECT '"'||uniqueid || '"=>"' || uniqueid || 
+ ' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
 $ar = Array(
- "DPAC"=>"DPAC (2006-07-01 to 2015-12-03) [3442 days]",
+ "DPAC"=>"DPAC (2011-01-01 to 2015-12-03) [1797 days]",
  "SERF"=>"SERF (2011-01-01 to 2015-12-31) [1825 days]",
  "STJOHNS"=>"STJOHNS (2011-01-13 to 2015-11-20) [1772 days]",
 		);
