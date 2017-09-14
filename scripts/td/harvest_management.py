@@ -39,7 +39,11 @@ def main():
             for key in data.keys():
                 if key.startswith('gio'):
                     continue
-                val = data[key] if data[key] not in ['n/a',] else None
+                val = data[key]
+                if key in ['date', 'biomassdate1', 'biomassdate2',
+                           'outletdate']:
+                    val = (val if val not in ['unknown', 'N/A', 'n/a']
+                           else None)
                 vals.append(val)
                 cols.append(translate.get(key, key))
 
