@@ -1,4 +1,49 @@
 <?php 
 require_once "../../include/require_auth.php";
+require_once "../../include/myview.php";
+$t = new MyView();
+$t->title = "TD Data Portal";
+$t->content = <<<EOF
+<p>&nbsp;</p>
+
+<h3>Transforming Drainage Project Team Research Data</h3>
+
+<p><img src="https://fe6156f6-a-62cb3a1a-s-sites.googlegroups.com/site/transformingdrainage/home/Team%20Pic.jpg" class="img img-responsive" alt="TD Team"></p>
+
+<p>This website will contain research data measured across a set of experiments 
+  carried out by the Managing Water for Increased Resiliency of Drained Agricultural 
+  Landscapes or <a href="https://transformingdrainage.org/">Transforming Drainage</a>.</p>
+
+<p>The Transforming Drainage team is currently funded by the United States Department 
+  of Agriculture, National Institute of Food and Agriculture (USDA-NIFA, Award No. 2015-68007-23193).</p>
+
+<p>The team is a multi-state research, extension, and education effort aimed at addressing 
+  important drainage management questions through the assessment and development of new 
+  water storage practices and technologies. Drainage is an essential component of the 
+  landscape to provide suitable growing conditions for the crops that feed and support 
+  both local and global communities. However, this infrastructure also creates a pathway 
+  for water and nutrient losses to occur. Increasing water storage on the landscape can 
+  provide greater water security for growing crops while supporting water quality efforts, 
+  which are of growing interest to landowners and the public. The vision for this project 
+  is that the process of designing and implementing agricultural drainage will be transformed 
+  so that storing water in the landscape will be considered for every drainage system as a 
+  foundation for resilient and productive agricultural systems.</p>
+
+<p>Research data have been and are collected across 36 experimental sites focused on control 
+  drainage, water recycling, or saturated buffers, beginning in 1996. At the end of the project 
+  award period, the team will make all water quality and quantity data available here.</p>
+
+<p>For questions on the project, please contact the project director, 
+  <a href="frankenb@purdue.edu">Jane Frankenberger</a>, and the project manager, 
+  <a href="breinhar@purdue.edu">Ben Reinhart</a>. For questions on the research database, 
+  please contact Lori Abendroth and Giorgi Chighladze at isudatateam@iastate.edu.</p>
+
+
+
+<div class="clearfix"></div>
+<p>&nbsp;</p>
+<img src="https://user-images.githubusercontent.com/27225264/30398611-aee012e6-9896-11e7-9181-b62e19a66c1e.png">
+<div class="clearfix"></div>
+
+
 ?>
-<h3>Hello <?php echo $_SERVER["REMOTE_USER"]; ?></h3>
