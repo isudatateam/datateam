@@ -1,0 +1,18 @@
+<?php 
+require_once "../../include/require_auth.php";
+require_once "../../include/myview.php";
+
+$t = new MyView();
+$t->title = "TD Data Usage Agreement";
+$t->thispage = "td-usage";
+$t->content = <<<EOF
+<p>&nbsp;</p>
+
+<h3>Transforming Drainage Data Usage Agreement</h3>
+
+<p>TBD</p>
+
+EOF;
+$t->render('single.phtml');
+
+?>

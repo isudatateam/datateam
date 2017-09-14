@@ -178,8 +178,8 @@ function build_ui(){
 			$("#missingvalue_opt").css('display', 'none');
 		}
 	});
-	$("#agreewithterm").change(function(){
-		if ($(this).val() == 'AGREE'){
+	$("#agreewithterms").change(function(){
+		if ($(this).is(':checked')){
 			$("#proceed").css('display', 'block');			
 		} else {
 			$("#proceed").css('display', 'none');

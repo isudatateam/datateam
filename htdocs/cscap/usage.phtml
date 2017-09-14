@@ -1,0 +1,29 @@
+<?php 
+require_once "../../include/require_auth.php";
+require_once "../../include/myview.php";
+
+$t = new MyView();
+$t->title = "Sustainable Corn Data Usage Agreement";
+$t->thispage = "cscap-usage";
+$t->content = <<<EOF
+<p>&nbsp;</p>
+
+<h3>Sustainable Corn Data Usage Agreement</h3>
+
+<p>By using the datasets, you acknowledge and agree to cite the data in any publications or presentations in the following format: 
+Sustainable Corn CAP, http://dx.doi.org/___ (2017). You are encouraged to contact the original content providers to get assistance 
+in data interpretation, and may consider co-authoring with them. You shall have no claim of ownership to any intellectual property 
+rights in any part of data, content, functions, features, code, data exploration tools, logos or other intellectual property 
+comprising this database. Sustainable Corn CAP personnel is available to address any questions or concerns regarding usage and 
+application of the data that is made available to you on this site.
+</p>
+
+<p>Sustainable Corn CAP shall NOT be responsible or liable for the accuracy, reliability and completeness of any information included 
+in the database as well as for the suitability of its application for any particular purpose. Data users are encouraged to notify 
+Sustainable Corn CAP personnel regarding data quality and other issues concerning data shared through this website.
+</p>
+
+EOF;
+$t->render('single.phtml');
+
+?>
