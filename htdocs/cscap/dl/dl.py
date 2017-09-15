@@ -305,13 +305,13 @@ def do_plotids(writer, sites):
         y2011 as "2011 Crop", y2012 as "2012 Crop", y2013 as "2013 Crop",
         y2014 as "2014 Crop", y2015 as "2015 Crop",
         drainage, nitrogen,
-        landscape, soilseriesname2, soiltextureseries2,
-        soilseriesname1,
-        soiltextureseries1, soilseriesdescription1, soiltaxonomicclass1,
-        soilseriesdescription2, soiltaxonomicclass2, soiltextureseries3,
-        soiltaxonomicclass3, soilseriesdescription3, soilseriesname3,
-        soiltaxonomicclass4, soilseriesdescription4, soilseriesname4,
-        soiltextureseries4, notes, agro, soil, ghg, ipmcscap, ipmusb
+        landscape,
+        soilseriesname1, soiltextureseries1, soilseriesdescription1,
+        soilseriesname2, soiltextureseries2, soilseriesdescription2,
+        soilseriesname3, soiltextureseries3, soilseriesdescription3,
+        soilseriesname4, soiltextureseries4, soilseriesdescription4,
+        notes, agro as "agro_data", soil as "soil_data", 
+        ghg as "ghg_data", ipmcscap as "ipmcscap_data", ipmusb as "ipmusb_data"
         from plotids p LEFT JOIN xref_rotation x on (p.rotation = x.code)
         where uniqueid in %s and
         (herbicide != 'HERB2' or herbicide is null)
