@@ -306,11 +306,11 @@ def do_plotids(writer, sites):
         y2014 as "2014 Crop", y2015 as "2015 Crop",
         drainage, nitrogen,
         landscape,
-        soilseriesname1, soiltextureseries1, soilseriesdescription1,
-        soilseriesname2, soiltextureseries2, soilseriesdescription2,
-        soilseriesname3, soiltextureseries3, soilseriesdescription3,
-        soilseriesname4, soiltextureseries4, soilseriesdescription4,
-        notes, agro as "agro_data", soil as "soil_data", 
+        soilseriesname1, soiltextureseries1, soilseriesdescription1, soiltaxonomicclass1,
+        soilseriesname2, soiltextureseries2, soilseriesdescription2, soiltaxonomicclass2,
+        soilseriesname3, soiltextureseries3, soilseriesdescription3, soiltaxonomicclass3,
+        soilseriesname4, soiltextureseries4, soilseriesdescription4, soiltaxonomicclass4,
+        notes, agro as "agro_data", soil as "soil_data",
         ghg as "ghg_data", ipmcscap as "ipmcscap_data", ipmusb as "ipmusb_data"
         from plotids p LEFT JOIN xref_rotation x on (p.rotation = x.code)
         where uniqueid in %s and
