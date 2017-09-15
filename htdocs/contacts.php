@@ -12,19 +12,19 @@ research and metadata collected, and protocols should be directed to
 The team members listed below will answer your questions. We will determine if contacting the individual 
 research site faculty and staff members are necessary.</p>
 
-<p>Lori Abendroth
-Sustainable Corn Project Manager, PI
-Agronomist
+<p>Lori Abendroth<br>
+Sustainable Corn Project Manager, PI<br>
+Agronomist<br>
 <a href="mailto:labend@iastate.edu">labend@iastate.edu</a></p>
 
-<p>Daryl Herzmann
-Systems Administrator and Analyst
-Agricultural Meteorologist
+<p>Daryl Herzmann<br>
+Systems Administrator and Analyst<br>
+Agricultural Meteorologist<br>
 <a href="mailto:akrherz@iastate.edu">akrherz@iastsate.edu</a></p>
 
-<p>Giorgi Chighladze
-Data Manager and Analyst
-Agricultural Engineer
+<p>Giorgi Chighladze<br>
+Data Manager and Analyst<br>
+Agricultural Engineer<br>
 <a href="mailto:gio@iastate.edu">gio@iastate.edu</a></p>
 
 <p><img src="images/dt-160307.jpg" class="img img-responsive"></p>
