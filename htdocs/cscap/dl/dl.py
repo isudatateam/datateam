@@ -136,7 +136,7 @@ def do_dictionary(writer):
 def do_metadata_master(writer, sites):
     """get Metadata master data"""
     df = read_sql("""
-    SELECT uniqueid, officialfarmname as "Official Farm Name",
+    SELECT uniqueid,
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
     selon as "SE Lon", selat as "SE Lat", nelon as "NE Lon", nelat as "NE Lat",
     rawlonlat as "Raw LonLat", state, county, citynearest as "City (nearest)",
