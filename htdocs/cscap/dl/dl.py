@@ -302,10 +302,9 @@ def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = read_sql("""
         SELECT uniqueid, rep, plotid, tillage, rotation,
+        drainage, nitrogen, landscape,
         y2011 as "2011crop", y2012 as "2012crop", y2013 as "2013crop",
         y2014 as "2014crop", y2015 as "2015crop",
-        drainage, nitrogen,
-        landscape,
         soilseriesname1, soiltextureseries1, soilseriesdescription1,
         soilseriesname2, soiltextureseries2, soilseriesdescription2,
         soilseriesname3, soiltextureseries3, soilseriesdescription3,
