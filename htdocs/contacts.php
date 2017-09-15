@@ -8,7 +8,7 @@ $t->content = <<<EOF
 
 <p>Questions regarding the research database such as experimental designs, farm management operations, 
 research and metadata collected, and protocols should be directed to 
-<a href="mailto:sustainablecorn@iastate.edu">sustainablecorn@iastate.edu</a>. 
+<a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a>. 
 The team members listed below will answer your questions. We will determine if contacting the individual 
 research site faculty and staff members are necessary.</p>
 
