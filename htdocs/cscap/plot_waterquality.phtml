@@ -1,0 +1,162 @@
+<?php
+require_once "../../include/require_auth.php";
+include_once "../../include/forms.php";
+require_once "../../include/myview.php";
+
+$site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC';
+$view = isset($_GET['view']) ? $_GET['view']: 'plot';
+$depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
+$errmsg = "";
+
+$varname = isset($_GET["varname"]) ? substr($_GET["varname"], 1, 4): "WAT2";
+$ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
+
+/* with data as (select uniqueid, min(date(valid)),
+ max(date(valid)) from waterquality_data GROUP by uniqueid)
+ 
+ SELECT '"'||uniqueid || '"=>"' || uniqueid
+ || ' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
+ from data ORDER by d;
+*/
+$ar = Array(
+    "DPAC"=>"DPAC (2011-01-03 to 2015-12-17) [1809 days]",
+    "GILMORE"=>"GILMORE (2011-04-05 to 2015-12-11) [1711 days]",
+    "HICKS.B"=>"HICKS.B (2011-05-02 to 2015-07-19) [1539 days]",
+    "SERF"=>"SERF (2011-01-25 to 2015-09-21) [1700 days]",
+    "STJOHNS"=>"STJOHNS (2011-01-12 to 2015-07-03) [1633 days]",
+    "WATERMAN"=>"WATERMAN (2014-04-24 to 2014-10-23) [182 days]",
+		);
+$siteselect = make_select("site", $site, $ar);
+
+
+$ar = Array(
+		'plot'=> 'View Plot',
+		'html' => 'View Raw Data in HTML Table',
+		'csv' => 'Download as CSV File',
+		'excel' => 'Download as Excel File'
+		);
+$viewselect = make_select('view', $view, $ar);
+
+$ar = Array(
+    'WAT2' => "Nitrogen Concentration",
+    'WAT9' => 'Reactive Phosphorus Concentration'
+    );
+$varselect = make_select('varname', $varname, $ar);
+
+$jsextra = "";
+if ($view != 'plot'){
+	$imageurl = sprintf("plot_waterquality.py?site=%s&varname=%s&ptype=%s&view=%s", 
+		$site, $varname, $ptype, $view);
+	$uri = sprintf("http://datateam.local/cscap/%s", $imageurl);
+	if ($view == 'html'){
+		$data = file_get_contents($uri);
+		$interface = $data;
+	} else{
+		Header(sprintf("Location: /cscap/%s", $imageurl));
+		die();
+	}
+} else {
+	$jsurl = sprintf("waterquality_%s_%s_%s.js", 
+		$site, $varname, $ptype);
+	$jsextra = "<script src=\"{$jsurl}\"></script>";
+	$interface = <<<EOF
+<div id="hc" style="width: 100%; height: 400px;"></div>
+EOF;
+}
+
+$t = new MyView();
+$t->thispage = "cscap-waterquality";
+$t->title = "CSCAP Water Quality Data Plotting/Download";
+$t->headextra = <<<EOF
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
+EOF;
+$t->jsextra = <<<EOF
+<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
+<script src="/vendor/highcharts/4.2.4/highcharts.js"></script>
+<script src="/vendor/highcharts/4.2.4/highcharts-more.js"></script>
+<script src="/vendor/highcharts/4.2.4/modules/exporting.js"></script>
+{$jsextra}
+<script>
+$(document).ready(function(){
+
+});
+</script>
+EOF;
+$t->content =  <<<EOF
+<style>
+select {
+  color: #000;
+}
+</style>
+
+<p>&nbsp;</p>
+
+<h3>Water Quality Data Plotting/Download</h3>
+
+<p>Water Quality data included in this visualization and aggregation tool are associated with two
+USDA-NIFA funded projects: "Cropping Systems Coordinated Agricultural Project: Climate Change,
+Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-68002-30190) and
+"Managing Water for Increased Resiliency of Drained Agricultural Landscapes" (Award No.
+2015-68007-23193).</p>
+
+<p>By using this tool, you agree to the 
+<a href="/cscap/usage.phtml" target="_blank">data usage agreement</a>.</p>
+
+{$errmsg}
+
+<form method="GET" name="plot1">
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>Select Variable</th>
+<th>Select Site: (<i>currently, all plots at site are shown on the graph)</i></th>
+<th>View and Download Options</th>
+</tr></thead>
+
+<tbody>
+<tr>
+<td>
+{$varselect}
+</td>
+<td>
+{$siteselect}
+</td>
+<td>{$viewselect}</td>
+</tr></tbody></table>
+
+<input type="submit" value="Run">
+</form>
+
+<p>{$interface}</p>
+
+<p><i>Pro Tip:</i> You can click the legend name to toggle showing and hiding
+the data series.  You can also mouse click and drag on the plot to zoom it in.
+</p>
+
+<h3>Frequently Asked Questions</h3>
+
+<ol>
+<li><strong>How are timezones handled?</strong><br />
+The timestamps presented should be valid for the local time zone of the sensor
+and are daylight saving time aware.  The daily aggregates should compute the
+daily summaries in the time zone of the station.
+</li>
+</ol>
+
+<h3>Observation Site Collection Interval</h3>
+
+<p>This table lists the observation time interval at each site:
+<pre>
+ ST  SITE         INTERVAL
+[IA] GILMORE      Varies     n=5 years; 2011 to 2015
+[IA] SERF         Varies     n=5 years; 2011 to 2015
+[IN] DPAC         Varies     n=5 years; 2011 to 2015
+[MN] HICKS.B      Varies     n=5 years; 2011 to 2015
+[OH] STJOHNS      Varies     n=5 years; 2011 to 2015
+[OH] WATERMAN     Varies     n=1 years; 2014
+</pre></p>
+
+EOF;
+$t->render('full.phtml');
+?>
