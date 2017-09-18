@@ -8,7 +8,7 @@ $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $errmsg = "";
 
-$varname = isset($_GET["varname"]) ? substr($_GET["varname"], 1, 4): "WAT2";
+$varname = isset($_GET["varname"]) ? substr($_GET["varname"], 0, 4): "WAT2";
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
 
 /* with data as (select uniqueid, min(date(valid)),
