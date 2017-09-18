@@ -79,7 +79,18 @@ $t->jsextra = <<<EOF
 {$jsextra}
 <script>
 $(document).ready(function(){
-
+    $("select[name=varname]").change(function(){
+        if ($(this).val() == 'WAT9'){
+           $('select[name=site]').children('option[value=WATERMAN]').hide();
+            $('select[name=site]').children('option[value=STJOHNS]').hide();
+            $('select[name=site]').children('option[value="HICKS.B"]').hide();
+ 
+        } else {
+            $('select[name=site]').children('option[value=WATERMAN]').show();
+            $('select[name=site]').children('option[value=STJOHNS]').show();
+            $('select[name=site]').children('option[value="HICKS.B"]').show();
+        }
+    });
 });
 </script>
 EOF;
