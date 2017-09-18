@@ -24,30 +24,40 @@ from pandas.io.sql import read_sql
 EMAILTEXT = """
 Sustainable Corn CAP - Research and Management Data
 Requested: %s UTC
-Website: https://datateam.agron.iastate.edu/cscap/dl/
-Contact: isudatateam@iastate.edu
+Website: https://datateam.agron.iastate.edu/cscap/
+Contact: sustainablecorn@iastate.edu
 
 Please click here to download your spreadsheet file.
 
-    %s
+    %s (link will remain active for 30 days)
 
-By using the datasets, you acknowledge and agree to cite the data in any 
-publications or presentations in the following format: Sustainable Corn CAP, 
-http://dx.doi.org/___ (2017). You are encouraged to contact the original 
-content providers to get assistance in data interpretation, and may consider 
-co-authoring with them. You shall have no claim of ownership to any 
-intellectual property rights in any part of data, content, functions, 
-features, code, data exploration tools, logos or other intellectual 
-property comprising this database. Sustainable Corn CAP personnel is 
-available to address any questions or concerns regarding usage and 
-application of the data that is made available to you on this site.
+By using these data, you acknowledge and agree to cite the data in all
+publications or presentations using the following format:
 
-Sustainable Corn CAP shall NOT be responsible or liable for the accuracy, 
-reliability and completeness of any information included in the database 
-as well as for the suitability of its application for any particular 
-purpose. Data users are encouraged to notify Sustainable Corn CAP personnel 
-regarding data quality and other issues concerning data shared through this 
-website.
+Abendroth, Lori J., Daryl E. Herzmann, Giorgi Chighladze, Eileen J. Kladivko,
+Matthew J. Helmers, Laura Bowling, Michael Castellano, Richard M. Cruse,
+Warren A. Dick, Norman R. Fausey, Jane Frankenberger, Aaron J. Gassmann,
+Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller,
+Emerson D. Nafziger, Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer,
+Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017.
+Sustainable Corn CAP (USDA-NIFA Funded). National Agricultural Library -
+ARS - USDA. https://dx.doi.org/xxxxxxx
+
+You are encouraged to contact the Sustainable Corn CAP personnel listed above
+to ensure proper data interpretation and may also consider co-authoring
+with them. You shall have no claim of ownership to any intellectual
+property rights in any part of the data, content, functions, features,
+code, data exploration tools, logos or other intellectual property
+comprising this database.
+
+The coauthors individually and the Sustainable Corn CAP collectively
+shall NOT be responsible or liable for the accuracy, reliability and
+completeness of any information included in the database as well as
+for the suitability of its application for any particular purpose.
+Data users are encouraged to notify the coauthors regarding data quality
+and other issues concerning the data, tools, and functionality of this
+website. Contact sustainablecorn@iastate.edu with any questions or concerns
+regarding usage and application of the data available at this site.
 
 """
 
