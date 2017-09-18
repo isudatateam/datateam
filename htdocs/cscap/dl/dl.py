@@ -154,7 +154,8 @@ def do_ghg(writer, sites, ghg, years):
     """get GHG data"""
     cols = ", ".join(ghg)
     df = read_sql("""
-    SELECT d.uniqueid, d.plotid, d.date, d.year, """ + cols + """
+    SELECT d.uniqueid, d.plotid, d.date, d.year, d.method, d.subsample,
+    d.position, """ + cols + """
     from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
