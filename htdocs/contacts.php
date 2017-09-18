@@ -27,6 +27,12 @@ Data Manager and Analyst<br>
 Agricultural Engineer<br>
 <a href="mailto:gio@iastate.edu">gio@iastate.edu</a></p>
 
+<p>Appreciation is extended to Suresh Lokhande, Katie Schwaegler, and Stephanie Bowden for their management 
+and review of all Sustainable Corn CAP data, metadata, and supporting information during the project.
+</p>
+
+<p>&nbsp<p>
+
 <p><img src="images/dt-160307.jpg" class="img img-responsive"></p>
 
 EOF;
