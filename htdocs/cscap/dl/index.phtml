@@ -3,17 +3,22 @@ require_once "../../../include/require_auth.php";
 
 function build_treatments_ui(){
 	$s = <<<EOF
+<p>Treatments that are applicable for the sites selected will be black. 
+Treatments in grey are not applicable for the sites selected.</p>
+<div class="clearfix"></div>
+
 <div class="row"><div class="col-md-4">
+
 
 <div class="panel panel-default">
   <div class="panel-heading">Continuous Crop Systems</div>
   <div class="panel-body">
 
 <input type="checkbox" value="_T5" data-treatment="_T5" name="treatments[]" id="_T5">
-<label for="_T5" class="control-label">Continuous Corn</label>
+<label for="_T5" class="control-label">Continuous corn</label>
 
 <input type="checkbox" value="_T6" data-treatment="_T6" name="treatments[]" id="_T6">
-<label for="_T6" class="control-label">Continuous Corn with Rye Cover</label>
+<label for="_T6" class="control-label">Continuous corn with rye cover</label>
 
 <input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]" id="ROT2">
 <label for="ROT2" class="control-label">continuous soybean</label>
@@ -29,19 +34,19 @@ function build_treatments_ui(){
   <div class="panel-body">
 
 <input type="checkbox" value="_T1" data-treatment="_T1" name="treatments[]" id="_T1">
-<label for="_T1" class="control-label">corn-soybean</label>
+<label for="_T1" class="control-label">Corn-soybean</label>
 
 <input type="checkbox" value="_T2" data-treatment="_T2" name="treatments[]" id="_T2">
-<label for="_T2" class="control-label">corn-soybean-wheat</label>
+<label for="_T2" class="control-label">Corn-soybean-wheat</label>
 
 <input type="checkbox" value="_T3" data-treatment="_T3" name="treatments[]" id="_T3">
-<label for="_T3" class="control-label">Corn-Soybean-Wheat/Red Clover or mixed cover crop</label>
+<label for="_T3" class="control-label">Corn-soybean-wheat/red clover or mixed cover crop</label>
 
 <input type="checkbox" value="_T4" data-treatment="_T4" name="treatments[]" id="_T4">
-<label for="_T4" class="control-label">Corn-Soybean with rye cover</label>
+<label for="_T4" class="control-label">Corn-soybean with rye cover</label>
 
 <input type="checkbox" value="ROT41" data-treatment="ROT41" name="treatments[]" id="ROT41">
-<label for="ROT41" class="control-label">CORN-corn-soybean-corn-soybean</label>
+<label for="ROT41" class="control-label">Corn-corn-soybean-corn-soybean</label>
 
   </div>
 </div>
@@ -81,11 +86,11 @@ function build_treatments_ui(){
   <div class="panel-body">
 
 <input type="checkbox" value="TIL4" data-treatment="TIL4" name="treatments[]" id="TIL4">
-<label for="TIL4" class="control-label">Conventional Tillage (2011), No Tillage (2012-2015)</label>
+<label for="TIL4" class="control-label">Conventional tillage (2011), no tillage (2012-2015)</label>
 <input type="checkbox" value="TIL2" data-treatment="TIL2" name="treatments[]" id="TIL2">
-<label for="TIL2" class="control-label">Conventional Tillage (CT)</label>
+<label for="TIL2" class="control-label">Conventional tillage (CT)</label>
 <input type="checkbox" value="TIL1" data-treatment="TIL1" name="treatments[]" id="TIL1">
-<label for="TIL1" class="control-label">No Tillage (NT)</label>
+<label for="TIL1" class="control-label">No tillage (NT)</label>
 
   </div>
 </div>
@@ -654,7 +659,8 @@ $t->content = <<<EOF
 </div>
 <div class="clearfix"></div>
 
-<p>Please select from the available agronomic variables below.  The usage of abbreviations <i>C</i>
+<p>Agronomic data that are available for the sites selected will be black. 
+The usage of abbreviations <i>C</i>
 and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 {$agronomicui}
 </div>
@@ -664,6 +670,8 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
   <button id="soil-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
 <div class="clearfix"></div>
+<p>Soil data that are available for the sites selected will be black.</p>
+<div class="clearfix"></div>
 
 {$soilui}
 </div>
@@ -671,6 +679,12 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 <div class="pull-right">
   <button id="ghg-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
+<div class="clearfix"></div>
+
+<p>Greenhouse gas data that are available for the sites selected will be black. 
+The soil data listed here were collected at the same time as the greenhouse 
+gas measurement; these are distinct fro those under the Soil tab.</p>
+
 <div class="clearfix"></div>
 
 {$ghgui}
@@ -794,6 +808,10 @@ regarding usage and application of the data available at this site.
 </form>
 		</div>
 		<div role="tabpanel" class="tab-pane active" id="sites">
+
+<p>Open the map, using the upper right bracket, to see the site area boundaries 
+for each experimental site.</p>
+
 <iframe src="https://www.google.com/maps/d/embed?mid=1VQuDqTRkO5RPvIgWMODYvBLWU1A&amp;z=5&amp;ll=42.62%2C-90.72" width="640" height="480"></iframe>
 
     {$sitestable}
@@ -856,13 +874,13 @@ and synthesize water data contained here.</p>
     <div role="tabpanel" class="tab-pane" id="wxdata">
     <h3>Daily Weather Data</h3>
 
-<p>Supplementary weather data are available for Sustainable Corn research sites. 
-This dataset is provided from nearby weather networks and curated by 
-Sustainable Corn personnel. It is most representative and accurate for pairing 
-with these research sites. The data is collected from a variety of sources, 
-including the National Climatic Data Center, National Weather Service, and 
-State Climatologists. These entities revise their data and will produce updated 
-values that are reprocessed into this archive.</p>
+<p>Supplementary weather data are available for Sustainable Corn CAP research sites 
+and are provided from nearby weather networks. These data are most appropriate 
+to use with these research sites because of proximity. The data are collected 
+from a variety of sources, including the National Climatic Data Center, 
+National Weather Service, and State Climatologists with curation and 
+management by Iowa Environmental Mesonet. These entities revise their 
+data and will produce updated values that are reprocessed into this archive.</p>
 
 <p>Documentation on this dataset can be found 
 <a href="https://mesonet.agron.iastate.edu/info/datasets/climodat.html" target="_blank">here</a></p>
@@ -1024,7 +1042,8 @@ values that are reprocessed into this archive.</p>
 </table>
 
 <p><strong>Select Data Variables</strong>:
-<br /><i>Date and Julian Day are included automatically</i>
+<br /><i>Date and Day of Year are included automatically in the export. 
+To select multiple data, hold CTRL key down while selecting options here.</i>
 <br /><select size=5 name="vars[]" MULTIPLE class="select">
   <option value="high">Variable: High Air Temperature [F]</option>
   <option value="highc">Variable: High Air Temperature [C]</option>
@@ -1036,9 +1055,8 @@ values that are reprocessed into this archive.</p>
   <option value="gdd_50_86">Computed: Growing Degree Days (base=50,max=86) [F]</option>
 </select></p>
 
-<p><strong>Specialized Data/Model Formats</strong>:
-<br /><i>When you select a given data format, it will override any selected variables
-above and formats below.  These are specialized formats typically used for modelling and
+<p><strong>Optional: Specialized Model Formats for Export</strong>:
+<br /><i>These are specialized formats typically used for modelling and
 their choice dictates the variables to be included.</i>
 <br />
 <select size="5" name="model">

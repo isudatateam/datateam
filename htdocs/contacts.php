@@ -3,6 +3,7 @@ include_once "../include/myview.php";
 $t = new MyView();
 $t->title = "ISU Data Team!";
 $t->content = <<<EOF
+<p>&nbsp;</p>
 
 <h3>ISU Data Team Contacts</h3>
 

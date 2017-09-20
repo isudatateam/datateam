@@ -133,14 +133,20 @@ def conv(value, detectlimit, missing):
 def do_dictionary(writer):
     """Add Data Dictionary to the spreadsheet"""
     df = read_sql("""
-    SELECT * from data_dictionary_export ORDER by element_or_value_display_name
+        SELECT * from data_dictionary_export
+        ORDER by ss_order ASC
     """, PGCONN, index_col=None)
+    df.drop('ss_order', axis=1, inplace=True)
     for col in df.columns:
         df[col] = df[col].str.decode('ascii', 'ignore')
     df.to_excel(writer, 'Data Dictionary', index=False)
     # Increase column width
     worksheet = writer.sheets['Data Dictionary']
-    worksheet.set_column('A:J', 36)
+    worksheet.set_column('A:D', 36)
+    worksheet.set_column('E:E', 18)
+    worksheet.set_column('F:F', 36)
+    worksheet.set_column('G:J', 12)
+    worksheet.set_column('K:K', 60)
 
 
 def do_metadata_master(writer, sites):
@@ -172,6 +178,8 @@ def do_ghg(writer, sites, ghg, years):
     and d.uniqueid in %s and d.year in %s ORDER by d.uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
     df.to_excel(writer, 'GHG', index=False)
+    worksheet = writer.sheets['GHG']
+    worksheet.set_column('C:C', 12)
 
 
 def do_ipm(writer, sites, ipm, years):
@@ -187,6 +195,8 @@ def do_ipm(writer, sites, ipm, years):
     df.columns = [s.upper() if s.startswith("ipm") else s
                   for s in df.columns]
     df.to_excel(writer, 'IPM', index=False)
+    worksheet = writer.sheets['IPM']
+    worksheet.set_column('C:C', 12)
 
 
 def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
@@ -276,6 +286,9 @@ def do_operations(writer, sites, years):
     valid2date(opdf)
     del opdf['productrate']
     opdf.to_excel(writer, 'Field Operations', index=False)
+    worksheet = writer.sheets['Field Operations']
+    worksheet.set_column('D:D', 12)
+    worksheet.set_column('M:N', 12)
 
 
 def do_management(writer, sites, years):
@@ -307,6 +320,8 @@ def do_pesticides(writer, sites, years):
     """, PGCONN, params=(tuple(sites), tuple(years)))
     valid2date(opdf)
     opdf.to_excel(writer, 'Pesticides', index=False)
+    worksheet = writer.sheets['Pesticides']
+    worksheet.set_column('D:D', 12)
 
 
 def do_plotids(writer, sites):
@@ -316,6 +331,9 @@ def do_plotids(writer, sites):
         drainage, nitrogen, landscape,
         y2011 as "2011crop", y2012 as "2012crop", y2013 as "2013crop",
         y2014 as "2014crop", y2015 as "2015crop",
+        agro as "agro_data", soil as "soil_data",
+        ghg as "ghg_data", ipmcscap as "ipmcscap_data",
+        ipmusb as "ipmusb_data",
         soilseriesname1, soiltextureseries1, soilseriesdescription1,
         soiltaxonomicclass1,
         soilseriesname2, soiltextureseries2, soilseriesdescription2,
@@ -323,9 +341,7 @@ def do_plotids(writer, sites):
         soilseriesname3, soiltextureseries3, soilseriesdescription3,
         soiltaxonomicclass3,
         soilseriesname4, soiltextureseries4, soilseriesdescription4,
-        soiltaxonomicclass4,
-        notes, agro as "agro_data", soil as "soil_data",
-        ghg as "ghg_data", ipmcscap as "ipmcscap_data", ipmusb as "ipmusb_data"
+        soiltaxonomicclass4
         from plotids p LEFT JOIN xref_rotation x on (p.rotation = x.code)
         where uniqueid in %s and
         (herbicide != 'HERB2' or herbicide is null)
@@ -365,6 +381,9 @@ def do_dwm(writer, sites):
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Drainage Control Structure Mngt',
                                 index=False)
+    worksheet = writer.sheets['Drainage Control Structure Mngt']
+    worksheet.set_column('G:G', 12)
+    worksheet.set_column('H:H', 30)
 
 
 def do_work(form):
