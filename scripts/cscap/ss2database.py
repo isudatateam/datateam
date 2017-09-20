@@ -34,12 +34,12 @@ def workflow(sheetid, tablename):
     for col in sheet.columns:
         cols.append(cleaner(col.title))
     cursor.execute(("""
-        CREATE TABLE """ + tablename + """ (%s)
+        CREATE TABLE """ + tablename + """ (ss_order int, %s)
     """) % (",".join([' "%s" varchar' % (s,) for s in cols]), ))
     cursor.execute("""
         GRANT SELECT on """ + tablename + """ to nobody,apache
     """)
-    for row in sheet.rows:
+    for i, row in enumerate(sheet.rows):
         vals = []
         for cell in row.cells:
             val = cell.value
@@ -47,9 +47,9 @@ def workflow(sheetid, tablename):
                 val = unidecode(val)
             vals.append(val)
         sql = """
-        INSERT into %s (%s) VALUES (%s)
+        INSERT into %s (ss_order, %s) VALUES (%s, %s)
         """ % (tablename, ",".join(['"%s"' % (s,) for s in cols]),
-               ",".join(["%s"]*len(cols)))
+               i, ",".join(["%s"]*len(cols)))
         cursor.execute(sql, vals)
     cursor.close()
     pgconn.commit()
