@@ -50,8 +50,7 @@ def make_plot(form):
     ptype = form.getfirst('ptype', '1')
     if ptype == '1':
         df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
-        discharge_mm_qc as discharge,
-        coalesce(discharge_mm_qcflag, '') as discharge_f
+        discharge_mm_qc as discharge
         from tileflow_data WHERE uniqueid = %s
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
@@ -62,7 +61,6 @@ def make_plot(form):
         from tileflow_data WHERE uniqueid = %s
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
-        df["discharge_f"] = '-'
     if len(df.index) < 3:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
     if ptype not in ['2', ]:
