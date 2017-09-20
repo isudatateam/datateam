@@ -202,11 +202,11 @@ def do_ipm(writer, sites, ipm, years):
 def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     """get agronomic data"""
     df = read_sql("""
-    SELECT d.site as uniqueid, d.plotid, d.varname, d.year, d.value
-    from agronomic_data d JOIN plotids p on (d.site = p.uniqueid and
+    SELECT d.uniqueid, d.plotid, d.varname, d.year, d.value
+    from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    site in %s and year in %s and varname in %s ORDER by uniqueid, year
+    d.uniqueid in %s and year in %s and varname in %s ORDER by uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(agronomic)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
@@ -224,12 +224,12 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     pprint("do_soil: " + str(sites))
     pprint("do_soil: " + str(years))
     df = read_sql("""
-    SELECT d.site as uniqueid, d.plotid, d.depth,
+    SELECT d.uniqueid, d.plotid, d.depth,
     coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value
-    from soil_data d JOIN plotids p ON (d.site = p.uniqueid and
+    from soil_data d JOIN plotids p ON (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    site in %s and year in %s and varname in %s ORDER by uniqueid, year
+    d.uniqueid in %s and year in %s and varname in %s ORDER by uniqueid, year
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))

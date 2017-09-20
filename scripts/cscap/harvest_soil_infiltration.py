@@ -20,7 +20,7 @@ DOMAIN = ['SOIL3']
 
 # Load up current data
 current = {}
-pcursor.execute("""SELECT site, plotid, varname, depth, subsample, value
+pcursor.execute("""SELECT uniqueid, plotid, varname, depth, subsample, value
     from soil_data WHERE year = %s and varname in %s
     """, (YEAR, tuple(DOMAIN)))
 for row in pcursor:
@@ -89,7 +89,7 @@ for item in res['items']:
             #    continue
             try:
                 pcursor.execute("""
-                    INSERT into soil_data(site, plotid, varname, year,
+                    INSERT into soil_data(uniqueid, plotid, varname, year,
                     depth, value, subsample)
                     values (%s, %s, %s, %s, %s, %s, %s)
                     """, (siteid, plotid, varname, YEAR, depth, val,
@@ -111,7 +111,7 @@ for key in current:
         print(('harvest_soil_infiltration rm %s %s %s %s %s %s %s'
                ) % (YEAR, siteid, plotid, varname, depth, subsample,
                     current[key]))
-        pcursor.execute("""DELETE from soil_data where site = %s and
+        pcursor.execute("""DELETE from soil_data where uniqueid = %s and
         plotid = %s and varname = %s and year = %s and depth = %s and
         subsample = %s""", (siteid, plotid, varname, YEAR, depth,
                             subsample))

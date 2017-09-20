@@ -87,6 +87,7 @@ def main():
     pgconn.commit()
     sys.stdout.write(json.dumps(res))
 
+
 if __name__ == '__main__':
     main()
     # print decagon_logic("ISUAG::302", "10 cm VSM")

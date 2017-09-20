@@ -33,7 +33,7 @@ DOMAIN = ['SOIL15', 'SOIL22', 'SOIL16', 'SOIL22', 'SOIL25', 'SOIL95',
 
 # Load up what data we have for this year
 current = {}
-pcursor.execute("""SELECT site, plotid, varname, depth, subsample, sampledate
+pcursor.execute("""SELECT uniqueid, plotid, varname, depth, subsample, sampledate
  from soil_data WHERE year = %s and varname in %s""", (YEAR,
                                                        tuple(DOMAIN)))
 for row in pcursor:
@@ -116,7 +116,7 @@ for item in res['items']:
                 DOMAIN.append(varname)
             try:
                 pcursor.execute("""
-                    INSERT into soil_data(site, plotid, varname, year,
+                    INSERT into soil_data(uniqueid, plotid, varname, year,
                     depth, value, subsample, sampledate)
                     values (%s, %s, %s, %s, %s, %s, %s, %s)
                     """, (siteid, plotid, varname, YEAR, depth, val,
@@ -132,7 +132,7 @@ for item in res['items']:
                    ) % (siteid, plotid, varname, depth, subsample,
                         date if date is None else date.strftime("%Y-%m-%d"))
             if key in current:
-                del(current[key])
+                del current[key]
 
 for key in current:
     (siteid, plotid, varname, depth, subsample, date) = key.split("|")
@@ -144,7 +144,7 @@ for key in current:
            ) % (YEAR, siteid, plotid, varname, depth, subsample,
                 date))
     pcursor.execute("""
-        DELETE from soil_data where site = %s and
+        DELETE from soil_data where uniqueid = %s and
         plotid = %s and varname = %s and year = %s and depth = %s and
         subsample = %s """ + datesql + """
     """, (siteid, plotid, varname, YEAR, depth, subsample))

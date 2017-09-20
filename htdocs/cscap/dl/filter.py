@@ -107,7 +107,7 @@ def do_filter(form):
         WHERE uniqueid in %s """ + sql + """
     )
     SELECT distinct varname from agronomic_data a, myplotids p
-    WHERE a.site = p.uniqueid and a.plotid = p.plotid and
+    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
     a.value not in ('n/a')
     """, pgconn, params=args, index_col=None)
     if len(df.index) > 0:
@@ -120,7 +120,7 @@ def do_filter(form):
         WHERE uniqueid in %s """ + sql + """
     )
     SELECT distinct varname from soil_data a, myplotids p
-    WHERE a.site = p.uniqueid and a.plotid = p.plotid
+    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
     """, pgconn, params=args, index_col=None)
     if len(df.index) > 0:
         res['soil'] = redup(df['varname'].values.tolist())
@@ -159,10 +159,10 @@ def do_filter(form):
     df = read_sql("""
     WITH soil_years as (
         SELECT distinct year from soil_data where varname in %s
-        and site in %s),
+        and uniqueid in %s),
     agronomic_years as (
         SELECT distinct year from agronomic_data where varname in %s
-        and site in %s),
+        and uniqueid in %s),
     ghg_years as (
         SELECT distinct year from ghg_data where uniqueid in %s),
     agg as (SELECT year from soil_years UNION select year from agronomic_years

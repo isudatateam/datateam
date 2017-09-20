@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import sys
-import psycopg2
 import cgi
 import datetime
+
+import psycopg2
 from pandas.io.sql import read_sql
 DBCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
                           user='nobody')
@@ -12,7 +13,7 @@ cursor = DBCONN.cursor()
 def get_data(mode, data, arr):
     ''' Do stuff '''
     table = 'agronomic_data' if mode == 'agronomic' else 'soil_data'
-    cursor.execute("""SELECT site,
+    cursor.execute("""SELECT uniqueid,
     -- We have some number
     sum(case when lower(value) not in ('.','','did not collect','n/a') and
         value is not null then 1 else 0 end),
@@ -25,7 +26,7 @@ def get_data(mode, data, arr):
     sum(case when value is null then 1 else 0 end),
     count(*) from """+table+"""
     WHERE (value is Null or lower(value) != 'n/a')
-    GROUP by site""")
+    GROUP by uniqueid""")
     for row in cursor:
         for site in [row[0], '_ALL']:
             entry = data.setdefault(site, dict(hits=0, dots=0, other=0,
@@ -78,11 +79,11 @@ def do_site(site):
     df = read_sql("""
     with ag as (
         select year, varname, value, count(*) from agronomic_data
-        where site = %s and (value is null or value in ('', '.'))
+        where uniqueid = %s and (value is null or value in ('', '.'))
         GROUP by year, varname, value),
     soil as (
         select year, varname, value, count(*) from soil_data
-        where site = %s and (value is null or value in ('', '.'))
+        where uniqueid = %s and (value is null or value in ('', '.'))
         GROUP by year, varname, value)
 
     SELECT * from ag UNION select * from soil ORDER by year ASC, varname ASC

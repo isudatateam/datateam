@@ -36,7 +36,7 @@ def get_data(year, mode):
     data = {ALL: {} }
     dvars = []
     table = 'agronomic_data' if mode == 'agronomic' else 'soil_data'
-    cursor.execute("""SELECT site, varname, 
+    cursor.execute("""SELECT uniqueid, varname, 
     -- We have some number
     sum(case when lower(value) not in ('.','','did not collect','n/a') and
         value is not null then 1 else 0 end),
@@ -47,7 +47,8 @@ def get_data(year, mode):
     -- We have a null
     sum(case when value is null then 1 else 0 end),
     count(*) from """+table+"""
-    WHERE year = %s and (value is Null or lower(value) != 'n/a') GROUP by site, varname""", (year,))
+    WHERE year = %s and (value is Null or lower(value) != 'n/a')
+    GROUP by uniqueid, varname""", (year,))
     for row in cursor:
         if row[1] not in dvars:
             dvars.append( row[1] )

@@ -1,6 +1,8 @@
 """Scrape out the Soil Bulk Density and Texture data from Google Drive"""
-import pyiem.cscap_utils as util
+from __future__ import print_function
 import sys
+
+import pyiem.cscap_utils as util
 import psycopg2
 
 YEAR = sys.argv[1]
@@ -26,7 +28,7 @@ DOMAIN = ['SOIL1', 'SOIL2', 'SOIL29', 'SOIL30', 'SOIL31', 'SOIL32', 'SOIL8',
 # Load up current data, incase we need to do some deleting
 current = {}
 pcursor.execute("""
-    SELECT site, plotid, varname, depth, subsample
+    SELECT uniqueid, plotid, varname, depth, subsample
     from soil_data WHERE year = %s and varname in %s
     """, (YEAR, tuple(DOMAIN)))
 for row in pcursor:
@@ -54,10 +56,10 @@ for item in res['items']:
     elif (worksheet.get_cell_value(1, 1) != 'plotid' or
             worksheet.get_cell_value(1, 2) != 'depth' or
             worksheet.get_cell_value(1, 3) != 'subsample'):
-        print 'FATAL site: %s(%s) bd & wr has bad header 1:%s 2:%s 3:%s' % (
-            siteid, YEAR, worksheet.get_cell_value(1, 1),
-            worksheet.get_cell_value(1, 2),
-            worksheet.get_cell_value(1, 3))
+        print(('FATAL site: %s(%s) bd & wr has bad header 1:%s 2:%s 3:%s'
+               ) % (siteid, YEAR, worksheet.get_cell_value(1, 1),
+                    worksheet.get_cell_value(1, 2),
+                    worksheet.get_cell_value(1, 3)))
         continue
 
     for row in range(3, worksheet.rows+1):
@@ -95,21 +97,22 @@ for item in res['items']:
                        ) % (siteid, YEAR, row, col, varname))
             try:
                 pcursor.execute("""
-                    INSERT into soil_data(site, plotid, varname, year,
+                    INSERT into soil_data(uniqueid, plotid, varname, year,
                     depth, value, subsample)
                     values (%s, %s, %s, %s, %s, %s, %s)
                     """, (siteid, plotid, varname, YEAR, depth, val,
                           subsample))
             except Exception, exp:
-                print 'HARVEST_SOIL_BD TRACEBACK'
-                print exp
-                print '%s %s %s %s %s %s' % (siteid, plotid, varname, depth,
-                                             val, subsample)
+                print('HARVEST_SOIL_BD TRACEBACK')
+                print(exp)
+                print(('%s %s %s %s %s %s'
+                       ) % (siteid, plotid, varname, depth,
+                            val, subsample))
                 sys.exit()
             key = "%s|%s|%s|%s|%s" % (siteid, plotid, varname, depth,
                                       subsample)
             if key in current:
-                del(current[key])
+                del current[key]
 
 for key in current:
     (siteid, plotid, varname, depth, subsample) = key.split("|")
@@ -120,7 +123,7 @@ for key in current:
         d1 = "depth is null" if depth == 'None' else "depth = '%s'" % (depth,)
         d2 = ("subsample is null" if subsample == 'None'
               else "subsample = '%s'" % (subsample, ))
-        pcursor.execute("""DELETE from soil_data where site = %s and
+        pcursor.execute("""DELETE from soil_data where uniqueid = %s and
         plotid = %s and varname = %s and year = %s and """ + d1 + """ and
         """ + d2, (siteid, plotid, varname, YEAR))
 

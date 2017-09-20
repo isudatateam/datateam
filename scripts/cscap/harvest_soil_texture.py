@@ -1,8 +1,10 @@
 '''
  Scrape out the Soil Texture data from Google Drive
 '''
-import pyiem.cscap_utils as util
+from __future__ import print_function
 import sys
+
+import pyiem.cscap_utils as util
 import psycopg2
 
 YEAR = sys.argv[1]
@@ -25,7 +27,7 @@ DOMAIN = ['SOIL26', 'SOIL27', 'SOIL28', 'SOIL6', 'SOIL40', 'SOIL20',
 
 # Load up current data
 current = {}
-pcursor.execute("""SELECT site, plotid, varname, depth, subsample, value
+pcursor.execute("""SELECT uniqueid, plotid, varname, depth, subsample, value
     from soil_data WHERE year = %s and varname in %s
     """, (YEAR, tuple(DOMAIN)))
 for row in pcursor:
@@ -92,21 +94,22 @@ for item in res['items']:
             #    continue
             try:
                 pcursor.execute("""
-                    INSERT into soil_data(site, plotid, varname, year,
+                    INSERT into soil_data(uniqueid, plotid, varname, year,
                     depth, value, subsample)
                     values (%s, %s, %s, %s, %s, %s, %s)
                     """, (siteid, plotid, varname, YEAR, depth, val,
                           subsample))
             except Exception, exp:
-                print 'HARVEST_SOIL_TEXTURE TRACEBACK'
-                print exp
-                print '%s %s %s %s %s' % (siteid, plotid, varname, depth, val,
-                                          subsample)
+                print('HARVEST_SOIL_TEXTURE TRACEBACK')
+                print(exp)
+                print(('%s %s %s %s %s %s'
+                       ) % (siteid, plotid, varname, depth, val,
+                            subsample))
                 sys.exit()
             key = "%s|%s|%s|%s|%s" % (siteid, plotid, varname, depth,
                                       subsample)
             if key in current:
-                del(current[key])
+                del current[key]
 
 for key in current:
     (siteid, plotid, varname, depth, subsample) = key.split("|")
@@ -114,10 +117,11 @@ for key in current:
         print(('harvest_soil_texture rm %s %s %s %s %s %s %s'
                ) % (YEAR, siteid, plotid, varname, depth, subsample,
                     current[key]))
-        pcursor.execute("""DELETE from soil_data where site = %s and
-        plotid = %s and varname = %s and year = %s and depth = %s and
-        subsample = %s""", (siteid, plotid, varname, YEAR, depth,
-                            subsample))
+        pcursor.execute("""
+            DELETE from soil_data where uniqueid = %s and
+            plotid = %s and varname = %s and year = %s and depth = %s and
+            subsample = %s
+        """, (siteid, plotid, varname, YEAR, depth, subsample))
 
 
 pcursor.close()

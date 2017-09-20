@@ -1,14 +1,14 @@
 #!/usr/bin/env python
+import sys
+import cStringIO
+import datetime
+import cgi
 
+import psycopg2
+import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import sys
-import cStringIO
-import psycopg2
-import datetime
-import numpy as np
-import cgi
 
 
 def make_plot(form):
@@ -69,6 +69,7 @@ def main():
     ram.seek(0)
     res = ram.read()
     sys.stdout.write(res)
+
 
 if __name__ == '__main__':
     # Go Main

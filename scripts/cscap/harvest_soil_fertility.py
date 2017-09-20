@@ -20,7 +20,7 @@ res = drive_client.files().list(q=("title contains '%s'"
 # Load up current data, incase we need to do some deleting
 current = {}
 pcursor.execute("""
-    SELECT site, plotid, varname, depth, year, sampledate, value
+    SELECT uniqueid, plotid, varname, depth, year, sampledate, value
     from soil_data WHERE varname ~* 'SOIL19'
     """)
 for row in pcursor:
@@ -100,7 +100,7 @@ for item in res['items']:
                        ) % (siteid, year, repr(oldval), repr(val)))
             try:
                 pcursor.execute("""
-                    INSERT into soil_data(site, plotid, varname, year,
+                    INSERT into soil_data(uniqueid, plotid, varname, year,
                     depth, value, sampledate)
                     values (%s, %s, %s, %s, %s, %s, %s)
                     """, (siteid, plotid, varname, year, depth, val,
@@ -122,7 +122,7 @@ for key in current:
         sql = "sampledate is null"
     else:
         sql = "sampledate = '%s'" % (sampledate,)
-    pcursor.execute("""DELETE from soil_data where site = %s and
+    pcursor.execute("""DELETE from soil_data where uniqueid = %s and
     plotid = %s and varname = %s and year = %s and """ + sql + """
     """, (siteid, plotid, varname, year))
     deletedvals += 1

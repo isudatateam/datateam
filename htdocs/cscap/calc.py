@@ -22,7 +22,7 @@ def get_df(equation):
     SELECT * from agronomic_data WHERE varname in %s
     """, pgconn, params=(tuple(varnames), ), index_col=None)
     df['value'] = pd.to_numeric(df['value'], errors='coerse')
-    df = pd.pivot_table(df, index=('site', 'plotid', 'year'),
+    df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     df.eval("calc = %s" % (equation, ), inplace=True)

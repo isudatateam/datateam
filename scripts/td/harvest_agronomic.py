@@ -1,9 +1,11 @@
 """
 Harvest the Agronomic Data into the ISU Database
 """
-import pyiem.cscap_utils as util
+from __future__ import print_function
 import sys
+
 import psycopg2
+import pyiem.cscap_utils as util
 
 config = util.get_config()
 
@@ -18,9 +20,9 @@ drive_client = util.get_driveclient(config, "td")
 def delete_entries(current, siteid):
     for key in current:
         (plotid, varname) = key.split("|")
-        print 'harvest_agronomic REMOVE %s %s %s' % (siteid, plotid,
-                                                     varname)
-        pcursor.execute("""DELETE from agronomic_data where site = %s and
+        print(('harvest_agronomic REMOVE %s %s %s'
+               ) % (siteid, plotid, varname))
+        pcursor.execute("""DELETE from agronomic_data where uniqueid = %s and
             plotid = %s and varname = %s and year = %s
         """, (siteid, plotid, varname, YEAR))
 
@@ -38,8 +40,10 @@ for item in res['items']:
         print("Efforting: %s[%s]" % (siteid, YEAR))
         # Load up current data, incase we need to do some deleting
         current = {}
-        pcursor.execute("""SELECT plotid, varname
-        from agronomic_data WHERE site = %s and year = %s""", (siteid, YEAR))
+        pcursor.execute("""
+            SELECT plotid, varname
+            from agronomic_data WHERE uniqueid = %s and year = %s
+        """, (siteid, YEAR))
         for row in pcursor:
             key = "%s|%s" % row
             current[key] = True
@@ -76,21 +80,21 @@ for item in res['items']:
                 try:
                     pcursor.execute("""
                         INSERT into agronomic_data
-                        (site, plotid, varname, year, value)
+                        (uniqueid, plotid, varname, year, value)
                         values (%s, %s, %s, %s, %s) RETURNING value
                         """, (siteid, plotid, varname, YEAR, val))
                     if pcursor.rowcount == 1:
                         newvals += 1
                 except Exception, exp:
-                    print 'HARVEST_AGRONOMIC TRACEBACK'
-                    print exp
-                    print '%s %s %s %s %s' % (YEAR, siteid, plotid,
-                                              repr(varname),
-                                              repr(val))
+                    print('HARVEST_AGRONOMIC TRACEBACK')
+                    print(exp)
+                    print(('%s %s %s %s %s'
+                           ) % (YEAR, siteid, plotid,
+                                repr(varname), repr(val)))
                     sys.exit()
                 key = "%s|%s" % (plotid, varname)
                 if key in current:
-                    del(current[key])
+                    del current[key]
         delete_entries(current, siteid)
         if newvals > 0:
             print(('harvest_agronomic year: %s site: %s had %s new values'

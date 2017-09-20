@@ -23,7 +23,7 @@ def delete_entries(current, siteid):
         (plotid, varname) = key.split("|")
         print 'harvest_agronomic REMOVE %s %s %s' % (siteid, plotid,
                                                      varname)
-        pcursor.execute("""DELETE from agronomic_data where site = %s and
+        pcursor.execute("""DELETE from agronomic_data where uniqueid = %s and
             plotid = %s and varname = %s and year = %s
         """, (siteid, plotid, varname, YEAR))
 
@@ -37,7 +37,7 @@ for item in res['items']:
     # Load up current data, incase we need to do some deleting
     current = {}
     pcursor.execute("""SELECT plotid, varname
-    from agronomic_data WHERE site = %s and year = %s""", (siteid, YEAR))
+    from agronomic_data WHERE uniqueid = %s and year = %s""", (siteid, YEAR))
     for row in pcursor:
         key = "%s|%s" % row
         current[key] = True
@@ -74,7 +74,7 @@ for item in res['items']:
             try:
                 pcursor.execute("""
                     INSERT into agronomic_data
-                    (site, plotid, varname, year, value)
+                    (uniqueid, plotid, varname, year, value)
                     values (%s, %s, %s, %s, %s) RETURNING value
                     """, (siteid, plotid, varname, YEAR, val))
                 if pcursor.rowcount == 1:
@@ -87,7 +87,7 @@ for item in res['items']:
                 sys.exit()
             key = "%s|%s" % (plotid, varname)
             if key in current:
-                del(current[key])
+                del current[key]
     delete_entries(current, siteid)
     if newvals > 0:
         print(('harvest_agronomic year: %s site: %s had %s new values'
