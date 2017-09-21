@@ -363,7 +363,7 @@ def do_notes(writer, sites):
         "edit review_needed", additional_comments_by_data_team,
         comments_by_site_personnel
         from highvalue_notes where "primary" in %s
-        ORDER by "primary" ASC, growing_season ASC
+        ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC, growing_season ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
     # Increase column width
