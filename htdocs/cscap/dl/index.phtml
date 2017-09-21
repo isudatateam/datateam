@@ -21,10 +21,10 @@ Treatments in grey are not applicable for the sites selected.</p>
 <label for="_T6" class="control-label">Continuous corn with rye cover</label>
 
 <input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]" id="ROT2">
-<label for="ROT2" class="control-label">continuous soybean</label>
+<label for="ROT2" class="control-label">Continuous soybean</label>
 
 <input type="checkbox" value="ROT39" data-treatment="ROT39" name="treatments[]" id="ROT39">
-<label for="ROT39" class="control-label">continuous soybean with rye cover</label>
+<label for="ROT39" class="control-label">Continuous soybean with rye cover</label>
 
   </div>
 </div>
@@ -463,37 +463,29 @@ function build_ghg_ui(){
 	<div class="panel-body">
 	
 	<input type="checkbox" value="GHG01" data-ghg="GHG01" name="ghg[]" id="GHG01">
-	<label for="GHG01" class="control-label">Method</label>
+	<label for="GHG01" class="control-label">Carbon Dioxide (CO<sub>2</sub>-C) flux</label>
 	<input type="checkbox" value="GHG02" data-ghg="GHG02" name="ghg[]" id="GHG02">
-	<label for="GHG02" class="control-label">Chamber Position</label>
+	<label for="GHG02" class="control-label">Carbon Dioxide (CO<sub>2</sub>) correlation coefficient (R<sup>2</sup>)</label>
 	<input type="checkbox" value="GHG03" data-ghg="GHG03" name="ghg[]" id="GHG03">
-	<label for="GHG03" class="control-label">Carbon Dioxide (CO<sub>2</sub>-C) flux</label>
+	<label for="GHG03" class="control-label">Nitrous Oxide (N<sub>2</sub>O-N) flux</label>
 	<input type="checkbox" value="GHG04" data-ghg="GHG04" name="ghg[]" id="GHG04">
-	<label for="GHG04" class="control-label">Carbon Dioxide (CO<sub>2</sub>) correlation coefficient (R<sup>2</sup>)</label>
+	<label for="GHG04" class="control-label">Nitrous Oxide (N<sub>2</sub>O) correlation coefficient (R<sup>2</sup>)</label>
 	<input type="checkbox" value="GHG05" data-ghg="GHG05" name="ghg[]" id="GHG05">
-	<label for="GHG05" class="control-label">Nitrous Oxide (N<sub>2</sub>O-N) flux</label>
+	<label for="GHG05" class="control-label">Ammonia (NH<sub>3</sub>-N) flux</label>
 	<input type="checkbox" value="GHG06" data-ghg="GHG06" name="ghg[]" id="GHG06">
-	<label for="GHG06" class="control-label">Nitrous Oxide (N<sub>2</sub>O) correlation coefficient (R<sup>2</sup>)</label>
+	<label for="GHG06" class="control-label">Ammonia (NH<sub>3</sub>) correlation coefficient (R<sup>2</sup>)</label>
 	<input type="checkbox" value="GHG07" data-ghg="GHG07" name="ghg[]" id="GHG07">
-	<label for="GHG07" class="control-label">Ammonia (NH<sub>3</sub>-N) flux</label>
+	<label for="GHG07" class="control-label">Methane (CH<sub>4</sub>-C) flux</label>
 	<input type="checkbox" value="GHG08" data-ghg="GHG08" name="ghg[]" id="GHG08">
-	<label for="GHG08" class="control-label">Ammonia (NH<sub>3</sub>) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG09" data-ghg="GHG09" name="ghg[]" id="GHG09">
-	<label for="GHG09" class="control-label">Methane (CH<sub>4</sub>-C) flux</label>
-	<input type="checkbox" value="GHG10" data-ghg="GHG10" name="ghg[]" id="GHG10">
-	<label for="GHG10" class="control-label">Methane (CH<sub>4</sub>) correlation coefficient (R<sup>2</sup>)</label>
+	<label for="GHG08" class="control-label">Methane (CH<sub>4</sub>) correlation coefficient (R<sup>2</sup>)</label>
 	<input type="checkbox" value="GHG11" data-ghg="GHG11" name="ghg[]" id="GHG11">
-	<label for="GHG11" class="control-label">Ammonium (NH<sub>4</sub>) flux</label>
+	<label for="GHG11" class="control-label">Volumetric soil moisture at 5 cm</label>
 	<input type="checkbox" value="GHG12" data-ghg="GHG12" name="ghg[]" id="GHG12">
-	<label for="GHG12" class="control-label">Ammonium (NH<sub>4</sub>) correlation coefficient (R<sup>2</sup>)</label>
+	<label for="GHG12" class="control-label">Soil Temperature at 5 cm</label>
 	<input type="checkbox" value="GHG13" data-ghg="GHG13" name="ghg[]" id="GHG13">
-	<label for="GHG13" class="control-label">Volumetric soil moisture at 5 cm</label>
+	<label for="GHG13" class="control-label">Soil Nitrate (NO<sub>3</sub>-N) at 0-10 cm</label>
 	<input type="checkbox" value="GHG14" data-ghg="GHG14" name="ghg[]" id="GHG14">
-	<label for="GHG14" class="control-label">Soil Temperature at 5 cm</label>
-	<input type="checkbox" value="GHG15" data-ghg="GHG15" name="ghg[]" id="GHG15">
-	<label for="GHG15" class="control-label">Soil Nitrate (NO<sub>3</sub>-N) at 0-10 cm</label>
-	<input type="checkbox" value="GHG16" data-ghg="GHG16" name="ghg[]" id="GHG16">
-	<label for="GHG16" class="control-label">Soil Ammonium (NH<sub>4</sub>-N) at 0-10 cm</label>
+	<label for="GHG14" class="control-label">Soil Ammonium (NH<sub>4</sub>-N) at 0-10 cm</label>
 	
 	</div>
 	</div>
@@ -683,17 +675,21 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 
 <p>Greenhouse gas data that are available for the sites selected will be black. 
 The soil data listed here were collected at the same time as the greenhouse 
-gas measurement; these are distinct fro those under the Soil tab.</p>
+gas measurement; these are distinct for those under the Soil tab.</p>
 
 <div class="clearfix"></div>
 
 {$ghgui}
-</div>
 
+</div>
 <div id="ipm-ui" style="display: none;">
 <div class="pull-right">
   <button id="ipm-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
+
+<p>Insects (pest and beneficial) and plant diseases that are available for 
+the sites selected will be black.</p>
+
 <div class="clearfix"></div>
 
 {$ipmui}
