@@ -1,0 +1,34 @@
+<?php 
+require_once "../../include/require_auth.php";
+require_once "../../include/myview.php";
+
+$pgconn = pg_connect("dbname=sustainablecorn host=iemdb");
+$table = <<<EOF
+<table class="table table-striped table-bordered">
+<thead><tr><th>Email</th><th>Timestamp</th></tr></thead>
+EOF;
+$rs = pg_query($pgconn, "SELECT email, ".
+    " to_char(valid, 'DD Mon YYYY, HH:MI AM') as v from website_downloads ".
+    "ORDER by valid DESC");
+for ($i=0; $row=@pg_fetch_assoc($rs,$i); $i++){
+	$table .= sprintf("<tr><td>%s</td><td>%s</td></tr>\n",
+			$row["email"], $row["v"]);
+}
+$table .= "</table>";
+
+$t = new MyView();
+$t->title = "CSCAP Download Users";
+
+$t->content = <<< EOF
+<ol class="breadcrumb">
+ <li><a href="/admin/">Administration</a></li>
+ <li class="active">CSCAP Download Users</li>
+</ol>
+
+<h3>Emails and Download Timestamps for CSCAP Download Interface</h3>
+		
+{$table}
+
+EOF;
+$t->render('single.phtml');
+?>
