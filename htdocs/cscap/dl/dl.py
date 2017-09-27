@@ -161,7 +161,8 @@ def do_metadata_master(writer, sites):
     siteareaha as "Site Area (ha)",
     numberofplotssubplots as "Number of Plots/ Subplots"
     from metadata_master
-    WHERE uniqueid in %s ORDER by uniqueid
+    WHERE uniqueid in %s
+    ORDER by uniqueid
     """, PGCONN, params=(tuple(sites), ), index_col=None)
     df.to_excel(writer, 'Site Metadata', index=False)
 
@@ -175,7 +176,8 @@ def do_ghg(writer, sites, ghg, years):
     from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
-    and d.uniqueid in %s and d.year in %s ORDER by d.uniqueid, year
+    and d.uniqueid in %s and d.year in %s
+    ORDER by d.uniqueid, year, date, plotid
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
     df.to_excel(writer, 'GHG', index=False)
     worksheet = writer.sheets['GHG']
@@ -190,7 +192,8 @@ def do_ipm(writer, sites, ipm, years):
     from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and d.year in %s ORDER by d.uniqueid, year
+    d.uniqueid in %s and d.year in %s
+    ORDER by d.uniqueid, year, date, plotid
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
     df.columns = [s.upper() if s.startswith("ipm") else s
                   for s in df.columns]
@@ -206,7 +209,8 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and year in %s and varname in %s ORDER by uniqueid, year
+    d.uniqueid in %s and year in %s and varname in %s
+    ORDER by uniqueid, year, plotid
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(agronomic)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
@@ -229,7 +233,8 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     from soil_data d JOIN plotids p ON (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and year in %s and varname in %s ORDER by uniqueid, year
+    d.uniqueid in %s and year in %s and varname in %s
+    ORDER by uniqueid, year, plotid, subsample
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
@@ -267,6 +272,8 @@ def do_operations(writer, sites, years):
                                         errors='coerse')
     for fert in FERTELEM:
         opdf[fert] = pd.to_numeric(opdf[fert], errors='coerse')
+    for col in ['biomassdate1', 'biomassdate2']:
+        opdf.at[opdf[col].isnull(), col] = 'n/a'
 
     # __________________________________________________________
     # case 1, values are > 0, so columns are in %
@@ -368,7 +375,9 @@ def do_notes(writer, sites):
     opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
     # Increase column width
     worksheet = writer.sheets['Notes']
-    worksheet.set_column('B:G', 36)
+    worksheet.set_column('B:B', 36)
+    worksheet.set_column('C:D', 18)
+    worksheet.set_column('E:G', 36)
 
 
 def do_dwm(writer, sites):
