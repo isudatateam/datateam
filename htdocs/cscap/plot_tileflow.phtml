@@ -64,10 +64,8 @@ if ($view != 'plot'){
 	$jsurl = sprintf("tileflow_%s_%s_%s_%s.js", 
 		$site, $date, $days, $ptype);
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
-	include_once "../../include/hceditor.php";
 	$interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
-{$hceditor}
 EOF;
 }
 

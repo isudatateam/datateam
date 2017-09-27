@@ -191,11 +191,9 @@ if ($view != 'plot'){
 	$jsurl = sprintf("decagon_%s_%s_%s_%s_%s.js", 
 		$site, $date, $days, $ptype, $depth);
     $jsextra = "<script src=\"{$jsurl}\"></script>";
-    include_once "../../include/hceditor.php";
     $interface = <<<EOF
 <div id="hc1" style="width: 100%; height: 400px;"></div>
 <div id="hc2" style="width: 100%; height: 400px;"></div>
-{$hceditor}
 EOF;
 	
 	

@@ -93,7 +93,7 @@ body {padding: 30px;}
 
 </body>
 </html>
-    """ % (df.to_html(index=False).replace("NaN", "M"), ))   
+    """ % (df.to_html(index=False).replace("NaN", "M"), ))
 
 
 if __name__ == '__main__':
