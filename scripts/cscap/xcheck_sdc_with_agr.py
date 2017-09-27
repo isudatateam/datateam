@@ -2,9 +2,11 @@
  Use the Site Data Collected and then see what columns exist within the
  Agronomic Data Sheets.
 """
-import pyiem.cscap_utils as util
+from __future__ import print_function
 import sys
 import copy
+
+import pyiem.cscap_utils as util
 
 YEAR = sys.argv[1]
 
@@ -38,20 +40,21 @@ def adjust_sdc(sitekey, varname):
         print("%s %s %s -> %s" % (sitekey, varname, val, s))
         spr_client.update(entry)
 
+
 res = drive_client.files().list(q="title contains 'Agronomic Data'").execute()
 for item in res['items']:
     if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
         continue
     spreadsheet = util.Spreadsheet(spr_client, item['id'])
     sitekey = item['title'].split()[0].lower()
-    print '------------> %s [%s] [%s]' % (YEAR, sitekey, item['title'])
+    print('------------> %s [%s] [%s]' % (YEAR, sitekey, item['title']))
     if YEAR not in spreadsheet.worksheets:
         print('%s does not have Year: %s in worksheet' % (sitekey, YEAR))
         continue
     worksheet = spreadsheet.worksheets[YEAR]
     worksheet.get_list_feed()
     if len(worksheet.list_feed.entry) == 0:
-        print '    EMPTY sheet, skipping'
+        print('    EMPTY sheet, skipping')
         continue
     entry2 = worksheet.list_feed.entry[0]
     data = entry2.to_dict()
@@ -68,7 +71,7 @@ for item in res['items']:
             if d[key] not in vals:
                 vals.append(d[key])
         if varname not in shouldhave:
-            print 'EXTRA %s' % (varname,), vals
+            print('EXTRA %s %s' % (varname, vals))
             if raw_input("DELETE? y/n ") == 'y':
                 print("Deleting...")
                 worksheet.del_column(varname)
@@ -87,5 +90,5 @@ for item in res['items']:
 
     for sh in shouldhave:
         if sh.startswith('AGR'):
-            print 'SHOULDHAVE %s' % (sh,)
+            print('SHOULDHAVE %s' % (sh,))
             error = True
