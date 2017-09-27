@@ -1,3 +1,8 @@
 /.project
 /.pydevproject
 /.settings/
+/scripts/td/wx/processed/
+*.p12
+*.txt
+*.xlsx
+*.csv
