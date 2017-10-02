@@ -169,7 +169,7 @@ def do_metadata_master(writer, sites):
 
 def do_ghg(writer, sites, ghg, years):
     """get GHG data"""
-    cols = ", ".join(ghg)
+    cols = ", ".join(['%s as "%s"' % (s, s) for s in ghg])
     df = read_sql("""
     SELECT d.uniqueid, d.plotid, d.date, d.year, d.method, d.subsample,
     d.position, """ + cols + """
@@ -216,7 +216,8 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
-                        aggfunc=lambda x: ' '.join(str(v) for v in x))
+                        aggfunc=lambda x: ' '.join(str(v) for v in x),
+                        fill_value=missing)
     df.reset_index(inplace=True)
     valid2date(df)
     df.to_excel(writer, 'Agronomic', index=False)
@@ -241,7 +242,8 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'depth', 'subsample',
                                    'year'),
                         values='value', columns=('varname',),
-                        aggfunc=lambda x: ' '.join(str(v) for v in x))
+                        aggfunc=lambda x: ' '.join(str(v) for v in x),
+                        fill_value=missing)
     df.reset_index(inplace=True)
     valid2date(df)
     df.to_excel(writer, 'Soil', index=False)
