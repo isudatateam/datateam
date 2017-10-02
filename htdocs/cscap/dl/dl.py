@@ -167,7 +167,7 @@ def do_metadata_master(writer, sites):
     df.to_excel(writer, 'Site Metadata', index=False)
 
 
-def do_ghg(writer, sites, ghg, years):
+def do_ghg(writer, sites, ghg, years, missing):
     """get GHG data"""
     cols = ", ".join(['%s as "%s"' % (s, s) for s in ghg])
     df = read_sql("""
@@ -179,12 +179,13 @@ def do_ghg(writer, sites, ghg, years):
     and d.uniqueid in %s and d.year in %s
     ORDER by d.uniqueid, year, date, plotid
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
+    df.fillna(missing, inplace=True)
     df.to_excel(writer, 'GHG', index=False)
     worksheet = writer.sheets['GHG']
     worksheet.set_column('C:C', 12)
 
 
-def do_ipm(writer, sites, ipm, years):
+def do_ipm(writer, sites, ipm, years, missing):
     """get IPM data"""
     cols = ", ".join(ipm)
     df = read_sql("""
@@ -195,6 +196,7 @@ def do_ipm(writer, sites, ipm, years):
     d.uniqueid in %s and d.year in %s
     ORDER by d.uniqueid, year, date, plotid
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
+    df.fillna(missing, inplace=True)
     df.columns = [s.upper() if s.startswith("ipm") else s
                   for s in df.columns]
     df.to_excel(writer, 'IPM', index=False)
@@ -225,9 +227,9 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
 
 def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
-    pprint("do_soil: " + str(soil))
-    pprint("do_soil: " + str(sites))
-    pprint("do_soil: " + str(years))
+    # pprint("do_soil: " + str(soil))
+    # pprint("do_soil: " + str(sites))
+    # pprint("do_soil: " + str(years))
     df = read_sql("""
     SELECT d.uniqueid, d.plotid, d.depth,
     coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value
@@ -238,22 +240,27 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     ORDER by uniqueid, year, plotid, subsample
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
+    pprint("do_soil() query done")
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
+    pprint("do_soil() value replacement done")
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'depth', 'subsample',
                                    'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x),
                         fill_value=missing)
+    pprint("do_soil() pivot_table done")
     df.reset_index(inplace=True)
     valid2date(df)
+    pprint("do_soil() valid2date done")
     df.to_excel(writer, 'Soil', index=False)
+    pprint("do_soil() to_excel done")
     workbook = writer.book
     format1 = workbook.add_format({'num_format': '@'})
     worksheet = writer.sheets['Soil']
     worksheet.set_column('B:B', 12, format1)
 
 
-def do_operations(writer, sites, years):
+def do_operations(writer, sites, years, missing):
     """Return a DataFrame for the operations"""
     opdf = read_sql("""
     SELECT uniqueid, cropyear, operation, valid, cashcrop, croprot,
@@ -274,8 +281,8 @@ def do_operations(writer, sites, years):
                                         errors='coerse')
     for fert in FERTELEM:
         opdf[fert] = pd.to_numeric(opdf[fert], errors='coerse')
-    for col in ['biomassdate1', 'biomassdate2']:
-        opdf.at[opdf[col].isnull(), col] = 'n/a'
+    for col in ['biomassdate1', 'biomassdate2', 'valid']:
+        opdf.at[opdf[col].isnull(), col] = missing
 
     # __________________________________________________________
     # case 1, values are > 0, so columns are in %
@@ -296,6 +303,7 @@ def do_operations(writer, sites, years):
     del opdf['productrate']
     opdf.to_excel(writer, 'Field Operations', index=False)
     worksheet = writer.sheets['Field Operations']
+    worksheet.set_column('C:C', 18)
     worksheet.set_column('D:D', 12)
     worksheet.set_column('M:N', 12)
 
@@ -372,7 +380,8 @@ def do_notes(writer, sites):
         "edit review_needed", additional_comments_by_data_team,
         comments_by_site_personnel
         from highvalue_notes where "primary" in %s
-        ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC, growing_season ASC
+        ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC,
+        growing_season ASC
     """, PGCONN, params=(tuple(sites), ))
     opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
     # Increase column width
@@ -446,16 +455,16 @@ def do_work(form):
         do_soil(writer, sites, soil, years, detectlimit, missing)
         pprint("do_soil() is done")
     if ghg:
-        do_ghg(writer, sites, ghg, years)
+        do_ghg(writer, sites, ghg, years, missing)
         pprint("do_ghg() is done")
     if ipm:
-        do_ipm(writer, sites, ipm, years)
+        do_ipm(writer, sites, ipm, years, missing)
         pprint("do_ipm() is done")
 
     # Management
     # Field Operations
     if "SHM1" in shm:
-        do_operations(writer, sites, years)
+        do_operations(writer, sites, years, missing)
         pprint("do_operations() is done")
     # Pesticides
     if 'SHM2' in shm:
@@ -477,7 +486,6 @@ def do_work(form):
     if 'SHM6' in shm:
         do_notes(writer, sites)
         pprint("do_notes() is done")
-
 
     # Send to client
     writer.close()
