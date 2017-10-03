@@ -5,14 +5,13 @@ select string_agg(column_name, ', ') from
     (select column_name, ordinal_position from information_schema.columns where
     table_name='management' ORDER by ordinal_position) as foo;
 """
+from __future__ import print_function
 import sys
 import os
 import cgi
 import datetime
 import shutil
 import smtplib
-from email import encoders
-from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -20,6 +19,7 @@ from email.mime.multipart import MIMEMultipart
 import psycopg2
 import pandas as pd
 from pandas.io.sql import read_sql
+import numpy as np
 
 EMAILTEXT = """
 Sustainable Corn CAP - Research and Management Data
@@ -108,10 +108,13 @@ def redup(arr):
     return arr + additional
 
 
-def conv(value, detectlimit, missing):
+def conv(value, detectlimit):
     """Convert a value into something that gets returned"""
+    # Careful here, we need to keep missing values for a later replacement
     if value is None or value == '':
-        return missing
+        return None
+    if value in ['n/a', 'did not collect']:
+        return None
     if value.startswith("<"):
         if detectlimit == "1":
             return value
@@ -122,8 +125,6 @@ def conv(value, detectlimit, missing):
             return floatval / 2 ** 0.5
         if detectlimit == "4":
             return "M"
-    if value in ['n/a', 'did not collect']:
-        return missing
     try:
         return float(value)
     except Exception as _:
@@ -215,11 +216,14 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     ORDER by uniqueid, year, plotid
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(agronomic)), index_col=None)
-    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
+    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
-                        aggfunc=lambda x: ' '.join(str(v) for v in x),
-                        fill_value=missing)
+                        aggfunc=lambda x: ' '.join(str(v) for v in x))
+    # String aggregate above creates a mixture of None and "None"
+    df.replace(['None', None], np.nan, inplace=True)
+    df.dropna(how='all', inplace=True)
+    df.fillna(missing, inplace=True)
     df.reset_index(inplace=True)
     valid2date(df)
     df.to_excel(writer, 'Agronomic', index=False)
@@ -227,7 +231,7 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
 
 def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
-    # pprint("do_soil: " + str(soil))
+    pprint("do_soil: " + str(soil))
     # pprint("do_soil: " + str(sites))
     # pprint("do_soil: " + str(years))
     df = read_sql("""
@@ -241,13 +245,18 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     """, PGCONN, params=(tuple(sites), tuple(years),
                          tuple(soil)), index_col=None)
     pprint("do_soil() query done")
-    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit, missing))
+    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
     pprint("do_soil() value replacement done")
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'depth', 'subsample',
                                    'year'),
                         values='value', columns=('varname',),
-                        aggfunc=lambda x: ' '.join(str(v) for v in x),
-                        fill_value=missing)
+                        aggfunc=lambda x: ' '.join(str(v) for v in x))
+    # String aggregate above creates a mixture of None and "None"
+    df.replace(['None', None], np.nan, inplace=True)
+    pprint("do_soil() len of inbound df %s" % (len(df.index, )))
+    df.dropna(how='all', inplace=True)
+    df.fillna(missing, inplace=True)
+    pprint("do_soil() len of outbound df %s" % (len(df.index, )))
     pprint("do_soil() pivot_table done")
     df.reset_index(inplace=True)
     valid2date(df)
@@ -534,8 +543,12 @@ def main():
 
 
 if __name__ == '__main__':
-    # do_soil(None, ['ISUAG', 'SERF'],
-    #        ['SOIL19.8', 'SOIL19.11', 'SOIL19.12', 'SOIL19.1', 'SOIL19.10',
-    #         'SOIL19.2', 'SOIL19.5', 'SOIL19.7', 'SOIL19.6', 'SOIL19.13'],
-    #        ['2011', '2012', '2013', '2014', '2015'], '', '')
+    # do_soil(None, ['ORR', ],
+    #        ['_S1', 'SOIL15', 'SOIL14', 'SOIL12', 'SOIL1', 'SOIL11', '_S19',
+    #         'SOIL6', 'SOIL6', 'SOIL28', 'SOIL26', 'SOIL27', 'SOIL13',
+    #         'SOIL41', 'SOIL34', 'SOIL29', 'SOIL30', 'SOIL31', 'SOIL2',
+    #         'SOIL35', 'SOIL32', 'SOIL42', 'SOIL33', 'SOIL39', 'SOIL19.8',
+    #         'SOIL19.11', 'SOIL19.12', 'SOIL19.1', 'SOIL19.10', 'SOIL19.2',
+    #         'SOIL19.5', 'SOIL19.7', 'SOIL19.6', 'SOIL19.13'],
+    #        ['2012', ], '', 'daryl')
     main()
