@@ -96,7 +96,8 @@ function build_ui(){
 	// Prevent submit
 	$('#mainform').submit(function(e){
 		  e.preventDefault();
-		  if ($("#myemail").val() != $("#myemail2").val()){
+		  if ($("#myemail").val() != $("#myemail2").val() ||
+				  $("#myemail").val() == ''){
 			  alert("Entered emails do not match, please correct.");
 			  return;
 		  }

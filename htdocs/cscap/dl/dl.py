@@ -231,7 +231,7 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
 
 def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
-    pprint("do_soil: " + str(soil))
+    # pprint("do_soil: " + str(soil))
     # pprint("do_soil: " + str(sites))
     # pprint("do_soil: " + str(years))
     df = read_sql("""
