@@ -353,7 +353,8 @@ def do_pesticides(writer, sites, years):
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = read_sql("""
-        SELECT uniqueid, rep, plotid, tillage, rotation,
+        SELECT uniqueid, rep, plotid, tillage,
+    (case when rotation = 'ROT62' then 'ROT7v' else rotation end) as rotation,
         drainage, nitrogen, landscape,
         y2011 as "2011crop", y2012 as "2012crop", y2013 as "2013crop",
         y2014 as "2014crop", y2015 as "2015crop",
