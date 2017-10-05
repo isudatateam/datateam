@@ -582,7 +582,7 @@ label { display: block !important; margin-left: 1.5em;}
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="dl.js?v=6"></script>
+<script src="dl.js?v=7"></script>
 EOF;
 
 $sitesui = build_sites_ui();
@@ -602,7 +602,7 @@ $t->content = <<<EOF
 <br />
 
  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
+  <ul class="nav nav-tabs maintabs" role="tablist">
     <li role="presentation"><a href="/cscap/" role="tab"><i class="fa fa-home"></i></a></li>
     <li role="presentation" class="active"><a href="#sites" aria-controls="sites" role="tab" data-toggle="tab">Research Sites</a></li>
     <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Research Data</a></li>

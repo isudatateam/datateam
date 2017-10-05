@@ -186,6 +186,17 @@ function build_ui(){
 			$("#proceed").css('display', 'none');
 		}		
 	});
+	// https://stackoverflow.com/questions/7862233
+	// Change hash for page-reload
+	var prefix = "tab_";
+	$('.nav-tabs.maintabs a').on('shown.bs.tab', function (e) {
+	    window.location.hash = e.target.hash.replace("#", "#" + prefix);
+	})
+	// Read any hash links
+	var hash = document.location.hash;
+	if (hash) {
+		$('.nav-tabs a[href="'+hash.replace(prefix,"")+'"]').tab('show');
+	}
 };
 
 $(document).ready(function(){
