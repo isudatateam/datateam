@@ -19,6 +19,11 @@ function authorize(){
 	if (pg_num_rows($rs) != 1){
 		die("User '{$email}' not authorized for this website");
 	}
+	// Can this user admin?
+	$rs = pg_execute($pgconn, "authorize", Array($email, "admin"));
+	if (pg_num_rows($rs) == 1){
+	    $_SERVER["DATATEAM_ADMIN"] = True;
+	}
 	// Log the access
 	$rs = pg_prepare($pgconn, "LOGIT",
 			"UPDATE website_users SET last_usage = now() WHERE "

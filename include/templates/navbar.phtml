@@ -186,6 +186,9 @@ function get_title($page){
 
 while( list($idx, $page) = each($_pages) )
 {
+    if ($idx == "admin" && ! isset($_SERVER["DATATEAM_ADMIN"])){
+        continue;
+    }
   	echo sprintf("<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\" 
 		data-toggle=\"dropdown\" href=\"#\">%s</a>\n", 
       ($ar[0] == $idx) ? " active" : "", get_title($page));
