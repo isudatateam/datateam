@@ -8,6 +8,7 @@ select string_agg(column_name, ', ') from
 from __future__ import print_function
 import sys
 import os
+import re
 import cgi
 import datetime
 import shutil
@@ -21,6 +22,7 @@ import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
 
+VARNAME_RE = re.compile(r"^[A-Z]+[0-9]$")
 EMAILTEXT = """
 Sustainable Corn CAP - Research and Management Data
 Requested: %s UTC
@@ -82,6 +84,13 @@ AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
                 "SOIL19.13"]}
 # runtime storage
 MEMORY = dict(stamp=datetime.datetime.utcnow())
+
+
+def replace_varname(varname):
+    """We want varname to be zero padded, where appropriate"""
+    if VARNAME_RE.match(varname):
+        return "%s0%s" % (varname[:-1], varname[-1])
+    return varname
 
 
 def pprint(msg):
@@ -220,6 +229,12 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
+    # fix column names
+    df.columns = map(replace_varname, df.columns)
+    # reorder columns
+    cols = df.columns.values.tolist()
+    cols.sort()
+    df = df.reindex_axis(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
     df.replace(['None', None], np.nan, inplace=True)
     df.dropna(how='all', inplace=True)
@@ -251,6 +266,12 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
                                    'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
+    # fix column names
+    df.columns = map(replace_varname, df.columns)
+    # reorder columns
+    cols = df.columns.values.tolist()
+    cols.sort()
+    df = df.reindex_axis(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
     df.replace(['None', None], np.nan, inplace=True)
     pprint("do_soil() len of inbound df %s" % (len(df.index, )))
