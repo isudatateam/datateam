@@ -251,7 +251,8 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     # pprint("do_soil: " + str(years))
     df = read_sql("""
     SELECT d.uniqueid, d.plotid, d.depth,
-    coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value
+    coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value,
+    coalesce(d.sampledate::text, '') as sampledate
     from soil_data d JOIN plotids p ON (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
@@ -263,7 +264,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
     pprint("do_soil() value replacement done")
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'depth', 'subsample',
-                                   'year'),
+                                   'year', 'sampledate'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     # fix column names
@@ -280,6 +281,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     pprint("do_soil() len of outbound df %s" % (len(df.index, )))
     pprint("do_soil() pivot_table done")
     df.reset_index(inplace=True)
+    df['sampledate'] = df['sampledate'].replace('', missing)
     valid2date(df)
     pprint("do_soil() valid2date done")
     df.to_excel(writer, 'Soil', index=False)
