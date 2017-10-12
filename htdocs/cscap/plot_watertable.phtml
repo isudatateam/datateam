@@ -4,7 +4,7 @@ include_once "../../include/forms.php";
 require_once "../../include/myview.php";
 
 $site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC';
-$date = isset($_GET["date"]) ? $_GET["date"]: '2014-06-10';
+$date = isset($_GET["date"]) ? $_GET["date"]: '2011-01-01';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $errmsg = "";
@@ -99,6 +99,9 @@ $t->content =  <<<EOF
 select {
   color: #000;
 }
+.table-nonfluid {
+   width: auto !important;
+}
 </style>
 
 <p>&nbsp;</p>
@@ -117,8 +120,9 @@ Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-6800
 {$errmsg}
 
 <form method="GET" name="plot1">
-<table class="table table-bordered">
-<thead><tr><th>Select Site: (<i>currently, all plots at site are shown on the graph)</i></th><th>Select Start Date</th>
+<table class="table table-bordered table-nonfluid">
+<thead><tr><th>Select Site: (<i>currently, all plots at site are shown on the graph)</i></th>
+<th>Select Start Date</th>
 </tr></thead>
 <tbody><tr><td>
 {$siteselect}
@@ -126,9 +130,9 @@ Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-6800
 <td><input type="text" id="datepicker" name="date" value="{$date}" size="11" /></td>
 </tr></tbody></table>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-nonfluid">
 <thead><tr><th>Number of Days to Plot</th>
-<th>Timeseries Aggregation:</th><th>View and Download Options</th></tr></thead>
+<th>Time-series Aggregation:</th><th>View and Download Options</th></tr></thead>
 <tbody><tr>
 <td><input type="text" name="days" value="{$days}" size="4" /></td>
 <td>{$ptypeselect}</td>
@@ -141,9 +145,8 @@ Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-6800
 
 <p>{$interface}</p>
 
-<p><i>Pro Tip:</i> You can click the legend name to toggle showing and hiding
-the data series.  You can also mouse click and drag on the plot to zoom it in.
-</p>
+<p><i>Pro Tip:</i> Click the legend name to de/select data series. 
+To zoom in, click and drag your mouse within the plot frame.</p>
 
 <h3>Frequently Asked Questions</h3>
 
