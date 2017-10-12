@@ -84,6 +84,17 @@ AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
                 "SOIL19.13"]}
 # runtime storage
 MEMORY = dict(stamp=datetime.datetime.utcnow())
+ROT_CODES = {
+    "ROT10": "ROT7v",
+    "ROT11": "ROT8v",
+    "ROT41": "ROT5v",
+    "ROT50": "ROT40v",
+    "ROT9": "ROT6v",
+    "ROT58": "ROT38v",
+    "ROT60": "ROT36v",
+    "ROT61": "ROT1v",
+    "ROT62": "ROT7v",
+    }
 
 
 def replace_varname(varname):
@@ -376,8 +387,7 @@ def do_pesticides(writer, sites, years):
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = read_sql("""
-        SELECT uniqueid, rep, plotid, tillage,
-    (case when rotation = 'ROT62' then 'ROT7v' else rotation end) as rotation,
+        SELECT uniqueid, rep, plotid, tillage, rotation,
         drainage, nitrogen, landscape,
         y2011 as "2011crop", y2012 as "2012crop", y2013 as "2013crop",
         y2014 as "2014crop", y2015 as "2015crop",
@@ -405,6 +415,8 @@ def do_plotids(writer, sites):
         (herbicide != 'HERB2' or herbicide is null)
         ORDER by uniqueid, plotid ASC
     """, PGCONN, params=(tuple(sites), ))
+    # Fake rotation codes
+    opdf.replace({'rotation': ROT_CODES}, inplace=True)
     opdf[opdf.columns].to_excel(writer, 'Plot Identifiers', index=False)
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
