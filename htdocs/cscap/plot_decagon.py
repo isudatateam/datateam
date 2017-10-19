@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 """Decagon SM Plot!"""
-import psycopg2
 import sys
-import pytz
-import numpy as np
-import pandas as pd
-from pandas.io.sql import read_sql
 import cgi
 import datetime
 import os
+
+import pytz
+import psycopg2
+import numpy as np
+import pandas as pd
+from pandas.io.sql import read_sql
 
 DEPTHS = [None, '10 cm', '20 cm', '40 cm', '60 cm', '100 cm']
 
@@ -230,6 +231,7 @@ options = {
             lines.append("""{
             name: '"""+DEPTHS[i+1]+""" Temp',
             type: 'line',
+            connectNulls: true,
             tooltip: {valueDecimal: 1},
             data: """+v+"""
             }
@@ -239,6 +241,7 @@ options = {
             lines2.append("""{
             name: '"""+DEPTHS[i+1]+""" VSM',
             type: 'line',
+            connectNulls: true,
             tooltip: {valueDecimal: 3},
             data: """+v+"""
             }
@@ -253,6 +256,7 @@ options = {
             lines.append("""{
             name: '"""+plotid+"""',
             type: 'line',
+            connectNulls: true,
             tooltip: {valueDecimal: 3},
             data: """+v+"""
             }
@@ -266,6 +270,7 @@ options = {
             lines2.append("""{
             name: '"""+plotid+"""',
             type: 'line',
+            connectNulls: true,
             tooltip: {valueDecimal: 3},
             data: """+v+"""
             }
@@ -294,6 +299,7 @@ def main():
     """Do Something"""
     form = cgi.FieldStorage()
     make_plot(form)
+
 
 if __name__ == '__main__':
     main()
