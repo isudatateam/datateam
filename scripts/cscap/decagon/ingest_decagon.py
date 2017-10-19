@@ -1,11 +1,12 @@
 """Process the decagon data"""
-import psycopg2
+from __future__ import print_function
 import sys
 import os
 import glob
 import datetime
+
 import pandas as pd
-import numpy as np
+import psycopg2
 
 CENTRAL_TIME = ['ISUAG', 'ISUAG.USB', 'GILMORE', 'SERF', 'HICKS.B', 'HICKS.G']
 
@@ -53,7 +54,7 @@ def process4(fn):
         depth = col[-2:]
         e = extract.setdefault(plotid, [df.columns[0]])
         e.append(col)
-    print extract
+    print(extract)
     mydict = {}
     for plotid in extract.keys():
         mydict[plotid] = df[extract[plotid]].copy()
@@ -62,11 +63,12 @@ def process4(fn):
             depth = col[-2:]
             rename[col] = "%smoisture" % (x[depth], )
         mydict[plotid].rename(columns=rename, inplace=True)
-        print mydict[plotid].columns
+        print(mydict[plotid].columns)
     return mydict
 
 
 def process3(fn):
+    """SERF"""
     mydict = pd.read_excel(fn, sheetname=None, index_col=False)
     # Need to load up rows 0 and 1 into the column names
     for sheetname in mydict:
@@ -120,15 +122,15 @@ def process6(uniqueid, dirname):
         plotid = fn.split("_")[1].replace("Field", "")
         thissite = "HICKS.%s" % (plotid[0], )
         plotid = plotid[1]
-        print fn, thissite, plotid
+        print("%s %s %s" % (fn, thissite, plotid))
         df = pd.read_excel(fn, sheetname=None)
         sheets = df.keys()
         df[sheets[0]].set_index('valid', inplace=True)
         df[sheets[1]].set_index('valid', inplace=True)
-        print df[sheets[0]].columns
-        print df[sheets[1]].columns
+        print(df[sheets[0]].columns)
+        print(df[sheets[1]].columns)
         if 'Port 1 VWC' in df[sheets[0]].columns:
-            print 'Port 1 in sheet 0'
+            print('Port 1 in sheet 0')
             ldf = df[sheets[0]].copy()
             two = 1
         else:
@@ -164,7 +166,7 @@ def process7(uniqueid, fn):
         elif depth == '80':
             port = 5
         else:
-            print colname
+            print(colname)
             sys.exit()
         plotid = "-".join(colname.split("-")[:-1])
         if plotid not in plotids:
@@ -224,13 +226,13 @@ def database_save(uniqueid, plot, df):
         #    print row
         #    sys.exit()
         try:
-            if np.isnan(val):
+            if pd.isnull(val):
                 return 'null'
         except Exception, exp:
-            print exp
+            print(exp)
             print(('Plot: %s Val: %s[%s] Name: %s Valid: %s'
                    ) % (plot, val, type(val), name, row['valid']))
-            # sys.exit()
+            sys.exit()
             return 'null'
         return val
     for _, row in df.iterrows():
@@ -292,6 +294,7 @@ def main(argv):
         print(("File: %s found: %s lines for columns %s"
                ) % (fn, len(df.index), df.columns))
         database_save(uniqueid, plot, df)
+
 
 if __name__ == '__main__':
     main(sys.argv)
