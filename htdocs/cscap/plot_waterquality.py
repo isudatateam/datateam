@@ -12,8 +12,8 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
 
-VARDICT = {'WAT2': {'title': 'Nitrogen Concentration', 'units': 'mg N / L'},
-           'WAT9': {'title': 'Reactive Phosphorus Concentration',
+VARDICT = {'WAT2': {'title': 'Nitrate-N Concentration', 'units': 'mg N / L'},
+           'WAT9': {'title': 'Soluble Reactive Phosphorus Concentration',
                     'units': 'ug P / L'}}
 
 
@@ -96,7 +96,7 @@ def make_plot(form):
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
-    yAxis: {title: {text: '""" + VARDICT[varname]["title"] + """'}
+    yAxis: {title: {text: '""" + VARDICT[varname]["title"], VARDICT[varname]["units"] + """'}
     },
     plotOptions: {line: {turboThreshold: 0}
     },
