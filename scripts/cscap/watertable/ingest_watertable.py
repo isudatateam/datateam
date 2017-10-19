@@ -100,16 +100,18 @@ def process1(fn):
 
 def process4(filename):
     """ DPAC, round 2"""
-    df = pd.read_excel(filename, na_values=['NaN', ], skiprows=[1, ])
+    df = pd.read_csv(filename, na_values=['NaN', ], skiprows=[1, ])
     df['valid'] = df['Date']
+    df['valid'] = df['valid'].apply(
+        lambda s: datetime.datetime.strptime(s.strip(), '%m/%d/%Y %H:%M'))
     res = {}
     for plotid in ['SW', 'SE', 'NW', 'NE']:
         res[plotid] = df[['valid',
                           '%s WAT4 Water Table Depth' % (plotid, )]].copy()
         res[plotid].columns = ['valid', 'depth']
         # shrug/sigh
-        res[plotid]['valid'] = (res[plotid]['valid'] +
-                                datetime.timedelta(seconds=1))
+        #res[plotid]['valid'] = (res[plotid]['valid'] +
+        #                        datetime.timedelta(seconds=1))
         res[plotid]['depth'] = pd.to_numeric(res[plotid]['depth'],
                                              errors='coerse') * 10.
     return res
@@ -181,7 +183,7 @@ def main(argv):
     project = argv[5]
     if fmt == '1':
         df = process1(fn)
-        database_save(df, uniqueid, plotid)
+        database_save(df, uniqueid, plotid, project)
         return
     elif fmt == '2':
         df = process2(fn)
