@@ -96,7 +96,7 @@ def make_plot(form):
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
-    yAxis: {title: {text: '""" + VARDICT[varname]["title"], VARDICT[varname]["units"] + """'}
+    yAxis: {title: {text: '""" + VARDICT[varname]["title"] +""" """+ VARDICT[varname]["units"] + """'}
     },
     plotOptions: {line: {turboThreshold: 0}
     },
