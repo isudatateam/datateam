@@ -1,0 +1,17 @@
+<?php 
+include_once "../../include/myview.php";
+$t = new MyView();
+$t->title = "Login Status";
+
+$username = $_SERVER["REMOTE_USER"];
+
+$t->content = <<<EOF
+
+<h3>Greetings, ${username}!</h3>
+
+<p>You have successfully logged in via your Google Account.  You should now
+see more options available for your usage from the website menus above.</p>
+
+EOF;
+$t->render('single.phtml');
+?>
