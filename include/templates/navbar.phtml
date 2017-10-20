@@ -21,21 +21,26 @@ $_pages = Array(
         "title" => "Transforming Drainage",
         "subs" => Array(
             "base" => Array("title" => "Homepage", "url" => "/td/"),
-            "agronomic" => Array("title" => "Agronomic Data Plotting", "url" => "/td/plot_agronomic.phtml"),
-            "usage" => Array("title" => "Data Usage Agreement", "url" => "/td/usage.phtml"),
-            "nitrateload" => Array("title" => "Nitrate Load Data Plotting", "url" => "/td/plot_nitrateload.phtml"),
-            "soilmoisture" => Array("title" => "Soil Moisture Data Plotting", "url" => "/td/plot_decagon.phtml"),
-            "tileflow" => Array("title" => "Tile Flow Data Plotting", "url" => "/td/plot_tileflow.phtml"),
-            "watertable" => Array("title" => "Water Table Data Plotting", "url" => "/td/plot_watertable.phtml"),
+            "agronomic" => Array("title" => "Agronomic Data Plotting", "url" => "/td/plot_agronomic.phtml", "auth" => TRUE),
+            "usage" => Array("title" => "Data Usage Agreement", "url" => "/td/usage.phtml", "auth" => TRUE),
+            "nitrateload" => Array("title" => "Nitrate Load Data Plotting", "url" => "/td/plot_nitrateload.phtml", "auth" => TRUE),
+            "soilmoisture" => Array("title" => "Soil Moisture Data Plotting", "url" => "/td/plot_decagon.phtml", "auth" => TRUE),
+            "tileflow" => Array("title" => "Tile Flow Data Plotting", "url" => "/td/plot_tileflow.phtml", "auth" => TRUE),
+            "watertable" => Array("title" => "Water Table Data Plotting", "url" => "/td/plot_watertable.phtml", "auth" => TRUE),
             ),
         ),
     "admin" => Array(
+        "auth" => TRUE,
         "title" => "Administration",
         "subs" => Array(
-            "base" => Array("title" => "Mainpage", "url" => "/admin/"),
+            "base" => Array("title" => "Mainpage", "url" => "/admin/", "auth" => TRUE),
             ),
         ),
     );
+$userinfo = "";
+if (isset($_SERVER["REMOTE_USER"])){
+    $userinfo = sprintf("<li><a href=\"#\">%s</a></li>", $_SERVER["REMOTE_USER"]);
+};
 ?>
 <header>
 <nav class="navbar-iastate">
@@ -142,10 +147,7 @@ $_pages = Array(
 		<div class="navbar-site-info collapse navbar-collapse navbar-caps" id="navbar-site-links-collapse">
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="/contacts.php">contact us</a></li>
-                                <!--
-				<li><a href="/disclaimer.php">disclaimer</a></li>
-				<li><a href="/apps.php">apps</a></li>
-                                -->
+				<?php echo $userinfo; ?>
 			</ul>
 		</div>
 
@@ -186,16 +188,15 @@ function get_title($page){
 
 while( list($idx, $page) = each($_pages) )
 {
-    if ($idx == "admin" && ! isset($_SERVER["DATATEAM_ADMIN"])){
-        continue;
-    }
-  	echo sprintf("<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\" 
+    if (! isset($_SERVER["REMOTE_USER"]) && isset($page["auth"])) continue;
+    echo sprintf("<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\" 
 		data-toggle=\"dropdown\" href=\"#\">%s</a>\n", 
       ($ar[0] == $idx) ? " active" : "", get_title($page));
 
     echo "<ul class=\"dropdown-menu\">\n";
     while( list($idx2, $page2) = each($page["subs"]) )
     {
+        if (! isset($_SERVER["REMOTE_USER"]) && isset($page2["auth"])) continue;
        echo sprintf("<li><a%s href=\"%s\">%s</a></li>\n", 
          ($ar[1] == $idx2 && $ar[0] == $idx) ? " class=\"active\"" : "",
            $page2["url"],  $page2["title"] );
