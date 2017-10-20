@@ -48,8 +48,10 @@ def make_plot(form):
     """, pgconn, params=(uniqueid, varname))
 
     if viewopt not in ['plot', 'js']:
+        newcolname = "%s, %s" % (VARDICT[varname]['title'],
+                                 VARDICT[varname]['units'])
         df.rename(columns=dict(v='timestamp',
-                               value=varname
+                               value=newcolname
                                ),
                   inplace=True)
         if viewopt == 'html':
