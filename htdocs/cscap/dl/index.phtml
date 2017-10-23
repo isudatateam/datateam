@@ -3,8 +3,7 @@
 
 function build_treatments_ui(){
 	$s = <<<EOF
-<p>Treatments that are applicable for the sites selected will be black. 
-Treatments in grey are not applicable for the sites selected.</p>
+<p>For sites you’ve selected, available treatments will be identified by black text; unavailable in grey.</p>
 <div class="clearfix"></div>
 
 <div class="row"><div class="col-md-4">
@@ -537,9 +536,9 @@ EOF;
 function build_shm_ui(){
 	$s = <<<EOF
 
-<p>It is recommended to export all of the data here as they are supplemental
+<p>It is recommended to export all of the data here because they are supplemental
 metadata that provide context to the experimental data and helps with
-interpretation. For this reason, all variables are by default selected.</p>
+interpretation. For this reason, all variables are selected by default.</p>
 
 	<div class="panel panel-default">
 	<div class="panel-heading">Available Variables</div>
@@ -652,8 +651,8 @@ $t->content = <<<EOF
 </div>
 <div class="clearfix"></div>
 
-<p>Agronomic data that are available for the sites selected will be black. 
-The usage of abbreviations <i>C</i>
+<p>For sites and treatments you’ve selected, available agronomic data will be identified by black text; 
+unavailable in grey. The usage of abbreviations <i>C</i>
 and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 {$agronomicui}
 </div>
@@ -663,45 +662,52 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
   <button id="soil-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
 <div class="clearfix"></div>
-<p>Soil data that are available for the sites selected will be black.</p>
+<p>For sites and treatments you’ve selected, available soil data will be identified by black text; 
+unavailable in grey.</p>
 <div class="clearfix"></div>
 
 {$soilui}
 </div>
+
 <div id="ghg-ui" style="display: none;">
 <div class="pull-right">
   <button id="ghg-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
 <div class="clearfix"></div>
 
-<p>Greenhouse gas data that are available for the sites selected will be black. 
-The soil data listed here were collected at the same time as the greenhouse 
+<p>For sites and treatments you’ve selected, available greenhouse gas data will be identified by black text; 
+unavailable in grey. The soil data listed here were collected at the same time as the greenhouse 
 gas measurement; these are distinct for those under the Soil tab.</p>
 
 <div class="clearfix"></div>
 
 {$ghgui}
-
 </div>
+
 <div id="ipm-ui" style="display: none;">
 <div class="pull-right">
   <button id="ipm-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
 <div class="clearfix"></div>
 
-<p>Insects (pest and beneficial) and plant diseases that are available for 
-the sites selected will be black.</p>
+<p>For sites and treatments you’ve selected, available insects (pest and beneficial) and plant diseases data 
+will be identified by black text; unavailable in grey.</p>
 
 <div class="clearfix"></div>
 
 {$ipmui}
 </div>
+
 <div id="year-ui" style="display: none;">
 <div class="pull-right">
   <button id="year-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
 <div class="clearfix"></div>
 
+<p>For sites and treatments you’ve selected, available years of data 
+will be identified by black text; unavailable in grey.</p>
+
+<div class="clearfix"></div>
 
 {$yearui}
 </div>
