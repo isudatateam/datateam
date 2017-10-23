@@ -3,8 +3,7 @@
 
 function build_treatments_ui(){
 	$s = <<<EOF
-<p>Treatments that are applicable for the sites selected will be black. 
-Treatments in grey are not applicable for the sites selected.</p>
+<p>For sites you’ve selected, available treatments will be identified by black text; unavailable in grey.</p>
 <div class="clearfix"></div>
 
 <div class="row"><div class="col-md-4">
@@ -537,9 +536,9 @@ EOF;
 function build_shm_ui(){
 	$s = <<<EOF
 
-<p>It is recommended to export all of the data here as they are supplemental
+<p>It is recommended to export all of the data here because they are supplemental
 metadata that provide context to the experimental data and helps with
-interpretation. For this reason, all variables are by default selected.</p>
+interpretation. For this reason, all variables are selected by default.</p>
 
 	<div class="panel panel-default">
 	<div class="panel-heading">Available Variables</div>
