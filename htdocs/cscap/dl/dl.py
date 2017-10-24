@@ -246,7 +246,9 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
-    for colname in df.columns[3:]:
+    # fix column names
+    df.columns = map(replace_varname, df.columns)
+    for colname in df.columns:
         places = 0
         if colname in ROUNDDF.index.values:
             places = ROUNDDF.at[colname, 'round']
@@ -254,8 +256,6 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
         df[colname] = df[colname].apply((lambda x: round(x, places)
                                          if isinstance(x, (int, float))
                                          else x))
-    # fix column names
-    df.columns = map(replace_varname, df.columns)
     # reorder columns
     cols = df.columns.values.tolist()
     cols.sort()
@@ -295,7 +295,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     # fix column names
     df.columns = map(replace_varname, df.columns)
-    for colname in df.columns[6:]:
+    for colname in df.columns:
         places = 0
         if colname in ROUNDDF.index.values:
             places = ROUNDDF.at[colname, 'round']
