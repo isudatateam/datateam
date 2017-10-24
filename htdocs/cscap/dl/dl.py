@@ -41,9 +41,9 @@ Matthew J. Helmers, Laura Bowling, Michael Castellano, Richard M. Cruse,
 Warren A. Dick, Norman R. Fausey, Jane Frankenberger, Aaron J. Gassmann,
 Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller,
 Emerson D. Nafziger, Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer,
-Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017.
-Sustainable Corn CAP (USDA-NIFA Funded). National Agricultural Library -
-ARS - USDA. https://dx.doi.org/xxxxxxx
+Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2016.
+Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190).
+National Agricultural Library - ARS - USDA. https://dx.doi.org/xxxxxxx
 
 You are encouraged to contact the Sustainable Corn CAP personnel listed above
 to ensure proper data interpretation and may also consider co-authoring
@@ -54,9 +54,9 @@ comprising this database.
 
 The coauthors individually and the Sustainable Corn CAP collectively
 shall NOT be responsible or liable for the accuracy, reliability and
-completeness of any information included in the database as well as
-for the suitability of its application for any particular purpose.
-Data users are encouraged to notify the coauthors regarding data quality
+completeness of any information included in the database nor for the 
+suitability of its application for a particular purpose. Data users 
+are encouraged to notify the coauthors regarding data quality
 and other issues concerning the data, tools, and functionality of this
 website. Contact sustainablecorn@iastate.edu with any questions or concerns
 regarding usage and application of the data available at this site.
