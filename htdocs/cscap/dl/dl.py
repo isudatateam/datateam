@@ -54,8 +54,8 @@ comprising this database.
 
 The coauthors individually and the Sustainable Corn CAP collectively
 shall NOT be responsible or liable for the accuracy, reliability and
-completeness of any information included in the database nor for the 
-suitability of its application for a particular purpose. Data users 
+completeness of any information included in the database nor for the
+suitability of its application for a particular purpose. Data users
 are encouraged to notify the coauthors regarding data quality
 and other issues concerning the data, tools, and functionality of this
 website. Contact sustainablecorn@iastate.edu with any questions or concerns
@@ -95,6 +95,12 @@ ROT_CODES = {
     "ROT61": "ROT1v",
     "ROT62": "ROT7v",
     }
+ROUNDDF = read_sql("""
+    select element_or_value_display_name as varname,
+    number_of_decimal_places_to_round_up::numeric::int as round from
+    data_dictionary_export
+    where number_of_decimal_places_to_round_up is not null
+""", PGCONN, index_col='varname')
 
 
 def replace_varname(varname):
@@ -240,6 +246,14 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
+    for colname in df.columns[3:]:
+        places = 0
+        if colname in ROUNDDF.index.values:
+            places = ROUNDDF.at[colname, 'round']
+        df[colname] = pd.to_numeric(df[colname], errors='coerse')
+        df[colname] = df[colname].apply((lambda x: round(x, places)
+                                         if isinstance(x, (int, float))
+                                         else x))
     # fix column names
     df.columns = map(replace_varname, df.columns)
     # reorder columns
@@ -251,6 +265,7 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df.dropna(how='all', inplace=True)
     df.fillna(missing, inplace=True)
     df.reset_index(inplace=True)
+    df = df.round(ROUNDDF['round'].to_dict())
     valid2date(df)
     df.to_excel(writer, 'Agronomic', index=False)
 
@@ -280,6 +295,14 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     # fix column names
     df.columns = map(replace_varname, df.columns)
+    for colname in df.columns[6:]:
+        places = 0
+        if colname in ROUNDDF.index.values:
+            places = ROUNDDF.at[colname, 'round']
+        df[colname] = pd.to_numeric(df[colname], errors='coerse')
+        df[colname] = df[colname].apply((lambda x: round(x, places)
+                                         if isinstance(x, (int, float))
+                                         else x))
     # reorder columns
     cols = df.columns.values.tolist()
     cols.sort()
