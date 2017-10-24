@@ -613,8 +613,6 @@ $t->content = <<<EOF
   
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane" id="data">
-
-<h2>Sustainable Corn CAP Data Download</h2>
     
 <form method="POST" action="dl.py" id="mainform">
 <div class="btn-group fauxtabs" role="group" aria-label="Pages">
@@ -635,8 +633,11 @@ $t->content = <<<EOF
 </div>
 <div class="clearfix"></div>
 
+<p>This download tool will auto-populate options in the following tabs based on the research sites selected below. 
+It is recommended to “Select All” sites if you want to retain the most options moving forward.</p>
 {$sitesui}
 </div>
+
 <div id="treatments-ui" style="display: none;">
 <div class="pull-right">
   <button id="treatments-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
@@ -861,7 +862,6 @@ via links to their major University library.</blockquote></p>
 
 		</div>
     <div role="tabpanel" class="tab-pane" id="wdata">
-    <h3>Water Data</h3>
 
 <p>Data originating from research sites that have subsurface tile drainage installed are included here. 
 They are not included under the Research Data tab because data are collected on a time series basis with 
@@ -882,7 +882,6 @@ and synthesize water data contained here.</p>
 
     </div><!-- ./wdata -->
     <div role="tabpanel" class="tab-pane" id="wxdata">
-    <h3>Daily Weather Data</h3>
 
 <p>Supplementary weather data are available for Sustainable Corn CAP research sites 
 and are provided from nearby weather networks. These data are most appropriate 
@@ -1089,7 +1088,7 @@ their choice dictates the variables to be included.</i>
    </select></p>
 
 <p>The downloaded data file name will contain the weather station identifiers
-if you request data from less than 9 sites.  For requests over 9 sites,
+if you request data from 9 or less sites.  For requests over 9 sites,
 the filename will simply be "changeme". Refer to the drop-down above for reminder as to 
 which site it corresponds with.</p>
 
