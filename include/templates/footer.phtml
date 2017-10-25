@@ -6,7 +6,27 @@ if (array_key_exists('iemss', $this->vars)){
 <script src="/js/iemss.js"></script>
 EOF;
 }
+$uacode = "";
+if (substr($_SERVER["SCRIPT_NAME"], 0, 6) == '/cscap'){
+    $uacode = "UA-108623031-1";
+}
+else if (substr($_SERVER["SCRIPT_NAME"], 0, 3) == '/td'){
+    $uacode = "UA-108623031-2";
+}
+$ua = "";
+if ($uacode != ''){
+$ua = <<< EOM
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={$uacode}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', '{$uacode}');
+</script>
+EOM;
+}
 ?>
 <!-- footer -->
 <footer role="contentinfo">
@@ -67,18 +87,6 @@ EOF;
     <script src="/vendor/iastate-v2.0.1/js/iastate.js"></script>
 
     <?php echo $jsextra; ?>
-<script type="text/javascript">
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-784549-2']);
-_gaq.push(['_trackPageview']);
-(function() {
-var ga = document.createElement('script');
-ga.src = ('https:' == document.location.protocol ?
-    'https://ssl' : 'http://www') +
-    '.google-analytics.com/ga.js';
-ga.setAttribute('async', 'true');
-document.documentElement.firstChild.appendChild(ga);
-})();
-</script>
+<?php echo $ua; ?>
   </body>
 </html>
