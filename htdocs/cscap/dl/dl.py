@@ -95,11 +95,10 @@ ROT_CODES = {
     "ROT61": "ROT1v",
     "ROT62": "ROT7v",
     }
-ROUNDDF = read_sql("""
+VARDF = read_sql("""
     select element_or_value_display_name as varname,
-    number_of_decimal_places_to_round_up::numeric::int as round from
-    data_dictionary_export
-    where number_of_decimal_places_to_round_up is not null
+    number_of_decimal_places_to_round_up::numeric::int as round,
+    short_description, units from data_dictionary_export
 """, PGCONN, index_col='varname')
 
 
@@ -250,10 +249,10 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df.columns = map(replace_varname, df.columns)
     for colname in df.columns:
         places = 0
-        if colname in ROUNDDF.index.values:
-            places = ROUNDDF.at[colname, 'round']
+        if colname in VARDF.index.values:
+            places = VARDF.at[colname, 'round']
         df[colname] = pd.to_numeric(df[colname], errors='coerse')
-        df[colname] = df[colname].apply((lambda x: round(x, places)
+        df[colname] = df[colname].apply((lambda x: round(x, int(places))
                                          if isinstance(x, (int, float))
                                          else x))
     # reorder columns
@@ -265,9 +264,30 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df.dropna(how='all', inplace=True)
     df.fillna(missing, inplace=True)
     df.reset_index(inplace=True)
-    df = df.round(ROUNDDF['round'].to_dict())
     valid2date(df)
-    df.to_excel(writer, 'Agronomic', index=False)
+    df, _worksheet = add_bling(writer, df, 'Agronomic')
+
+
+def add_bling(writer, df, sheetname):
+    """Do fancy things"""
+    # Insert some headers rows
+    metarows = [{}, {}]
+    cols = df.columns
+    for i, colname in enumerate(cols):
+        if i == 0:
+            metarows[0][colname] = 'description'
+            metarows[1][colname] = 'units'
+            continue
+        if colname in VARDF.index:
+            metarows[0][colname] = VARDF.at[colname, 'short_description']
+            metarows[1][colname] = VARDF.at[colname, 'units']
+    df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
+    # re-establish the correct column sorting
+    df = df.reindex_axis(cols, axis=1)
+    df.to_excel(writer, sheetname, index=False)
+    worksheet = writer.sheets[sheetname]
+    worksheet.freeze_panes(3, 0)
+    return df, worksheet
 
 
 def do_soil(writer, sites, soil, years, detectlimit, missing):
@@ -297,10 +317,12 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     df.columns = map(replace_varname, df.columns)
     for colname in df.columns:
         places = 0
-        if colname in ROUNDDF.index.values:
-            places = ROUNDDF.at[colname, 'round']
+        if colname in VARDF.index.values:
+            places = VARDF.at[colname, 'round']
+        if pd.isnull(places):
+            continue
         df[colname] = pd.to_numeric(df[colname], errors='coerse')
-        df[colname] = df[colname].apply((lambda x: round(x, places)
+        df[colname] = df[colname].apply((lambda x: round(x, int(places))
                                          if isinstance(x, (int, float))
                                          else x))
     # reorder columns
@@ -318,11 +340,10 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     df['sampledate'] = df['sampledate'].replace('', missing)
     valid2date(df)
     pprint("do_soil() valid2date done")
-    df.to_excel(writer, 'Soil', index=False)
+    df, worksheet = add_bling(writer, df, 'Soil')
     pprint("do_soil() to_excel done")
     workbook = writer.book
     format1 = workbook.add_format({'num_format': '@'})
-    worksheet = writer.sheets['Soil']
     worksheet.set_column('B:B', 12, format1)
 
 
@@ -367,8 +388,7 @@ def do_operations(writer, sites, years, missing):
         del opdf[elem]
     valid2date(opdf)
     del opdf['productrate']
-    opdf.to_excel(writer, 'Field Operations', index=False)
-    worksheet = writer.sheets['Field Operations']
+    opdf, worksheet = add_bling(writer, opdf, 'Field Operations')
     worksheet.set_column('C:C', 18)
     worksheet.set_column('D:D', 12)
     worksheet.set_column('M:N', 12)
@@ -402,8 +422,7 @@ def do_pesticides(writer, sites, years):
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     valid2date(opdf)
-    opdf.to_excel(writer, 'Pesticides', index=False)
-    worksheet = writer.sheets['Pesticides']
+    opdf, worksheet = add_bling(writer, opdf, 'Pesticides')
     worksheet.set_column('D:D', 12)
 
 
