@@ -1,8 +1,9 @@
+from __future__ import print_function
 import sys
-import pandas as pd
 import datetime
-# from pyiem.datatypes import temperature
+
 import psycopg2
+import pandas as pd
 from pyiem.datatypes import temperature, distance, speed, humidity
 from pyiem.meteorology import dewpoint
 pgconn = psycopg2.connect(database='sustainablecorn')
@@ -24,7 +25,7 @@ def process(sheets):
     resdf['dwpf'] = dewpoint(temperature(resdf['tmpf'], 'F'),
                              humidity(resdf['rh'], '%')).value('F')
     resdf['sknt'] = speed(resdf['sknt'], 'MPS').value('KT')
-    print resdf.describe()
+    print(resdf.describe())
     minval = resdf.index.min()
     maxval = resdf.index.max()
     cursor = pgconn.cursor()
@@ -38,10 +39,10 @@ def process(sheets):
         if pd.isnull(valid):
             continue
         cursor.execute("""INSERT into weather_data_obs
-        (station, valid, tmpf, dwpf, drct, precip, srad) VALUES
-        ('HICKS.P', %s, %s, %s, %s, %s, %s)
+        (station, valid, tmpf, dwpf, drct, precip, srad, sknt) VALUES
+        ('HICKS.P', %s, %s, %s, %s, %s, %s, %s)
         """, (valid.strftime("%Y-%m-%d %H:%M-06"), row['tmpf'], row['dwpf'],
-              row['drct'], row['precip'], row['srad']))
+              row['drct'], row['precip'], row['srad'], row['sknt']))
     cursor.close()
     pgconn.commit()
 
@@ -49,9 +50,13 @@ def process(sheets):
 def main():
     sheets = pd.read_excel(sys.argv[1], sheetname=None, skiprows=[0, 2, 3])
     for sheetlabel, df in sheets.iteritems():
-        print sheetlabel
+        print(sheetlabel)
         df.drop_duplicates(subset='TIMESTAMP', keep='last', inplace=True)
-        # df['valid'] = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S') for x in df['TIMESTAMP']]
+        # if sheetlabel not in ['SoilMoistOut1', 'SoilMoistOut2']:
+        #    df['valid'] = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
+        #                   for x in df['TIMESTAMP']]
+        # else:
+        #    df['valid'] = df['TIMESTAMP']
         df['valid'] = pd.to_datetime(df['TIMESTAMP'], errors='coerse')
         df.set_index('valid', inplace=True)
         df.sort_index(inplace=True)
@@ -59,9 +64,10 @@ def main():
             if col in ['TIMESTAMP', 'RECORD'] or col.startswith('Unnamed'):
                 df.drop(col, axis=1, inplace=True)
         cols = df.columns.values
-        print sheetlabel, ','.join(cols,)
+        print("%s %s" % (sheetlabel, ','.join(cols,)))
 
     process(sheets)
+
 
 if __name__ == '__main__':
     main()
