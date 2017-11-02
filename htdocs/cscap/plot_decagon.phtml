@@ -277,12 +277,14 @@ Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-6800
 <ol>
 <li><strong>How are timezones handled?</strong><br />
 The timestamps presented should be valid for the local time zone of the sensor
-and are daylight saving time aware.  The daily aggregates should compute the
-daily summaries in the time zone of the station.
+and are daylight saving time aware.
 </li>
-<li><strong>What quality control procedures have been implemented?</strong><br />
-Please see this <a href="https://docs.google.com/document/d/1K_FtA-nkhCVlkBULgwOpYb4FmMptaZDuEcaqaj7fS-U/edit">Google Drive Doc</a> for more details on this and the flags used
-to denote quality control.
+<li><strong>How the aggregation is implemented?</strong><br />
+The hourly aggregated value is computed by averaging any available 
+observations taken during that hour. If holes exist in the data 
+for that hour, they are ignored/unused in the aggregation. The same 
+procedure holds true for the daily aggregation, which represent 
+the daily summaries in the time zone of the station.
 </li>
 </ol>
 
