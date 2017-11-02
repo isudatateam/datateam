@@ -606,11 +606,19 @@ $wxdatacontent = <<<EOM
 <div class="tab-content">
 
  <div role="tabpanel" class="tab-pane active" id="wx1">
-  <p><blockquote>Precipitation, air temperature, solar radiation and wind speed were collected on site 
-  using weather stations.</blockquote></p>
+ <div class="clearfix">
+ <p>&nbsp;</p>
+ </div>
+ 
+ <p>Precipitation, air temperature, solar radiation and wind speed were collected on site 
+ using weather stations.</p>
  </div><!--./wx1-->
   
  <div role="tabpanel" class="tab-pane" id="wx2">
+ <div class="clearfix">
+ <p>&nbsp;</p>
+ </div>
+
 <p>Supplementary weather data are available for Sustainable Corn CAP research sites 
 and are provided from nearby weather networks. These data are most appropriate 
 to use with these research sites because of proximity. The data are collected 
@@ -1117,7 +1125,11 @@ This publication is hosted on the USDA NIFA website:</p>
 </div>
 
 		</div>
-    <div role="tabpanel" class="tab-pane" id="wdata">
+
+<div role="tabpanel" class="tab-pane" id="wdata">
+<div class="clearfix">
+<p>&nbsp;</p>
+</div>
 
 <p>Data originating from research sites that have subsurface tile drainage installed are included here. 
 They are not included under the Research Data tab because data are collected on a time series basis with 
@@ -1127,22 +1139,24 @@ under the Research Data tab. It is strongly recommended to download these suppor
 and synthesize water data contained here.</p>
 
 <p>Datasets include:</p>
-<ul>
-<li><a href="/cscap/plot_tileflow.phtml" target="_blank">Tile Flow</a></li>
-<li><a href="/cscap/plot_watertable.phtml" target="_blank">Water Table Depth</a></li>
-<li><a href="/cscap/plot_waterquality.phtml" target="_blank">Water Quality</a></li>
-<li><a href="/cscap/plot_decagon.phtml" target="_blank">Decagon - Soil Moisture and Temperature</a></li>
-<li>On-site Precipitation</li>
-</ul>
+   <ul>
+	<li><a href="/cscap/plot_tileflow.phtml" target="_blank">Tile Flow</a></li>
+	<li><a href="/cscap/plot_watertable.phtml" target="_blank">Water Table Depth</a></li>
+	<li><a href="/cscap/plot_waterquality.phtml" target="_blank">Water Quality</a></li>
+	<li><a href="/cscap/plot_decagon.phtml" target="_blank">Decagon - Soil Moisture and Temperature</a></li>
+   </ul>
+
+</div><!-- ./wdata -->
 
 
-    </div><!-- ./wdata -->
-    <div role="tabpanel" class="tab-pane" id="wxdata">
+<div role="tabpanel" class="tab-pane" id="wxdata">
     {$wxdatacontent}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="sdata">
+</div>
 
-<div class="clearfix"><p>&nbsp;</p></div>
+<div role="tabpanel" class="tab-pane" id="sdata">
+<div class="clearfix">
+<p>&nbsp;</p>
+</div>
 
 <p>Social economic research was conducted and included a survey of 4,778 farmers 
 in 11 Corn Belt states and 156 one-hour, in-person farmer interviews. The data 
@@ -1161,7 +1175,8 @@ provides the results of a USDA-NIFA-supported survey, conducted in 2012, of
 4,778 farmers in 11 Corn-belt states.</p>
 
 <p><a href="https://store.extension.iastate.edu/Product/14458" target="_blank">
-Farmer Perspectives on Agricultural Practices, Information, and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 2</a></p>
+Farmer Perspectives on Agricultural Practices, Information, and Weather Variability 
+in the Corn Belt: A Statistical Atlas, Volume 2</a></p>
 
 <p>This second atlas (Volume 2) provides additional results from a 2012 survey of 
 4,778 farmers in 11 Corn-belt states. Here, the focus is upon farmers' 
