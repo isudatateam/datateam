@@ -777,7 +777,7 @@ data and will produce updated values that are reprocessed into this archive.</p>
 <p><strong>Select Data Variables</strong>:
 <br /><i>Date and Day of Year are included automatically in the export. 
 To select multiple data, hold CTRL key down while selecting options here.</i>
-<br /><select size=5 name="vars[]" MULTIPLE class="select">
+<br /><select size=5 name="vars[]" MULTIPLE class="select">0
   <option value="high">Variable: High Air Temperature [F]</option>
   <option value="highc">Variable: High Air Temperature [C]</option>
   <option value="low">Variable: Low Air Temperature [F]</option>
@@ -834,12 +834,119 @@ this on-site data as a secondary data set to refine the networked data. It
 is expected that the temperature and wind values will be near identical
 between the stations but the precipitation amounts will vary.</p>
 
-<p><strong>Select Research Site(s):</strong></p>
-<p><strong>Select Time Period:</strong></p>
-<p><strong>Select Data Variables:</strong></p>
-<p><strong>Data Delimitation:</strong></p>
-<p><strong>Request Data:</strong></p>
+<form method="GET" id="wxform2" action="wxdl.py">
 
+<p><strong>Select Research Site(s):</strong>
+<br />
+<select name="stations" size="5" multiple="" class="select">
+ <option value="invalid">Select From List</option>
+<option value="ARL">ARL [Arlington, WI] -- 2011-2015</option>
+<option value="DPAC">DPAC [Farmland, IN] -- 2011-Sep 2015</option>
+<option value="HICKS.P">HICKS.P [Tracy, MN] -- 2011-2015</option>
+<option value="LAN">LAN [Lancaster, WI] -- 2011-2014</option>
+<option value="MAR">MAR [Marshfield, WI] -- 2011-2014</option>
+<option value="NWREC">NWREC [Monmouth, IL] -- 2011-2015</option>
+<option value="ORR">ORR [Perry, IL] -- 2011-2015</option>
+<option value="SEPAC">SEPAC [Butlerville, IN] -- 2011-2015</option>
+</select>
+</p>
+<p><strong>Select Time Period:</strong>
+
+<table><tr><th></th><th>Year</th><th>Month</th><th>Day</th></tr>
+<tr><td>Start:</td>
+<td><select id="year1" name="year1">
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015'>2015</option>
+</select></td>
+<td><select id="month1" name="month1">
+<option value='1' selected="selected">January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' >December</option>
+</select>
+</td>
+<td><select id="day1" name="day1">
+<option value="1" selected="selected">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" >31</option>
+</select></td>
+</tr>
+<tr><td>End:</td>
+<td><select id="year2" name="year2">
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015' selected="selected">2015</option>
+</select></td>
+<td><select id="month2" name="month2">
+<option value='1'>January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' selected="selected">December</option>
+</select></td>
+<td><select id="day2" name="day2">
+<option value="1">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" selected="selected">31</option>
+</select></td>
+</tr>
+</table>
+
+</p>
+<!--
+<p><strong>Select Data Variables:</strong>
+<br /><i>Date and Day of Year are included automatically in the export. 
+To select multiple data, hold CTRL key down while selecting options here.</i>
+<br /><select size=5 name="vars" MULTIPLE class="select">0
+  <option value="high">Variable: High Air Temperature [F]</option>
+  <option value="highc">Variable: High Air Temperature [C]</option>
+  <option value="low">Variable: Low Air Temperature [F]</option>
+  <option value="lowc">Variable: Low Air Temperature [C]</option>
+  <option value="precip">Variable: Precipitation (rain+melted snow) [inch]</option>
+  <option value="precipmm">Variable: Precipitation (rain+melted snow) [mm]</option>
+  <option value="srad">Variable: Solar Radiation [MJ m-2 dy-1]</option>
+  <option value="gdd_50_86">Computed: Growing Degree Days (base=50,max=86) [F]</option>
+</select>
+</p>
+-->
+<p><strong>Request Data:</strong>
+
+<br /><input type="submit" value="Request Data">
+</p>
+
+</form>
 
  </div><!--./wx1-->
 
