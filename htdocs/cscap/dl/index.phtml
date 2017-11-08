@@ -599,26 +599,14 @@ $sitestable = file_get_contents('sites.html');
 $wxdatacontent = <<<EOM
 <br />
 <ul class="nav nav-tabs" role="tablist">
- <li role="presentation" class="active"><a href="#wx1" aria-controls="wx1" role="tab" data-toggle="tab">On-Site Precipitation</a></li>
- <li role="presentation"><a href="#wx2" aria-controls="wx2" role="tab" data-toggle="tab">Nearby Weather Station</a></li>
+ <li role="presentation" class="active"><a href="#wx2" aria-controls="wx2" role="tab" data-toggle="tab">Nearby Weather Station</a></li>
+ <li role="presentation"><a href="#wx1" aria-controls="wx1" role="tab" data-toggle="tab">On-Site Precipitation</a></li>
 </ul>
 
 <div class="tab-content">
 
- <div role="tabpanel" class="tab-pane active" id="wx1">
- <div class="clearfix">
- <p>&nbsp;</p>
- </div>
- 
- <p>Precipitation, air temperature, solar radiation and wind speed were collected on site 
- using weather stations.</p>
- </div><!--./wx1-->
   
- <div role="tabpanel" class="tab-pane" id="wx2">
- <div class="clearfix">
- <p>&nbsp;</p>
- </div>
-
+ <div role="tabpanel" class="tab-pane active" id="wx2">
 <p>Supplementary weather data are available for Sustainable Corn CAP research sites 
 and are provided from nearby weather networks. These data are most appropriate 
 to use with these research sites because of proximity. The data are collected 
@@ -831,6 +819,31 @@ which site it corresponds with.</p>
 <p><input type="submit" value="Request Data" /></p>
 </form>
   </div><!--./wx2-->
+
+ <div role="tabpanel" class="tab-pane" id="wx1">
+
+<p>On-site weather stations existed at some research sites to provide finer
+resolution weather data as compared to the networked weather data which can
+be a mile or more away. This on-site weather data is especially valuable for
+precipitation amounts as that will vary more spatially than temperature or
+wind.</p>
+
+<p>On-site weather stations tend to be less robust of instrumentation however
+than the weather data included under the first tab. It is recommended to use
+this on-site data as a secondary data set to refine the networked data. It
+is expected that the temperature and wind values will be near identical
+between the stations but the precipitation amounts will vary.</p>
+
+<p><strong>Select Research Site(s):</strong></p>
+<p><strong>Select Time Period:</strong></p>
+<p><strong>Select Data Variables:</strong></p>
+<p><strong>Data Delimitation:</strong></p>
+<p><strong>Request Data:</strong></p>
+
+
+ </div><!--./wx1-->
+
+
 </div><!--./tab-content-->
 EOM;
 
@@ -1125,11 +1138,7 @@ This publication is hosted on the USDA NIFA website:</p>
 </div>
 
 		</div>
-
-<div role="tabpanel" class="tab-pane" id="wdata">
-<div class="clearfix">
-<p>&nbsp;</p>
-</div>
+    <div role="tabpanel" class="tab-pane" id="wdata">
 
 <p>Data originating from research sites that have subsurface tile drainage installed are included here. 
 They are not included under the Research Data tab because data are collected on a time series basis with 
@@ -1139,24 +1148,22 @@ under the Research Data tab. It is strongly recommended to download these suppor
 and synthesize water data contained here.</p>
 
 <p>Datasets include:</p>
-   <ul>
-	<li><a href="/cscap/plot_tileflow.phtml" target="_blank">Tile Flow</a></li>
-	<li><a href="/cscap/plot_watertable.phtml" target="_blank">Water Table Depth</a></li>
-	<li><a href="/cscap/plot_waterquality.phtml" target="_blank">Water Quality</a></li>
-	<li><a href="/cscap/plot_decagon.phtml" target="_blank">Decagon - Soil Moisture and Temperature</a></li>
-   </ul>
+<ul>
+<li><a href="/cscap/plot_tileflow.phtml" target="_blank">Tile Flow</a></li>
+<li><a href="/cscap/plot_watertable.phtml" target="_blank">Water Table Depth</a></li>
+<li><a href="/cscap/plot_waterquality.phtml" target="_blank">Water Quality</a></li>
+<li><a href="/cscap/plot_decagon.phtml" target="_blank">Decagon - Soil Moisture and Temperature</a></li>
+<li>On-site Precipitation</li>
+</ul>
 
-</div><!-- ./wdata -->
 
-
-<div role="tabpanel" class="tab-pane" id="wxdata">
+    </div><!-- ./wdata -->
+    <div role="tabpanel" class="tab-pane" id="wxdata">
     {$wxdatacontent}
-</div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="sdata">
 
-<div role="tabpanel" class="tab-pane" id="sdata">
-<div class="clearfix">
-<p>&nbsp;</p>
-</div>
+<div class="clearfix"><p>&nbsp;</p></div>
 
 <p>Social economic research was conducted and included a survey of 4,778 farmers 
 in 11 Corn Belt states and 156 one-hour, in-person farmer interviews. The data 
@@ -1175,8 +1182,7 @@ provides the results of a USDA-NIFA-supported survey, conducted in 2012, of
 4,778 farmers in 11 Corn-belt states.</p>
 
 <p><a href="https://store.extension.iastate.edu/Product/14458" target="_blank">
-Farmer Perspectives on Agricultural Practices, Information, and Weather Variability 
-in the Corn Belt: A Statistical Atlas, Volume 2</a></p>
+Farmer Perspectives on Agricultural Practices, Information, and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 2</a></p>
 
 <p>This second atlas (Volume 2) provides additional results from a 2012 survey of 
 4,778 farmers in 11 Corn-belt states. Here, the focus is upon farmers' 
