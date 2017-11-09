@@ -9,9 +9,10 @@ import datetime
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+from pyiem.datatypes import distance, temperature
 
-VARDF = {'station': '',
-         'valid': '',
+VARDF = {'uniqueid': '',
+         'day': '',
          'doy': 'Day Of Year',
          'sknt': 'Wind Speed',
          'drct': 'Wind Direction',
@@ -22,8 +23,8 @@ VARDF = {'station': '',
          'srad_mj': 'Solar Radiation',
          'precip': 'Precipitation',
          'precipmm': 'Precipitation'}
-UVARDF = {'station': '',
-          'valid': '',
+UVARDF = {'uniqueid': '',
+          'day': '',
           'doy': '',
           'sknt': 'knots',
           'drct': 'degrees N',
@@ -71,10 +72,15 @@ def do_work(form):
         stations.append("XXX")
     sts, ets = get_cgi_dates(form)
     df = read_sql("""
-    SELECT * from weather_data_daily WHERE station in %s
+    SELECT station as uniqueid, valid as day, extract(doy from valid) as doy,
+    high, low, precip, sknt,
+    srad_mj, drct from weather_data_daily WHERE station in %s
     and valid >= %s and valid <= %s
     ORDER by station ASC, valid ASC
     """, pgconn, params=(tuple(stations), sts, ets), index_col=None)
+    df['highc'] = temperature(df['high'].values, 'F').value('C')
+    df['lowc'] = temperature(df['low'].values, 'F').value('C')
+    df['precipmm'] = distance(df['precip'].values, 'IN').value('MM')
 
     metarows = [{}, {}]
     cols = df.columns
