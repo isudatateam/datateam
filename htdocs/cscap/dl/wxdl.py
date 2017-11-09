@@ -12,20 +12,28 @@ from pyiem.util import get_dbconn
 
 VARDF = {'station': '',
          'valid': '',
+         'doy': 'Day Of Year',
          'sknt': 'Wind Speed',
          'drct': 'Wind Direction',
          'high': 'High Temperature',
+         'highc': 'High Temperature',
          'low': 'Low Temperature',
+         'lowc': 'Low Temperature',
          'srad_mj': 'Solar Radiation',
-         'precip': 'Precipitation'}
+         'precip': 'Precipitation',
+         'precipmm': 'Precipitation'}
 UVARDF = {'station': '',
           'valid': '',
+          'doy': '',
           'sknt': 'knots',
           'drct': 'degrees N',
           'high': 'F',
+          'highc': 'C',
           'low': 'F',
+          'lowc': 'C',
           'srad_mj': 'MJ/day',
-          'precip': 'inch'}
+          'precip': 'inch',
+          'precipmm': 'mm'}
 
 
 def sane_date(year, month, day):
