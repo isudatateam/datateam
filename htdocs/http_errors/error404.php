@@ -7,5 +7,9 @@
 </html>
 <?php
 $ref = isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : 'none';
-error_log("404 datateam:". $_SERVER["REQUEST_URI"]. ' referer: '. $ref);
+openlog("datateam", LOG_PID | LOG_PERROR, LOG_LOCAL1);
+syslog(LOG_WARNING, "404 ". $_SERVER["REQUEST_URI"] .
+    ' remote: '. $_SERVER["REMOTE_ADDR"] .
+    ' referer: '. $ref);
+
 ?>
