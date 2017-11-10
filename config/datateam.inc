@@ -22,5 +22,11 @@
   </Directory>
   
   # Since RHEL Apache does not log 404s, sigh
-  ErrorDocument 404 /error404.php
-  ErrorDocument 401 /error401.php
+  ErrorDocument 404 /http_errors/error404.php
+  # ErrorDocument 401 /error404.php
+
+  <Location "/http_errors/">
+    # https://bz.apache.org/bugzilla/show_bug.cgi?id=55415
+    ProxyErrorOverride Off
+  </Location>
+  
