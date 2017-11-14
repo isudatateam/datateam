@@ -105,12 +105,14 @@ def do_filter(form):
 
     df = read_sql("""
     with myplotids as (
-        SELECT uniqueid, plotid from plotids
+        SELECT uniqueid, plotid, nitrogen from plotids
         WHERE uniqueid in %s """ + sql + """
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
-    a.value not in ('n/a')
+    a.value not in ('n/a') and not
+    (a.uniqueid = 'WOOSTER.COV' and a.year = 2015
+     and p.nitrogen in ('NIT3', 'NIT4'))
     """, pgconn, params=args, index_col=None)
     if len(df.index) > 0:
         res['agronomic'] = redup(df['varname'].values.tolist())
