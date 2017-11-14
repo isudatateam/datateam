@@ -92,6 +92,8 @@ def do_filter(form):
                       ['tillage', 'rotation', 'drainage', 'nitrogen',
                        'landscape']):
         a[l] = [b for b in treatments if b.startswith(l)]
+        if l == 'LND':
+            a[l].append('N/A')
         if len(a[l]) > 0:
             arsql.append(" %s in %%s" % (col,))
             args.append(tuple(a[l]))
