@@ -49,14 +49,14 @@ def make_plot(form):
     viewopt = form.getfirst('view', 'plot')
     ptype = form.getfirst('ptype', '1')
     if ptype == '1':
-        df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid, valid at time zone 'UTC' as v,
         discharge_mm_qc as discharge
         from tileflow_data WHERE uniqueid = %s
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     elif ptype == '2':
-        df = read_sql("""SELECT
-        date_trunc('month', valid at time zone 'UTC') as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid,
+        date_trunc('month', valid at time zone 'UTC') as v,
         sum(discharge_mm_qc) as discharge
         from tileflow_data WHERE uniqueid = %s
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
