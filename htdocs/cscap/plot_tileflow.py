@@ -69,7 +69,7 @@ def make_plot(form):
 
     if viewopt not in ['plot', 'js']:
         df.rename(columns=dict(v='timestamp',
-                               discharge='Discharge (mm)'
+                               discharge='Tile Flow (mm)'
                                ),
                   inplace=True)
         if viewopt == 'html':
@@ -120,7 +120,7 @@ def make_plot(form):
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
-    yAxis: {title: {text: 'Discharge (mm)'}
+    yAxis: {title: {text: 'Tile Flow (mm)'}
     },
     plotOptions: {line: {turboThreshold: 0},
         series: {
