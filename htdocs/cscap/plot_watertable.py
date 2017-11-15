@@ -50,21 +50,21 @@ def make_plot(form):
     viewopt = form.getfirst('view', 'plot')
     ptype = form.getfirst('ptype', '1')
     if ptype == '1':
-        df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid, valid at time zone 'UTC' as v, 
         depth_mm_qc as depth
         from watertable_data WHERE uniqueid = %s
         and valid between %s and %s ORDER by valid ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     elif ptype in ['3', '4']:
         res = 'hour' if ptype == '3' else 'week'
-        df = read_sql("""SELECT
-        date_trunc('"""+res+"""', valid at time zone 'UTC') as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid,
+        date_trunc('"""+res+"""', valid at time zone 'UTC') as v,
         avg(depth_mm_qc) as depth
         from watertable_data WHERE uniqueid = %s
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     else:
-        df = read_sql("""SELECT date(valid at time zone %s) as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid, date(valid at time zone %s) as v,
         avg(depth_mm_qc) as depth
         from watertable_data WHERE uniqueid = %s
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
