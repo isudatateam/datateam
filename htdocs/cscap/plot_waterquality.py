@@ -41,7 +41,7 @@ def make_plot(form):
                               user='nobody')
     viewopt = form.getfirst('view', 'plot')
     varname = form.getfirst('varname', 'WAT2')
-    df = read_sql("""SELECT valid at time zone 'UTC' as v, plotid,
+    df = read_sql("""SELECT uniqueid, plotid, valid at time zone 'UTC' as v, 
     value
     from waterquality_data WHERE uniqueid = %s
     and varname = %s ORDER by valid ASC
