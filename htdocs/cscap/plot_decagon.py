@@ -52,7 +52,7 @@ def make_plot(form):
     if depth != 'all':
         plotid_limit = ""
     if ptype == '1':
-        df = read_sql("""SELECT valid as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid, valid as v,
         d1temp_qc as d1t,
         d2temp_qc as d2t,
         d3temp_qc as d3t,
@@ -71,8 +71,8 @@ def make_plot(form):
 
     elif ptype in ['3', '4']:
         res = 'hour' if ptype == '3' else 'week'
-        df = read_sql("""SELECT
-        timezone('UTC', date_trunc('"""+res+"""', valid at time zone 'UTC')) as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid,
+        timezone('UTC', date_trunc('"""+res+"""', valid at time zone 'UTC')) as v,
         avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
@@ -83,8 +83,8 @@ def make_plot(form):
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
 
     else:
-        df = read_sql("""SELECT
-        timezone('UTC', date_trunc('day', valid at time zone %s)) as v, plotid,
+        df = read_sql("""SELECT uniqueid, plotid,
+        timezone('UTC', date_trunc('day', valid at time zone %s)) as v,
         avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
