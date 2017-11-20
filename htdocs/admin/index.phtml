@@ -7,7 +7,8 @@ $table = <<<EOF
 <table class="table table-striped table-bordered">
 <thead><tr><th>Email</th><th>Last Usage</th><th>Access Level</th></tr></thead>
 EOF;
-$rs = pg_query($pgconn, "SELECT * from website_users ORDER by email ASC");
+$rs = pg_query($pgconn, "SELECT * from website_users ".
+    "WHERE access_level != 1 ORDER by email ASC");
 for ($i=0; $row=@pg_fetch_assoc($rs,$i); $i++){
 	$table .= sprintf("<tr><td>%s</td><td>%s</td><td>%s</td></tr>\n",
 			$row["email"], $row["last_usage"], $row["access_level"]);
