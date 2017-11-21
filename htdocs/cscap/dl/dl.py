@@ -206,8 +206,7 @@ def do_ghg(writer, sites, ghg, years, missing):
     ORDER by d.uniqueid, year, date, plotid
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
     df.fillna(missing, inplace=True)
-    df.to_excel(writer, 'GHG', index=False)
-    worksheet = writer.sheets['GHG']
+    df, worksheet = add_bling(writer, df, 'GHG')
     worksheet.set_column('C:C', 12)
 
 
@@ -225,8 +224,7 @@ def do_ipm(writer, sites, ipm, years, missing):
     df.fillna(missing, inplace=True)
     df.columns = [s.upper() if s.startswith("ipm") else s
                   for s in df.columns]
-    df.to_excel(writer, 'IPM', index=False)
-    worksheet = writer.sheets['IPM']
+    df, worksheet = add_bling(writer, df, 'IPM')
     worksheet.set_column('C:C', 12)
 
 
@@ -461,11 +459,10 @@ def do_plotids(writer, sites):
     """, PGCONN, params=(tuple(sites), ))
     # Fake rotation codes
     opdf.replace({'rotation': ROT_CODES}, inplace=True)
-    opdf[opdf.columns].to_excel(writer, 'Plot Identifiers', index=False)
+    opdf, worksheet = add_bling(writer, opdf[opdf.columns], 'Plot Identifiers')
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
     format1 = workbook.add_format({'num_format': '0'})
-    worksheet = writer.sheets['Plot Identifiers']
     worksheet.set_column('B:B', 12, format1)
 
 
