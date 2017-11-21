@@ -110,11 +110,11 @@ def do_filter(form):
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
-    a.value not in ('n/a') and not
+    a.value not in ('n/a', 'did not collect') and not
     (a.uniqueid = 'WOOSTER.COV' and a.year = 2015
      and p.nitrogen in ('NIT3', 'NIT4'))
     """, pgconn, params=args, index_col=None)
-    if len(df.index) > 0:
+    if not df.empty:
         res['agronomic'] = redup(df['varname'].values.tolist())
 
     # build a list of soil data based on the plotids and sites
@@ -124,9 +124,10 @@ def do_filter(form):
         WHERE uniqueid in %s """ + sql + """
     )
     SELECT distinct varname from soil_data a, myplotids p
-    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
+    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
+    a.value not in ('n/a', 'did not collect')
     """, pgconn, params=args, index_col=None)
-    if len(df.index) > 0:
+    if not df.empty:
         res['soil'] = redup(df['varname'].values.tolist())
 
     # Figure out which GHG variables we have
@@ -138,7 +139,7 @@ def do_filter(form):
     SELECT * from ghg_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
     """, pgconn, params=(tuple(sites), ), index_col=None)
-    if len(df.index) > 0:
+    if not df.empty:
         for i in range(1, 17):
             col = "ghg%02i" % (i, )
             if len(df[df[col].notnull()].index) > 0:
@@ -153,22 +154,27 @@ def do_filter(form):
     SELECT * from ipm_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
     """, pgconn, params=(tuple(sites), ), index_col=None)
-    if len(df.index) > 0:
+    if not df.empty:
         for i in range(1, 15):
             col = "ipm%02i" % (i, )
             if len(df[df[col].notnull()].index) > 0:
                 res['ipm'].append(col.upper())
 
     # Compute which years we have data for these locations
+    _g = [" %s is not null " % (g, ) for g in ghg if g != 'ZZZ']
+    ghglimiter = "1 = 2"
+    if _g:
+        ghglimiter = "( %s )" % ("or".join(_g), )
     df = read_sql("""
     WITH soil_years as (
         SELECT distinct year from soil_data where varname in %s
-        and uniqueid in %s),
+        and uniqueid in %s and value not in ('n/a', 'did not collect')),
     agronomic_years as (
         SELECT distinct year from agronomic_data where varname in %s
-        and uniqueid in %s),
+        and uniqueid in %s and value not in ('n/a', 'did not collect')),
     ghg_years as (
-        SELECT distinct year from ghg_data where uniqueid in %s),
+        SELECT distinct year from ghg_data where uniqueid in %s
+        and """ + ghglimiter + """),
     agg as (SELECT year from soil_years UNION select year from agronomic_years
         UNION select year from ghg_years)
 
