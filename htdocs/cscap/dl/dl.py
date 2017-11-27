@@ -95,11 +95,16 @@ ROT_CODES = {
     "ROT61": "ROT1v",
     "ROT62": "ROT7v",
     }
-VARDF = read_sql("""
-    select element_or_value_display_name as varname,
-    number_of_decimal_places_to_round_up::numeric::int as round,
-    short_description, units from data_dictionary_export
-""", PGCONN, index_col='varname')
+
+
+def get_vardf(tabname):
+    """Get a dataframe of descriptors for this tabname"""
+    return read_sql("""
+        select element_or_value_display_name as varname,
+        number_of_decimal_places_to_round_up::numeric::int as round,
+        short_description, units from data_dictionary_export WHERE
+        spreadsheet_tab = %s
+    """, PGCONN, params=(tabname, ), index_col='varname')
 
 
 def replace_varname(varname):
@@ -206,7 +211,7 @@ def do_ghg(writer, sites, ghg, years, missing):
     ORDER by d.uniqueid, year, date, plotid
     """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
     df.fillna(missing, inplace=True)
-    df, worksheet = add_bling(writer, df, 'GHG')
+    df, worksheet = add_bling(writer, df, 'GHG', 'GHG')
     worksheet.set_column('C:C', 12)
 
 
@@ -224,7 +229,7 @@ def do_ipm(writer, sites, ipm, years, missing):
     df.fillna(missing, inplace=True)
     df.columns = [s.upper() if s.startswith("ipm") else s
                   for s in df.columns]
-    df, worksheet = add_bling(writer, df, 'IPM')
+    df, worksheet = add_bling(writer, df, 'IPM', 'IPM')
     worksheet.set_column('C:C', 12)
 
 
@@ -247,10 +252,11 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     # fix column names
     df.columns = map(replace_varname, df.columns)
+    vardf = get_vardf('Agronomic')
     for colname in df.columns:
         places = 0
-        if colname in VARDF.index.values:
-            places = VARDF.at[colname, 'round']
+        if colname in vardf.index.values:
+            places = vardf.at[colname, 'round']
         df[colname] = pd.to_numeric(df[colname], errors='coerse')
         df[colname] = df[colname].apply((lambda x: round(x, int(places))
                                          if isinstance(x, (int, float))
@@ -265,22 +271,23 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     df.fillna(missing, inplace=True)
     df.reset_index(inplace=True)
     valid2date(df)
-    df, _worksheet = add_bling(writer, df, 'Agronomic')
+    df, _worksheet = add_bling(writer, df, 'Agronomic', 'Agronomic')
 
 
-def add_bling(writer, df, sheetname):
+def add_bling(writer, df, sheetname, tabname):
     """Do fancy things"""
     # Insert some headers rows
     metarows = [{}, {}]
     cols = df.columns
+    vardf = get_vardf(tabname)
     for i, colname in enumerate(cols):
         if i == 0:
             metarows[0][colname] = 'description'
             metarows[1][colname] = 'units'
             continue
-        if colname in VARDF.index:
-            metarows[0][colname] = VARDF.at[colname, 'short_description']
-            metarows[1][colname] = VARDF.at[colname, 'units']
+        if colname in vardf.index:
+            metarows[0][colname] = vardf.at[colname, 'short_description']
+            metarows[1][colname] = vardf.at[colname, 'units']
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
     df = df.reindex_axis(cols, axis=1)
@@ -315,10 +322,11 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
     # fix column names
     df.columns = map(replace_varname, df.columns)
+    vardf = get_vardf('Soil')
     for colname in df.columns:
         places = 0
-        if colname in VARDF.index.values:
-            places = VARDF.at[colname, 'round']
+        if colname in vardf.index.values:
+            places = vardf.at[colname, 'round']
         if pd.isnull(places):
             continue
         df[colname] = pd.to_numeric(df[colname], errors='coerse')
@@ -340,7 +348,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     df['sampledate'] = df['sampledate'].replace('', missing)
     valid2date(df)
     pprint("do_soil() valid2date done")
-    df, worksheet = add_bling(writer, df, 'Soil')
+    df, worksheet = add_bling(writer, df, 'Soil', 'Soil')
     pprint("do_soil() to_excel done")
     workbook = writer.book
     format1 = workbook.add_format({'num_format': '@'})
@@ -388,7 +396,8 @@ def do_operations(writer, sites, years, missing):
         del opdf[elem]
     valid2date(opdf)
     del opdf['productrate']
-    opdf, worksheet = add_bling(writer, opdf, 'Field Operations')
+    opdf, worksheet = add_bling(writer, opdf, 'Field Operations',
+                                'Field Operations')
     worksheet.set_column('C:C', 18)
     worksheet.set_column('D:D', 12)
     worksheet.set_column('M:N', 12)
@@ -422,7 +431,8 @@ def do_pesticides(writer, sites, years):
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     valid2date(opdf)
-    opdf, worksheet = add_bling(writer, opdf, 'Pesticides')
+    opdf, worksheet = add_bling(writer, opdf, 'Pesticides',
+                                'Pesticides')
     worksheet.set_column('D:D', 12)
 
 
@@ -459,7 +469,8 @@ def do_plotids(writer, sites):
     """, PGCONN, params=(tuple(sites), ))
     # Fake rotation codes
     opdf.replace({'rotation': ROT_CODES}, inplace=True)
-    opdf, worksheet = add_bling(writer, opdf[opdf.columns], 'Plot Identifiers')
+    opdf, worksheet = add_bling(writer, opdf[opdf.columns], 'Plot Identifiers',
+                                'Plot Identifiers')
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
     format1 = workbook.add_format({'num_format': '0'})
@@ -493,9 +504,9 @@ def do_dwm(writer, sites):
         from dwm where uniqueid in %s
         ORDER by uniqueid ASC, cropyear ASC
     """, PGCONN, params=(tuple(sites), ))
-    opdf[opdf.columns].to_excel(writer, 'Drainage Control Structure Mngt',
-                                index=False)
-    worksheet = writer.sheets['Drainage Control Structure Mngt']
+    df, worksheet = add_bling(writer, opdf[opdf.columns],
+                              'Drainage Control Structure Mngt',
+                              'Drainage Control Structure Mngt')
     worksheet.set_column('G:G', 12)
     worksheet.set_column('H:H', 30)
 
