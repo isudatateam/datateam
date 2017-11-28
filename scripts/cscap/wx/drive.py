@@ -28,6 +28,7 @@ for plot_type in PLOTS:
         #    continue
         for fmt in ['eps', 'png']:
             fn = 'plots/%s_%s.%s' % (station, plot_type, fmt)
+            # This is now autoplot 189
             url = ('http://iem.local/cgi-bin/climate/cplot.py?first_year'
                    '=%s&station=%s&plot_type=%s&format=%s&linregress=on'
                    ) % (first_year, station, plot_type, fmt)
