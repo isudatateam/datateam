@@ -186,11 +186,11 @@ def do_metadata_master(writer, sites):
     SELECT uniqueid,
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
     selon as "SE Lon", selat as "SE Lat", nelon as "NE Lon", nelat as "NE Lat",
-    rawlonlat as "Raw LonLat", state, county, citynearest as "City (nearest)",
+    rawlonlat as "Raw LonLat", state, county, city as "City (nearest)",
     landscapeslope as "Landscape Slope (%%)",
-    depthoftilem as "Depth of Tile (m)", tilespacingm as "Tile Spacing (m)",
-    siteareaha as "Site Area (ha)",
-    numberofplotssubplots as "Number of Plots/ Subplots"
+    tilespacing as "Tile Spacing (m)",
+    sitearea as "Site Area (ha)",
+    numberofplots as "Number of Plots/ Subplots"
     from metadata_master
     WHERE uniqueid in %s
     ORDER by uniqueid
