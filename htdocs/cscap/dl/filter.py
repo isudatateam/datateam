@@ -110,9 +110,7 @@ def do_filter(form):
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
-    a.value not in ('n/a', 'did not collect') and not
-    (a.uniqueid = 'WOOSTER.COV' and a.year = 2015
-     and p.nitrogen in ('NIT3', 'NIT4'))
+    a.value not in ('n/a', 'did not collect')
     """, pgconn, params=args, index_col=None)
     if not df.empty:
         res['agronomic'] = redup(df['varname'].values.tolist())

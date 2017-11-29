@@ -240,8 +240,6 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    not (d.uniqueid = 'WOOSTER.COV' and d.year = 2015
-     and p.nitrogen in ('NIT3', 'NIT4')) and
     d.uniqueid in %s and year in %s and varname in %s
     ORDER by uniqueid, year, plotid
     """, PGCONN, params=(tuple(sites), tuple(years),
