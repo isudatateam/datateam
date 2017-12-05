@@ -95,6 +95,9 @@ ROT_CODES = {
     "ROT61": "ROT1v",
     "ROT62": "ROT7v",
     }
+TIL_CODES = {
+    "TIL4": "TIL1v",
+    }
 
 
 def get_vardf(tabname):
@@ -467,6 +470,8 @@ def do_plotids(writer, sites):
     """, PGCONN, params=(tuple(sites), ))
     # Fake rotation codes
     opdf.replace({'rotation': ROT_CODES}, inplace=True)
+    # Fake tillage codes
+    opdf.replace({'tillage': TIL_CODES}, inplace=True)
     opdf, worksheet = add_bling(writer, opdf[opdf.columns], 'Plot Identifiers',
                                 'Plot Identifiers')
     # Make plotids as strings and not something that goes to dates
