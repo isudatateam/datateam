@@ -41,7 +41,7 @@ Matthew J. Helmers, Laura Bowling, Michael Castellano, Richard M. Cruse,
 Warren A. Dick, Norman R. Fausey, Jane Frankenberger, Aaron J. Gassmann,
 Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller,
 Emerson D. Nafziger, Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer,
-Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2016.
+Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017.
 Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190).
 National Agricultural Library - ARS - USDA. https://dx.doi.org/xxxxxxx
 
