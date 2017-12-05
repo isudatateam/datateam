@@ -94,6 +94,9 @@ ROT_CODES = {
     "ROT60": "ROT36v",
     "ROT61": "ROT1v",
     "ROT62": "ROT7v",
+    "ROT54": "ROT5v",
+    "ROT55": "ROT37v",
+    "ROT56": "ROT1v",
     }
 TIL_CODES = {
     "TIL4": "TIL1v",
