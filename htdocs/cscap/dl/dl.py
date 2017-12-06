@@ -92,9 +92,10 @@ ROT_CODES = {
     "ROT9": "ROT6v",
     "ROT58": "ROT38v",
     "ROT60": "ROT36v",
-    "ROT61": "ROT1v",
+    "ROT61": "ROT5v",
     "ROT62": "ROT7v",
     "ROT54": "ROT5v",
+    "ROT57": "ROT37v",
     "ROT55": "ROT37v",
     "ROT56": "ROT1v",
     }
