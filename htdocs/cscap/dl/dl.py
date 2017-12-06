@@ -366,7 +366,7 @@ def do_operations(writer, sites, years, missing):
     SELECT uniqueid, cropyear, operation, valid, cashcrop, croprot,
     plantryemethod, planthybrid, plantmaturity, plantrate, plantrateunits,
     terminatemethod, biomassdate1, biomassdate2, depth, limerate,
-    manuresource, manurecomposition, manuremethod, manurerate,
+    manuresource, manuremethod, manurerate,
     manurerateunits, fertilizerform, fertilizercrop, fertilizerapptype,
     fertilizerformulation, productrate, nitrogenelem, phosphoruselem,
     potassiumelem, sulfurelem, zincelem, magnesiumelem, ironelem, calciumelem,
