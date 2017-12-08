@@ -2,16 +2,15 @@
 from __future__ import print_function
 import sys
 
-import psycopg2
 import pyiem.cscap_utils as util
+from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main"""
     config = util.get_config()
 
-    pgconn = psycopg2.connect(database='sustainablecorn',
-                              host=config['database']['host'])
+    pgconn = get_dbconn('sustainablecorn')
     pcursor = pgconn.cursor()
 
     # Get me a client, stat
@@ -40,7 +39,10 @@ def main():
         sheets += 1
         spreadsheet = util.Spreadsheet(spr_client, item['id'])
         spreadsheet.get_worksheets()
-        worksheet = spreadsheet.worksheets['Sheet 1']
+        # A one off
+        worksheet = spreadsheet.worksheets.get('Sheet 1_export')
+        if worksheet is None:
+            worksheet = spreadsheet.worksheets['Sheet 1']
         for entry2 in worksheet.get_list_feed().entry:
             data = entry2.to_dict()
             cols = []
