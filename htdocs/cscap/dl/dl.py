@@ -174,7 +174,8 @@ def do_dictionary(writer):
         SELECT * from data_dictionary_export
         ORDER by ss_order ASC
     """, PGCONN, index_col=None)
-    df.drop('ss_order', axis=1, inplace=True)
+    for col in ['ss_order', 'number_of_decimal_places_to_round_up']:
+        df.drop(col, axis=1, inplace=True)
     for col in df.columns:
         df[col] = df[col].str.decode('ascii', 'ignore')
     df.to_excel(writer, 'Data Dictionary', index=False)
