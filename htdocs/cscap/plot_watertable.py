@@ -1,22 +1,52 @@
 #!/usr/bin/env python
 """Plot!"""
-import psycopg2
-import matplotlib
 import sys
 import cStringIO
-import pandas as pd
-from pandas.io.sql import read_sql
 import cgi
 import datetime
-import pytz
 import os
+
+import pandas as pd
+from pandas.io.sql import read_sql
 import numpy as np
+import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
+from pyiem.util import get_dbconn
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
+
+
+def get_vardf(pgconn, tabname):
+    """Get a dataframe of descriptors for this tabname"""
+    return read_sql("""
+        select element_or_value_display_name as varname,
+        number_of_decimal_places_to_round_up::numeric::int as round,
+        short_description, units from data_dictionary_export WHERE
+        spreadsheet_tab = %s
+    """, pgconn, params=(tabname, ), index_col='varname')
+
+
+def add_bling(pgconn, df, tabname):
+    """Do fancy things"""
+    # Insert some headers rows
+    metarows = [{}, {}]
+    cols = df.columns
+    vardf = get_vardf(pgconn, tabname)
+    for i, colname in enumerate(cols):
+        if i == 0:
+            metarows[0][colname] = 'description'
+            metarows[1][colname] = 'units'
+            continue
+        if colname in vardf.index:
+            metarows[0][colname] = vardf.at[colname, 'short_description']
+            metarows[1][colname] = vardf.at[colname, 'units']
+    df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
+    # re-establish the correct column sorting
+    df = df.reindex_axis(cols, axis=1)
+    return df
 
 
 def send_error(viewopt, msg):
@@ -43,14 +73,14 @@ def make_plot(form):
                                      '%Y-%m-%d')
     days = int(form.getfirst('days', 1))
     ets = sts + datetime.timedelta(days=days)
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                              user='nobody')
+    pgconn = get_dbconn('sustainablecorn')
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
     viewopt = form.getfirst('view', 'plot')
     ptype = form.getfirst('ptype', '1')
     if ptype == '1':
-        df = read_sql("""SELECT uniqueid, plotid, valid at time zone 'UTC' as v, 
+        df = read_sql("""
+        SELECT uniqueid, plotid, valid at time zone 'UTC' as v,
         depth_mm_qc as depth
         from watertable_data WHERE uniqueid = %s
         and valid between %s and %s ORDER by valid ASC
@@ -64,7 +94,8 @@ def make_plot(form):
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     else:
-        df = read_sql("""SELECT uniqueid, plotid, date(valid at time zone %s) as v,
+        df = read_sql("""
+        SELECT uniqueid, plotid, date(valid at time zone %s) as v,
         avg(depth_mm_qc) as depth
         from watertable_data WHERE uniqueid = %s
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
@@ -80,6 +111,7 @@ def make_plot(form):
                                depth='Depth (mm)'
                                ),
                   inplace=True)
+        df = add_bling(pgconn, df, 'Water')
         if viewopt == 'html':
             sys.stdout.write("Content-type: text/html\n\n")
             sys.stdout.write(df.to_html(index=False))
@@ -101,6 +133,8 @@ def make_plot(form):
             writer = pd.ExcelWriter('/tmp/ss.xlsx',
                                     options={'remove_timezone': True})
             df.to_excel(writer, 'Data', index=False)
+            worksheet = writer.sheets['Data']
+            worksheet.freeze_panes(3, 0)
             writer.save()
             sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
@@ -164,6 +198,7 @@ def main():
     """Do Something"""
     form = cgi.FieldStorage()
     make_plot(form)
+
 
 if __name__ == '__main__':
     main()
