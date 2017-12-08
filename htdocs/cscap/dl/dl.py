@@ -432,7 +432,8 @@ def do_pesticides(writer, sites, years):
     product3, rate3, rateunit3,
     product4, rate4, rateunit4,
     adjuvant1, adjuvant2, comments
-    from pesticides where uniqueid in %s and cropyear in %s
+    from pesticides where uniqueid in %s and cropyear in %s and
+    operation != 'seed'
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     valid2date(opdf)
