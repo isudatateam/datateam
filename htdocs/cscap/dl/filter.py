@@ -19,7 +19,7 @@ from pandas.io.sql import read_sql
 AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
        "_T2": ["ROT8", 'ROT7', 'ROT6'],
        "_T3": ["ROT16", "ROT15", "ROT17"],
-       "_T4": ["ROT37", "ROT36", "ROT55", "ROT59", "ROT60"],
+       "_T4": ["ROT37", "ROT36", "ROT55", "ROT59"],
        "_T5": ["ROT61", "ROT56", "ROT1"],
        "_T6": ["ROT57", "ROT58", "ROT38"],
        "_T7": ["ROT40", "ROT50"],
