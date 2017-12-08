@@ -490,8 +490,7 @@ def do_notes(writer, sites):
     opdf = read_sql("""
         SELECT "primary" as uniqueid, overarching_data_category, data_type,
         replace(growing_season, '.0', '') as growing_season,
-        "edit review_needed", additional_comments_by_data_team,
-        comments_by_site_personnel
+        comments
         from highvalue_notes where "primary" in %s
         ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC,
         growing_season ASC
