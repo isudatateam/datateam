@@ -43,7 +43,8 @@ Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller,
 Emerson D. Nafziger, Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer,
 Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017.
 Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190).
-National Agricultural Library - ARS - USDA. https://dx.doi.org/10.15482/USDA.ADC/1411953
+National Agricultural Library - ARS - USDA.
+https://dx.doi.org/10.15482/USDA.ADC/1411953
 
 You are encouraged to contact the Sustainable Corn CAP personnel listed above
 to ensure proper data interpretation and may also consider co-authoring
@@ -204,7 +205,9 @@ def do_metadata_master(writer, sites):
     WHERE uniqueid in %s
     ORDER by uniqueid
     """, PGCONN, params=(tuple(sites), ), index_col=None)
-    df.to_excel(writer, 'Site Metadata', index=False)
+    df, worksheet = add_bling(writer, df, 'Site Metadata', 'Site Metadata')
+    worksheet.set_column('A:A', 12)
+    worksheet.set_column('L:R', 12)
 
 
 def do_ghg(writer, sites, ghg, years, missing):
@@ -513,9 +516,9 @@ def do_dwm(writer, sites):
         from dwm where uniqueid in %s
         ORDER by uniqueid ASC, cropyear ASC
     """, PGCONN, params=(tuple(sites), ))
-    df, worksheet = add_bling(writer, opdf[opdf.columns],
-                              'Drainage Control Structure Mngt',
-                              'Drainage Control Structure Mngt')
+    _df, worksheet = add_bling(writer, opdf[opdf.columns],
+                               'Drainage Control Structure Mngt',
+                               'Drainage Control Structure Mngt')
     worksheet.set_column('G:G', 12)
     worksheet.set_column('H:H', 30)
 
