@@ -79,7 +79,7 @@ def make_plot(form):
         avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
         avg(d5moisture_qc) as d5m
         from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
+        and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
 
     else:
@@ -91,7 +91,7 @@ def make_plot(form):
         avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
         avg(d5moisture_qc) as d5m
         from decagon_data WHERE uniqueid = %s  """+plotid_limit+"""
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
+        and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
         """, pgconn, params=(tzname, uniqueid, sts.date(), ets.date()))
 
     if len(df.index) < 3:

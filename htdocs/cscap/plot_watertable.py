@@ -91,14 +91,14 @@ def make_plot(form):
         date_trunc('"""+res+"""', valid at time zone 'UTC') as v,
         avg(depth_mm_qc) as depth
         from watertable_data WHERE uniqueid = %s
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
+        and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     else:
         df = read_sql("""
         SELECT uniqueid, plotid, date(valid at time zone %s) as v,
         avg(depth_mm_qc) as depth
         from watertable_data WHERE uniqueid = %s
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
+        and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
         """, pgconn, params=(tzname, uniqueid, sts.date(), ets.date()))
     if len(df.index) < 3:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
