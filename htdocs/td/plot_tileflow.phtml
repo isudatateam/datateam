@@ -17,24 +17,28 @@ if (strlen($date) != 10){
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 100;
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
 
-/* with data as (select uniqueid, plotid, min(date(valid)),
- max(date(valid)) from tileflow_data GROUP by uniqueid, plotid)
+/* with data as (select uniqueid, min(date(valid)),
+ max(date(valid)) from tileflow_data GROUP by uniqueid)
  
- SELECT '"'||uniqueid || '::'|| plotid || '"=>"' || uniqueid || ' '||
- plotid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
+ SELECT '"'||uniqueid ||  '"=>"' || uniqueid || ' '||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
 $ar = Array(
-		"CLAY_C"=>"CLAY_C (2015-04-20 to 2015-11-06) [200 days]",
-		"CLAY_R"=>"CLAY_R (2015-04-27 to 2015-12-15) [232 days]",
-		"DPAC"=>"DPAC (2011-12-31 to 2015-11-17) [1417 days]",
-		"MUDS2"=>"MUDS2 (2010-07-04 to 2013-10-20) [1204 days]",
-		"MUDS3_OLD"=>"MUDS3_OLD (2010-05-25 to 2013-06-27) [1129 days]",
-		"MUDS4"=>"MUDS4 (2010-07-06 to 2013-05-23) [1052 days]",
-		"SERF_IA"=>"SERF_IA (2007-04-20 to 2016-12-09) [3521 days]",
-		"SERF_SD"=>"SERF_SD (2015-04-14 to 2016-11-03) [569 days]",
-		"STJOHNS"=>"STJOHNS (2010-12-31 to 2015-12-31) [1826 days]",
-		"STORY"=>"STORY (2006-01-01 to 2009-12-31) [1460 days]",
+    "AUGLA"=>"AUGLA  (2008-05-01 to 2014-12-29) [2433 days]",
+    "CLAY_C"=>"CLAY_C  (2015-04-20 to 2015-11-06) [200 days]",
+    "CLAY_R"=>"CLAY_R  (2015-04-27 to 2015-12-15) [232 days]",
+    "CRAWF"=>"CRAWF  (2008-10-02 to 2014-12-29) [2279 days]",
+    "DPAC"=>"DPAC  (2011-12-31 to 2016-12-20) [1816 days]",
+    "HARDIN"=>"HARDIN  (2008-10-02 to 2014-12-29) [2279 days]",
+    "HARDIN_NW"=>"HARDIN_NW  (2008-01-07 to 2014-12-29) [2548 days]",
+    "HENRY"=>"HENRY  (2008-05-17 to 2014-12-31) [2419 days]",
+    "MUDS2"=>"MUDS2  (2010-07-04 to 2013-10-20) [1204 days]",
+    "MUDS3_OLD"=>"MUDS3_OLD  (2010-05-25 to 2013-06-27) [1129 days]",
+    "MUDS4"=>"MUDS4  (2010-07-06 to 2013-05-23) [1052 days]",
+    "SERF_IA"=>"SERF_IA  (2007-04-20 to 2016-12-09) [3521 days]",
+    "SERF_SD"=>"SERF_SD  (2015-04-14 to 2016-11-03) [569 days]",
+    "STJOHNS"=>"STJOHNS  (2009-03-25 to 2015-11-20) [2431 days]",
+    "STORY"=>"STORY  (2006-01-01 to 2009-12-31) [1460 days]",
 		//"UBWC"=>"UBWC (2005-01-01 to 2012-12-31) [2921 days]",
 		);
 $siteselect = make_select("site", $site, $ar);
