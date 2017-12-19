@@ -13,6 +13,9 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
 from pyiem.util import get_dbconn
 
+ERRMSG = ("No data found. Check the start date falls within the "
+          "applicable date range for the research site. "
+          "If yes, try expanding the number of days included.")
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
@@ -52,7 +55,7 @@ def send_error(viewopt, msg):
     """" """
     if viewopt == 'js':
         sys.stdout.write("Content-type: application/javascript\n\n")
-        sys.stdout.write("alert('No data found, sorry');")
+        sys.stdout.write("alert('"+ERRMSG+"');")
         sys.exit()
     fig, ax = plt.subplots(1, 1)
     ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha='center')

@@ -5,6 +5,7 @@ import sys
 import pytz
 import numpy as np
 import pandas as pd
+from common import ERRMSG
 from pandas.io.sql import read_sql
 import cgi
 import datetime
@@ -20,7 +21,7 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
 def send_error(msg):
     """" """
     sys.stdout.write("Content-type: application/javascript\n\n")
-    sys.stdout.write("alert('No data found, sorry');")
+    sys.stdout.write("alert('"+ERRMSG+"');")
     sys.exit()
 
 

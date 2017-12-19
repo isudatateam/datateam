@@ -11,6 +11,9 @@ import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
 
+ERRMSG = ("No data found. Check the start date falls within the "
+          "applicable date range for the research site. "
+          "If yes, try expanding the number of days included.")
 DEPTHS = [None, '10 cm', '20 cm', '40 cm', '60 cm', '100 cm']
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
@@ -21,7 +24,7 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
 def send_error(msg):
     """" """
     sys.stdout.write("Content-type: application/javascript\n\n")
-    sys.stdout.write("alert('No data found, sorry');")
+    sys.stdout.write("alert('"+ERRMSG+"');")
     sys.exit()
 
 

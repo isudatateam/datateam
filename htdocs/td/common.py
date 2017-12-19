@@ -23,6 +23,10 @@ CODES = {'UD': 'Undrained (No Drainage)',
          'TBD': 'To Be Determined',
          'n/a': 'Not Available or Not Applicable'}
 
+ERRMSG = ("No data found. Check the start date falls within the "
+          "applicable date range for the research site. "
+          "If yes, try expanding the number of days included.")
+
 
 def getColor(label, i):
     """Lookup and generate highcharts color

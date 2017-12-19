@@ -9,7 +9,7 @@ from pandas.io.sql import read_sql
 import cgi
 import datetime
 import os
-from common import CODES, getColor
+from common import CODES, getColor, ERRMSG
 import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
@@ -23,7 +23,7 @@ def send_error(viewopt, msg):
     """" """
     if viewopt == 'js':
         sys.stdout.write("Content-type: application/javascript\n\n")
-        sys.stdout.write("alert('No data found, sorry');")
+        sys.stdout.write("alert('"+ERRMSG+"');")
         sys.exit()
     fig, ax = plt.subplots(1, 1)
     ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha='center')
