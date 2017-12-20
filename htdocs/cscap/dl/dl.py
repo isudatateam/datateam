@@ -33,8 +33,7 @@ Please click here to download your spreadsheet file.
 
     %s (link will remain active for 30 days)
 
-By using these data, you acknowledge and agree to cite the data in all
-publications or presentations using the following format:
+Please reference this data set in publications as:
 
 Abendroth, Lori J., Daryl E. Herzmann, Giorgi Chighladze, Eileen J. Kladivko,
 Matthew J. Helmers, Laura Bowling, Michael Castellano, Richard M. Cruse,
