@@ -189,7 +189,7 @@ def do_dictionary(writer):
     worksheet.set_column('K:K', 60)
 
 
-def do_metadata_master(writer, sites):
+def do_metadata_master(writer, sites, missing):
     """get Metadata master data"""
     df = read_sql("""
     SELECT uniqueid,
@@ -205,6 +205,9 @@ def do_metadata_master(writer, sites):
     WHERE uniqueid in %s
     ORDER by uniqueid
     """, PGCONN, params=(tuple(sites), ), index_col=None)
+    df.replace(['None', None, ''], np.nan, inplace=True)
+    df.dropna(how='all', inplace=True)
+    df.fillna(missing, inplace=True)
     df, worksheet = add_bling(writer, df, 'Site Metadata', 'Site Metadata')
     worksheet.set_column('A:A', 12)
     worksheet.set_column('L:R', 12)
@@ -490,7 +493,7 @@ def do_plotids(writer, sites):
     worksheet.set_column('B:B', 12, format1)
 
 
-def do_notes(writer, sites):
+def do_notes(writer, sites, missing):
     """Write notes to the spreadsheet"""
     opdf = read_sql("""
         SELECT "primary" as uniqueid, overarching_data_category, data_type,
@@ -500,6 +503,9 @@ def do_notes(writer, sites):
         ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC,
         growing_season ASC
     """, PGCONN, params=(tuple(sites), ))
+    opdf.replace(['None', None, ''], np.nan, inplace=True)
+    opdf.dropna(how='all', inplace=True)
+    opdf.fillna(missing, inplace=True)
     opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
     # Increase column width
     worksheet = writer.sheets['Notes']
@@ -508,7 +514,7 @@ def do_notes(writer, sites):
     worksheet.set_column('E:G', 36)
 
 
-def do_dwm(writer, sites):
+def do_dwm(writer, sites, missing):
     """Write dwm to the spreadsheet"""
     opdf = read_sql("""
         SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
@@ -516,6 +522,9 @@ def do_dwm(writer, sites):
         from dwm where uniqueid in %s
         ORDER by uniqueid ASC, cropyear ASC
     """, PGCONN, params=(tuple(sites), ))
+    opdf.replace(['None', None, ''], np.nan, inplace=True)
+    opdf.dropna(how='all', inplace=True)
+    opdf.fillna(missing, inplace=True)
     _df, worksheet = add_bling(writer, opdf[opdf.columns],
                                'Drainage Control Structure Mngt',
                                'Drainage Control Structure Mngt')
@@ -593,15 +602,15 @@ def do_work(form):
         pprint("do_management() is done")
     # Site Metadata
     if 'SHM8' in shm:
-        do_metadata_master(writer, sites)
+        do_metadata_master(writer, sites, missing)
         pprint("do_metadata_master() is done")
     # Drainage Management
     if 'SHM7' in shm:
-        do_dwm(writer, sites)
+        do_dwm(writer, sites, missing)
         pprint("do_dwm() is done")
     # Notes
     if 'SHM6' in shm:
-        do_notes(writer, sites)
+        do_notes(writer, sites, missing)
         pprint("do_notes() is done")
 
     # Send to client
