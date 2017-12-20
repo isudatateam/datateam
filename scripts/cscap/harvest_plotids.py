@@ -55,7 +55,7 @@ def main():
                     if data[key] is not None:
                         val = data[key].strip(
                             ).replace("[", "").replace("]", "").split()[0]
-                        if val != 'N/A':
+                        if val not in ['N/A', "n/a"]:
                             val = "%s%s" % (lookup.get(key, ''), val)
                 if key == 'uniqueid':
                     val = val.upper()
@@ -63,7 +63,7 @@ def main():
                     continue
                 vals.append(val)
                 cols.append(translate.get(key, key))
-            if len(cols) == 0:
+            if not cols:
                 print("No columns for '%s'?" % (item['title'], ))
                 continue
             if 'uniqueid' not in cols:
@@ -80,12 +80,10 @@ def main():
                 sys.exit()
             added += 1
             # One-time correction of missing nitrogen entries
-            # if data['nitrogen'] is None or data['nitrogen'] == '':
-            #    print("Updating %s %s for nitrogen" % (data['uniqueid'],
-            #                                           data['plotid']))
-            #    entry2.set_value('nitrogen',
-            #                     ('[2] MRTN application of N '
-            #                      'fertilizer in spring'))
+            # if data['landscape'] == 'N/A':
+            #    print("Updating %s %s for landscape" % (data['uniqueid'],
+            #                                            data['plotid']))
+            #    entry2.set_value('landscape', 'n/a')
             #    spr_client.update(entry2)
 
     print(("harvest_plotids, removed: %s, added: %s, sheets: %s"
