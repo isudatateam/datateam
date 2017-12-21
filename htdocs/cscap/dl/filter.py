@@ -93,7 +93,7 @@ def do_filter(form):
                        'landscape']):
         a[l] = [b for b in treatments if b.startswith(l)]
         if l == 'LND':
-            a[l].append('N/A')
+            a[l].append('n/a')
         if len(a[l]) > 0:
             arsql.append(" %s in %%s" % (col,))
             args.append(tuple(a[l]))
