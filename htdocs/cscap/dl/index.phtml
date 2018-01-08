@@ -344,14 +344,17 @@ EOF;
 
 function build_theses(){
 	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
-	$rs = pg_query($pgconn, "select * from theses ".
-			"WHERE online_source != 'N/A' ORDER by authors");
+	$rs = pg_query($pgconn, "select * from theses ORDER by authors");
 	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$s .= sprintf("<p>%s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a></p>\n",
+	    $srs = "";
+	    if ($row["online_source"] != "N/A"){
+    	    $srs = sprintf("<a href=\"%s\" target=\"_blank\">%s</a>",
+    	       $row["online_source"], $row["online_source"]);
+	    }
+	    $s .= sprintf("<p>%s %s %s %s %s</p>\n",
 				$row['authors'], $row["year"], $row['title'],
-				$row["journal_or_source"],
-				$row["online_source"], $row["online_source"]);
+				$row["journal_or_source"], $srs);
 	}
 	$s .= "\n";
 	return $s;
