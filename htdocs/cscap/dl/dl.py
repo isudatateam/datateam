@@ -341,7 +341,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
             places = vardf.at[colname, 'round']
         if pd.isnull(places):
             continue
-        df[colname] = pd.to_numeric(df[colname], errors='coerse')
+        df[colname] = pd.to_numeric(df[colname], errors='ignore')
         df[colname] = df[colname].apply((lambda x: round(x, int(places))
                                          if isinstance(x, (int, float))
                                          else x))
@@ -659,12 +659,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # do_soil(None, ['ORR', ],
-    #        ['_S1', 'SOIL15', 'SOIL14', 'SOIL12', 'SOIL1', 'SOIL11', '_S19',
-    #         'SOIL6', 'SOIL6', 'SOIL28', 'SOIL26', 'SOIL27', 'SOIL13',
-    #         'SOIL41', 'SOIL34', 'SOIL29', 'SOIL30', 'SOIL31', 'SOIL2',
-    #         'SOIL35', 'SOIL32', 'SOIL42', 'SOIL33', 'SOIL39', 'SOIL19.8',
-    #         'SOIL19.11', 'SOIL19.12', 'SOIL19.1', 'SOIL19.10', 'SOIL19.2',
-    #         'SOIL19.5', 'SOIL19.7', 'SOIL19.6', 'SOIL19.13'],
-    #        ['2012', ], '', 'daryl')
+    # do_soil(None, ['MASON', ],
+    #        ['SOIL15', ],
+    #        ['2015', ], '', 'daryl')
     main()
