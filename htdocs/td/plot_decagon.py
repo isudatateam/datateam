@@ -92,6 +92,7 @@ def make_plot(form):
         from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
+        df['v'] = pd.to_datetime(df['v'], utc=True)
         for n in ['m', 't']:
             for i in range(1, 6):
                 df["d%s%s_f" % (n, i)] = '-'
@@ -108,6 +109,7 @@ def make_plot(form):
         from decagon_data WHERE uniqueid = %s  """+plotid_limit+"""
         and valid between %s and %s GROUP by v, plotid ORDER by v ASC
         """, pgconn, params=(tzname, uniqueid, sts.date(), ets.date()))
+        df['v'] = pd.to_datetime(df['v'], utc=True)
         for n in ['m', 't']:
             for i in range(1, 6):
                 df["d%s%s_f" % (n, i)] = '-'

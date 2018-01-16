@@ -21,7 +21,7 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
 
 
-def send_error(msg):
+def send_error():
     """" """
     sys.stdout.write("Content-type: application/javascript\n\n")
     sys.stdout.write("alert('"+ERRMSG+"');")
@@ -84,6 +84,7 @@ def make_plot(form):
         from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
         and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
+        df['v'] = pd.to_datetime(df['v'], utc=True)
 
     else:
         df = read_sql("""SELECT uniqueid, plotid,
@@ -96,9 +97,10 @@ def make_plot(form):
         from decagon_data WHERE uniqueid = %s  """+plotid_limit+"""
         and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
         """, pgconn, params=(tzname, uniqueid, sts.date(), ets.date()))
+        df['v'] = pd.to_datetime(df['v'], utc=True)
 
     if len(df.index) < 3:
-        send_error("No / Not Enough Data Found, sorry!")
+        send_error()
     if ptype not in ['2']:
         df['v'] = df['v'].apply(
             lambda x: x.tz_convert(tzname))
