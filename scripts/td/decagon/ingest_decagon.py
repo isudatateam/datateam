@@ -1,8 +1,9 @@
 """Process the decagon data"""
-import psycopg2
 import sys
 import datetime
+
 import pandas as pd
+from pyiem.util import get_dbconn
 
 CENTRAL_TIME = ['SERF_IA', 'BEAR', 'CLAY_U', 'FAIRM', 'MAASS', 'SERF_SD']
 
@@ -29,6 +30,7 @@ def translate(df):
             x[colname] = name
 
     df.rename(columns=x, inplace=True)
+
 
 def process1(fn):
     df = pd.read_csv(fn, skiprows=[0, 1, 2, 3, 5, 6], index_col=False)
@@ -69,18 +71,20 @@ def process1(fn):
     p2.columns = p1.columns
     return {'CD1': p1, 'CD2': p2}
 
+
 def process2(fn):
     mydict = pd.read_excel(fn, sheetname=None, index_col=False)
     df = pd.concat(mydict.values())
     gdf = df[['Date', 'grass 3"', 'grass 6"', 'grass 12"',
               'grass 24"', 'grass 36"']]
-    gdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture', 'd4moisture',
-                   'd5moisture']
+    gdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
+                   'd4moisture', 'd5moisture']
     tdf = df[['Date', 'trees 3"', 'trees 6"', 'trees 12"',
               'trees 24"', 'trees 36"']]
-    tdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture', 'd4moisture',
-                   'd5moisture']
+    tdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
+                   'd4moisture', 'd5moisture']
     return dict(trees=tdf, grass=gdf)
+
 
 def process3(fn):
     mydict = pd.read_excel(fn, sheetname=None, index_col=False)
@@ -97,9 +101,11 @@ def process3(fn):
         translate(df)
     return mydict
 
+
 def process4(fn):
-    # df = pd.read_excel(fn, skiprows=[0, 2], sheetname='Data', index_col=False)
-    df = pd.read_csv(fn, skiprows=range(6), index_col=False)
+    df = pd.read_excel(fn, skiprows=range(4), sheet_name='Data',
+                       index_col=False)
+    # df = pd.read_csv(fn, skiprows=range(6), index_col=False)
     df.columns = ['valid', 'bogus',
                   'd1temp', 'd1moisture', 'd1ec', 'd1ec2',
                   'd2temp', 'd2moisture', 'd2ec', 'd2ec2',
@@ -114,7 +120,7 @@ def process4(fn):
                   'd4temp_2', 'd4moisture_2', 'd4ec_2', 'd4ec2_2',
                   'd5temp_2', 'd5moisture_2', 'd5ec_2', 'd5ec2_2',
                   'd6temp_2', 'd6moisture_2', 'd6ec_2', 'd6ec2_2',
-                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2'
+                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2',
                   ]
     df['valid'] = pd.to_datetime(df['valid'])
     p1 = df[['valid',
@@ -134,12 +140,14 @@ def process4(fn):
              'd6temp_2', 'd6moisture_2', 'd6ec_2',
              'd7temp_2', 'd7moisture_2', 'd7ec_2']]
     p2.columns = p1.columns
-    return {'SI1': p1, 'SI2': p2}
+    return {'1': p1, '2': p2}
+
 
 def process5(fn):
-    df = pd.read_excel(fn, skiprows=range(6), sheetname='Data', index_col=False)
+    df = pd.read_excel(fn, skiprows=range(6), sheetname='Data',
+                       index_col=False)
     df.columns = ['valid', 'bogus',
-                  'd1temp', 'd1moisture', 'd1ec', 'd1ec2', 'b', 'b', 'b', 'b', 
+                  'd1temp', 'd1moisture', 'd1ec', 'd1ec2', 'b', 'b', 'b', 'b',
                   'd2temp', 'd2moisture', 'd2ec', 'd2ec2', 'b', 'b', 'b', 'b',
                   'd3temp', 'd3moisture', 'd3ec', 'd3ec2', 'b', 'b', 'b', 'b',
                   'd4temp', 'd4moisture', 'd4ec', 'd4ec2', 'b', 'b', 'b', 'b',
@@ -176,6 +184,7 @@ def process5(fn):
     p2.columns = p1.columns
     return {'1': p1, '2': p2}
 
+
 def process6(fn):
     sm = pd.read_excel('Maass soil moisture.xlsx', sheetname=None)
     sm = pd.concat(sm.values())
@@ -191,6 +200,7 @@ def process6(fn):
     df = st.join(sm)
     df = df.reset_index()
     return {'1': df}
+
 
 def process7(fn):
     df = pd.read_csv(fn, index_col=False)
@@ -210,8 +220,9 @@ def process7(fn):
 
     return {'7': p7, '8': p8}
 
+
 def database_save(uniqueid, plot, df):
-    pgconn = psycopg2.connect(database='td', host='iemdb')
+    pgconn = get_dbconn('td')
     cursor = pgconn.cursor()
     for i, row in df.iterrows():
         if not isinstance(row['valid'], datetime.datetime) or pd.isnull(row['valid']):
