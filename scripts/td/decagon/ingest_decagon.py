@@ -1,4 +1,5 @@
 """Process the decagon data"""
+from __future__ import print_function
 import sys
 import datetime
 
@@ -30,6 +31,20 @@ def translate(df):
             x[colname] = name
 
     df.rename(columns=x, inplace=True)
+
+
+def process0(fn):
+    """DPAC"""
+    df = pd.read_csv(fn, index_col=False, sep='\t')
+    df.columns = ['valid', 
+                  'd1moisture', 'd1temp',  'd1ec',
+                  'd2moisture', 'd2temp',
+                  'd3moisture', 'd3temp',
+                  'd4moisture', 'd4temp',
+                  'd5moisture', 'd5temp',
+                  ]
+    df['valid'] = pd.to_datetime(df['valid'])
+    return df
 
 
 def process1(fn):
@@ -240,7 +255,7 @@ def database_save(uniqueid, plot, df):
           maxvalid.strftime("%Y-%m-%d %H:%M-"+tzoff)))
     if cursor.rowcount > 0:
         print("DELETED %s rows previously saved!" % (cursor.rowcount, ))
-        if minvalid.year < 2011 or maxvalid.year > 2016:
+        if minvalid.year < 2011 or maxvalid.year > 2018:
             print("Aborting, due to valid bounds outside of domain")
             sys.exit()
 
@@ -260,7 +275,7 @@ def database_save(uniqueid, plot, df):
             if pd.isnull(val):
                 return 'null'
         except Exception, exp:
-            print exp
+            print(exp)
             print(('Plot: %s Val: %s[%s] Name: %s Valid: %s'
                    ) % (plot, val, type(val), name, row['valid']))
             # sys.exit()
@@ -305,7 +320,9 @@ def main(argv):
     fn = argv[2]
     uniqueid = argv[3]
     plot = argv[4]
-    if fmt == '1':
+    if fmt == '0':
+        df = process0(fn)
+    elif fmt == '1':
         df = process1(fn)
     elif fmt == '2':
         df = process2(fn)
