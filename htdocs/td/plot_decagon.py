@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 """SM Plot!"""
-import psycopg2
 import sys
 import pytz
 import numpy as np
@@ -10,6 +9,7 @@ from pandas.io.sql import read_sql
 import cgi
 import datetime
 import os
+from pyiem.util import get_dbconn
 
 DEPTHS = [None, '10 cm', '20 cm', '40 cm', '60 cm', '100 cm', None, None]
 
@@ -47,7 +47,7 @@ def make_plot(form):
                                      '%Y-%m-%d')
     days = int(form.getfirst('days', 1))
     ets = sts + datetime.timedelta(days=days)
-    pgconn = psycopg2.connect(database='td', host='iemdb')
+    pgconn = get_dbconn('td')
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
     viewopt = form.getfirst('view', 'js')

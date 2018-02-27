@@ -1,8 +1,8 @@
 <?php
-$HIGHCHARTS = "5.0.9";
 require_once "../../include/require_auth.php";
 include_once "../../include/forms.php";
 require_once "../../include/myview.php";
+$HIGHCHARTS = "6.0.7";
 
 $site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2014-01-10';
@@ -78,8 +78,10 @@ if ($view != 'plot'){
 	$jsurl = sprintf("tileflow_%s_%s_%s_%s_%s.js", 
 		$site, $date, $days, $ptype, $group);
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
+	require_once "../../include/hceditor.php";
 	$interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
+${hceditor}
 EOF;
 }
 
@@ -97,6 +99,10 @@ $t->jsextra = <<<EOF
 <script src="/vendor/highcharts/${HIGHCHARTS}/modules/exporting.js"></script>
 {$jsextra}
 <script>
+var EDIT_TABLE = "tileflow_data";
+var EDIT_UNIQUEID = "{$site}";
+var EDIT_COLUMN = "discharge_mm";
+
 $(document).ready(function(){
 	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
 		defaultDate: "{$date}",

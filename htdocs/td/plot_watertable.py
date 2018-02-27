@@ -151,7 +151,20 @@ $("#hc").highcharts({
     yAxis: {title: {text: 'Depth below ground (mm)'},
         reversed: true
     },
-    plotOptions: {line: {turboThreshold: 0}},
+    plotOptions: {
+        line: {turboThreshold: 0},
+        series: {
+            cursor: 'pointer',
+            allowPointSelect: true,
+            point: {
+                events: {
+                    click: function() {
+                        editPoint(this);
+                    }
+                }
+            }
+        }
+    },
     xAxis: {
         type: 'datetime'
     },
