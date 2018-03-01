@@ -1,3 +1,4 @@
+"""Ingest CSV data provided by Gio"""
 from __future__ import print_function
 import pandas as pd
 import sys
@@ -21,18 +22,18 @@ def main():
         print("Removed %s" % (deleted,))
 
     inserts = 0
-    for idx, row in df.iterrows():
+    for _idx, row in df.iterrows():
         if row['Date'] == ' ' or row['Date'] is None:
             continue
         cursor.execute("""
         INSERT into watertable_data
         (uniqueid, plotid, valid, depth_mm_qc, depth_mm)
         VALUES (%s, %s, %s, %s, %s)
-        """, (uniqueid, row['plot'], row['Date'], row.get('WAT4'), row.get('WAT4')
-            ))
+        """, (uniqueid, row['plot'], row['Date'], row.get('WAT4'),
+              row.get('WAT4')))
         inserts += 1
     print("Inserted %s, Deleted %s entries for %s" % (inserts, deleted,
-                                                    uniqueid))
+                                                      uniqueid))
     cursor.close()
     pgconn.commit()
     pgconn.close()

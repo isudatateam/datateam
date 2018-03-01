@@ -1,15 +1,15 @@
 """Harvest the data in the data management store!"""
 from __future__ import print_function
+
 import pyiem.cscap_utils as util
-import psycopg2
+from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main"""
     config = util.get_config()
 
-    pgconn = psycopg2.connect(database='td', user='mesonet',
-                              host=config['database']['host'])
+    pgconn = get_dbconn('td')
     pcursor = pgconn.cursor()
 
     # Get me a client, stat
@@ -42,7 +42,7 @@ def main():
                 val = data[key]
                 if key in ['date', 'biomassdate1', 'biomassdate2',
                            'outletdate']:
-                    val = (val if val not in ['unknown', 'N/A', 'n/a']
+                    val = (val if val not in ['unknown', 'N/A', 'n/a', 'TBD']
                            else None)
                 vals.append(val)
                 cols.append(translate.get(key, key))
@@ -53,14 +53,14 @@ def main():
             try:
                 pcursor.execute(sql, vals)
             except Exception as exp:
-                print("harvest_management traceback")
+                print("[TD] harvest_management traceback")
                 print(exp)
                 for col, val in zip(cols, vals):
                     print("   |%s| -> |%s|" % (col, val))
                 return
             added += 1
 
-        print(("harvest_management %16s added:%4s deleted:%4s"
+        print(("[TD] harvest_management %16s added:%4s deleted:%4s"
                ) % (sheetkey, added, deleted))
 
     pcursor.close()
