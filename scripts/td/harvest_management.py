@@ -4,6 +4,11 @@ from __future__ import print_function
 import pyiem.cscap_utils as util
 from pyiem.util import get_dbconn
 
+TABS = ['Plant & Harvest', 'Soil & Fert', 'Pesticides', 'Residue Mngt',
+        'DWM', 'Irrigation', 'Notes']
+TABLENAMES = ['plant_harvest', 'soil_fert', 'pesticides', 'residue_mngt',
+              'dwm', 'irrigation', 'notes']
+
 
 def main():
     """Go Main"""
@@ -19,11 +24,7 @@ def main():
 
     translate = {'date': 'valid'}
 
-    tabs = ['Plant & Harvest', 'Soil & Fert', 'Pesticides', 'Residue Mngt',
-            'DWM', 'Irrigation', 'Notes']
-    tablenames = ['plant_harvest', 'soil_fert', 'pesticides', 'residue_mngt',
-                  'dwm', 'irrigation', 'notes']
-    for sheetkey, table in zip(tabs, tablenames):
+    for sheetkey, table in zip(TABS, TABLENAMES):
         pcursor.execute("""DELETE from """ + table)
         deleted = pcursor.rowcount
         sheet = spread.worksheets[sheetkey]
