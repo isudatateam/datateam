@@ -20,7 +20,7 @@ def translate(df):
             name = "valid"
         elif colname.startswith('Port '):
             name = 'd%s' % (tokens[1].split(".")[0], )
-            if colname.find('Bulk EC') > 0:
+            if colname.find('Bulk') > 0:
                 name += "ec"
             elif colname.find('VWC') > 0:
                 name += 'moisture'
@@ -88,7 +88,7 @@ def process1(fn):
 
 
 def process2(fn):
-    mydict = pd.read_excel(fn, sheetname=None, index_col=False)
+    mydict = pd.read_excel(fn, sheet_name=None, index_col=False)
     df = pd.concat(mydict.values())
     gdf = df[['Date', 'grass 3"', 'grass 6"', 'grass 12"',
               'grass 24"', 'grass 36"']]
@@ -102,9 +102,12 @@ def process2(fn):
 
 
 def process3(fn):
-    mydict = pd.read_excel(fn, sheetname=None, index_col=False)
+    """SERF_IA"""
+    mydict = pd.read_excel(fn, sheet_name=None, index_col=False)
     # Need to load up rows 0 and 1 into the column names
     for sheetname in mydict:
+        if sheetname in ['metadata', ]:
+            continue
         df = mydict[sheetname]
         row0 = df.iloc[0, :]
         row1 = df.iloc[1, :]
@@ -159,7 +162,7 @@ def process4(fn):
 
 
 def process5(fn):
-    df = pd.read_excel(fn, skiprows=range(6), sheetname='Data',
+    df = pd.read_excel(fn, skiprows=range(6), sheet_name='Data',
                        index_col=False)
     df.columns = ['valid', 'bogus',
                   'd1temp', 'd1moisture', 'd1ec', 'd1ec2', 'b', 'b', 'b', 'b',
@@ -169,13 +172,20 @@ def process5(fn):
                   'd5temp', 'd5moisture', 'd5ec', 'd5ec2', 'b', 'b', 'b', 'b',
                   'd6temp', 'd6moisture', 'd6ec', 'd6ec2', 'b', 'b', 'b', 'b',
                   'd7temp', 'd7moisture', 'd7ec', 'd7ec2', 'b', 'b', 'b', 'b',
-                  'd1temp_2', 'd1moisture_2', 'd1ec_2', 'd1ec2_2', 'b', 'b', 'b', 'b',
-                  'd2temp_2', 'd2moisture_2', 'd2ec_2', 'd2ec2_2', 'b', 'b', 'b', 'b',
-                  'd3temp_2', 'd3moisture_2', 'd3ec_2', 'd3ec2_2', 'b', 'b', 'b', 'b',
-                  'd4temp_2', 'd4moisture_2', 'd4ec_2', 'd4ec2_2', 'b', 'b', 'b', 'b',
-                  'd5temp_2', 'd5moisture_2', 'd5ec_2', 'd5ec2_2', 'b', 'b', 'b', 'b',
-                  'd6temp_2', 'd6moisture_2', 'd6ec_2', 'd6ec2_2', 'b', 'b', 'b', 'b',
-                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2', 'b', 'b', 'b', 'b',
+                  'd1temp_2', 'd1moisture_2', 'd1ec_2', 'd1ec2_2',
+                  'b', 'b', 'b', 'b',
+                  'd2temp_2', 'd2moisture_2', 'd2ec_2', 'd2ec2_2',
+                  'b', 'b', 'b', 'b',
+                  'd3temp_2', 'd3moisture_2', 'd3ec_2', 'd3ec2_2',
+                  'b', 'b', 'b', 'b',
+                  'd4temp_2', 'd4moisture_2', 'd4ec_2', 'd4ec2_2',
+                  'b', 'b', 'b', 'b',
+                  'd5temp_2', 'd5moisture_2', 'd5ec_2', 'd5ec2_2',
+                  'b', 'b', 'b', 'b',
+                  'd6temp_2', 'd6moisture_2', 'd6ec_2', 'd6ec2_2',
+                  'b', 'b', 'b', 'b',
+                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2',
+                  'b', 'b', 'b', 'b',
                   'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
                   'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
                   ]
@@ -201,13 +211,14 @@ def process5(fn):
 
 
 def process6(fn):
-    sm = pd.read_excel('Maass soil moisture.xlsx', sheetname=None)
+    sm = pd.read_excel('Maass soil moisture.xlsx', sheet_name=None)
     sm = pd.concat(sm.values())
     sm.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
                   'd4moisture', 'd5moisture']
     sm = sm.set_index('valid')
 
-    st = pd.read_excel('Maass soil temperature.xlsx', skiprows=[1,], sheetname=None)
+    st = pd.read_excel('Maass soil temperature.xlsx', skiprows=[1,],
+                       sheet_name=None)
     st = pd.concat(st.values())
     st.columns = ['valid', 'd1temp', 'd2temp', 'd3temp',
                   'd4temp', 'd5temp']
@@ -267,10 +278,10 @@ def database_save(uniqueid, plot, df):
             if val.strip().lower() in ['nan', '-999']:
                 return 'null'
             return val
-        # elif isinstance(val, pd.core.series.Series):
-        #    print val
-        #    print row
-        #    sys.exit()
+        elif isinstance(val, pd.core.series.Series):
+            print(val)
+            print(row)
+            sys.exit()
         try:
             if pd.isnull(val):
                 return 'null'
