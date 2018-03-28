@@ -171,13 +171,14 @@ def drive_changelog(regime, yesterday, html):
                     lastmsg = thismsg
             # Now we check revisions
             if not hit:
-                luser = item['file']['lastModifyingUser']
+                luser = item['file'].get('lastModifyingUser', dict())
                 html += """
 <tr><td colspan="2"><img src="%s" style="height:25px;"/> %s by
  %s (%s)</td></tr>
                 """ % (luser['picture']['url'] if 'picture' in luser else '',
                        localts.strftime("%-d %b %-I:%M %p"),
-                       luser['displayName'], luser.get('emailAddress', 'n/a'))
+                       luser.get('displayName', 'n/a'),
+                       luser.get('emailAddress', 'n/a'))
         if not page_token:
             break
 
