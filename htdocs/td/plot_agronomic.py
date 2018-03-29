@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 """Plot!"""
-import psycopg2
-import matplotlib
 import sys
 import cStringIO
+import cgi
+import os
+
 import pandas as pd
 from pandas.io.sql import read_sql
-import cgi
 from common import CODES, getColor
-import os
-matplotlib.use('agg')
+import matplotlib
+matplotlib.use('agg')  # NOPEP8
 import matplotlib.pyplot as plt  # NOPEP8
+from pyiem.util import get_dbconn  # NOPEP8
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
@@ -34,8 +35,7 @@ def send_error(viewopt, msg):
 
 
 def get_vardesc(varname):
-    pgconn = psycopg2.connect(database='td', host='iemdb',
-                              user='nobody')
+    pgconn = get_dbconn('td')
     cursor = pgconn.cursor()
     cursor.execute("""
     SELECT short_description, units from td_data_dictionary WHERE
@@ -48,7 +48,7 @@ def get_vardesc(varname):
 
 def make_plot(form):
     """Make the plot"""
-    pgconn = psycopg2.connect(database='td', host='iemdb', user='nobody')
+    pgconn = get_dbconn('td')
     uniqueid = form.getfirst('site', 'ISUAG')
     varname = form.getfirst('varname', 'AGR17')
     (varlabel, varunits) = get_vardesc(varname)
@@ -56,11 +56,11 @@ def make_plot(form):
     group = int(form.getfirst('group', 0))
     viewopt = form.getfirst('view', 'plot')
     df = read_sql("""SELECT value, year, plotid from agronomic_data
-        WHERE site = %s and varname = %s and value is not null
+        WHERE uniqueid = %s and varname = %s and value is not null
         and value not in ('did not collect')
         ORDER by plotid, year ASC
         """, pgconn, params=(uniqueid, varname), index_col=None)
-    if len(df.index) < 1:
+    if df.empty:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
     df['value'] = pd.to_numeric(df['value'], errors='coerse')
     linecol = 'plotid'
