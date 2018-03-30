@@ -111,20 +111,21 @@ def make_plot(form):
 
     # Begin highcharts output
     sys.stdout.write("Content-type: application/javascript\n\n")
-    title = ("Agronomic Data for Site: %s"
-             ) % (uniqueid, )
-    s = []
+    title = "Agronomic Data for Site: %s" % (uniqueid, )
+    arr = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
+    if group == 1:
+        plot_ids = plot_ids[::-1]
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
-        s.append(("""{type: 'column',
+        arr.append(("""{type: 'column',
             """ + getColor(plotid, i) + """,
             name: '""" + CODES.get(plotid, plotid) + """',
             data: """ + str([[a, b] for a, b in zip(df2['year'].values,
                                                     df2['value'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
-    series = ",".join(s)
+    series = ",".join(arr)
     sys.stdout.write("""
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},

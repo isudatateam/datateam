@@ -1,7 +1,7 @@
 <?php
-$HIGHCHARTS = "5.0.9";
+$HIGHCHARTS = "6.0.7";
 require_once "../../include/require_auth.php";
-include_once "../../include/forms.php";
+require_once "../../include/forms.php";
 require_once "../../include/myview.php";
 
 $site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC';
@@ -187,7 +187,8 @@ USDA-NIFA funded project:
 <table class="table table-bordered">
 <thead>
 <tr>
-<th>View and Download Options</th></tr></thead>
+<th>View and Download Options</th></tr>
+</thead>
 <tbody><tr>
 <td>{$viewselect}</td>
 </tr></tbody>

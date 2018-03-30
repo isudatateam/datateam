@@ -134,6 +134,8 @@ def make_plot(form):
     s = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
+    if group == '1':
+        plot_ids = plot_ids[::-1]
     df['ticks'] = pd.to_datetime(df['v']).astype(np.int64) // 10 ** 6
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]

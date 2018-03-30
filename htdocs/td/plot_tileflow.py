@@ -160,6 +160,8 @@ def make_plot(form):
     s = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
+    if group == '1':
+        plot_ids = plot_ids[::-1]
     df['ticks'] = df['v'].astype(np.int64) // 10 ** 6
     seriestype = 'line' if ptype in ['1', '3'] else 'column'
     for i, plotid in enumerate(plot_ids):
