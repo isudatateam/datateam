@@ -36,7 +36,7 @@ def translate(df):
 def process0(fn):
     """DPAC"""
     df = pd.read_csv(fn, index_col=False, sep='\t')
-    df.columns = ['valid', 
+    df.columns = ['valid',
                   'd1moisture', 'd1temp',  'd1ec',
                   'd2moisture', 'd2temp',
                   'd3moisture', 'd3temp',
@@ -211,13 +211,14 @@ def process5(fn):
 
 
 def process6(fn):
-    sm = pd.read_excel('Maass soil moisture.xlsx', sheet_name=None)
+    """MAASS"""
+    sm = pd.read_excel(fn, sheet_name=None)
     sm = pd.concat(sm.values())
     sm.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
                   'd4moisture', 'd5moisture']
     sm = sm.set_index('valid')
 
-    st = pd.read_excel('Maass soil temperature.xlsx', skiprows=[1,],
+    st = pd.read_excel('Maass soil temperature.xlsx', skiprows=[1, ],
                        sheet_name=None)
     st = pd.concat(st.values())
     st.columns = ['valid', 'd1temp', 'd2temp', 'd3temp',
@@ -251,7 +252,8 @@ def database_save(uniqueid, plot, df):
     pgconn = get_dbconn('td')
     cursor = pgconn.cursor()
     for i, row in df.iterrows():
-        if not isinstance(row['valid'], datetime.datetime) or pd.isnull(row['valid']):
+        if (not isinstance(row['valid'], datetime.datetime) or
+                pd.isnull(row['valid'])):
             print('Row df.index=%s, valid=%s, culling' % (i, row['valid']))
             df.drop(i, inplace=True)
     minvalid = df['valid'].min()
@@ -357,6 +359,7 @@ def main(argv):
         print(("File: %s found: %s lines for columns %s"
                ) % (fn, len(df.index), df.columns))
         database_save(uniqueid, plot, df)
+
 
 if __name__ == '__main__':
     main(sys.argv)
