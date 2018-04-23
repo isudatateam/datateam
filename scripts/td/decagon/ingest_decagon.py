@@ -6,7 +6,8 @@ import datetime
 import pandas as pd
 from pyiem.util import get_dbconn
 
-CENTRAL_TIME = ['SERF_IA', 'BEAR', 'CLAY_U', 'FAIRM', 'MAASS', 'SERF_SD']
+CENTRAL_TIME = ['SERF_IA', 'BEAR', 'CLAY_U', 'CLAY_R',
+                'FAIRM', 'MAASS', 'SERF_SD']
 
 
 def translate(df):
@@ -248,6 +249,32 @@ def process7(fn):
     return {'7': p7, '8': p8}
 
 
+def process8(filename):
+    """CLAY_R"""
+    df = pd.read_csv(filename, index_col=False)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df['plotid'] = df['plotid'] + df['location'].astype('str')
+    df.drop(['location', 'uniqueid'], axis=1, inplace=True)
+    conv = {'5 cm': 1, '15 cm': 2, '30 cm': 3, '45 cm': 4, '60 cm': 5,
+            '75 cm': 6, '90 cm': 7}
+    remap = {'timestamp': 'valid'}
+    for key in conv:
+        for prefix, newval in zip(['soil_moisture', 'soil_temp', 'soil_ec'],
+                                  ['moisture', 'temp', 'ec']):
+            remap["%s %s" % (prefix, key)] = 'd%s%s' % (conv[key], newval)
+
+    df2 = pd.pivot_table(df, values=['soil_moisture', 'soil_temp', 'soil_ec'],
+                         columns=['depth'], index=['plotid', 'timestamp'])
+    df2.columns = [' '.join(col).strip() for col in df2.columns.values]
+    df2.reset_index(inplace=True)
+    df2.rename(columns=remap, inplace=True)
+    res = {}
+    for plotid in ['CD1', 'CD2', 'SI1', 'SI2']:
+        res[plotid] = df2[df2['plotid'] == plotid].copy()
+
+    return res
+
+
 def database_save(uniqueid, plot, df):
     pgconn = get_dbconn('td')
     cursor = pgconn.cursor()
@@ -349,6 +376,8 @@ def main(argv):
         df = process6(fn)
     elif fmt == '7':
         df = process7(fn)
+    elif fmt == '8':
+        df = process8(fn)
     if isinstance(df, dict):
         for plot in df:
             print(("File: %s[%s] found: %s lines for columns %s"
