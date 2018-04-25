@@ -250,11 +250,12 @@ def process7(fn):
 
 
 def process8(filename):
-    """CLAY_R"""
+    """CLAY_R, FAIRM"""
     df = pd.read_csv(filename, index_col=False)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
-    df['plotid'] = df['plotid'] + df['location'].astype('str')
-    df.drop(['location', 'uniqueid'], axis=1, inplace=True)
+    # df['plotid'] = df['plotid'] + df['location'].astype('str')
+    # df.drop(['location', 'uniqueid'], axis=1, inplace=True)
+    df.drop('uniqueid', axis=1, inplace=True)
     conv = {'5 cm': 1, '15 cm': 2, '30 cm': 3, '45 cm': 4, '60 cm': 5,
             '75 cm': 6, '90 cm': 7}
     remap = {'timestamp': 'valid'}
@@ -269,7 +270,7 @@ def process8(filename):
     df2.reset_index(inplace=True)
     df2.rename(columns=remap, inplace=True)
     res = {}
-    for plotid in ['CD1', 'CD2', 'SI1', 'SI2']:
+    for plotid in df['plotid'].unique():
         res[plotid] = df2[df2['plotid'] == plotid].copy()
 
     return res
