@@ -1,14 +1,13 @@
 #!/usr/bin/env python
-import sys
-import cStringIO
+from io import BytesIO
 import datetime
 import cgi
 
-import psycopg2
 import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn, ssw
 
 
 def make_plot(form):
@@ -16,8 +15,7 @@ def make_plot(form):
     year = int(form.getfirst('year', 2013))
     varname = form.getfirst('varname', 'AGR1')[:10]
 
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                              user='nobody')
+    pgconn = get_dbconn('sustainablecorn')
     cursor = pgconn.cursor()
     cursor.execute("""
     SELECT date(updated) as d,
@@ -55,20 +53,21 @@ def make_plot(form):
     ax.set_xticklabels(xticklabels)
     ax.set_title("CSCAP %s Upload Progress for %s" % (varname, year))
     ax.grid(True)
+    return fig
 
 
 def main():
     """ Make a plot please """
     form = cgi.FieldStorage()
-    make_plot(form)
+    fig = make_plot(form)
 
-    sys.stdout.write("Content-type: image/png\n\n")
+    ssw("Content-type: image/png\n\n")
 
-    ram = cStringIO.StringIO()
-    plt.savefig(ram, format='png', dpi=100)
+    ram = BytesIO()
+    fig.savefig(ram, format='png', dpi=100)
     ram.seek(0)
     res = ram.read()
-    sys.stdout.write(res)
+    ssw(res)
 
 
 if __name__ == '__main__':

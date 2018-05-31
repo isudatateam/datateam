@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 """Download weather data, please"""
 from __future__ import print_function
-import sys
 import os
 import cgi
 import datetime
 
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, ssw
 from pyiem.datatypes import distance, temperature
 
 VARDF = {'uniqueid': '',
@@ -102,10 +101,10 @@ def do_work(form):
     writer.close()
 
     fn = ",".join(stations)
-    sys.stdout.write("Content-type: application/vnd.ms-excel\n")
-    sys.stdout.write(("Content-Disposition: attachment;Filename=wx_%s.xls\n\n"
-                      ) % (fn, ))
-    sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
+    ssw("Content-type: application/vnd.ms-excel\n")
+    ssw(("Content-Disposition: attachment;Filename=wx_%s.xls\n\n"
+         ) % (fn, ))
+    ssw(open('/tmp/ss.xlsx', 'rb').read())
     os.unlink('/tmp/ss.xlsx')
 
 

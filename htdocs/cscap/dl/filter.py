@@ -12,8 +12,8 @@ import json
 import sys
 import cgi
 
-import psycopg2
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn, ssw
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
 AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
@@ -33,7 +33,8 @@ AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
 def redup(arr):
     """Replace any codes that are collapsed by the above"""
     additional = []
-    for key, vals in AGG.iteritems():
+    for key in AGG:
+        vals = AGG[key]
         for val in vals:
             if val in arr and key not in additional:
                 additional.append(key)
@@ -56,8 +57,7 @@ def agg(arr):
 
 
 def do_filter(form):
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                              user='nobody')
+    pgconn = get_dbconn('sustainablecorn')
     cursor = pgconn.cursor()
     res = {'treatments': [], 'agronomic': [], 'soil': [],
            'ghg': [], 'water': [], 'ipm': [], 'year': []}
@@ -180,17 +180,17 @@ def do_filter(form):
     """, pgconn, params=(tuple(soil), tuple(sites), tuple(agronomic),
                          tuple(sites), tuple(sites)), index_col=None)
     for _, row in df.iterrows():
-        res['year'].append(row['year'])
+        res['year'].append(float(row['year']))
 
     return res
 
 
 def main():
     """Do Stuff"""
-    sys.stdout.write("Content-type: application/json\n\n")
+    ssw("Content-type: application/json\n\n")
     form = cgi.FieldStorage()
     res = do_filter(form)
-    sys.stdout.write(json.dumps(res))
+    ssw(json.dumps(res))
 
 
 if __name__ == '__main__':

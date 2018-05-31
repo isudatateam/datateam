@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Generalized accepting of a data edit!
 
-UPSTREAM is /cscap/edit.py, so edit there and copy to td :/
+UPSTREAM is /td/edit.py, so edit there and copy to admin :/
 """
 import cgi
 import os
@@ -10,7 +10,7 @@ import datetime
 import json
 
 import pytz
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, ssw
 
 
 def decagon_logic(uniqueid_in, plotid_in):
@@ -43,7 +43,7 @@ def main():
     """Do Something"""
     form = cgi.FieldStorage()
     remote_user = os.environ.get('REMOTE_USER', 'anonymous')
-    sys.stdout.write("Content-type: application/json\n\n")
+    ssw("Content-type: application/json\n\n")
 
     # Figure out what we are editing
     table = form.getfirst('table')
@@ -86,7 +86,7 @@ def main():
               comment))
     cursor.close()
     pgconn.commit()
-    sys.stdout.write(json.dumps(res))
+    ssw(json.dumps(res))
 
 
 if __name__ == '__main__':

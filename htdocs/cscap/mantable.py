@@ -6,11 +6,10 @@ import subprocess
 import datetime
 import os
 
-import psycopg2
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn, ssw
 
-DBCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                          user='nobody')
+DBCONN = get_dbconn('sustainablecorn')
 cursor = DBCONN.cursor()
 
 ALL = " ALL SITES"
@@ -37,7 +36,7 @@ def reload_data():
 
 def main():
     """Go Main"""
-    sys.stdout.write('Content-type: text/html\n\n')
+    ssw('Content-type: text/html\n\n')
 
     form = cgi.FieldStorage()
     reloadres = ""
@@ -231,7 +230,7 @@ def main():
                         data[site].get(yr, {}).get(op, ''),)
         table5 += "</tr>"
 
-    sys.stdout.write("""<!DOCTYPE html>
+    ssw("""<!DOCTYPE html>
 <html lang='en'>
 <head>
  <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">

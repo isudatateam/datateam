@@ -6,10 +6,10 @@ import datetime
 import os
 
 import pytz
-import psycopg2
 import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn, ssw
 
 ERRMSG = ("No data found. Check the start date falls within the "
           "applicable date range for the research site. "
@@ -23,8 +23,8 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
 
 def send_error():
     """" """
-    sys.stdout.write("Content-type: application/javascript\n\n")
-    sys.stdout.write("alert('"+ERRMSG+"');")
+    ssw("Content-type: application/javascript\n\n")
+    ssw("alert('"+ERRMSG+"');")
     sys.exit()
 
 
@@ -45,7 +45,7 @@ def make_plot(form):
                                      '%Y-%m-%d')
     days = int(form.getfirst('days', 1))
     ets = sts + datetime.timedelta(days=days)
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb')
+    pgconn = get_dbconn('sustainablecorn')
     tzname = 'America/Chicago' if uniqueid in [
         'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
     viewopt = form.getfirst('view', 'js')
@@ -120,28 +120,28 @@ def make_plot(form):
                                ),
                   inplace=True)
         if viewopt == 'html':
-            sys.stdout.write("Content-type: text/html\n\n")
-            sys.stdout.write(df.to_html(index=False))
+            ssw("Content-type: text/html\n\n")
+            ssw(df.to_html(index=False))
             return
         if viewopt == 'csv':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.csv\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
-            sys.stdout.write(df.to_csv(index=False))
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
+                 'filename=%s_%s_%s_%s.csv\n\n'
+                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
+            ssw(df.to_csv(index=False))
             return
         if viewopt == 'excel':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.xlsx\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
+                 'filename=%s_%s_%s_%s.xlsx\n\n'
+                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
             writer = pd.ExcelWriter('/tmp/ss.xlsx',
                                     options={'remove_timezone': True})
             df.to_excel(writer, 'Data', index=False)
             writer.save()
-            sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
+            ssw(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
             return
 
@@ -152,8 +152,8 @@ def make_plot(form):
     title = ("Decagon Temperature + Moisture for "
              "Site:%s %s Period:%s to %s"
              ) % (uniqueid, lbl, sts.date(), ets.date())
-    sys.stdout.write("Content-type: application/javascript\n\n")
-    sys.stdout.write("""
+    ssw("Content-type: application/javascript\n\n")
+    ssw("""
 /**
  * In order to synchronize tooltips and crosshairs, override the
  * built-in events with handlers defined on the parent element.
@@ -282,7 +282,7 @@ options = {
             """)
     series = ",".join(lines)
     series2 = ",".join(lines2)
-    sys.stdout.write("""
+    ssw("""
 charts[0] = new Highcharts.Chart($.extend(true, {}, options, {
     chart: { renderTo: 'hc1'},
     title: {text: '"""+title+"""'},

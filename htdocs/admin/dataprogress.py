@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 ''' Print out a big thing of progress bars, gasp '''
-
-import sys
-import psycopg2
 import cgi
+
 import pyiem.cscap_utils as util
-DBCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                          user='nobody')
+from pyiem.util import get_dbconn, ssw
+DBCONN = get_dbconn('sustainablecorn')
 cursor = DBCONN.cursor()
 
 ALL = " ALL SITES"
@@ -27,23 +25,23 @@ def build_vars(mode):
         data = entry.to_dict()
         if data['key'] is None or data['key'][:places] != prefix:
             continue
-        varorder.append( data['key'].strip() )
-        varlookup[ data['key'].strip() ] = data['name'].strip()
+        varorder.append(data['key'].strip())
+        varlookup[data['key'].strip()] = data['name'].strip()
 
 
 def get_data(year, mode):
     ''' Do stuff '''
-    data = {ALL: {} }
+    data = {ALL: {}}
     dvars = []
     table = 'agronomic_data' if mode == 'agronomic' else 'soil_data'
-    cursor.execute("""SELECT uniqueid, varname, 
+    cursor.execute("""SELECT uniqueid, varname,
     -- We have some number
     sum(case when lower(value) not in ('.','','did not collect','n/a') and
         value is not null then 1 else 0 end),
     -- Periods
     sum(case when lower(value) in ('.') then 1 else 0 end),
     -- We have some value, not a number
-    sum(case when lower(value) in ('did not collect', 'n/a') then 1 else 0 end),
+ sum(case when lower(value) in ('did not collect', 'n/a') then 1 else 0 end),
     -- We have a null
     sum(case when value is null then 1 else 0 end),
     count(*) from """+table+"""
@@ -51,21 +49,21 @@ def get_data(year, mode):
     GROUP by uniqueid, varname""", (year,))
     for row in cursor:
         if row[1] not in dvars:
-            dvars.append( row[1] )
-        if not data.has_key(row[0]):
+            dvars.append(row[1])
+        if row[0] not in data:
             data[row[0]] = {}
-        data[row[0]][row[1]] = {'hits': row[2], 'dots': row[3], 
+        data[row[0]][row[1]] = {'hits': row[2], 'dots': row[3],
                                 'other': row[4], 'nulls': row[5],
                                 'tot': row[6]}
-        if not data[ALL].has_key(row[1]):
+        if row[1] not in data[ALL]:
             data[ALL][row[1]] = {'hits': 0, 'dots': 0, 'other': 0,
-                                    'nulls': 0, 'tot': 0}
+                                 'nulls': 0, 'tot': 0}
         data[ALL][row[1]]['hits'] += row[2]
         data[ALL][row[1]]['dots'] += row[3]
         data[ALL][row[1]]['other'] += row[4]
         data[ALL][row[1]]['nulls'] += row[5]
         data[ALL][row[1]]['tot'] += row[6]
-    
+
     return data, dvars
 
 
@@ -94,8 +92,10 @@ def make_progress(row):
              other - 0.05, row['other'],
              nulls - 0.05, row['nulls'])
 
-if __name__ == '__main__':
-    sys.stdout.write('Content-type: text/html\n\n')
+
+def main():
+    """Go Main Go"""
+    ssw('Content-type: text/html\n\n')
     form = cgi.FieldStorage()
     year = int(form.getfirst('year', 2011))
     mode = form.getfirst('mode', 'agronomic')
@@ -103,12 +103,12 @@ if __name__ == '__main__':
 
     data, dvars = get_data(year, mode)
 
-    sites = data.keys()
+    sites = list(data.keys())
     sites.sort()
-    sys.stdout.write("""<!DOCTYPE html>
+    ssw("""<!DOCTYPE html>
     <html lang='en'>
     <head>
-    <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/bootstrap-override.css" rel="stylesheet">
     </head>
     <body>
@@ -139,28 +139,27 @@ if __name__ == '__main__':
     <input type="hidden" name="mode" value="%s" />
     Select Year; <select name="year">
     """ % (mode,))
-    for yr in range(2011,2016):
+    for yr in range(2011, 2016):
         checked = ''
         if year == yr:
             checked = " selected='selected'"
-        sys.stdout.write("""<option value="%s" %s>%s</option>\n""" % (yr, 
-                                                            checked, yr))
+        ssw("""<option value="%s" %s>%s</option>\n""" % (yr, checked, yr))
 
-    sys.stdout.write("</select><br />")
+    ssw("</select><br />")
 
     ids = form.getlist('ids')
     dvars = varorder
-    if len(ids) > 0:
+    if ids:
         dvars = ids
     for varid in varorder:
         checked = ""
         if varid in ids:
             checked = "checked='checked'"
-        sys.stdout.write("""<input type='checkbox' name='ids' 
-        value='%s'%s><abbr title="%s">%s</abbr></input> &nbsp; """ % (varid, 
-                                            checked, varlookup[varid], varid))
+        ssw("""<input type='checkbox' name='ids'
+        value='%s'%s><abbr title="%s">%s</abbr></input> &nbsp;
+        """ % (varid, checked, varlookup[varid], varid))
 
-    sys.stdout.write("""
+    ssw("""
     <input type="submit" value="Generate Table">
     </form>
     <span>Key:</span>
@@ -171,20 +170,20 @@ if __name__ == '__main__':
     <table class='table table-striped table-bordered'>
 
     """)
-    sys.stdout.write("<thead><tr><th>SiteID</th>")
+    ssw("<thead><tr><th>SiteID</th>")
     for dv in dvars:
-        sys.stdout.write("""<th><abbr title="%s">%s</abbr></th>""" % (
+        ssw("""<th><abbr title="%s">%s</abbr></th>""" % (
                                                 varlookup[dv], dv))
-    sys.stdout.write("</tr></thead>")
+    ssw("</tr></thead>")
     for sid in sites:
-        sys.stdout.write("""<tr><th>%s</th>""" % (sid,))
+        ssw("""<tr><th>%s</th>""" % (sid,))
         for datavar in dvars:
             row = data[sid].get(datavar, None)
-            sys.stdout.write('<td>%s</td>' % (make_progress(row)))
-        sys.stdout.write("</tr>\n\n")
-    sys.stdout.write("</table>")
+            ssw('<td>%s</td>' % (make_progress(row)))
+        ssw("</tr>\n\n")
+    ssw("</table>")
 
-    sys.stdout.write("""
+    ssw("""
     <h3>Data summary for all sites included</h3>
     <p>
     <span>Key:</span>
@@ -197,8 +196,11 @@ if __name__ == '__main__':
     """ % (ALL,))
     for datavar in dvars:
         row = data[ALL].get(datavar, None)
-        sys.stdout.write("<tr><th>%s %s</th><td>%s</td></tr>" % (
-                                                    datavar, varlookup[datavar],
-                                                        make_progress(row)))
+        ssw(("<tr><th>%s %s</th><td>%s</td></tr>"
+             ) % (datavar, varlookup[datavar], make_progress(row)))
 
-    sys.stdout.write('</table></p>')
+    ssw('</table></p>')
+
+
+if __name__ == '__main__':
+    main()

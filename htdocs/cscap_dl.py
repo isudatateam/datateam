@@ -3,12 +3,14 @@
 
 """
 import sys
-import psycopg2.extras
 import cgi
 import datetime
+
+from psycopg2.extras import RealDictCursor
 import pandas as pd
 import pandas.io.sql as pdsql
 import pyiem.cscap_utils as util
+from pyiem.util import get_dbconn, ssw
 
 
 config = util.get_config(
@@ -29,8 +31,8 @@ def clean(val):
 def check_auth(form):
     """ Make sure request is authorized """
     if form.getfirst('hash') != config['appauth']['sharedkey']:
-        sys.stdout.write("Content-type: text/plain\n\n")
-        sys.stdout.write("Unauthorized request!")
+        ssw("Content-type: text/plain\n\n")
+        ssw("Unauthorized request!")
         sys.stderr.write(("Unauthorized CSCAP hash=%s"
                           ) % (form.getfirst('hash'),))
         sys.exit()
@@ -38,9 +40,8 @@ def check_auth(form):
 
 def get_nitratedata():
     ''' Fetch some nitrate data, for now '''
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                              user='nobody')
-    cursor = pgconn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    pgconn = get_dbconn('sustainablecorn')
+    cursor = pgconn.cursor(cursor_factory=RealDictCursor)
 
     res = "uniqueid,plotid,year,depth,soil15,soil16,soil23\n"
     cursor.execute("""SELECT site, plotid, depth, varname, year, value
@@ -67,8 +68,7 @@ def get_nitratedata():
 
 def get_agdata():
     """A specialized report"""
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                              user='nobody')
+    pgconn = get_dbconn('sustainablecorn')
     cursor = pgconn.cursor()
 
     SITES = ['MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
@@ -184,8 +184,7 @@ def get_agdata():
 
 def get_dl(form):
     """ Process the form provided to us from the Internal website """
-    pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                              user='nobody')
+    pgconn = get_dbconn('sustainablecorn')
 
     years = form.getlist('years')
     if len(years) == 1:
@@ -323,7 +322,7 @@ def get_dl(form):
     def find_rotation(rotation, year):
         try:
             return rotdf.at[rotation, 'y%s' % (year, )]
-        except:
+        except Exception as _exp:
             return ''
     df2['crop'] = df2[['rotation', 'year']].apply(lambda x:
                                                   find_rotation(x[0], x[1]),
@@ -332,8 +331,8 @@ def get_dl(form):
 
     fmt = form.getfirst('format', 'csv')
     if fmt == 'excel':
-        sys.stdout.write("Content-type: application/vnd.ms-excel\n")
-        sys.stdout.write((
+        ssw("Content-type: application/vnd.ms-excel\n")
+        ssw((
             "Content-Disposition: attachment;Filename=cscap.xlsx\n\n"))
         writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
         df2.to_excel(writer, columns=cols, index=False,
@@ -345,13 +344,12 @@ def get_dl(form):
         writer.close()
         return open('/tmp/cscap.xlsx', 'rb').read()
     elif fmt == 'tab':
-        sys.stdout.write('Content-type: application/octet-stream\n')
-        sys.stdout.write('Content-Disposition: attachment; filename=%s\n\n' % (
-                         'cscap.txt',))
+        ssw('Content-type: application/octet-stream\n')
+        ssw(('Content-Disposition: attachment; filename=%s\n\n'
+             ) % ('cscap.txt',))
         return df2.to_csv(columns=cols, sep='\t', index=False)
-    sys.stdout.write('Content-type: application/octet-stream\n')
-    sys.stdout.write('Content-Disposition: attachment; filename=%s\n\n' % (
-                         'cscap.csv',))
+    ssw('Content-type: application/octet-stream\n')
+    ssw('Content-Disposition: attachment; filename=%s\n\n' % ('cscap.csv',))
     sys.stderr.write("5. %s\n" % (datetime.datetime.now(), ))
     return df2.to_csv(columns=cols, index=False)
 
@@ -362,13 +360,14 @@ def main():
     check_auth(form)
     report = form.getfirst('report', 'ag1')
     if report == 'ag1':
-        sys.stdout.write("Content-type: text/plain\n\n")
-        sys.stdout.write(get_agdata())
+        ssw("Content-type: text/plain\n\n")
+        ssw(get_agdata())
     elif report == 'dl':  # coming from internal website
-        sys.stdout.write(get_dl(form))
+        ssw(get_dl(form))
     else:
-        sys.stdout.write("Content-type: text/plain\n\n")
-        sys.stdout.write(get_nitratedata())
+        ssw("Content-type: text/plain\n\n")
+        ssw(get_nitratedata())
+
 
 if __name__ == '__main__':
     # Do Something

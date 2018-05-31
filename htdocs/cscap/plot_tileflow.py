@@ -2,16 +2,17 @@
 """Plot!"""
 import matplotlib
 import sys
-import cStringIO
-import pandas as pd
-from pandas.io.sql import read_sql
+from io import BytesIO
 import cgi
 import datetime
 import os
+
+import pandas as pd
+from pandas.io.sql import read_sql
 import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt  # NOPEP8
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, ssw
 
 ERRMSG = ("No data found. Check the start date falls within the "
           "applicable date range for the research site. "
@@ -54,16 +55,16 @@ def add_bling(pgconn, df, tabname):
 def send_error(viewopt, msg):
     """" """
     if viewopt == 'js':
-        sys.stdout.write("Content-type: application/javascript\n\n")
-        sys.stdout.write("alert('"+ERRMSG+"');")
+        ssw("Content-type: application/javascript\n\n")
+        ssw("alert('"+ERRMSG+"');")
         sys.exit()
     fig, ax = plt.subplots(1, 1)
     ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha='center')
-    sys.stdout.write("Content-type: image/png\n\n")
-    ram = cStringIO.StringIO()
+    ssw("Content-type: image/png\n\n")
+    ram = BytesIO()
     fig.savefig(ram, format='png')
     ram.seek(0)
-    sys.stdout.write(ram.read())
+    ssw(ram.read())
     sys.exit()
 
 
@@ -106,35 +107,35 @@ def make_plot(form):
                   inplace=True)
         df = add_bling(pgconn, df, 'Water')
         if viewopt == 'html':
-            sys.stdout.write("Content-type: text/html\n\n")
-            sys.stdout.write(df.to_html(index=False))
+            ssw("Content-type: text/html\n\n")
+            ssw(df.to_html(index=False))
             return
         if viewopt == 'csv':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s.csv\n\n'
-                              ) % (uniqueid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
-            sys.stdout.write(df.to_csv(index=False))
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
+                 'filename=%s_%s_%s.csv\n\n'
+                 ) % (uniqueid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
+            ssw(df.to_csv(index=False))
             return
         if viewopt == 'excel':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s.xlsx\n\n'
-                              ) % (uniqueid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
+                 'filename=%s_%s_%s.xlsx\n\n'
+                 ) % (uniqueid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
             writer = pd.ExcelWriter('/tmp/ss.xlsx',
                                     options={'remove_timezone': True})
             df.to_excel(writer, 'Data', index=False)
             worksheet = writer.sheets['Data']
             worksheet.freeze_panes(3, 0)
             writer.save()
-            sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
+            ssw(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
             return
 
     # Begin highcharts output
-    sys.stdout.write("Content-type: application/javascript\n\n")
+    ssw("Content-type: application/javascript\n\n")
     title = ("Tile Flow for Site: %s (%s to %s)"
              ) % (uniqueid, sts.strftime("%-d %b %Y"),
                   ets.strftime("%-d %b %Y"))
@@ -151,7 +152,7 @@ def make_plot(form):
                                                     df2['discharge'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
     series = ",".join(s)
-    sys.stdout.write("""
+    ssw("""
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
@@ -191,6 +192,7 @@ def main():
     """Do Something"""
     form = cgi.FieldStorage()
     make_plot(form)
+
 
 if __name__ == '__main__':
     main()

@@ -1,12 +1,10 @@
 #!/usr/bin/env python
-import sys
 import cgi
 import datetime
 
-import psycopg2
 from pandas.io.sql import read_sql
-DBCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                          user='nobody')
+from pyiem.util import get_dbconn, ssw
+DBCONN = get_dbconn('sustainablecorn')
 cursor = DBCONN.cursor()
 
 
@@ -57,7 +55,7 @@ def make_progress(row):
         return ''
     hits = row['hits'] / float(row['tot']) * 100.0
     dots = row['dots'] / float(row['tot']) * 100.0
-    other = row['other'] / float(row['tot']) * 100.0
+    # other = row['other'] / float(row['tot']) * 100.0
     nulls = row['nulls'] / float(row['tot']) * 100.0
     return """<div class="progress">
   <div class="progress-bar progress-bar-success" style="width: %.1f%%">
@@ -88,14 +86,13 @@ def do_site(site):
 
     SELECT * from ag UNION select * from soil ORDER by year ASC, varname ASC
     """, DBCONN, params=(site, site), index_col=None)
-    sys.stdout.write("Content-type: text/plain\n\n")
-    sys.stdout.write("CSCAP Variable Progress Report\n")
-    sys.stdout.write("Site: %s\n" % (site,))
-    sys.stdout.write("Generated: %s\n" % (
+    ssw("Content-type: text/plain\n\n")
+    ssw("CSCAP Variable Progress Report\n")
+    ssw("Site: %s\n" % (site,))
+    ssw("Generated: %s\n" % (
         datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), ))
-    sys.stdout.write("Total Missing: %s\n" % (df['count'].sum(),))
-    sys.stdout.write("%4s %-10s %-10s %-6s\n" % ('YEAR', 'VARNAME', 'VALUE',
-                                                 'COUNT'))
+    ssw("Total Missing: %s\n" % (df['count'].sum(),))
+    ssw("%4s %-10s %-10s %-6s\n" % ('YEAR', 'VARNAME', 'VALUE', 'COUNT'))
 
     def nice(val):
         if val is None:
@@ -107,10 +104,8 @@ def do_site(site):
         return val
 
     for _, row in df.iterrows():
-        sys.stdout.write("%s %-10s %-10s %-6s\n" % (row['year'],
-                                                    row['varname'],
-                                                    nice(row['value']),
-                                                    row['count']))
+        ssw("%s %-10s %-10s %-6s\n" % (row['year'], row['varname'],
+                                       nice(row['value']), row['count']))
 
 
 def main():
@@ -118,7 +113,7 @@ def main():
     if 'site' in form:
         do_site(form.getfirst('site'))
         return
-    mode = form.getfirst('mode', 'agronomic')
+    # mode = form.getfirst('mode', 'agronomic')
     show_has = (form.getfirst('has', '0') == '1')
     show_period = (form.getfirst('period', '0') == '1')
     show_dnc = (form.getfirst('dnc', '0') == '1')
@@ -138,10 +133,10 @@ def main():
     get_data('agronomic', data, arr)
     get_data('soils', data, arr)
 
-    sites = data.keys()
+    sites = list(data.keys())
     sites.sort()
-    sys.stdout.write('Content-type: text/html\n\n')
-    sys.stdout.write("""<!DOCTYPE html>
+    ssw('Content-type: text/html\n\n')
+    ssw("""<!DOCTYPE html>
 <html lang='en'>
 <head>
 <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -198,23 +193,27 @@ def main():
     for sid in sites:
         if sid == '_ALL':
             continue
-        sys.stdout.write("""
-        <tr><th><a href="siteprogress.py?site=%s"><i class="glyphicon glyphicon-search"></i> %s</a></th>""" % (sid, sid))
+        ssw("""
+        <tr><th>
+<a href="siteprogress.py?site=%s">
+<i class="glyphicon glyphicon-search"></i> %s</a></th>
+        """ % (sid, sid))
         row = data[sid]
-        sys.stdout.write('<td>%s</td>' % (make_progress(row)))
-        sys.stdout.write("<td>%.0f</td>" % (row['tot'], ))
-        sys.stdout.write("<td>%.0f%%</td>" % (((row['hits2']) /
-                                               float(row['all'])) * 100.))
-        sys.stdout.write("</tr>\n\n")
+        ssw('<td>%s</td>' % (make_progress(row)))
+        ssw("<td>%.0f</td>" % (row['tot'], ))
+        ssw("<td>%.0f%%</td>" % (((row['hits2']) /
+                                   float(row['all'])) * 100.))
+        ssw("</tr>\n\n")
     sid = "_ALL"
-    sys.stdout.write("""<tr><th>%s</th>""" % (sid,))
+    ssw("""<tr><th>%s</th>""" % (sid,))
     row = data[sid]
-    sys.stdout.write('<td>%s</td>' % (make_progress(row)))
-    sys.stdout.write("<td>%.0f</td>" % (row['tot'], ))
-    sys.stdout.write("<td>%.0f%%</td>" % (((row['hits2']) /
-                                           float(row['all'])) * 100.))
-    sys.stdout.write("</tr>\n\n")
-    sys.stdout.write("</table>")
+    ssw('<td>%s</td>' % (make_progress(row)))
+    ssw("<td>%.0f</td>" % (row['tot'], ))
+    ssw("<td>%.0f%%</td>" % (((row['hits2']) /
+                               float(row['all'])) * 100.))
+    ssw("</tr>\n\n")
+    ssw("</table>")
+
 
 if __name__ == '__main__':
     main()

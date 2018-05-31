@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Plot!"""
 import sys
-import cStringIO
+from io import BytesIO
 import cgi
 import os
 
@@ -9,9 +9,9 @@ import pandas as pd
 from pandas.io.sql import read_sql
 from common import CODES, getColor
 import matplotlib
-matplotlib.use('agg')  # NOPEP8
-import matplotlib.pyplot as plt  # NOPEP8
-from pyiem.util import get_dbconn  # NOPEP8
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn, ssw
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
@@ -21,16 +21,16 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
 def send_error(viewopt, msg):
     """" """
     if viewopt == 'js':
-        sys.stdout.write("Content-type: application/javascript\n\n")
-        sys.stdout.write("alert('No data found, sorry');")
+        ssw("Content-type: application/javascript\n\n")
+        ssw("alert('No data found, sorry');")
         sys.exit()
     fig, ax = plt.subplots(1, 1)
     ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha='center')
-    sys.stdout.write("Content-type: image/png\n\n")
-    ram = cStringIO.StringIO()
+    ssw("Content-type: image/png\n\n")
+    ram = BytesIO()
     fig.savefig(ram, format='png')
     ram.seek(0)
-    sys.stdout.write(ram.read())
+    ssw(ram.read())
     sys.exit()
 
 
@@ -86,31 +86,31 @@ def make_plot(form):
                                ),
                   inplace=True)
         if viewopt == 'html':
-            sys.stdout.write("Content-type: text/html\n\n")
-            sys.stdout.write(df.to_html(index=False))
+            ssw("Content-type: text/html\n\n")
+            ssw(df.to_html(index=False))
             return
         if viewopt == 'csv':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
                               'filename=%s_%s.csv\n\n'
                               ) % (uniqueid, varname))
-            sys.stdout.write(df.to_csv(index=False))
+            ssw(df.to_csv(index=False))
             return
         if viewopt == 'excel':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
                               'filename=%s_%s.xlsx\n\n'
                               ) % (uniqueid, varname))
             writer = pd.ExcelWriter('/tmp/ss.xlsx',
                                     options={'remove_timezone': True})
             df.to_excel(writer, 'Data', index=False)
             writer.save()
-            sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
+            ssw(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
             return
 
     # Begin highcharts output
-    sys.stdout.write("Content-type: application/javascript\n\n")
+    ssw("Content-type: application/javascript\n\n")
     title = "Agronomic Data for Site: %s" % (uniqueid, )
     arr = []
     plot_ids = df[linecol].unique()
@@ -126,7 +126,7 @@ def make_plot(form):
                                                     df2['value'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
     series = ",".join(arr)
-    sys.stdout.write("""
+    ssw("""
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     subtitle: {text: '""" + varlabel + """ (""" + varunits + """)'},

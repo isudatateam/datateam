@@ -17,10 +17,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
-import psycopg2
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
+from pyiem.util import get_dbconn, ssw
 
 VARNAME_RE = re.compile(r"^[A-Z]+[0-9]$")
 EMAILTEXT = """
@@ -63,8 +63,7 @@ regarding usage and application of the data available at this site.
 
 """
 
-PGCONN = psycopg2.connect(database='sustainablecorn', host='iemdb',
-                          user='nobody')
+PGCONN = get_dbconn('sustainablecorn')
 FERTELEM = ['nitrogen', 'phosphorus', 'phosphate', 'potassium',
             'potash', 'sulfur', 'calcium', 'magnesium', 'zinc', 'iron']
 KGH_LBA = 1.12085
@@ -535,8 +534,8 @@ def do_work(form):
     """do great things"""
     agree = form.getfirst('agree')
     if agree != 'AGREE':
-        sys.stdout.write("Content-type: text/plain\n\n")
-        sys.stdout.write("You did not agree to download terms.")
+        ssw("Content-type: text/plain\n\n")
+        ssw("You did not agree to download terms.")
         return
     email = form.getfirst('email')
     sites = form.getlist('sites[]')
@@ -642,8 +641,8 @@ def do_work(form):
     _s.sendmail(msg['From'], msg['To'], msg.as_string())
     _s.quit()
     os.unlink('/tmp/cscap.xlsx')
-    sys.stdout.write("Content-type: text/plain\n\n")
-    sys.stdout.write("Email Delivered!")
+    ssw("Content-type: text/plain\n\n")
+    ssw("Email Delivered!")
     cursor = PGCONN.cursor()
     cursor.execute("""INSERT into website_downloads(email) values (%s)
     """, (email, ))

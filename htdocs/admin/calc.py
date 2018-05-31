@@ -1,22 +1,20 @@
 #!/usr/bin/env python
 """Dynamic Calculation, yikes"""
-import sys
 import cgi
 import re
 import os
 import datetime
 
-import psycopg2
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn, ssw
 
 VARRE = re.compile(r"(AGR[0-9]{1,2})")
 
 
 def get_df(equation):
     """Attempt to compute what was asked for"""
-    pgconn = psycopg2.connect(database='sustainablecorn', user='nobody',
-                              host='iemdb')
+    pgconn = get_dbconn('sustainablecorn')
     varnames = VARRE.findall(equation)
     df = read_sql("""
     SELECT * from agronomic_data WHERE varname in %s
@@ -41,29 +39,25 @@ def main():
     df = get_df(equation)
 
     if fmt == 'excel':
-        sys.stdout.write('Content-type: application/octet-stream\n')
-        sys.stdout.write(('Content-Disposition: attachment; '
-                          'filename=cscap_%s.xlsx\n\n'
-                          ) % (datetime.datetime.now().strftime("%Y%m%d%H%M"),
-                               ))
+        ssw('Content-type: application/octet-stream\n')
+        ssw(('Content-Disposition: attachment; filename=cscap_%s.xlsx\n\n'
+             ) % (datetime.datetime.now().strftime("%Y%m%d%H%M"), ))
         writer = pd.ExcelWriter('/tmp/ss.xlsx',
                                 options={'remove_timezone': True})
         df.to_excel(writer, 'Data', index=False)
         writer.save()
-        sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
+        ssw(open('/tmp/ss.xlsx', 'rb').read())
         os.unlink('/tmp/ss.xlsx')
         return
     if fmt == 'csv':
-        sys.stdout.write('Content-type: application/octet-stream\n')
-        sys.stdout.write(('Content-Disposition: attachment; '
-                          'filename=cscap_%s.csv\n\n'
-                          ) % (datetime.datetime.now().strftime("%Y%m%d%H%M"),
-                               ))
-        sys.stdout.write(df.to_csv(index=False))
+        ssw('Content-type: application/octet-stream\n')
+        ssw(('Content-Disposition: attachment; filename=cscap_%s.csv\n\n'
+             ) % (datetime.datetime.now().strftime("%Y%m%d%H%M"), ))
+        ssw(df.to_csv(index=False))
         return
 
-    sys.stdout.write('Content-type: text/html\n\n')
-    sys.stdout.write("""<!DOCTYPE html>
+    ssw('Content-type: text/html\n\n')
+    ssw("""<!DOCTYPE html>
 <html lang='en'>
 <head>
  <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -79,7 +73,7 @@ body {padding: 30px;}
 <table>
 <thead><tr><th>Enter Equation</th><th>Output Format</th></tr></thead>
 <tbody><tr><td>
-    <input name="equation" type="text" size="80" value="AGR33 / (AGR4 + AGR33)">
+<input name="equation" type="text" size="80" value="AGR33 / (AGR4 + AGR33)">
 </td>
 <td><select name="fmt">
  <option value="html">HTML Table</option>

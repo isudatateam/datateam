@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-import sys
-import psycopg2
-from pyiem.network import Table as NetworkTable
+
 from pandas.io.sql import read_sql
+from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn, ssw
 
 nt = NetworkTable("CSCAP")
 
 
 def main():
-    sys.stdout.write("Content-type: text/html\n\n")
-    pgconn = psycopg2.connect(database='coop', host='iemdb', user='mesonet')
+    ssw("Content-type: text/html\n\n")
+    pgconn = get_dbconn('coop')
     cids = []
     for sid in nt.sts.keys():
         csite = nt.sts[sid]['climate_site']
@@ -24,7 +24,7 @@ def main():
     df.set_index(['station', 'year'], inplace=True)
 
     table = ""
-    ids = nt.sts.keys()
+    ids = list(nt.sts.keys())
     ids.sort()
     for sid in ids:
         cid = nt.sts[sid]['climate_site']
@@ -41,7 +41,7 @@ def main():
 
         table += "</tr>\n"
 
-    sys.stdout.write("""<!DOCTYPE html>
+    ssw("""<!DOCTYPE html>
 <html lang='en'>
 <head>
  <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -78,6 +78,7 @@ def main():
 </body>
 </html>
     """ % (table, ))
+
 
 if __name__ == '__main__':
     main()

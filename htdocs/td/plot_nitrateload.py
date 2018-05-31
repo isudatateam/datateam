@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 """Plot!"""
-import psycopg2
-import matplotlib
 import sys
-import cStringIO
-import pandas as pd
-from pandas.io.sql import read_sql
+from io import BytesIO
 import cgi
 import datetime
 import os
-from common import CODES, getColor, ERRMSG
+
+import pandas as pd
+from pandas.io.sql import read_sql
 import numpy as np
+import matplotlib
 matplotlib.use('agg')
-import matplotlib.pyplot as plt  # NOPEP8
+import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn, ssw
+from common import CODES, getColor, ERRMSG
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
@@ -22,23 +23,22 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
 def send_error(viewopt, msg):
     """" """
     if viewopt == 'js':
-        sys.stdout.write("Content-type: application/javascript\n\n")
-        sys.stdout.write("alert('"+ERRMSG+"');")
+        ssw("Content-type: application/javascript\n\n")
+        ssw("alert('"+ERRMSG+"');")
         sys.exit()
     fig, ax = plt.subplots(1, 1)
     ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha='center')
-    sys.stdout.write("Content-type: image/png\n\n")
-    ram = cStringIO.StringIO()
+    ssw("Content-type: image/png\n\n")
+    ram = BytesIO()
     fig.savefig(ram, format='png')
     ram.seek(0)
-    sys.stdout.write(ram.read())
+    ssw(ram.read())
     sys.exit()
 
 
 def make_plot(form):
     """Make the plot"""
-    pgconn = psycopg2.connect(database='td', host='iemdb',
-                              user='nobody')
+    pgconn = get_dbconn('td')
     (uniqueid, plotid) = form.getfirst('site', 'ISUAG::302E').split("::")
 
     sts = datetime.datetime.strptime(form.getfirst('date', '2014-01-01'),
@@ -92,33 +92,33 @@ def make_plot(form):
                                ),
                   inplace=True)
         if viewopt == 'html':
-            sys.stdout.write("Content-type: text/html\n\n")
-            sys.stdout.write(df.to_html(index=False))
+            ssw("Content-type: text/html\n\n")
+            ssw(df.to_html(index=False))
             return
         if viewopt == 'csv':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.csv\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
-            sys.stdout.write(df.to_csv(index=False))
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
+                 'filename=%s_%s_%s_%s.csv\n\n'
+                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
+            ssw(df.to_csv(index=False))
             return
         if viewopt == 'excel':
-            sys.stdout.write('Content-type: application/octet-stream\n')
-            sys.stdout.write(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.xlsx\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
+            ssw('Content-type: application/octet-stream\n')
+            ssw(('Content-Disposition: attachment; '
+                 'filename=%s_%s_%s_%s.xlsx\n\n'
+                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
             writer = pd.ExcelWriter('/tmp/ss.xlsx',
                                     options={'remove_timezone': True})
             df.to_excel(writer, 'Data', index=False)
             writer.save()
-            sys.stdout.write(open('/tmp/ss.xlsx', 'rb').read())
+            ssw(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
             return
 
     # Begin highcharts output
-    sys.stdout.write("Content-type: application/javascript\n\n")
+    ssw("Content-type: application/javascript\n\n")
     title = ("Nitrate Load for Site: %s (%s to %s)"
              ) % (uniqueid, sts.strftime("%-d %b %Y"),
                   ets.strftime("%-d %b %Y"))
@@ -138,7 +138,7 @@ def make_plot(form):
                                                     df2['load'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
     series = ",".join(s)
-    sys.stdout.write("""
+    ssw("""
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},

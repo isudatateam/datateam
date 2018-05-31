@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 """Generalized accepting of a data edit!
 
-UPSTREAM is /cscap/edit.py, so edit there and copy to td :/
+UPSTREAM is /td/edit.py, so edit there and copy to admin :/
 """
 import cgi
 import os
 import sys
-import psycopg2
 import datetime
-import pytz
 import json
+
+import pytz
+from pyiem.util import get_dbconn, ssw
 
 
 def decagon_logic(uniqueid_in, plotid_in):
@@ -42,13 +43,13 @@ def main():
     """Do Something"""
     form = cgi.FieldStorage()
     remote_user = os.environ.get('REMOTE_USER', 'anonymous')
-    sys.stdout.write("Content-type: application/json\n\n")
+    ssw("Content-type: application/json\n\n")
 
     # Figure out what we are editing
     table = form.getfirst('table')
     valid = datetime.datetime.strptime(form.getfirst('valid')[:19],
                                        '%Y-%m-%dT%H:%M:%S')
-    valid = valid.replace(tzinfo=pytz.timezone("UTC"))
+    valid = valid.replace(tzinfo=pytz.utc)
     column = form.getfirst('column')
     uniqueid = form.getfirst('uniqueid')
     plotid = form.getfirst('plotid')
@@ -63,7 +64,7 @@ def main():
     dbname = ('sustainablecorn'
               if os.environ.get('DATATEAM_APP') == 'cscap'
               else 'td')
-    pgconn = psycopg2.connect(database=dbname, host='iemdb', user='nobody')
+    pgconn = get_dbconn(dbname)
     cursor = pgconn.cursor()
 
     cursor.execute("""UPDATE """+table+""" SET """+column+"""_qc = %s,
@@ -85,7 +86,7 @@ def main():
               comment))
     cursor.close()
     pgconn.commit()
-    sys.stdout.write(json.dumps(res))
+    ssw(json.dumps(res))
 
 
 if __name__ == '__main__':
