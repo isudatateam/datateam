@@ -81,6 +81,7 @@ def drive_changelog(regime, yesterday, html):
     largestChangeId = -1
     hits = 0
     page_token = None
+    changestamp = None
     param = {'includeDeleted': False, 'maxResults': 1000}
     while True:
         if start_change_id:
@@ -134,7 +135,7 @@ def drive_changelog(regime, yesterday, html):
                 try:
                     revisions = drive.revisions().list(
                         fileId=item['file']['id']).execute()
-                except Exception as exp:
+                except Exception as _exp:
                     print(('[%s] file %s (%s) failed revisions'
                            ) % (regime, title, item['file']['mimeType']))
                     revisions = {'items': []}
@@ -182,7 +183,8 @@ def drive_changelog(regime, yesterday, html):
         if not page_token:
             break
 
-    CONFIG[regime]['changestamp'] = changestamp
+    if changestamp is not None:
+        CONFIG[regime]['changestamp'] = changestamp
     if hits == 0:
         html += """<tr><td colspan="5">No Changes Found...</td></tr>\n"""
 
