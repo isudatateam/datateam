@@ -4,8 +4,8 @@
 from __future__ import print_function
 import sys
 
-import pyiem.cscap_utils as util
 import psycopg2
+import pyiem.cscap_utils as util
 
 YEAR = sys.argv[1]
 
@@ -99,7 +99,7 @@ for item in res['items']:
                     values (%s, %s, %s, %s, %s, %s, %s)
                     """, (siteid, plotid, varname, YEAR, depth, val,
                           subsample))
-            except Exception, exp:
+            except Exception as exp:
                 print('HARVEST_SOIL_TEXTURE TRACEBACK')
                 print(exp)
                 print(('%s %s %s %s %s %s'

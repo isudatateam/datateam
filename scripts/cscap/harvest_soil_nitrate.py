@@ -135,7 +135,7 @@ def main():
                         values (%s, %s, %s, %s, %s, %s, %s, %s)
                         """, (siteid, plotid, varname, YEAR, depth, val,
                               subsample, date))
-                except Exception, exp:
+                except Exception as exp:
                     print(('site: %s year: %s HARVEST_SOIL_NITRATE TRACEBACK'
                            ) % (siteid, YEAR))
                     print(exp)

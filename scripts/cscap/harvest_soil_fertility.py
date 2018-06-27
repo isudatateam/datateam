@@ -1,7 +1,8 @@
 """Harvest Soil Fertility Files"""
-import pyiem.cscap_utils as util
 import sys
+
 import psycopg2
+import pyiem.cscap_utils as util
 
 config = util.get_config()
 
@@ -34,7 +35,7 @@ for item in res['items']:
     try:
         # print("Processing %s %s" % (item['title'], item['id']))
         spreadsheet = util.Spreadsheet(spr_client, item['id'])
-    except Exception, exp:
+    except Exception as exp:
         print("harvest_soil_fertility FAIL: %s\n%s" % (exp, item['title']))
         continue
     siteid = item['title'].split()[0]
@@ -47,9 +48,9 @@ for item in res['items']:
     worksheet.get_cell_feed()
     if (worksheet.get_cell_value(1, 4) != 'plotid' or
             worksheet.get_cell_value(1, 5) != 'depth'):
-        print 'FATAL site: %s fert has bad header 4:%s 5:%s' % (
+        print('FATAL site: %s fert has bad header 4:%s 5:%s' % (
             siteid, worksheet.get_cell_value(1, 4),
-            worksheet.get_cell_value(1, 5))
+            worksheet.get_cell_value(1, 5)))
         continue
 
     for row in range(3, worksheet.rows+1):
@@ -84,7 +85,7 @@ for item in res['items']:
                                          year, sampledate)
             if key in current:
                 oldval = current[key]
-                del(current[key])
+                del current[key]
                 if oldval is None and val is None:
                     continue
                 if val is not None:
@@ -106,11 +107,11 @@ for item in res['items']:
                     """, (siteid, plotid, varname, year, depth, val,
                           sampledate))
                 newvals += 1
-            except Exception, exp:
-                print 'HARVEST_SOIL_FERTILITY TRACEBACK'
-                print exp
-                print '%s %s %s %s %s %s' % (siteid, plotid, varname, depth,
-                                             val, sampledate)
+            except Exception as exp:
+                print('HARVEST_SOIL_FERTILITY TRACEBACK')
+                print(exp)
+                print('%s %s %s %s %s %s' % (siteid, plotid, varname, depth,
+                                             val, sampledate))
                 sys.exit()
 
 deletedvals = 0

@@ -21,8 +21,8 @@ drive_client = util.get_driveclient(config)
 def delete_entries(current, siteid):
     for key in current:
         (plotid, varname) = key.split("|")
-        print 'harvest_agronomic REMOVE %s %s %s' % (siteid, plotid,
-                                                     varname)
+        print('harvest_agronomic REMOVE %s %s %s' % (siteid, plotid,
+                                                     varname))
         pcursor.execute("""DELETE from agronomic_data where uniqueid = %s and
             plotid = %s and varname = %s and year = %s
         """, (siteid, plotid, varname, YEAR))
@@ -79,11 +79,11 @@ for item in res['items']:
                     """, (siteid, plotid, varname, YEAR, val))
                 if pcursor.rowcount == 1:
                     newvals += 1
-            except Exception, exp:
-                print 'HARVEST_AGRONOMIC TRACEBACK'
-                print exp
-                print '%s %s %s %s %s' % (YEAR, siteid, plotid, repr(varname),
-                                          repr(val))
+            except Exception as exp:
+                print('HARVEST_AGRONOMIC TRACEBACK')
+                print(exp)
+                print('%s %s %s %s %s' % (YEAR, siteid, plotid, repr(varname),
+                                          repr(val)))
                 sys.exit()
             key = "%s|%s" % (plotid, varname)
             if key in current:
