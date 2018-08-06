@@ -18,6 +18,8 @@ FMIME = 'application/vnd.google-apps.folder'
 FORM_MTYPE = 'application/vnd.google-apps.form'
 CFG = {'cscap': dict(emails=CONFIG['cscap']['email_daily_list'],
                      title="Sustainable Corn"),
+       'nutrinet': dict(emails=CONFIG['nutrinet']['email_daily_list'],
+                        title='NutriNet (4R)'),
        'td': dict(emails=CONFIG['td']['email_daily_list'],
                   title='Transforming Drainage')}
 LOCALTZ = pytz.timezone("America/Chicago")
@@ -37,7 +39,12 @@ def sites_changelog(regime, yesterday, html):
     <thead><tr><th>Time</th><th>Activity</th></tr></thead>
     <tbody>""" % (CFG[regime]['title'],)
 
-    site = 'sustainablecorn' if regime == 'cscap' else 'transformingdrainage'
+    if regime == 'cscap':
+        site = 'sustainablecorn'
+    elif regime == 'td':
+        site = 'transformingdrainage'
+    else:
+        site = 'nutrinet'
     s = util.get_sites_client(CONFIG, site)
     # Fetch more results for sites activity feed
     opt = {'max-results': 999}
@@ -46,7 +53,7 @@ def sites_changelog(regime, yesterday, html):
     for entry in feed.entry:
         ts = datetime.datetime.strptime(entry.updated.text,
                                         '%Y-%m-%dT%H:%M:%S.%fZ')
-        ts = ts.replace(tzinfo=pytz.timezone("UTC"))
+        ts = ts.replace(tzinfo=pytz.UTC)
         # print 'Sites ts: %s' % (ts,)
         if ts < yesterday:
             continue
@@ -196,10 +203,10 @@ def drive_changelog(regime, yesterday, html):
 
 def main(argv):
     """Do Fun things"""
-    regime = "cscap" if argv[1] == 'cscap' else 'td'
+    regime = argv[1]
 
     today = datetime.datetime.utcnow()
-    today = today.replace(tzinfo=pytz.timezone("UTC"), hour=12,
+    today = today.replace(tzinfo=pytz.UTC, hour=12,
                           minute=0, second=0, microsecond=0)
     yesterday = today - datetime.timedelta(days=1)
     localts = yesterday.astimezone(LOCALTZ)
@@ -214,7 +221,8 @@ def main(argv):
        (localts + datetime.timedelta(hours=24)).strftime("%-I %p %-d %B %Y"))
 
     html = drive_changelog(regime, yesterday, html)
-    html = sites_changelog(regime, yesterday, html)
+    if regime != 'nutrinet':
+        html = sites_changelog(regime, yesterday, html)
 
     html += """<p>That is all...</p>"""
     # debugging
