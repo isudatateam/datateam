@@ -127,7 +127,8 @@ def drive_changelog(regime, yesterday, html):
                        ) % (regime, repr(item['file']['title'])))
                 continue
             uri = item['file']['alternateLink']
-            title = item['file']['title'].encode('ascii', 'ignore')
+            title = item['file']['title'].encode(
+                'ascii', 'ignore').decode('ascii')
             localts = modifiedDate.astimezone(LOCALTZ)
             hits += 1
             pfolder = item['file']['parents'][0]['id']
