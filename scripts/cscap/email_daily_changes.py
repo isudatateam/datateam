@@ -16,6 +16,7 @@ import pyiem.cscap_utils as util
 CONFIG = util.get_config()
 FMIME = 'application/vnd.google-apps.folder'
 FORM_MTYPE = 'application/vnd.google-apps.form'
+SITES_MYTPE = 'application/vnd.google-apps.site'
 CFG = {'cscap': dict(emails=CONFIG['cscap']['email_daily_list'],
                      title="Sustainable Corn"),
        'nutrinet': dict(emails=CONFIG['nutrinet']['email_daily_list'],
@@ -101,7 +102,7 @@ def drive_changelog(regime, yesterday, html):
         largestChangeId = response['largestChangeId']
         page_token = response.get('nextPageToken')
         for item in response['items']:
-            if item['file']['mimeType'] in [FMIME, FORM_MTYPE]:
+            if item['file']['mimeType'] in [FMIME, FORM_MTYPE, SITES_MYTPE]:
                 continue
             changestamp = item['id']
             if item['deleted']:
@@ -119,12 +120,12 @@ def drive_changelog(regime, yesterday, html):
                     print(('[%s] file: %s has unknown parent: %s'
                            ) % (regime, item['id'], parent['id']))
                     continue
-                if (folders[parent['id']]['basefolder'] ==
-                        CONFIG[regime]['basefolder']):
-                    isproject = True
+                isproject = True
             if not isproject:
-                print(('[%s] %s skipped'
-                       ) % (regime, repr(item['file']['title'])))
+                print(('[%s] %s (%s) skipped as basefolders are: %s'
+                       ) % (regime, repr(item['file']['title']),
+                            item['file']['mimeType'],
+                            item['file']['parents']))
                 continue
             uri = item['file']['alternateLink']
             title = item['file']['title'].encode(
