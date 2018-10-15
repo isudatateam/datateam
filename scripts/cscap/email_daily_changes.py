@@ -10,6 +10,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from gdata.client import RequestError
 import pytz
 import pyiem.cscap_utils as util
 
@@ -49,7 +50,14 @@ def sites_changelog(regime, yesterday, html):
     s = util.get_sites_client(CONFIG, site)
     # Fetch more results for sites activity feed
     opt = {'max-results': 999}
-    feed = s.get_activity_feed(**opt)
+    try:
+        feed = s.get_activity_feed(**opt)
+    except RequestError as exp:
+        html += (
+            "<tr><th colspan=\"2\">Google Sites API Error :(</th></tr>"
+            "</tbody></table>"
+        )
+        return html
     tablerows = []
     for entry in feed.entry:
         ts = datetime.datetime.strptime(entry.updated.text,
