@@ -12,57 +12,58 @@ TABLENAMES = ['plant_harvest', 'soil_fert', 'pesticides', 'residue_mngt',
 
 def main():
     """Go Main"""
-    config = util.get_config()
-
     pgconn = get_dbconn('td')
     pcursor = pgconn.cursor()
 
-    # Get me a client, stat
-    spr_client = util.get_spreadsheet_client(config)
-
-    spread = util.Spreadsheet(spr_client, config['td']['manstore'])
-
+    config = util.get_config()
+    sheets = util.get_sheetsclient(config, "cscap")
+    f = sheets.spreadsheets().get(
+        spreadsheetId=config['td']['manstore'], includeGridData=True
+    )
+    j = util.exponential_backoff(f.execute)
     translate = {'date': 'valid'}
 
-    for sheetkey, table in zip(TABS, TABLENAMES):
+    for sheet in j['sheets']:
+        table = TABLENAMES[TABS.index(sheet['properties']['title'])]
         pcursor.execute("""DELETE from """ + table)
         deleted = pcursor.rowcount
-        sheet = spread.worksheets[sheetkey]
-
         added = 0
-        for rownum, entry in enumerate(sheet.get_list_feed().entry):
-            # Skip the first row of units
-            if rownum == 0:
-                continue
-            data = entry.to_dict()
-            cols = []
-            vals = []
-            for key in data.keys():
-                if key.startswith('gio'):
-                    continue
-                val = data[key]
-                if key in ['date', 'biomassdate1', 'biomassdate2',
-                           'outletdate']:
-                    val = (val if val not in ['unknown', 'N/A', 'n/a', 'TBD']
-                           else None)
-                vals.append(val)
-                cols.append(translate.get(key, key))
+        for grid in sheet['data']:
+            cols = [a['formattedValue'] for a in grid['rowData'][0]['values']]
+            for row in grid['rowData'][2:]:
+                vals = [a.get('formattedValue') for a in row['values']]
+                data = dict(zip(cols, vals))
+                dbvals = []
+                dbcols = []
+                for key in data.keys():
+                    if key.startswith('gio'):
+                        continue
+                    val = data[key]
+                    if key in ['date', 'biomassdate1', 'biomassdate2',
+                               'outletdate']:
+                        val = (
+                            val
+                            if val not in ['unknown', 'N/A', 'n/a', 'TBD']
+                            else None
+                        )
+                    dbvals.append(val)
+                    dbcols.append(translate.get(key, key.replace("_", "")))
 
-            sql = """
-                INSERT into %s(%s) VALUES (%s)
-                """ % (table, ",".join(cols), ','.join(["%s"]*len(cols)))
-            try:
-                pcursor.execute(sql, vals)
-            except Exception as exp:
-                print("[TD] harvest_management traceback")
-                print(exp)
-                for col, val in zip(cols, vals):
-                    print("   |%s| -> |%s|" % (col, val))
-                return
-            added += 1
+                sql = """
+                    INSERT into %s(%s) VALUES (%s)
+                """ % (table, ",".join(dbcols), ','.join(["%s"]*len(dbcols)))
+                try:
+                    pcursor.execute(sql, dbvals)
+                except Exception as exp:
+                    print("[TD] harvest_management traceback")
+                    print(exp)
+                    for col, val in zip(cols, vals):
+                        print("   |%s| -> |%s|" % (col, val))
+                    return
+                added += 1
 
         print(("[TD] harvest_management %16s added:%4s deleted:%4s"
-               ) % (sheetkey, added, deleted))
+               ) % (table, added, deleted))
 
     pcursor.close()
     pgconn.commit()

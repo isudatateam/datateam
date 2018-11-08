@@ -3,7 +3,6 @@ import pandas as pd
 import psycopg2
 
 config = util.get_config()
-sheets = util.get_sheetsclient(config, "td")
 
 pgconn = psycopg2.connect(database='td',
                           host=config['database']['host'])
