@@ -8,7 +8,9 @@ $table = <<<EOF
 <thead><tr><th>Email</th><th>Timestamp</th></tr></thead>
 EOF;
 $rs = pg_query($pgconn, "SELECT email, ".
-    " to_char(valid, 'DD Mon YYYY, HH:MI AM') as v from website_downloads ".
+    "to_char(valid, 'DD Mon YYYY, HH:MI AM') as v from website_downloads ".
+    "WHERE email not in ('akrherz@iastate.edu', 'gio@iastate.edu', ".
+    "'labend@iastate.edu') ".
     "ORDER by valid DESC");
 for ($i=0; $row=@pg_fetch_assoc($rs,$i); $i++){
 	$table .= sprintf("<tr><td>%s</td><td>%s</td></tr>\n",
