@@ -175,8 +175,6 @@ def do_dictionary(writer):
     """, PGCONN, index_col=None)
     for col in ['ss_order', 'number_of_decimal_places_to_round_up']:
         df.drop(col, axis=1, inplace=True)
-    for col in df.columns:
-        df[col] = df[col].str.decode('ascii', 'ignore')
     df.to_excel(writer, 'Data Dictionary', index=False)
     # Increase column width
     worksheet = writer.sheets['Data Dictionary']
@@ -661,4 +659,6 @@ if __name__ == '__main__':
     # do_soil(None, ['MASON', ],
     #        ['SOIL15', ],
     #        ['2015', ], '', 'daryl')
+    # writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
+    # do_dictionary(writer)
     main()
