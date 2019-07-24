@@ -266,14 +266,14 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
         places = 0
         if colname in vardf.index.values:
             places = vardf.at[colname, 'round']
-        df[colname] = pd.to_numeric(df[colname], errors='coerse')
+        df[colname] = pd.to_numeric(df[colname], errors='coerce')
         df[colname] = df[colname].apply((lambda x: round(x, int(places))
                                          if isinstance(x, (int, float))
                                          else x))
     # reorder columns
     cols = df.columns.values.tolist()
     cols.sort()
-    df = df.reindex_axis(cols, axis=1)
+    df = df.reindex(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
     df.replace(['None', None], np.nan, inplace=True)
     df.dropna(how='all', inplace=True)
@@ -299,7 +299,7 @@ def add_bling(writer, df, sheetname, tabname):
             metarows[1][colname] = vardf.at[colname, 'units']
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
-    df = df.reindex_axis(cols, axis=1)
+    df = df.reindex(cols, axis=1)
     df.to_excel(writer, sheetname, index=False)
     worksheet = writer.sheets[sheetname]
     worksheet.freeze_panes(3, 0)
@@ -345,7 +345,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     # reorder columns
     cols = df.columns.values.tolist()
     cols.sort()
-    df = df.reindex_axis(cols, axis=1)
+    df = df.reindex(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
     df.replace(['None', None], np.nan, inplace=True)
     pprint("do_soil() len of inbound df %s" % (len(df.index, )))
@@ -382,9 +382,9 @@ def do_operations(writer, sites, years, missing):
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """, PGCONN, params=(tuple(sites), tuple(years)))
     opdf['productrate'] = pd.to_numeric(opdf['productrate'],
-                                        errors='coerse')
+                                        errors='coerce')
     for fert in FERTELEM:
-        opdf[fert] = pd.to_numeric(opdf[fert], errors='coerse')
+        opdf[fert] = pd.to_numeric(opdf[fert], errors='coerce')
     for col in ['biomassdate1', 'biomassdate2', 'valid']:
         opdf.at[opdf[col].isnull(), col] = missing
 

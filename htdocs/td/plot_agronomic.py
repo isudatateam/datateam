@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Plot!"""
+# pylint: disable=abstract-class-instantiated
 import sys
 from io import BytesIO
 import cgi
@@ -7,11 +8,10 @@ import os
 
 import pandas as pd
 from pandas.io.sql import read_sql
-from common import CODES, getColor
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
+
+from common import CODES, getColor
 
 LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-', '-.', '-.', '-.', '-.', '-.',
@@ -35,11 +35,12 @@ def send_error(viewopt, msg):
 
 
 def get_vardesc(varname):
+    """Get the heading for the variable."""
     pgconn = get_dbconn('td')
     cursor = pgconn.cursor()
     cursor.execute("""
-    SELECT short_description, units from td_data_dictionary WHERE
-    code_column_heading = %s
+        SELECT short_description, units from td_data_dictionary WHERE
+        code_column_heading = %s
     """, (varname, ))
     if cursor.rowcount == 0:
         return varname, varname
@@ -62,7 +63,7 @@ def make_plot(form):
         """, pgconn, params=(uniqueid, varname), index_col=None)
     if df.empty:
         send_error(viewopt, "No / Not Enough Data Found, sorry!")
-    df['value'] = pd.to_numeric(df['value'], errors='coerse')
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
     linecol = 'plotid'
     if group == 1:
         # Generate the plotid lookup table
@@ -71,11 +72,12 @@ def make_plot(form):
         """, pgconn, params=(uniqueid, ), index_col='plotid')
 
         def lookup(row):
+            """A helper."""
             try:
                 return plotdf.loc[row['plotid'], "y%s" % (row['year'], )]
             except KeyError:
                 return row['plotid']
-        df['treatment'] = df.apply(lambda row: lookup(row), axis=1)
+        df['treatment'] = df.apply(lookup, axis=1)
         del df['plotid']
         df = df.groupby(['treatment', 'year']).mean()
         df.reset_index(inplace=True)
@@ -92,19 +94,15 @@ def make_plot(form):
         if viewopt == 'csv':
             ssw('Content-type: application/octet-stream\n')
             ssw(('Content-Disposition: attachment; '
-                              'filename=%s_%s.csv\n\n'
-                              ) % (uniqueid, varname))
+                 'filename=%s_%s.csv\n\n') % (uniqueid, varname))
             ssw(df.to_csv(index=False))
             return
         if viewopt == 'excel':
             ssw('Content-type: application/octet-stream\n')
             ssw(('Content-Disposition: attachment; '
-                              'filename=%s_%s.xlsx\n\n'
-                              ) % (uniqueid, varname))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                    options={'remove_timezone': True})
-            df.to_excel(writer, 'Data', index=False)
-            writer.save()
+                 'filename=%s_%s.xlsx\n\n') % (uniqueid, varname))
+            with pd.ExcelWriter('/tmp/ss.xlsx') as writer:
+                df.to_excel(writer, 'Data', index=False)
             ssw(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
             return
@@ -122,8 +120,8 @@ def make_plot(form):
         arr.append(("""{type: 'column',
             """ + getColor(plotid, i) + """,
             name: '""" + CODES.get(plotid, plotid) + """',
-            data: """ + str([[a, b] for a, b in zip(df2['year'].values,
-                                                    df2['value'].values)]) + """
+            data: """ + str([[a, b] for a, b in zip(
+                df2['year'].values, df2['value'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
     series = ",".join(arr)
     ssw("""

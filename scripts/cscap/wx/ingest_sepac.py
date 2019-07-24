@@ -12,10 +12,10 @@ fn = 'sepac.xlsx'
 
 df = pd.read_excel(fn)
 print df.columns
-df['sknt'] = speed(pd.to_numeric(df['Wind Speed(mph)'], errors='coerse'),
+df['sknt'] = speed(pd.to_numeric(df['Wind Speed(mph)'], errors='coerce'),
                    'MPH').value('KT')
-df['high'] = pd.to_numeric(df['Maximum Air Temperature(degF)'], errors='coerse')
-df['low'] = pd.to_numeric(df['Minimum Air Temperature(degF)'], errors='coerse')
+df['high'] = pd.to_numeric(df['Maximum Air Temperature(degF)'], errors='coerce')
+df['low'] = pd.to_numeric(df['Minimum Air Temperature(degF)'], errors='coerce')
 df['pday'] = df['Precipitation(inch)']
 df['srad'] = df['Solar Radiation(MJsqm)']
 

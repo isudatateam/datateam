@@ -19,7 +19,7 @@ def get_df(equation):
     df = read_sql("""
     SELECT * from agronomic_data WHERE varname in %s
     """, pgconn, params=(tuple(varnames), ), index_col=None)
-    df['value'] = pd.to_numeric(df['value'], errors='coerse')
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
     df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
                         values='value', columns=('varname',),
                         aggfunc=lambda x: ' '.join(str(v) for v in x))
@@ -42,8 +42,7 @@ def main():
         ssw('Content-type: application/octet-stream\n')
         ssw(('Content-Disposition: attachment; filename=cscap_%s.xlsx\n\n'
              ) % (datetime.datetime.now().strftime("%Y%m%d%H%M"), ))
-        writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                options={'remove_timezone': True})
+        writer = pd.ExcelWriter('/tmp/ss.xlsx')
         df.to_excel(writer, 'Data', index=False)
         writer.save()
         ssw(open('/tmp/ss.xlsx', 'rb').read())

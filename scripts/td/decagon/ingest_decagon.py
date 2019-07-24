@@ -190,7 +190,7 @@ def process5(fn):
                   'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
                   'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
                   ]
-    df['valid'] = pd.to_datetime(df['valid'], errors='coerse')
+    df['valid'] = pd.to_datetime(df['valid'], errors='coerce')
     p1 = df[['valid',
              'd1temp', 'd1moisture', 'd1ec',
              'd2temp', 'd2moisture', 'd2ec',

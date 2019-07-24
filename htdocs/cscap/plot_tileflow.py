@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 """Plot!"""
-import matplotlib
 import sys
 from io import BytesIO
 import cgi
@@ -10,8 +9,7 @@ import os
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
-matplotlib.use('agg')
-import matplotlib.pyplot as plt  # NOPEP8
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
 
 ERRMSG = ("No data found. Check the start date falls within the "
@@ -48,7 +46,7 @@ def add_bling(pgconn, df, tabname):
             metarows[1][colname] = vardf.at[colname, 'units']
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
-    df = df.reindex_axis(cols, axis=1)
+    df = df.reindex(cols, axis=1)
     return df
 
 
@@ -124,8 +122,10 @@ def make_plot(form):
                  'filename=%s_%s_%s.xlsx\n\n'
                  ) % (uniqueid, sts.strftime("%Y%m%d"),
                       ets.strftime("%Y%m%d")))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                    options={'remove_timezone': True})
+            writer = pd.ExcelWriter('/tmp/ss.xlsx')
+            # Prevent timezone troubles
+            if ptype not in ['2', ]:
+                df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
             df.to_excel(writer, 'Data', index=False)
             worksheet = writer.sheets['Data']
             worksheet.freeze_panes(3, 0)

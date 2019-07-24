@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """SM Plot!"""
+# pylint: disable=abstract-class-instantiated
 import sys
 import cgi
 import datetime
@@ -19,10 +20,10 @@ LINESTYLE = ['-', '-', '-', '-', '-', '-',
              '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
 
 
-def send_error(msg):
+def send_error():
     """" """
     ssw("Content-type: application/javascript\n\n")
-    ssw("alert('"+ERRMSG+"');")
+    ssw("alert('" + ERRMSG + "');")
     sys.exit()
 
 
@@ -82,8 +83,9 @@ def make_plot(form):
     elif ptype in ['3', '4']:
         res = 'hour' if ptype == '3' else 'week'
         df = read_sql("""SELECT
-        timezone('UTC', date_trunc('"""+res+"""', valid at time zone 'UTC')) as v, plotid,
-        avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
+        timezone('UTC',
+                 date_trunc('"""+res+"""', valid at time zone 'UTC')) as v,
+        plotid, avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
         avg(d6temp_qc) as d6t, avg(d7temp_qc) as d7t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
@@ -115,12 +117,13 @@ def make_plot(form):
             for i in range(1, 6):
                 df["d%s%s_f" % (n, i)] = '-'
     if len(df.index) < 3:
-        send_error("No / Not Enough Data Found, sorry!")
+        send_error()
     if ptype not in ['2', ]:
         df['v'] = df['v'].apply(
             lambda x: x.tz_convert(tzname))
 
     if viewopt != 'js':
+        df['v'] = df['v'].dt.strftime("%Y-%m-%d %H:%M")
         df.rename(columns=dict(v='timestamp',
                                d1t='%s Temp (C)' % (DEPTHS[1], ),
                                d2t='%s Temp (C)' % (DEPTHS[2], ),
@@ -159,21 +162,19 @@ def make_plot(form):
         if viewopt == 'csv':
             ssw('Content-type: application/octet-stream\n')
             ssw(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.csv\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
+                 'filename=%s_%s_%s_%s.csv\n\n'
+                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
             ssw(df.to_csv(index=False))
             return
         if viewopt == 'excel':
             ssw('Content-type: application/octet-stream\n')
             ssw(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s_%s.xlsx\n\n'
-                              ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                    options={'remove_timezone': True})
-            df.to_excel(writer, 'Data', index=False)
-            writer.save()
+                 'filename=%s_%s_%s_%s.xlsx\n\n'
+                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
+            with pd.ExcelWriter('/tmp/ss.xlsx') as writer:
+                df.to_excel(writer, 'Data', index=False)
             ssw(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
             return

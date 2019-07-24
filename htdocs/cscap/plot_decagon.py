@@ -137,8 +137,9 @@ def make_plot(form):
                  'filename=%s_%s_%s_%s.xlsx\n\n'
                  ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
                       ets.strftime("%Y%m%d")))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                    options={'remove_timezone': True})
+            writer = pd.ExcelWriter('/tmp/ss.xlsx')
+            # Prevent timezone troubles
+            df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
             df.to_excel(writer, 'Data', index=False)
             writer.save()
             ssw(open('/tmp/ss.xlsx', 'rb').read())

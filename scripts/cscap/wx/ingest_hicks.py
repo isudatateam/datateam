@@ -57,7 +57,7 @@ def main():
         #                   for x in df['TIMESTAMP']]
         # else:
         #    df['valid'] = df['TIMESTAMP']
-        df['valid'] = pd.to_datetime(df['TIMESTAMP'], errors='coerse')
+        df['valid'] = pd.to_datetime(df['TIMESTAMP'], errors='coerce')
         df.set_index('valid', inplace=True)
         df.sort_index(inplace=True)
         for col in df.columns.values:

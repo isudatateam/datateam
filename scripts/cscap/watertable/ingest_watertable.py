@@ -32,7 +32,7 @@ def process6(spreadkey):
         plotid = col.replace('wat4watertabledepth', '').upper()
         df['depth'] = pd.to_numeric(
                         df['%swat4watertabledepth' % (plotid.lower(),)],
-                        errors='coerse') * 1.  # TODO: watch the units here!
+                        errors='coerce') * 1.  # TODO: watch the units here!
         res[plotid] = df[['valid', 'depth']].copy()
 
     return res
@@ -51,7 +51,7 @@ def process5(spreadkey):
     res = {}
     for plotid in [str(s) for s in range(1, 9)]:
         df['plot%swatertablemm' % (plotid,)] = pd.to_numeric(
-                        df['plot%swatertablemm' % (plotid,)], errors='coerse')
+                        df['plot%swatertablemm' % (plotid,)], errors='coerce')
         res[plotid] = df[['valid', 'plot%swatertablemm' % (plotid,)]].copy()
         res[plotid].columns = ['valid', 'depth']
 
@@ -113,7 +113,7 @@ def process4(filename):
         #res[plotid]['valid'] = (res[plotid]['valid'] +
         #                        datetime.timedelta(seconds=1))
         res[plotid]['depth'] = pd.to_numeric(res[plotid]['depth'],
-                                             errors='coerse') * 10.
+                                             errors='coerce') * 10.
     return res
 
 

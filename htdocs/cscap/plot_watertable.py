@@ -9,9 +9,7 @@ import os
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt  # NOPEP8
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
 
 ERRMSG = ("No data found. Check the start date falls within the "
@@ -48,7 +46,7 @@ def add_bling(pgconn, df, tabname):
             metarows[1][colname] = vardf.at[colname, 'units']
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
-    df = df.reindex_axis(cols, axis=1)
+    df = df.reindex(cols, axis=1)
     return df
 
 
@@ -110,10 +108,11 @@ def make_plot(form):
             lambda x: x.tz_localize('UTC').tz_convert(tzname))
 
     if viewopt not in ['plot', 'js']:
-        df.rename(columns=dict(v='timestamp',
+        if viewopt == 'excel':
+            df['v'] = df['v'].dt.strftime("%Y-%m-%d %H:%M")
+        df = df.rename(columns=dict(v='timestamp',
                                depth='Depth (mm)'
-                               ),
-                  inplace=True)
+                               ))
         df = add_bling(pgconn, df, 'Water')
         if viewopt == 'html':
             ssw("Content-type: text/html\n\n")
@@ -133,8 +132,7 @@ def make_plot(form):
                  'filename=%s_%s_%s.xlsx\n\n'
                  ) % (uniqueid, sts.strftime("%Y%m%d"),
                       ets.strftime("%Y%m%d")))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                    options={'remove_timezone': True})
+            writer = pd.ExcelWriter('/tmp/ss.xlsx')
             df.to_excel(writer, 'Data', index=False)
             worksheet = writer.sheets['Data']
             worksheet.freeze_panes(3, 0)

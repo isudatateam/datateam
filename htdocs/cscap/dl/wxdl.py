@@ -92,7 +92,7 @@ def do_work(form):
         metarows[1][colname] = UVARDF.get(colname, '')
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
-    df = df.reindex_axis(cols, axis=1)
+    df = df.reindex(cols, axis=1)
 
     writer = pd.ExcelWriter("/tmp/ss.xlsx", engine='xlsxwriter')
     df.to_excel(writer, 'Daily Weather', index=False)

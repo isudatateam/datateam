@@ -8,9 +8,7 @@ import os
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt  # NOPEP8
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
 
 ERRMSG = ("No data found. Check the start date falls within the "
@@ -47,7 +45,7 @@ def add_bling(pgconn, df, tabname):
             metarows[1][colname] = vardf.at[colname, 'units']
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
-    df = df.reindex_axis(cols, axis=1)
+    df = df.reindex(cols, axis=1)
     return df
 
 
@@ -102,8 +100,7 @@ def make_plot(form):
             ssw('Content-type: application/octet-stream\n')
             ssw(('Content-Disposition: attachment; '
                  'filename=%s.xlsx\n\n') % (uniqueid, ))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                    options={'remove_timezone': True})
+            writer = pd.ExcelWriter('/tmp/ss.xlsx')
             df.to_excel(writer, 'Data', index=False)
             worksheet = writer.sheets['Data']
             worksheet.freeze_panes(3, 0)
@@ -132,7 +129,8 @@ def make_plot(form):
 $("#hc").highcharts({
     title: {text: '"""+title+"""'},
     chart: {zoomType: 'x'},
-    yAxis: {title: {text: '""" + VARDICT[varname]["title"] +""" """+ VARDICT[varname]["units"] + """'}
+    yAxis: {title: {text: '""" + VARDICT[varname]["title"] + """ """ +
+    VARDICT[varname]["units"] + """'}
     },
     plotOptions: {line: {turboThreshold: 0}
     },

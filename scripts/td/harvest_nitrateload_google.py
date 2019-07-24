@@ -78,7 +78,7 @@ for item in res['items']:
                 if col2 not in df.columns:
                     df[col2] = None
                 else:
-                    df[col2] = pd.to_numeric(df[col2], errors='coerse')
+                    df[col2] = pd.to_numeric(df[col2], errors='coerce')
             df2 = df[['date', plotid+' WAT2', plotid+' WAT9',
                       plotid + ' WAT20', plotid + ' WAT26']]
             for vals in df2.itertuples(index=False):

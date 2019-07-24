@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Plot!"""
-import unittest
+# pylint: disable=abstract-class-instantiated
 import sys
 from io import BytesIO
 import cgi
@@ -10,9 +10,7 @@ import os
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
 from common import CODES, getColor, ERRMSG
 
@@ -77,7 +75,7 @@ def make_plot(form):
         """, pgconn, params=(uniqueid, sts.date(), ets.date()))
     elif ptype == '2':
         # resample the weather data
-        if len(wxdf.index) > 0:
+        if not wxdf.empty:
             wxdf = wxdf.resample('M',
                                  loffset=datetime.timedelta(days=-27)).sum()
             wxdf['ticks'] = wxdf.index.values.astype('datetime64[ns]').astype(
@@ -108,11 +106,12 @@ def make_plot(form):
         """, pgconn, params=(uniqueid, ), index_col='plotid')
 
         def lookup(row):
+            """Lookup value."""
             try:
                 return plotdf.loc[row['plotid'], "y%s" % (row['v'].year, )]
             except KeyError:
                 return row['plotid']
-        df['treatment'] = df.apply(lambda row: lookup(row), axis=1)
+        df['treatment'] = df.apply(lookup, axis=1)
         del df['plotid']
         df = df.groupby(['treatment', 'v']).mean()
         df.reset_index(inplace=True)
@@ -122,6 +121,7 @@ def make_plot(form):
             lambda x: x.tz_localize('UTC').tz_convert(tzname))
 
     if viewopt not in ['plot', 'js']:
+        df['v'] = df['v'].dt.strftime("%Y-%m-%d %H:%M")
         df.rename(columns=dict(v='timestamp',
                                discharge='Discharge (mm)'
                                ),
@@ -133,21 +133,19 @@ def make_plot(form):
         if viewopt == 'csv':
             ssw('Content-type: application/octet-stream\n')
             ssw(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s.csv\n\n'
-                              ) % (uniqueid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
+                 'filename=%s_%s_%s.csv\n\n'
+                 ) % (uniqueid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
             ssw(df.to_csv(index=False))
             return
         if viewopt == 'excel':
             ssw('Content-type: application/octet-stream\n')
             ssw(('Content-Disposition: attachment; '
-                              'filename=%s_%s_%s.xlsx\n\n'
-                              ) % (uniqueid, sts.strftime("%Y%m%d"),
-                                   ets.strftime("%Y%m%d")))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx',
-                                    options={'remove_timezone': True})
-            df.to_excel(writer, 'Data', index=False)
-            writer.save()
+                 'filename=%s_%s_%s.xlsx\n\n'
+                 ) % (uniqueid, sts.strftime("%Y%m%d"),
+                      ets.strftime("%Y%m%d")))
+            with pd.ExcelWriter('/tmp/ss.xlsx') as writer:
+                df.to_excel(writer, 'Data', index=False)
             ssw(open('/tmp/ss.xlsx', 'rb').read())
             os.unlink('/tmp/ss.xlsx')
             return
@@ -169,16 +167,16 @@ def make_plot(form):
         s.append(("""{type: '""" + seriestype + """',
             """ + getColor(plotid, i) + """,
             name: '""" + CODES.get(plotid, plotid) + """',
-            data: """ + str([[a, b] for a, b in zip(df2['ticks'].values,
-                                                    df2['discharge'].values)]) + """
+            data: """ + str([[a, b] for a, b in zip(
+                df2['ticks'].values, df2['discharge'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
-    if len(wxdf.index) > 0:
+    if not wxdf.empty:
         s.append(("""{type: 'column',
             name: 'Precip',
             color: '#0000ff',
             yAxis: 1,
-            data: """ + str([[a, b] for a, b in zip(wxdf['ticks'].values,
-                                                    wxdf['precip_mm'].values)]) + """
+            data: """ + str([[a, b] for a, b in zip(
+                wxdf['ticks'].values, wxdf['precip_mm'].values)]) + """
         }""").replace("None", "null").replace("nan", "null"))
     series = ",".join(s)
     ssw("""
@@ -233,11 +231,10 @@ if __name__ == '__main__':
     main()
 
 
-class TestCase(unittest.TestCase):
-
-    def test_wx(self):
-        pgconn = get_dbconn('td')
-        wxdf = get_weather(pgconn, 'CLAY_C',
-                           datetime.datetime(2015, 4, 20),
-                           datetime.datetime(2016, 1, 1))
-        self.assertEquals(len(wxdf.index), 0)
+def test_wx():
+    """Test that we can fetch data."""
+    pgconn = get_dbconn('td')
+    wxdf = get_weather(
+        pgconn, 'CLAY_C',
+        datetime.datetime(2015, 4, 20), datetime.datetime(2016, 1, 1))
+    assert wxdf.empty
