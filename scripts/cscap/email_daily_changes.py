@@ -20,6 +20,8 @@ FORM_MTYPE = 'application/vnd.google-apps.form'
 SITES_MYTPE = 'application/vnd.google-apps.site'
 CFG = {'cscap': dict(emails=CONFIG['cscap']['email_daily_list'],
                      title="Sustainable Corn"),
+       'inrc': dict(emails=CONFIG['inrc']['email_daily_list'],
+                        title='Iowa Nutrient Reduction Center (INRC)'),
        'nutrinet': dict(emails=CONFIG['nutrinet']['email_daily_list'],
                         title='NutriNet (4R)'),
        'td': dict(emails=CONFIG['td']['email_daily_list'],
