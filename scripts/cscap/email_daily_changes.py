@@ -234,8 +234,8 @@ def main(argv):
        (localts + datetime.timedelta(hours=24)).strftime("%-I %p %-d %B %Y"))
 
     html = drive_changelog(regime, yesterday, html)
-    if regime != 'nutrinet':
-        html = sites_changelog(regime, yesterday, html)
+    # if regime != 'nutrinet':
+    #    html = sites_changelog(regime, yesterday, html)
 
     html += """<p>That is all...</p>"""
     # debugging
