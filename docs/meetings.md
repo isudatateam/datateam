@@ -1,3 +1,12 @@
+DataTeam Meeting Notes
+======================
+
+24 Sep 2019 :: Lori, Gio, Steph, Sam
+
+- isudatateam google site has a job board I should review.
+- TD website work is scheduled December thru Feb 2020.
+- Look into the Agricultural Research Data Network.
+
   4 Apr 2017
   Gio, Lori, Katie
   - Katie's last day with our group is next week, so we shall do lunch
