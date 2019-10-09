@@ -343,7 +343,7 @@ EOF;
 }
 
 function build_theses(){
-	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
 	$rs = pg_query($pgconn, "select * from theses ORDER by authors");
 	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
@@ -367,7 +367,7 @@ function cullna($val){
     return $val;
 }
 function build_publications(){
-	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb user=nobody");
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
 	$rs = pg_query($pgconn, "select * from refereed_journals ".
 			"ORDER by authors");
 	$s = "\n";
@@ -394,7 +394,7 @@ function build_sites_ui(){
 		"IN" => "Indiana",
 		"MI" => "Michigan",
 		"OH" => "Ohio");
-	$pgconn = pg_connect("dbname=mesosite host=iemdb user=nobody");
+	$pgconn = pg_connect("dbname=mesosite host=iemdb-sustainablecorn.local user=nobody");
 	$rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
 			" and id !~* 'ONFARM' and ".
 			"id not in ('VICMS', 'NAEW.Y102', 'NAEW.Y103', 'NAEW.WS115', ".

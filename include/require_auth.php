@@ -10,7 +10,7 @@ function authorize(){
 	}
 	// This is set via local .htaccess files, hacky
     $app = $_SERVER["DATATEAM_APP"];
-	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb");
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local");
 	$rs = pg_prepare($pgconn, "authorize",
 			"SELECT email from website_users u JOIN website_access_levels l "
 		   ."on (u.access_level = l.access_level) where email = $1"

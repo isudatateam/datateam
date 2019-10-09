@@ -2,9 +2,10 @@
 Synchronize the ACL on the Google Drive to the local DB
 """
 import pyiem.cscap_utils as utils
+from pyiem.util import get_dbconn
 import psycopg2
 
-pgconn = psycopg2.connect(database='sustainablecorn', host='iemdb')
+pgconn = get_dbconn('sustainablecorn')
 cursor = pgconn.cursor()
 
 

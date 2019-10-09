@@ -2,7 +2,7 @@
 require_once "../../include/require_auth.php";
 require_once "../../include/myview.php";
 
-$pgconn = pg_connect("dbname=sustainablecorn host=iemdb");
+$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local");
 $table = <<<EOF
 <table class="table table-striped table-bordered">
 <thead><tr><th>Email</th><th>Last Usage</th><th>Access Level</th></tr></thead>
