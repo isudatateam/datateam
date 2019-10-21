@@ -23,6 +23,9 @@ CFG = {'cscap': dict(emails=CONFIG['cscap']['email_daily_list'],
        'inrc': dict(
             emails=CONFIG['inrc']['email_daily_list'],
             title='Integrating Social and Biophysical Indicators (ISBI)'),
+       'kb': dict(
+            emails=CONFIG['kb']['email_daily_list'],
+            title='Knowledgebase (2019-2023)'),
        'nutrinet': dict(emails=CONFIG['nutrinet']['email_daily_list'],
                         title='NutriNet (4R)'),
        'td': dict(emails=CONFIG['td']['email_daily_list'],
