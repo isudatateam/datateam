@@ -16,12 +16,14 @@ def main():
     pcursor = pgconn.cursor()
 
     config = util.get_config()
-    sheets = util.get_sheetsclient(config, "cscap")
+    sheets = util.get_sheetsclient(config, "td")
     f = sheets.spreadsheets().get(
         spreadsheetId=config['td']['manstore'], includeGridData=True
     )
     j = util.exponential_backoff(f.execute)
-    translate = {'date': 'valid'}
+    translate = {
+        'date': 'valid',
+        'plantmaturity_GDD (F)': 'plantmaturity_gdd'}
 
     for sheet in j['sheets']:
         table = TABLENAMES[TABS.index(sheet['properties']['title'])]
