@@ -32,6 +32,7 @@ python email_daily_changes.py td
 python email_daily_changes.py inrc
 python email_daily_changes.py nutrinet
 python email_daily_changes.py kb
+python email_daily_changes.py ardn
 
 #python ss2database.py
 

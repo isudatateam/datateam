@@ -23,6 +23,9 @@ CFG = {'cscap': dict(emails=CONFIG['cscap']['email_daily_list'],
        'inrc': dict(
             emails=CONFIG['inrc']['email_daily_list'],
             title='Integrating Social and Biophysical Indicators (ISBI)'),
+       'ardn': dict(
+            emails=CONFIG['ardn']['email_daily_list'],
+            title='Ag Research Data Network'),
        'kb': dict(
             emails=CONFIG['kb']['email_daily_list'],
             title='Knowledgebase (2019-2023)'),
@@ -58,7 +61,7 @@ def sites_changelog(regime, yesterday, html):
     opt = {'max-results': 999}
     try:
         feed = s.get_activity_feed(**opt)
-    except RequestError as exp:
+    except RequestError:
         html += (
             "<tr><th colspan=\"2\">Google Sites API Error :(</th></tr>"
             "</tbody></table>"
@@ -158,7 +161,7 @@ def drive_changelog(regime, yesterday, html):
                 try:
                     revisions = drive.revisions().list(
                         fileId=item['file']['id']).execute()
-                except Exception as _exp:
+                except Exception:
                     print(('[%s] file %s (%s) failed revisions'
                            ) % (regime, title, item['file']['mimeType']))
                     revisions = {'items': []}
