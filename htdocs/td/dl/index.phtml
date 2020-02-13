@@ -1,0 +1,1323 @@
+<?php 
+// require_once "../../../include/require_auth.php";
+
+function build_treatments_ui(){
+	$s = <<<EOF
+<p>For sites you’ve selected, available treatments will be identified by black text; unavailable in grey.</p>
+<div class="clearfix"></div>
+
+<div class="row"><div class="col-md-4">
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">Continuous Crop Systems</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="_T5" data-treatment="_T5" name="treatments[]" id="_T5">
+<label for="_T5" class="control-label">Continuous corn</label>
+
+<input type="checkbox" value="_T6" data-treatment="_T6" name="treatments[]" id="_T6">
+<label for="_T6" class="control-label">Continuous corn with rye cover</label>
+
+<input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]" id="ROT2">
+<label for="ROT2" class="control-label">Continuous soybean</label>
+
+<input type="checkbox" value="ROT39" data-treatment="ROT39" name="treatments[]" id="ROT39">
+<label for="ROT39" class="control-label">Continuous soybean with rye cover</label>
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Rotated Crop Systems</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="_T1" data-treatment="_T1" name="treatments[]" id="_T1">
+<label for="_T1" class="control-label">Corn-soybean</label>
+
+<input type="checkbox" value="_T2" data-treatment="_T2" name="treatments[]" id="_T2">
+<label for="_T2" class="control-label">Corn-soybean-wheat</label>
+
+<input type="checkbox" value="_T3" data-treatment="_T3" name="treatments[]" id="_T3">
+<label for="_T3" class="control-label">Corn-soybean-wheat/red clover or mixed cover crop</label>
+
+<input type="checkbox" value="_T4" data-treatment="_T4" name="treatments[]" id="_T4">
+<label for="_T4" class="control-label">Corn-soybean with rye cover</label>
+
+<!-- <input type="checkbox" value="ROT41" data-treatment="ROT41" name="treatments[]" id="ROT41"> -->
+<!-- <label for="ROT41" class="control-label">Corn-corn-soybean-corn-soybean</label> -->
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Prairie</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="_T7" data-treatment="_T7" name="treatments[]" id="_T7">
+<label for="_T7" class="control-label">Prairie</label>
+
+  </div>
+</div>
+
+</div><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Drainage</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="DWM3" data-treatment="DWM3" name="treatments[]" id="DWM3">
+<label for="DWM3" class="control-label">Controlled drainage ("managed")</label>
+<input type="checkbox" value="DWM2" data-treatment="DWM2" name="treatments[]" id="DWM2">
+<label for="DWM2" class="control-label">Conventional drainage ("free")</label>
+<input type="checkbox" value="DWM5" data-treatment="DWM5" name="treatments[]" id="DWM5">
+<label for="DWM5" class="control-label">Drainage with subirrigation</label>
+<input type="checkbox" value="DWM1" data-treatment="DWM1" name="treatments[]" id="DWM1">
+<label for="DWM1" class="control-label">No drainage</label>
+<input type="checkbox" value="DWM4" data-treatment="DWM4" name="treatments[]" id="DWM4">
+<label for="DWM4" class="control-label">Shallow drainage</label>
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Tillage</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="TIL2" data-treatment="TIL2" name="treatments[]" id="TIL2">
+<label for="TIL2" class="control-label">Tillage</label>
+<input type="checkbox" value="TIL1" data-treatment="TIL1" name="treatments[]" id="TIL1">
+<label for="TIL1" class="control-label">No-tillage</label>
+
+  </div>
+</div>
+
+</div><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Nitrogen</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="NIT2" data-treatment="NIT2" name="treatments[]" id="NIT2">
+<label for="NIT2" class="control-label">MRTN application of N fertilizer</label>
+<input type="checkbox" value="NIT1" data-treatment="NIT1" name="treatments[]" id="NIT1">
+<label for="NIT1" class="control-label">No N fertilizer applied</label>
+<input type="checkbox" value="NIT3" data-treatment="NIT3" name="treatments[]" id="NIT3">
+<label for="NIT3" class="control-label">Sensor based N application - MO/OH recommendation</label>
+<input type="checkbox" value="NIT4" data-treatment="NIT4" name="treatments[]" id="NIT4">
+<label for="NIT4" class="control-label">Sensor based N application - OK recommendation</label>
+
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Landscape</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="LND1" data-treatment="LND1" name="treatments[]" id="LND1">
+<label for="LND1" class="control-label">Near-summit</label>
+<input type="checkbox" value="LND2" data-treatment="LND2" name="treatments[]" id="LND2">
+<label for="LND2" class="control-label">Side slope</label>
+<input type="checkbox" value="LND3" data-treatment="LND3" name="treatments[]" id="LND3">
+<label for="LND3" class="control-label">Toe slope</label>
+
+  </div>
+</div>
+
+
+</div></div>
+EOF;
+	return $s;
+}
+
+function build_agronomic_ui(){
+	$s = <<<EOF
+<div class="row"><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Corn</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="AGR32" data-agronomic="AGR32" name="agronomic[]" id="AGR32">
+<label for="AGR32" class="control-label">Corn cob biomass at R6</label>
+	<input type="checkbox" value="AGR24" data-agronomic="AGR24" name="agronomic[]" id="AGR24">
+<label for="AGR24" class="control-label">Corn cob total C at R6</label>
+	<input type="checkbox" value="AGR26" data-agronomic="AGR26" name="agronomic[]" id="AGR26">
+<label for="AGR26" class="control-label">Corn cob total N at R6</label>
+	<input type="checkbox" value="AGR1" data-agronomic="AGR1" name="agronomic[]" id="AGR1">
+<label for="AGR1" class="control-label">Corn final plant population</label>
+	<input type="checkbox" value="AGR33" data-agronomic="AGR33" name="agronomic[]" id="AGR33">
+<label for="AGR33" class="control-label">Corn grain biomass at R6</label>
+	<input type="checkbox" value="AGR18" data-agronomic="AGR18" name="agronomic[]" id="AGR18">
+<label for="AGR18" class="control-label">Corn grain moisture</label>
+	<input type="checkbox" value="AGR23" data-agronomic="AGR23" name="agronomic[]" id="AGR23">
+<label for="AGR23" class="control-label">Corn grain total C at R6</label>
+	<input type="checkbox" value="AGR25" data-agronomic="AGR25" name="agronomic[]" id="AGR25">
+<label for="AGR25" class="control-label">Corn grain total N at R6</label>
+	<input type="checkbox" value="AGR17" data-agronomic="AGR17" name="agronomic[]" id="AGR17">
+<label for="AGR17" class="control-label">Corn grain yield at 15.5% MB</label>
+	<input type="checkbox" value="AGR4" data-agronomic="AGR4" name="agronomic[]" id="AGR4">
+<label for="AGR4" class="control-label">Corn vegetative biomass at R6</label>
+	<input type="checkbox" value="AGR9" data-agronomic="AGR9" name="agronomic[]" id="AGR9">
+<label for="AGR9" class="control-label">Corn vegetative biomass total C at R6</label>
+	<input type="checkbox" value="AGR10" data-agronomic="AGR10" name="agronomic[]" id="AGR10">
+<label for="AGR10" class="control-label">Corn vegetative biomass total N at R6</label>
+	<input type="checkbox" value="AGR3" data-agronomic="AGR3" name="agronomic[]" id="AGR3">
+<label for="AGR3" class="control-label">Mid-season canopy N sensing</label>
+
+  </div>
+</div>
+
+</div><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Cover Crop</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="AGR39" data-agronomic="AGR39" name="agronomic[]" id="AGR39">
+<label for="AGR39" class="control-label">Cover crop (rye) and weedy biomass at termination (spring)</label>
+	<input type="checkbox" value="AGR7" data-agronomic="AGR7" name="agronomic[]" id="AGR7">
+<label for="AGR7" class="control-label">Cover crop (rye) biomass at termination (spring) (no significant weeds)</label>
+	<input type="checkbox" value="AGR6" data-agronomic="AGR6" name="agronomic[]" id="AGR6">
+<label for="AGR6" class="control-label">Cover crop (rye) biomass in late fall (no significant weeds)</label>
+	<input type="checkbox" value="AGR41" data-agronomic="AGR41" name="agronomic[]" id="AGR41">
+<label for="AGR41" class="control-label">Red clover or mixed cover crop biomass in late fall of previous year</label>
+	<input type="checkbox" value="AGR43" data-agronomic="AGR43" name="agronomic[]" id="AGR43">
+<label for="AGR43" class="control-label">Red clover or mixed cover crop total C in late fall of previous year</label>
+	<input type="checkbox" value="AGR46" data-agronomic="AGR46" name="agronomic[]" id="AGR46">
+<label for="AGR46" class="control-label">Red clover or mixed cover crop total C in spring of spreadsheet year</label>
+	<input type="checkbox" value="AGR42" data-agronomic="AGR42" name="agronomic[]" id="AGR42">
+<label for="AGR42" class="control-label">Red clover or mixed cover crop total N in late fall of previous year</label>
+	<input type="checkbox" value="AGR13" data-agronomic="AGR13" name="agronomic[]" id="AGR13">
+<label for="AGR13" class="control-label">Rye biomass total C at fall</label>
+	<input type="checkbox" value="AGR15" data-agronomic="AGR15" name="agronomic[]" id="AGR15">
+<label for="AGR15" class="control-label">Rye biomass total C at spring</label>
+	<input type="checkbox" value="AGR14" data-agronomic="AGR14" name="agronomic[]" id="AGR14">
+<label for="AGR14" class="control-label">Rye biomass total N at fall</label>
+	<input type="checkbox" value="AGR16" data-agronomic="AGR16" name="agronomic[]" id="AGR16">
+<label for="AGR6" class="control-label">Rye biomass total N at spring</label>
+	<input type="checkbox" value="AGR40" data-agronomic="AGR40" name="agronomic[]" id="AGR40">
+<label for="AGR40" class="control-label">Weedy biomass (only) at termination (spring)</label>
+
+
+  </div>
+</div>
+
+
+</div><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Soybean</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="AGR2" data-agronomic="AGR2" name="agronomic[]" id="AGR2">
+<label for="AGR2" class="control-label">Soybean final plant population</label>
+	<input type="checkbox" value="AGR34" data-agronomic="AGR34" name="agronomic[]" id="AGR34">
+<label for="AGR34" class="control-label">Soybean grain biomass at R8</label>
+	<input type="checkbox" value="AGR20" data-agronomic="AGR20" name="agronomic[]" id="AGR20">
+<label for="AGR20" class="control-label">Soybean grain moisture</label>
+	<input type="checkbox" value="AGR27" data-agronomic="AGR27" name="agronomic[]" id="AGR27">
+<label for="AGR27" class="control-label">Soybean grain total C at R8</label>
+	<input type="checkbox" value="AGR28" data-agronomic="AGR28" name="agronomic[]" id="AGR28">
+<label for="AGR28" class="control-label">Soybean grain total N at R8</label>
+	<input type="checkbox" value="AGR19" data-agronomic="AGR19" name="agronomic[]" id="AGR19">
+<label for="AGR19" class="control-label">Soybean grain yield at 13.0% MB</label>
+	<input type="checkbox" value="AGR5" data-agronomic="AGR5" name="agronomic[]" id="AGR5">
+<label for="AGR5" class="control-label">Soybean vegetative biomass at R8</label>
+	<input type="checkbox" value="AGR11" data-agronomic="AGR11" name="agronomic[]" id="AGR11">
+<label for="AGR11" class="control-label">Soybean vegetative biomass total C at R8</label>
+	<input type="checkbox" value="AGR12" data-agronomic="AGR12" name="agronomic[]" id="AGR12">
+<label for="AGR12" class="control-label">Soybean vegetative biomass total N at R8</label>
+
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Wheat</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="AGR22" data-agronomic="AGR22" name="agronomic[]" id="AGR22">
+<label for="AGR22" class="control-label">Wheat grain moisture</label>
+	<input type="checkbox" value="AGR21" data-agronomic="AGR21" name="agronomic[]" id="AGR21">
+<label for="AGR21" class="control-label">Wheat grain yield at 13.5% MB</label>
+
+  </div>
+</div>
+
+
+
+</div></div>
+EOF;
+	return $s;
+}
+
+function build_soil_ui(){
+	$s = <<<EOF
+<div class="row"><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Water Retention</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="_S1" data-soil="_S1" name="soil[]" id="_S1">
+<label for="_S1" class="control-label">Water retention</label>
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Soil Nitrogen</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="SOIL22" data-soil="SOIL22" name="soil[]" id="SOIL22">
+<label for="SOIL22" class="control-label">Soil Ammonium</label>
+	<input type="checkbox" value="SOIL15" data-soil="SOIL15" name="soil[]" id="SOIL15">
+<label for="SOIL15" class="control-label">Soil Nitrate</label>
+	<input type="checkbox" value="SOIL14" data-soil="SOIL14" name="soil[]" id="SOIL14">
+<label for="SOIL14" class="control-label">Total N</label>
+
+  </div>
+</div>
+
+</div><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Soil Properties</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="SOIL7" data-soil="SOIL7" name="soil[]" id="SOIL7">
+<label for="SOIL7" class="control-label">Aggregate stability</label>
+	<input type="checkbox" value="SOIL12" data-soil="SOIL12" name="soil[]" id="SOIL12">
+<label for="SOIL12" class="control-label">Cation Exchange Capacity (CEC)</label>
+	<input type="checkbox" value="SOIL1" data-soil="SOIL1" name="soil[]" id="SOIL1">
+<label for="SOIL1" class="control-label">Dry bulk density (BD)</label>
+	<input type="checkbox" value="SOIL3" data-soil="SOIL3" name="soil[]" id="SOIL3">
+<label for="SOIL3" class="control-label">Infiltration rate</label>
+	<input type="checkbox" value="SOIL11" data-soil="SOIL11" name="soil[]" id="SOIL11">
+<label for="SOIL11" class="control-label">Soil pH</label>
+	<input type="checkbox" value="_S19" data-soil="_S19" name="soil[]" id="_S19">
+<label for="_S19" class="control-label">Soil Fertility Routine Analysis</label>
+	<input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
+<label for="SOIL6" class="control-label">Soil texture</label>
+
+  </div>
+</div>
+
+</div><div class="col-md-4">
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">Soil Texture</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
+<label for="SOIL6" class="control-label">Soil Texture Name</label>
+	<input type="checkbox" value="SOIL28" data-soil="SOIL28" name="soil[]" id="SOIL28">
+<label for="SOIL28" class="control-label">Percent Clay</label>
+	<input type="checkbox" value="SOIL26" data-soil="SOIL26" name="soil[]" id="SOIL26">
+<label for="SOIL26" class="control-label">Percent Sand</label>
+	<input type="checkbox" value="SOIL27" data-soil="SOIL27" name="soil[]" id="SOIL27">
+<label for="SOIL27" class="control-label">Percent Silt</label>
+
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Soil Carbon</div>
+  <div class="panel-body">
+
+	<input type="checkbox" value="SOIL13" data-soil="SOIL13" name="soil[]" id="SOIL13">
+<label for="SOIL13" class="control-label">Soil Organic Carbon (SOC)</label>
+
+  </div>
+</div>
+
+
+
+</div></div>
+EOF;
+	return $s;
+}
+
+function build_theses(){
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
+	$rs = pg_query($pgconn, "select * from theses ORDER by authors");
+	$s = "\n";
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+	    $srs = "";
+	    if ($row["online_source"] != "N/A"){
+    	    $srs = sprintf("<a href=\"%s\" target=\"_blank\">%s</a>",
+    	       $row["online_source"], $row["online_source"]);
+	    }
+	    $s .= sprintf("<p>%s %s %s %s %s</p>\n",
+				$row['authors'], $row["year"], $row['title'],
+				$row["journal_or_source"], $srs);
+	}
+	$s .= "\n";
+	return $s;
+}
+
+function cullna($val){
+    if ($val == 'NA' || $val == 'na' || $val == 'N/A'){
+        return '';
+    }
+    return $val;
+}
+function build_publications(){
+	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
+	$rs = pg_query($pgconn, "select * from refereed_journals ".
+			"ORDER by authors");
+	$s = "\n";
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+		$strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
+		$endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
+		$s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a>%s</p>\n",
+				$strong,
+				$row['authors'], $row["year"], $row['title'],
+				$row["journal_or_source"], cullna($row["vol"]),
+		      cullna($row["pg_no."]),
+				$row["online_source"], $row["online_source"], $endstrong);
+	}
+	$s .= "\n";
+	return $s;
+}
+
+function build_sites_ui(){
+	$states = Array("IA" => "Iowa",
+		"MN" => "Minnesota",
+		"WI" => "Wisconsin",
+		"IL" => "Illinois",
+		"MO" => "Missouri",
+		"IN" => "Indiana",
+		"MI" => "Michigan",
+		"OH" => "Ohio");
+	$pgconn = pg_connect("dbname=mesosite host=iemdb-sustainablecorn.local user=nobody");
+	$rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
+			" and id !~* 'ONFARM' and ".
+			"id not in ('VICMS', 'NAEW.Y102', 'NAEW.Y103', 'NAEW.WS115', ".
+			" 'NAEW.WS123', 'NAEW.WS127') ORDER by name ASC");
+	$data = Array();
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+		$data[$row["state"]][$row["id"]] = $row["name"];
+	}
+	$keys = array_keys($data);
+	asort($keys);
+	$s = '';
+	$q = -1;	
+	while (list($v,$k)=each($keys)){
+		$q += 1;
+		if ($q % 3 == 0){
+			$s .= "<div class=\"col-md-4\">\n";
+		}
+		$s .= sprintf("<div class=\"panel panel-default\">".
+  "<div class=\"panel-heading\">".
+  "<input type=\"checkbox\" class=\"state-check\" value=\"%s\">%s</div>".
+  "<div class=\"panel-body\">\n", $k, $states[$k]);
+		while (list($v2, $k2)=each($data[$k])){
+			$s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
+			    "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
+                "<label for=\"ST%s\" class=\"control-label\">%s</label>",
+				$v2, $v2, $k, $v2, $v2);
+		}
+		$s .= "</div></div>\n";
+		if ($q % 3 == 2){
+			$s .= "</div>\n";
+		}
+	}
+	if ($q % 3 != 2){
+		$s .= "</div>\n";
+	}
+	return $s;
+}
+
+function build_year_ui(){
+	$s = <<<EOF
+	<div class="panel panel-default">
+	<div class="panel-heading">Available Years</div>
+	<div class="panel-body">
+	
+	<input type="checkbox" value="2011" data-year="2011" name="year[]" id="Y2011">
+	<label for="Y2011" class="control-label">2011</label>
+	<input type="checkbox" value="2012" data-year="2012" name="year[]" id="Y2012">
+	<label for="Y2012" class="control-label">2012</label>
+	<input type="checkbox" value="2013" data-year="2013" name="year[]" id="Y2013">
+	<label for="Y2013" class="control-label">2013</label>
+	<input type="checkbox" value="2014" data-year="2014" name="year[]" id="Y2014">
+	<label for="Y2014" class="control-label">2014</label>
+	<input type="checkbox" value="2015" data-year="2015" name="year[]" id="Y2015">
+	<label for="Y2015" class="control-label">2015</label>
+	
+	</div>
+	</div>
+EOF;
+	return $s;
+}
+
+function build_ghg_ui(){
+	$s = <<<EOF
+	<div class="panel panel-default">
+	<div class="panel-heading">Available Variables</div>
+	<div class="panel-body">
+	
+	<input type="checkbox" value="GHG01" data-ghg="GHG01" name="ghg[]" id="GHG01">
+	<label for="GHG01" class="control-label">Carbon Dioxide (CO<sub>2</sub>-C) flux</label>
+	<input type="checkbox" value="GHG02" data-ghg="GHG02" name="ghg[]" id="GHG02">
+	<label for="GHG02" class="control-label">Carbon Dioxide (CO<sub>2</sub>) correlation coefficient (R<sup>2</sup>)</label>
+	<input type="checkbox" value="GHG03" data-ghg="GHG03" name="ghg[]" id="GHG03">
+	<label for="GHG03" class="control-label">Nitrous Oxide (N<sub>2</sub>O-N) flux</label>
+	<input type="checkbox" value="GHG04" data-ghg="GHG04" name="ghg[]" id="GHG04">
+	<label for="GHG04" class="control-label">Nitrous Oxide (N<sub>2</sub>O) correlation coefficient (R<sup>2</sup>)</label>
+	<input type="checkbox" value="GHG05" data-ghg="GHG05" name="ghg[]" id="GHG05">
+	<label for="GHG05" class="control-label">Ammonia (NH<sub>3</sub>-N) flux</label>
+	<input type="checkbox" value="GHG06" data-ghg="GHG06" name="ghg[]" id="GHG06">
+	<label for="GHG06" class="control-label">Ammonia (NH<sub>3</sub>) correlation coefficient (R<sup>2</sup>)</label>
+	<input type="checkbox" value="GHG07" data-ghg="GHG07" name="ghg[]" id="GHG07">
+	<label for="GHG07" class="control-label">Methane (CH<sub>4</sub>-C) flux</label>
+	<input type="checkbox" value="GHG08" data-ghg="GHG08" name="ghg[]" id="GHG08">
+	<label for="GHG08" class="control-label">Methane (CH<sub>4</sub>) correlation coefficient (R<sup>2</sup>)</label>
+	<input type="checkbox" value="GHG11" data-ghg="GHG11" name="ghg[]" id="GHG11">
+	<label for="GHG11" class="control-label">Volumetric soil moisture at 5 cm</label>
+	<input type="checkbox" value="GHG12" data-ghg="GHG12" name="ghg[]" id="GHG12">
+	<label for="GHG12" class="control-label">Soil Temperature at 5 cm</label>
+	<input type="checkbox" value="GHG13" data-ghg="GHG13" name="ghg[]" id="GHG13">
+	<label for="GHG13" class="control-label">Soil Nitrate (NO<sub>3</sub>-N) at 0-10 cm</label>
+	<input type="checkbox" value="GHG14" data-ghg="GHG14" name="ghg[]" id="GHG14">
+	<label for="GHG14" class="control-label">Soil Ammonium (NH<sub>4</sub>-N) at 0-10 cm</label>
+	
+	</div>
+	</div>
+EOF;
+	return $s;
+}
+
+function build_ipm_ui(){
+	$s = <<<EOF
+	<div class="panel panel-default">
+	<div class="panel-heading">Available Variables</div>
+	<div class="panel-body">
+
+	<input type="checkbox" value="IPM01" data-ipm="IPM01" name="ipm[]" id="IPM01">
+	<label for="IPM01" class="control-label">Insect Sampling Methods</label>
+	<input type="checkbox" value="IPM02" data-ipm="IPM02" name="ipm[]" id="IPM02">
+	<label for="IPM02" class="control-label">Insect Common Name</label>
+	<input type="checkbox" value="IPM03" data-ipm="IPM03" name="ipm[]" id="IPM03">
+	<label for="IPM03" class="control-label">Insect Class</label>
+	<input type="checkbox" value="IPM04" data-ipm="IPM04" name="ipm[]" id="IPM04">
+	<label for="IPM04" class="control-label">Insect Order</label>
+	<input type="checkbox" value="IPM05" data-ipm="IPM05" name="ipm[]" id="IPM05">
+	<label for="IPM05" class="control-label">Insect Family</label>
+	<input type="checkbox" value="IPM06" data-ipm="IPM06" name="ipm[]" id="IPM06">
+	<label for="IPM06" class="control-label">Insect Species</label>
+	<input type="checkbox" value="IPM07" data-ipm="IPM07" name="ipm[]" id="IPM07">
+	<label for="IPM07" class="control-label">Insect Population</label>
+	<input type="checkbox" value="IPM08" data-ipm="IPM08" name="ipm[]" id="IPM08">
+	<label for="IPM08" class="control-label">Insect population measurement unit</label>
+	<input type="checkbox" value="IPM09" data-ipm="IPM09" name="ipm[]" id="IPM09">
+	<label for="IPM09" class="control-label">Plant Sample Number</label>
+	<input type="checkbox" value="IPM10" data-ipm="IPM10" name="ipm[]" id="IPM10">
+	<label for="IPM10" class="control-label">Plant sampled</label>
+	<input type="checkbox" value="IPM11" data-ipm="IPM11" name="ipm[]" id="IPM11">
+	<label for="IPM11" class="control-label">Plant component assessed for damage</label>
+	<input type="checkbox" value="IPM12" data-ipm="IPM12" name="ipm[]" id="IPM12">
+	<label for="IPM12" class="control-label">Disease/Damage type</label>
+	<input type="checkbox" value="IPM13" data-ipm="IPM13" name="ipm[]" id="IPM13">
+	<label for="IPM13" class="control-label">Position assessed</label>
+	<input type="checkbox" value="IPM14" data-ipm="IPM14" name="ipm[]" id="IPM14">
+	<label for="IPM14" class="control-label">Visual rating of damage due to disease or insect</label>
+			
+	</div>
+	</div>
+EOF;
+	return $s;
+}
+
+function build_shm_ui(){
+	$s = <<<EOF
+
+<p>It is recommended to export all of the data here because they are supplemental
+metadata that provide context to the experimental data and helps with
+interpretation. For this reason, all variables are selected by default.</p>
+
+	<div class="panel panel-default">
+	<div class="panel-heading">Available Variables</div>
+	<div class="panel-body">
+			
+	<input type="checkbox" value="SHM5" data-ipm="SHM5" name="shm[]" id="SHM5" checked="checked">
+	<label for="SHM5" class="control-label">Data Dictionary</label>
+	<input type="checkbox" value="SHM7" data-ipm="SHM7" name="shm[]" id="SHM7" checked="checked">
+	<label for="SHM7" class="control-label">Drainage Control Structure Management</label>
+	<input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
+	<label for="SHM1" class="control-label">Field Operations</label>
+	<input type="checkbox" value="SHM6" data-ipm="SHM6" name="shm[]" id="SHM6" checked="checked">
+	<label for="SHM6" class="control-label">Notes</label>
+	<input type="checkbox" value="SHM2" data-ipm="SHM2" name="shm[]" id="SHM2" checked="checked">
+	<label for="SHM2" class="control-label">Pesticides</label>
+	<input type="checkbox" value="SHM4" data-ipm="SHM4" name="shm[]" id="SHM4" checked="checked">
+	<label for="SHM4" class="control-label">Plot Identifiers</label>
+	<input type="checkbox" value="SHM8" data-ipm="SHM8" name="shm[]" id="SHM8" checked="checked">
+	<label for="SHM8" class="control-label">Site Metadata and History</label>
+			
+	</div>
+	</div>
+EOF;
+	return $s;
+}
+
+require_once "../../../include/myview.php";
+$t = new MyView();
+$t->title = "CSCAP Project Data Download";
+$t->headextra = <<<EOF
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
+<link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
+<style>
+input[type=checkbox][disabled] + label {
+    color: #ccc;
+}
+input { float: left;}
+label { display: block !important; margin-left: 1.5em;}
+</style>
+EOF;
+$t->jsextra = <<<EOF
+<script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
+<script src="dl.js?v=7"></script>
+EOF;
+
+$sitesui = build_sites_ui();
+$treatmentui = build_treatments_ui();
+$agronomicui = build_agronomic_ui();
+$soilui = build_soil_ui();
+$yearui = build_year_ui();
+$shmui = build_shm_ui();
+$publisting = build_publications();
+$theseslisting = build_theses();
+$ghgui = build_ghg_ui();
+$ipmui = build_ipm_ui();
+$sitestable = file_get_contents('sites.html');
+
+$wxdatacontent = <<<EOM
+<br />
+<ul class="nav nav-tabs" role="tablist">
+ <li role="presentation" class="active"><a href="#wx2" aria-controls="wx2" role="tab" data-toggle="tab">Nearby Weather Station</a></li>
+ <li role="presentation"><a href="#wx1" aria-controls="wx1" role="tab" data-toggle="tab">On-Site Weather</a></li>
+</ul>
+
+<div class="tab-content">
+
+  
+ <div role="tabpanel" class="tab-pane active" id="wx2">
+<p>Supplementary weather data are available for Sustainable Corn CAP research sites 
+and are provided from nearby weather networks. These data are most appropriate 
+to use with these research sites because of proximity. The data are collected 
+from a variety of sources, including the National Climatic Data Center, 
+National Weather Service, and State Climatologists with curation and 
+management by Iowa Environmental Mesonet. These entities revise their 
+data and will produce updated values that are reprocessed into this archive.</p>
+
+<p>Documentation on this dataset can be found 
+<a href="https://mesonet.agron.iastate.edu/info/datasets/climodat.html" target="_blank">here</a></p>
+
+<form method="GET" id="wxform" action="https://mesonet.agron.iastate.edu/cgi-bin/request/coop.py">
+<input type="hidden" name="network" value="IACLIMATE" id="network" />
+
+<p><strong>Select Research Site(s):</strong></p>
+<select id="station" name="station[]" size="5" multiple="" class="select">
+<option value="WI4961">ARL [Arlington, WI] -- WI4961 MADISON DANE RGNL AP</option>
+<option value="MO1791">BRADFORD.A [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="MO1791">BRADFORD.B1 [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="MO1791">BRADFORD.B2 [Columba, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="MO1791">BRADFORD.C [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
+<option value="IN2825">DPAC [Farmland, IN] -- IN2825 FARMLAND 5 NNW</option>
+<option value="MO4271">FREEMAN [Jefferson City, MO] -- MO4271 JEFFERSON CITY WTP</option>
+<option value="IA6719">GILMORE [Gilmore City, IA] -- IA6719 POCAHONTAS</option>
+<option value="MN8323">HICKS.B [Tracy, MN] -- MN8323 TRACY</option>
+<option value="MN8323">HICKS.G [Tracy, MN] -- MN8323 TRACY</option>
+<option value="MN8323">HICKS.P [Tracy, MN] -- MN8323 TRACY</option>
+<option value="OH3874">HOYTVILLE.LTR [Custar, OH] -- OH3874 HOYTVILLE 2 NE</option>
+<option value="IA0200">ISUAG [Boone, IA] -- IA0200 AMES-8-WSW</option>
+<option value="IA0200">ISUAG.USB [Boone, IA] -- IA0200 AMES-8-WSW</option>
+<option value="MI3504">KELLOGG [Hickory Corners, MI] -- MI3504 Gull Lake Biological Station</option>
+<option value="WI4546">LAN [Lancaster, WI] -- WI4546 LANCASTER 4 WSW</option>
+<option value="WI8241">MAR [Marshfield, WI] -- WI8241 STRATFORD 1 NW</option>
+<option value="MI2395">MASON [East Lansing, MI] -- MI2395 EAST LANSING 4 S</option>
+<option value="OH1905">NAEW.WS109 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS111 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS113 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="OH1905">NAEW.WS118 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
+<option value="IL5768">NWREC [Monmouth, IL] -- IL5768 MONMOUTH</option>
+<option value="IL3717">ORR [Perry, IL] -- IL3717 Griggsville</option>
+<option value="IN6435">SEPAC [Butlerville, IN] -- IN6435 NORTH VERNON 2 ESE</option>
+<option value="IA8688">SERF [Crawfordsville, IA] -- IA8688 WASHINGTON</option>
+<option value="OH4551">STJOHNS [St. Johns, OH] -- OH4551 LIMA WWTP</option>
+<option value="OH8951">WATERMAN [Columbus, OH] -- OH8951 WESTERVILLE</option>
+<option value="OH9312">WOOSTER.COV [Wooster, OH] -- OH9312 WOOSTER EXP STN</option>
+<option value="OH9312">WOOSTER.LTR [Wooster, OH] -- OH9312 WOOSTER EXP STN</option>
+</select>
+
+<br />
+<p><strong>Select Time Period:</strong></p>
+
+<table><tr><th></th><th>Year</th><th>Month</th><th>Day</th></tr>
+<tr><td>Start:</td>
+<td><select id="year1" name="year1">
+<option value='1951' selected="selected">1951</option><option value='1952' >1952</option><option value='1953' >1953</option>
+<option value='1954' >1954</option><option value='1955' >1955</option><option value='1956' >1956</option>
+<option value='1957' >1957</option><option value='1958' >1958</option><option value='1959' >1959</option>
+<option value='1960' >1960</option><option value='1961' >1961</option><option value='1962' >1962</option>
+<option value='1963' >1963</option><option value='1964' >1964</option><option value='1965' >1965</option>
+<option value='1966' >1966</option><option value='1967' >1967</option><option value='1968' >1968</option>
+<option value='1969' >1969</option><option value='1970' >1970</option><option value='1971' >1971</option>
+<option value='1972' >1972</option><option value='1973' >1973</option><option value='1974' >1974</option>
+<option value='1975' >1975</option><option value='1976' >1976</option><option value='1977' >1977</option>
+<option value='1978' >1978</option><option value='1979' >1979</option><option value='1980' >1980</option>
+<option value='1981' >1981</option><option value='1982' >1982</option><option value='1983' >1983</option>
+<option value='1984' >1984</option><option value='1985' >1985</option><option value='1986' >1986</option>
+<option value='1987' >1987</option><option value='1988' >1988</option><option value='1989' >1989</option>
+<option value='1990' >1990</option><option value='1991' >1991</option><option value='1992' >1992</option>
+<option value='1993' >1993</option><option value='1994' >1994</option><option value='1995' >1995</option>
+<option value='1996' >1996</option><option value='1997' >1997</option><option value='1998' >1998</option>
+<option value='1999' >1999</option><option value='2000' >2000</option><option value='2001' >2001</option>
+<option value='2002' >2002</option><option value='2003' >2003</option><option value='2004' >2004</option>
+<option value='2005' >2005</option><option value='2006' >2006</option><option value='2007' >2007</option>
+<option value='2008' >2008</option><option value='2009' >2009</option><option value='2010' >2010</option>
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015'>2015</option>
+<option value='2016'>2016</option>
+<option value='2017'>2017</option>
+</select></td>
+<td><select id="month1" name="month1">
+<option value='1' selected="selected">January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' >December</option>
+</select>
+</td>
+<td><select id="day1" name="day1">
+<option value="1" selected="selected">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" >31</option>
+</select></td>
+</tr>
+<tr><td>End:</td>
+<td><select id="year2" name="year2">
+<option value='1951' >1951</option><option value='1952' >1952</option><option value='1953' >1953</option>
+<option value='1954' >1954</option><option value='1955' >1955</option><option value='1956' >1956</option>
+<option value='1957' >1957</option><option value='1958' >1958</option><option value='1959' >1959</option>
+<option value='1960' >1960</option><option value='1961' >1961</option><option value='1962' >1962</option>
+<option value='1963' >1963</option><option value='1964' >1964</option><option value='1965' >1965</option>
+<option value='1966' >1966</option><option value='1967' >1967</option><option value='1968' >1968</option>
+<option value='1969' >1969</option><option value='1970' >1970</option><option value='1971' >1971</option>
+<option value='1972' >1972</option><option value='1973' >1973</option><option value='1974' >1974</option>
+<option value='1975' >1975</option><option value='1976' >1976</option><option value='1977' >1977</option>
+<option value='1978' >1978</option><option value='1979' >1979</option><option value='1980' >1980</option>
+<option value='1981' >1981</option><option value='1982' >1982</option><option value='1983' >1983</option>
+<option value='1984' >1984</option><option value='1985' >1985</option><option value='1986' >1986</option>
+<option value='1987' >1987</option><option value='1988' >1988</option><option value='1989' >1989</option>
+<option value='1990' >1990</option><option value='1991' >1991</option><option value='1992' >1992</option>
+<option value='1993' >1993</option><option value='1994' >1994</option><option value='1995' >1995</option>
+<option value='1996' >1996</option><option value='1997' >1997</option><option value='1998' >1998</option>
+<option value='1999' >1999</option><option value='2000' >2000</option><option value='2001' >2001</option>
+<option value='2002' >2002</option><option value='2003' >2003</option><option value='2004' >2004</option>
+<option value='2005' >2005</option><option value='2006' >2006</option><option value='2007' >2007</option>
+<option value='2008' >2008</option><option value='2009' >2009</option><option value='2010' >2010</option>
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015'>2015</option>
+<option value='2016'>2016</option><option value='2017' selected="selected">2017</option>
+</select></td>
+<td><select id="month2" name="month2">
+<option value='1' selected="selected">January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' >December</option>
+</select></td>
+<td><select id="day2" name="day2">
+<option value="1" selected="selected">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" >31</option>
+</select></td>
+</tr>
+</table>
+
+<p><strong>Select Data Variables</strong>:
+<br /><i>Date and Day of Year are included automatically in the export. 
+To select multiple data, hold CTRL key down while selecting options here.</i>
+<br /><select size=5 name="vars[]" MULTIPLE class="select">0
+  <option value="high">Variable: High Air Temperature [F]</option>
+  <option value="highc">Variable: High Air Temperature [C]</option>
+  <option value="low">Variable: Low Air Temperature [F]</option>
+  <option value="lowc">Variable: Low Air Temperature [C]</option>
+  <option value="precip">Variable: Precipitation (rain+melted snow) [inch]</option>
+  <option value="precipmm">Variable: Precipitation (rain+melted snow) [mm]</option>
+  <option value="merra_srad">Variable: Solar Radiation from MERRA (shortwave down at ground) [MJ m-2 dy-1]</option>
+  <option value="gdd_50_86">Computed: Growing Degree Days (base=50,max=86) [F]</option>
+</select></p>
+
+<p><strong>Optional: Specialized Model Formats for Export</strong>:
+<br /><i>These are specialized formats typically used for modelling and
+their choice dictates the variables to be included.</i>
+<br />
+<select size="5" name="model">
+  <option value="apsim">Model: APSIM MET File</option> 
+  <option value="century">Model: Century (Monthly Format)</option> 
+  <option value="daycent">Model: DailyDayCent (no extra drivers)</option> 
+  <option value="dndc">Model: DNDC</option> 
+  <option value="salus">Model: SALUS</option> 
+  <option value="swat">Model: SWAT (daily precip and temperature)</option> 
+</select></p>
+
+<input type="hidden" name="what" value="download" />
+
+<p><strong>Data Delimitation:</strong>
+<br />How shall the output values be separated?
+<br><select name="delim">
+    <option value="comma">Comma
+    <option value="space">Space
+    <option value="tab">Tab
+   </select></p>
+
+<p>The downloaded data file name will contain the weather station identifiers
+if you request data from 9 or less sites.  For requests over 9 sites,
+the filename will simply be "changeme". Refer to the drop-down above for reminder as to 
+which site it corresponds with.</p>
+
+<p><input type="submit" value="Request Data" /></p>
+</form>
+  </div><!--./wx2-->
+
+ <div role="tabpanel" class="tab-pane" id="wx1">
+
+<p>On-site weather stations existed at some research sites to provide finer
+resolution weather data as compared to the networked weather data which can
+be a mile or more away. This on-site weather data is especially valuable for
+precipitation amounts as that will vary more spatially than temperature or
+wind.</p>
+
+<p>On-site weather stations tend to be less robust of instrumentation however
+than the weather data included under the first tab. It is recommended to use
+this on-site data as a secondary data set to refine the networked data. It
+is expected that the temperature and wind values will be near identical
+between the stations but the precipitation amounts will vary.</p>
+
+<form method="GET" id="wxform2" action="wxdl.py">
+
+<p><strong>Select Research Site(s):</strong>
+<br />
+<select name="stations" size="5" multiple="" class="select">
+<option value="ARL">ARL [Arlington, WI] -- 2011-2015</option>
+<option value="DPAC">DPAC [Farmland, IN] -- 2011-Sep 2015</option>
+<option value="HICKS.P">HICKS.P [Tracy, MN] -- 2011-2015</option>
+<option value="LAN">LAN [Lancaster, WI] -- 2011-2014</option>
+<option value="MAR">MAR [Marshfield, WI] -- 2011-2014</option>
+<option value="NWREC">NWREC [Monmouth, IL] -- 2011-2015</option>
+<option value="ORR">ORR [Perry, IL] -- 2011-2015</option>
+<option value="SEPAC">SEPAC [Butlerville, IN] -- 2011-2015</option>
+<option value="SERF">SERF [Crawfordsville, IA] -- 2011-2015</option>
+<option value="STJOHNS">STJOHNS [St Johns, OH] -- 2011-2014</option>
+</select>
+</p>
+<p><strong>Select Time Period:</strong>
+
+<table><tr><th></th><th>Year</th><th>Month</th><th>Day</th></tr>
+<tr><td>Start:</td>
+<td><select id="year1" name="year1">
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015'>2015</option>
+</select></td>
+<td><select id="month1" name="month1">
+<option value='1' selected="selected">January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' >December</option>
+</select>
+</td>
+<td><select id="day1" name="day1">
+<option value="1" selected="selected">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" >31</option>
+</select></td>
+</tr>
+<tr><td>End:</td>
+<td><select id="year2" name="year2">
+<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
+<option value='2014'>2014</option>
+<option value='2015' selected="selected">2015</option>
+</select></td>
+<td><select id="month2" name="month2">
+<option value='1'>January</option>
+<option value='2' >February</option>
+<option value='3' >March</option>
+<option value='4' >April</option>
+<option value='5' >May</option>
+<option value='6' >June</option>
+<option value='7' >July</option>
+<option value='8' >August</option>
+<option value='9' >September</option>
+<option value='10' >October</option>
+<option value='11' >November</option>
+<option value='12' selected="selected">December</option>
+</select></td>
+<td><select id="day2" name="day2">
+<option value="1">1</option>
+<option value="2" >2</option><option value="3" >3</option><option value="4" >4</option>
+<option value="5" >5</option><option value="6" >6</option><option value="7" >7</option>
+<option value="8" >8</option><option value="9" >9</option><option value="10" >10</option>
+<option value="11" >11</option><option value="12" >12</option><option value="13" >13</option>
+<option value="14" >14</option><option value="15" >15</option><option value="16" >16</option>
+<option value="17" >17</option><option value="18" >18</option><option value="19" >19</option>
+<option value="20" >20</option><option value="21" >21</option><option value="22" >22</option>
+<option value="23" >23</option><option value="24" >24</option><option value="25" >25</option>
+<option value="26" >26</option><option value="27" >27</option><option value="28" >28</option>
+<option value="29" >29</option><option value="30" >30</option><option value="31" selected="selected">31</option>
+</select></td>
+</tr>
+</table>
+
+</p>
+<!--
+<p><strong>Select Data Variables:</strong>
+<br /><i>Date and Day of Year are included automatically in the export. 
+To select multiple data, hold CTRL key down while selecting options here.</i>
+<br /><select size=5 name="vars" MULTIPLE class="select">0
+  <option value="high">Variable: High Air Temperature [F]</option>
+  <option value="highc">Variable: High Air Temperature [C]</option>
+  <option value="low">Variable: Low Air Temperature [F]</option>
+  <option value="lowc">Variable: Low Air Temperature [C]</option>
+  <option value="precip">Variable: Precipitation (rain+melted snow) [inch]</option>
+  <option value="precipmm">Variable: Precipitation (rain+melted snow) [mm]</option>
+  <option value="srad">Variable: Solar Radiation [MJ m-2 dy-1]</option>
+  <option value="gdd_50_86">Computed: Growing Degree Days (base=50,max=86) [F]</option>
+</select>
+</p>
+-->
+<br />
+
+<br /><input type="submit" value="Request Data">
+</p>
+
+</form>
+
+ </div><!--./wx1-->
+
+
+</div><!--./tab-content-->
+EOM;
+
+$t->content = <<<EOF
+
+<br />
+
+ <!-- Nav tabs -->
+  <ul class="nav nav-tabs maintabs" role="tablist">
+    <li role="presentation"><a href="/cscap/" role="tab"><i class="fa fa-home"></i></a></li>
+    <li role="presentation" class="active"><a href="#sites" aria-controls="sites" role="tab" data-toggle="tab">Research Sites</a></li>
+    <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Research Data</a></li>
+    <li role="presentation"><a href="#wdata" aria-controls="data" role="tab" data-toggle="tab">Water Data, Tools</a></li>
+    <li role="presentation"><a href="#wxdata" aria-controls="data" role="tab" data-toggle="tab">Weather Data</a></li>
+    <li role="presentation"><a href="#sdata" aria-controls="data" role="tab" data-toggle="tab">Soc Econ Data</a></li>
+    <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
+  </ul>
+  
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane" id="data">
+    
+<form method="POST" action="dl.py" id="mainform">
+<div class="btn-group fauxtabs" role="group" aria-label="Pages">
+  <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
+  <button type="button" class="btn btn-default" id="treatments-btn">Treatments</button>
+  <button type="button" class="btn btn-default" id="agronomic-btn">Agronomic</button>
+  <button type="button" class="btn btn-default" id="soil-btn">Soil</button>
+  <button type="button" class="btn btn-default" id="ghg-btn">GHG</button>
+  <button type="button" class="btn btn-default" id="ipm-btn">IPM</button>
+  <button type="button" class="btn btn-default" id="year-btn">Year</button>
+  <button type="button" class="btn btn-default" id="shm-btn">Management and Metadata</button>
+  <button type="button" class="btn btn-default" id="option-btn">Export Options</button>
+</div>
+
+<div id="sites-ui" style="display: block;">
+<div class="pull-right">
+<button id="sites-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+<p>This download tool will auto-populate options in the following tabs based on the research sites selected below. 
+It is recommended to “Select All” sites if you want to retain the most options moving forward.</p>
+{$sitesui}
+</div>
+
+<div id="treatments-ui" style="display: none;">
+<div class="pull-right">
+  <button id="treatments-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+{$treatmentui}
+</div>
+<div id="agronomic-ui" style="display: none;">
+<div class="pull-right">
+  <button id="agronomic-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+<p>For sites and treatments you’ve selected, available agronomic data will be identified by black text; 
+unavailable in grey. The usage of abbreviations <i>C</i>
+and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
+{$agronomicui}
+</div>
+
+<div id="soil-ui" style="display: none;">
+<div class="pull-right">
+  <button id="soil-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+<p>For sites and treatments you’ve selected, available soil data will be identified by black text; 
+unavailable in grey.</p>
+<div class="clearfix"></div>
+
+{$soilui}
+</div>
+
+<div id="ghg-ui" style="display: none;">
+<div class="pull-right">
+  <button id="ghg-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+<p>For sites and treatments you’ve selected, available greenhouse gas data will be identified by black text; 
+unavailable in grey. The soil data listed here were collected at the same time as the greenhouse 
+gas measurement; these are distinct for those under the Soil tab.</p>
+
+<div class="clearfix"></div>
+
+{$ghgui}
+</div>
+
+<div id="ipm-ui" style="display: none;">
+<div class="pull-right">
+  <button id="ipm-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+<p>For sites and treatments you’ve selected, available insects (pest and beneficial) and plant diseases data 
+will be identified by black text; unavailable in grey.</p>
+
+<div class="clearfix"></div>
+
+{$ipmui}
+</div>
+
+<div id="year-ui" style="display: none;">
+<div class="pull-right">
+  <button id="year-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+<p>For sites and treatments you’ve selected, available years of data 
+will be identified by black text; unavailable in grey.</p>
+
+<div class="clearfix"></div>
+
+{$yearui}
+</div>
+
+<div id="shm-ui" style="display: none;">
+<div class="pull-right">
+  <button id="shm-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+{$shmui}
+</div>
+
+<div id="option-ui" style="display: none;">
+
+
+<div class="form-group">
+    <label for="dlimit">How to handle values below detection limit:</label>
+<select name="detectlimit" class="form-control" id="dlimit">
+	<option value="1">Keep them as is, presented as "&lt; LOD"</option>
+	<option value="2">Divide the LOD value by two</option>
+	<option value="3">Divide the LOD value by square root of two</option>
+	<option value="4">Omit all occurrences and replace as missing</option>
+</select>
+</div>
+
+<div class="form-group">
+    <label for="missingvalue">How to represent missing values:</label>
+<select name="missing" class="form-control" id="missingvalue">
+	<option value="M">M</option>
+	<option value="N/A">N/A</option>
+	<option value="NaN">NaN</option>
+	<option value="NULL">NULL</option>
+	<option value=" ">((blank space))</option>
+	<option value=".">.</option>
+	<option value="-999">-999</option>
+    <option value="__custom__">Custom Value</option>
+</select>
+</div>
+
+<div class="form-group" id="missingvalue_opt" style="display: none;">
+    <label for="missingcustom">Enter Custom Missing Value:</label>
+    <input type="text" name="custom_missing" id="missingcustom" class="form-control">
+</div>
+
+<div class="form-group">
+    <label for="myemail">Enter Email Address:</label>
+    <input type="text" name="email" id="myemail" placeholder="joeuser@iastate.edu" class="form-control" aria-describedby="helpEmailBlock">
+    <label for="myemail2">Verify Email Address:</label>
+    <input type="text" name="email2" id="myemail2" placeholder="joeuser@iastate.edu" class="form-control" aria-describedby="helpEmailBlock">
+<span id="helpEmailBlock" class="help-block">You will be emailed the exported data file once generated.</span>
+</div>
+<br class="clearfix" />
+
+<h4>Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190) Usage Agreement</h4>
+<blockquote>
+<p>Please reference this data set in publications as:</p>
+
+<p>Abendroth, Lori J., Daryl E. Herzmann, Giorgi Chighladze, Eileen J. Kladivko, Matthew J. Helmers, 
+Laura Bowling, Michael Castellano, Richard M. Cruse, Warren A. Dick, Norman R. Fausey, Jane Frankenberger, 
+Aaron J. Gassmann, Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller, Emerson D. Nafziger, 
+Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer, Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017. 
+Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190). National Agricultural Library - ARS 
+- USDA. <a href="https://dx.doi.org/10.15482/USDA.ADC/1411953" target="_blank">https://dx.doi.org/10.15482/USDA.ADC/1411953</a>
+</p>
+
+<p>You are encouraged to contact the Sustainable Corn CAP personnel listed above to ensure 
+proper data interpretation and may also consider co-authoring with them. You shall have no claim 
+of ownership to any intellectual property rights in any part of the data, content, functions, features, 
+code, data exploration tools, logos or other intellectual property comprising this database.
+</p>
+
+<p>The coauthors individually and the Sustainable Corn CAP collectively shall NOT be responsible or 
+liable for the accuracy, reliability and completeness of any information included in the database nor 
+the suitability of its application for any particular purpose. Data users are encouraged to notify 
+the coauthors regarding data quality and other issues concerning the data, tools, and functionality of this website. 
+Contact <a href="mailto:sustainablecorn@iastate.edu">sustainablecorn@iastate.edu</a> with any questions or concerns 
+regarding usage and application of the data available at this site.
+</p>
+</blockquote>
+
+<p>
+<input id="agreewithterms" type="checkbox" name="agree" value="AGREE"> I agree
+ with the above terms of usage.
+</p>
+
+
+<div class="alert alert-info" role="alert" id="dlmsg" style="display: none;">
+<strong>Thank you</strong>: Your request has been sent to the server for
+processing.  In a few minutes, you should get a message here that your request
+has been processed and an email will be delivered to your address with details
+on how to download your data file. Large data requests may result in a processing
+timeout shown, but an email will still be delivered with the data.</div>
+
+<div class="alert alert-info" role="alert" id="dlmsg2" style="display: none;">
+<strong>Completed</strong>: Please check your email for download information!</div>
+
+<div id="proceed" style="display: none;">
+  <p><input type="submit" value="Proceed with Download"></p>
+</div>
+	
+</div>
+<br clear="both" />
+<div class="pull-right">
+<button id="prev-btn" type="button" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i> Previous</button>
+<button id="next-btn" type="button" class="btn btn-default">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
+</div>
+</form>
+		</div>
+		<div role="tabpanel" class="tab-pane active" id="sites">
+
+<iframe src="https://www.google.com/maps/d/embed?mid=1VQuDqTRkO5RPvIgWMODYvBLWU1A&amp;z=5&amp;ll=42.62%2C-90.72" width="640" height="480"></iframe>
+
+    {$sitestable}
+
+
+		</div>
+		<div role="tabpanel" class="tab-pane" id="pubs">
+
+<br />
+
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#p1" aria-controls="p1" role="tab" data-toggle="tab">Refereed Journals</a></li>
+    <li role="presentation"><a href="#p2" aria-controls="p2" role="tab" data-toggle="tab">Thesis and Dissertations</a></li>
+    <li role="presentation"><a href="#p3" aria-controls="p3" role="tab" data-toggle="tab">Technical Reports</a></li>
+  </ul>
+  
+<div class="tab-content">
+
+    <div role="tabpanel" class="tab-pane active" id="p1">
+<p><blockquote>Articles with open access availability are <strong>in bold</strong>.
+These do not require a subscription to the journal to access. For individuals 
+without accessibility to certain journals, contact 
+<a href="mailto:sustainablecorn@iastate.edu">sustainablecorn@iastate.edu</a> 
+for requests to articles below that are subscription-only.</blockquote></p>
+
+{$publisting}
+    </div>
+    
+    <div role="tabpanel" class="tab-pane" id="p2">
+<p><blockquote>Many biophysical and social science graduate students were 
+supported by and contributed to the scientific discoveries and publications of 
+the Sustainable Corn CAP team. Their theses and dissertations are provided here 
+via links to their major University library. If a web link is not provided, 
+contact <a href="mailto:sustainablecorn@iastate.edu">sustainablecorn@iastate.edu</a>
+for a PDF copy.</blockquote></p>
+
+{$theseslisting}
+    </div>
+    
+    <div role="tabpanel" class="tab-pane" id="p3">
+<p><blockquote>The Sustainable Corn CAP published a technical report series highlighting 
+the team’s research, extension, education, and management findings. These are available 
+in electronic and print format:</blockquote></p>
+    <ul>
+	<li><a href="https://store.extension.iastate.edu/product/14878" target="_blank">Climate and Managing Corn-Soybean 
+	Agroecosystems 1: Findings, Implications and Recommendations</a></li>
+	<li><a href="https://store.extension.iastate.edu/product/15130" target="_blank">Climate and Managing Corn-Soybean 
+	Agroecosystems 2: Findings, Implications and Recommendations</a></li>
+	<li><a href="https://store.extension.iastate.edu/product/14504" target="_blank">Climate Change and Agricultural Extension; 
+	Building Capacity for Land Grant Extension Services to Address the Agricultural Impacts of Climate Change 
+	and the Adaptive Management Needs of Agricultural Stakeholders (vol. 3)</a></li>
+	<li><a href="https://store.extension.iastate.edu/product/14913" target="_blank">Agri-Climate Education; Preparing 
+	the Next Generation (vol. 4)</a></li>
+	<li><a href="https://store.extension.iastate.edu/product/15140" target="_blank">Project and Research Management: 
+	Integrating Systems, Data, and People in Multidisciplinary Work (vol. 5)</a></li>
+    </ul>
+
+<p>Project Director, Lois Wright Morton, co-published a primer for project directors of large teams. 
+This publication is hosted on the USDA NIFA website:</p>
+    <ul>
+	<li><a href="https://nifa.usda.gov/leading-transdisciplinary-projects" target="_blank">Leading Large Transdisciplinary 
+	Projects Addressing Social-Ecological Systems: A Primer for Project Directors</a></li>
+    </ul>
+
+    </div>
+</div>
+
+		</div>
+    <div role="tabpanel" class="tab-pane" id="wdata">
+
+<p>Data originating from research sites that have subsurface tile drainage installed are included here. 
+They are not included under the Research Data tab because data are collected on a time series basis with 
+the user selecting the aggregation preferred for export. Please note that additional data such as management 
+operations, plot identifiers, data dictionary, and site history for these drainage research sites are included 
+under the Research Data tab. It is strongly recommended to download these supporting data to properly interpret 
+and synthesize water data contained here.</p>
+
+<p>Datasets include:</p>
+<ul>
+<li><a href="/cscap/plot_tileflow.phtml" target="_blank">Tile Flow</a></li>
+<li><a href="/cscap/plot_watertable.phtml" target="_blank">Water Table Depth</a></li>
+<li><a href="/cscap/plot_waterquality.phtml" target="_blank">Water Quality</a></li>
+<li><a href="/cscap/plot_decagon.phtml" target="_blank">Decagon - Soil Moisture and Temperature</a></li>
+</ul>
+
+<p>Tile flow and water quality data for the BRADFORD.A experimental site are not included here due to conditions 
+that are distinct from other drainage sites. Drainage tile were installed in the clay layer of the soil profile 
+which impacted the amount of water through the system and out from the site. Contact <a href="mailto:sustainablecorn@iastate.edu">
+sustainablecorn@iastate.edu</a> for access to this data.</p>
+
+    </div><!-- ./wdata -->
+    <div role="tabpanel" class="tab-pane" id="wxdata">
+    {$wxdatacontent}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="sdata">
+
+<div class="clearfix"><p>&nbsp;</p></div>
+
+<p>Social economic research was conducted and included a survey of 4,778 farmers 
+in 11 Corn Belt states and 156 one-hour, in-person farmer interviews. The data 
+cannot be released due to anonymity issues but are available in aggregated 
+format across watersheds in the region. These aggregated data and maps are 
+available in two publications:</p>
+
+<p><a href="https://store.extension.iastate.edu/Product/14459" target="_blank">   
+Farmer Perspectives on Agriculture and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 1</a></p>
+
+<p>This first atlas (Volume 1) provides data regarding farmer beliefs and 
+concerns about climate change, attitudes toward adaptation and mitigation, 
+perceived capacity to deal with the impacts and recent experiences with extreme 
+weather events. Delineated by watershed, this collection of tables and maps 
+provides the results of a USDA-NIFA-supported survey, conducted in 2012, of 
+4,778 farmers in 11 Corn-belt states.</p>
+
+<p><a href="https://store.extension.iastate.edu/Product/14458" target="_blank">
+Farmer Perspectives on Agricultural Practices, Information, and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 2</a></p>
+
+<p>This second atlas (Volume 2) provides additional results from a 2012 survey of 
+4,778 farmers in 11 Corn-belt states. Here, the focus is upon farmers' 
+specific behaviors, beliefs about climate and weather, and the tools they 
+utilize to make farm decisions. You will find information covering timing of 
+farming practices and farming decisions, whether and how farmers use weather 
+information when making farming decisions; a detailed look at the influence of 
+agricultural advisors in farmer decision making processes; farmers' personal 
+experiences regarding weather and risks; and plans and efforts of farmers to 
+adapt to and manage for weather and climate variability and risk.</p>
+
+    </div>
+</div>
+
+</div>
+
+</div>    
+
+<div class="clearfix"></div>
+<p>&nbsp;</p>
+<img src="/images/logos/web_logos.png" class="img img-responsive">
+		
+EOF;
+$t->render('single.phtml');
+
+?>
