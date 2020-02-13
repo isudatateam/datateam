@@ -65,7 +65,7 @@ def get_cgi_dates(form):
 
 def do_work(form):
     """do great things"""
-    pgconn = get_dbconn('sustainablecorn')
+    pgconn = get_dbconn('td')
     stations = form.getlist('stations')
     if not stations:
         stations.append("XXX")

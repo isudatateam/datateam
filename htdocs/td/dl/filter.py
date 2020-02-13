@@ -57,7 +57,7 @@ def agg(arr):
 
 
 def do_filter(form):
-    pgconn = get_dbconn('sustainablecorn')
+    pgconn = get_dbconn('td')
     cursor = pgconn.cursor()
     res = {'treatments': [], 'agronomic': [], 'soil': [],
            'ghg': [], 'water': [], 'ipm': [], 'year': []}

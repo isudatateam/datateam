@@ -63,7 +63,7 @@ regarding usage and application of the data available at this site.
 
 """
 
-PGCONN = get_dbconn('sustainablecorn')
+PGCONN = get_dbconn('td')
 FERTELEM = ['nitrogen', 'phosphorus', 'phosphate', 'potassium',
             'potash', 'sulfur', 'calcium', 'magnesium', 'zinc', 'iron']
 KGH_LBA = 1.12085

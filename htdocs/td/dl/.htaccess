@@ -1,4 +1,4 @@
-SetEnv DATATEAM_APP cscap
+SetEnv DATATEAM_APP td
 
 AddHandler cgi-script .py
 Options +ExecCGI
