@@ -1,8 +1,7 @@
 """Harvest the data in the data management store!"""
-from __future__ import print_function
 
 import pyiem.cscap_utils as util
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, exponential_backoff
 
 TABS = ['Plant & Harvest', 'Soil & Fert', 'Pesticides', 'Residue Mngt',
         'DWM', 'Irrigation', 'Notes']
@@ -20,7 +19,7 @@ def main():
     f = sheets.spreadsheets().get(
         spreadsheetId=config['td']['manstore'], includeGridData=True
     )
-    j = util.exponential_backoff(f.execute)
+    j = exponential_backoff(f.execute)
     translate = {
         'date': 'valid',
         'plantmaturity_GDD (F)': 'plantmaturity_gdd'}

@@ -1,7 +1,6 @@
 """
 Harvest the Agronomic Data into the ISU Database
 """
-from __future__ import print_function
 import sys
 
 import psycopg2
@@ -85,7 +84,7 @@ for item in res['items']:
                         """, (siteid, plotid, varname, YEAR, val))
                     if pcursor.rowcount == 1:
                         newvals += 1
-                except Exception, exp:
+                except Exception as exp:
                     print('HARVEST_AGRONOMIC TRACEBACK')
                     print(exp)
                     print(('%s %s %s %s %s'
