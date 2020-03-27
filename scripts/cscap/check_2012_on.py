@@ -3,27 +3,29 @@
   2011 and the rest of the years
 """
 import pyiem.cscap_utils as util
+from pyiem.util import logger
+from gspread_pandas import Spread
 
-config = util.get_config()
+LOG = logger()
 
-spr_client = util.get_spreadsheet_client(config)
-drive = util.get_driveclient(config)
 
-res = drive.files().list(q="title contains 'Agronomic Data'").execute()
+def main():
+    """Go Main Go."""
+    config = util.get_config()
 
-for item in res['items']:
-    if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
-        continue
-    print '------------>', item['title']
-    spreadsheet = util.Spreadsheet(spr_client, item['id'])
-    spreadsheet.get_worksheets()
-    if '2011' not in spreadsheet.worksheets:
-        print('ERROR: Does not have 2011 sheet')
-        continue
-    worksheet = spreadsheet.worksheets['2011']
-    rows = worksheet.rows
-    for yr in ['2012', '2013', '2014', '2015']:
-        worksheet = spreadsheet.worksheets[yr]
-        if rows != worksheet.rows:
-            print('    Year: %s has row count: %s , 2011 has: %s'
-                  ) % (yr, worksheet.rows, rows)
+    drive = util.get_driveclient(config)
+
+    res = drive.files().list(q="title contains 'Agronomic Data'").execute()
+
+    for item in res["items"]:
+        if item["mimeType"] != "application/vnd.google-apps.spreadsheet":
+            continue
+        LOG.debug(item["title"])
+        spread = Spread(item["id"], config=config["cscap"]["service_account"])
+        for sheet in spread.sheets:
+            df = spread.sheet_to_df(index=None, sheet=sheet)
+            LOG.debug("%s %s", sheet.title, len(df.index))
+
+
+if __name__ == "__main__":
+    main()

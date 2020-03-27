@@ -9,21 +9,17 @@ config = util.get_config()
 spr_client = util.get_spreadsheet_client(config)
 drive_client = util.get_driveclient()
 
-res = drive_client.files().list(
-        q="title contains 'Soil Nitrate Data'").execute()
+res = (
+    drive_client.files().list(q="title contains 'Soil Nitrate Data'").execute()
+)
 
-newcols = [
-           ['SOIL22 Soil Ammonium (Optional)', 'mg per kg soil'],
-           ]
+newcols = [["SOIL22 Soil Ammonium (Optional)", "mg per kg soil"]]
 
-for item in res['items']:
-    feed2 = spr_client.GetWorksheets(item['id'])
+for item in res["items"]:
+    feed2 = spr_client.GetWorksheets(item["id"])
     for entry2 in feed2.entry:
         worksheet = entry2.id.text.split("/")[-1]
-        print 'Processing %s WRK: %s Title: %s' % (item['title'],
-                                                   worksheet,
-                                                   entry2.title.text),
-        feed3 = spr_client.get_list_feed(item['id'], worksheet)
+        feed3 = spr_client.get_list_feed(item["id"], worksheet)
         row = feed3.entry[0]
         data = row.to_dict()
 
@@ -33,13 +29,10 @@ for item in res['items']:
 
         # Add a column?
         for i in range(len(newcols)):
-            cell = spr_client.get_cell(item['id'], worksheet, 1, plusone-i)
+            cell = spr_client.get_cell(item["id"], worksheet, 1, plusone - i)
             cell.cell.input_value = newcols[i][0]
             spr_client.update(cell)
 
-            cell = spr_client.get_cell(item['id'], worksheet, 2, plusone-i)
+            cell = spr_client.get_cell(item["id"], worksheet, 2, plusone - i)
             cell.cell.input_value = newcols[i][1]
             spr_client.update(cell)
-
-        print ' ... updated'
-        # sys.exit()
