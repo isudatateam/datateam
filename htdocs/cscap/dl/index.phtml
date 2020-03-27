@@ -407,7 +407,7 @@ function build_sites_ui(){
 	asort($keys);
 	$s = '';
 	$q = -1;	
-	while (list($v,$k)=each($keys)){
+	foreach($keys as $v => $k){
 		$q += 1;
 		if ($q % 3 == 0){
 			$s .= "<div class=\"col-md-4\">\n";
@@ -416,7 +416,7 @@ function build_sites_ui(){
   "<div class=\"panel-heading\">".
   "<input type=\"checkbox\" class=\"state-check\" value=\"%s\">%s</div>".
   "<div class=\"panel-body\">\n", $k, $states[$k]);
-		while (list($v2, $k2)=each($data[$k])){
+		foreach($data[$k] as $v2 => $k2){
 			$s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
 			    "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
                 "<label for=\"ST%s\" class=\"control-label\">%s</label>",
@@ -993,7 +993,7 @@ $t->content = <<<EOF
 <div class="clearfix"></div>
 
 <p>This download tool will auto-populate options in the following tabs based on the research sites selected below. 
-It is recommended to “Select All” sites if you want to retain the most options moving forward.</p>
+We recommended you “Select All” sites if you want to retain the most options moving forward.</p>
 {$sitesui}
 </div>
 
@@ -1253,8 +1253,8 @@ This publication is hosted on the USDA NIFA website:</p>
 They are not included under the Research Data tab because data are collected on a time series basis with 
 the user selecting the aggregation preferred for export. Please note that additional data such as management 
 operations, plot identifiers, data dictionary, and site history for these drainage research sites are included 
-under the Research Data tab. It is strongly recommended to download these supporting data to properly interpret 
-and synthesize water data contained here.</p>
+under the Research Data tab. This supporting data must be downloaded to properly interpret and synthesize water 
+data contained here.</p>
 
 <p>Datasets include:</p>
 <ul>
