@@ -26,7 +26,7 @@ function tdyn2( $varname ){
 }
 function radio($varname, $vals){
 	$s = "";
-	while( list($k,$v) = each($vals)){
+	foreach($vals as $k => $v){
 		$s .= sprintf(" &nbsp; <input type='radio' name='%s' value='%s'>%s</input> &nbsp; ",
 				$varname, $k, $v);
 	}
@@ -362,7 +362,7 @@ it will default to no.</strong>
 <tr><th>Conservation Practices</th><td>Field 1</td><td>Field 2</td><td>On other land you farm</td></tr>
 <?php 
 $i = True;
-while (list($k,$v) = each($conservation)){
+foreach($conservation as $k => $v){
  if ($i){ $color = '#FFFFFF'; $i = False; }
  else{ $color = '#EEEEEE'; $i = True; }
  

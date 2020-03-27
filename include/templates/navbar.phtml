@@ -186,7 +186,7 @@ function get_title($page){
 	return sprintf("%s", $page["title"]);
 }
 
-while( list($idx, $page) = each($_pages) )
+foreach($_pages as $idx => $page)
 {
     if (! isset($_SERVER["REMOTE_USER"]) && isset($page["auth"])) continue;
     echo sprintf("<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\" 
@@ -194,7 +194,7 @@ while( list($idx, $page) = each($_pages) )
       ($ar[0] == $idx) ? " active" : "", get_title($page));
 
     echo "<ul class=\"dropdown-menu\">\n";
-    while( list($idx2, $page2) = each($page["subs"]) )
+    foreach($page["subs"] as $idx2 => $page2)
     {
         if (! isset($_SERVER["REMOTE_USER"]) && isset($page2["auth"])) continue;
        echo sprintf("<li><a%s href=\"%s\">%s</a></li>\n", 

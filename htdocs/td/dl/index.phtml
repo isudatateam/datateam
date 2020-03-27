@@ -407,7 +407,7 @@ function build_sites_ui(){
 	asort($keys);
 	$s = '';
 	$q = -1;	
-	while (list($v,$k)=each($keys)){
+	foreach($keys as $v => $k){
 		$q += 1;
 		if ($q % 3 == 0){
 			$s .= "<div class=\"col-md-4\">\n";
@@ -416,7 +416,7 @@ function build_sites_ui(){
   "<div class=\"panel-heading\">".
   "<input type=\"checkbox\" class=\"state-check\" value=\"%s\">%s</div>".
   "<div class=\"panel-body\">\n", $k, $states[$k]);
-		while (list($v2, $k2)=each($data[$k])){
+		foreach($data[$k] as $v2 => $k2){
 			$s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
 			    "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
                 "<label for=\"ST%s\" class=\"control-label\">%s</label>",
