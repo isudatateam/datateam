@@ -5,3 +5,4 @@ ALTER TABLE soil_fert add plotid text;
 ALTER TABLE soil_fert add action text;
 ALTER TABLE residue_mngt add action text;
 ALTER TABLE irrigation add action text;
+ALTER TABLE notes add action text;
