@@ -9,20 +9,23 @@ spr_client = util.get_spreadsheet_client(config)
 drive = util.get_driveclient(config)
 
 # Fake last conditional to make it easy to reprocess one site...
-res = drive.files().list(q=("title contains 'Agronomic Data'"),
-                         maxResults=999).execute()
+res = (
+    drive.files()
+    .list(q=("title contains 'Agronomic Data'"), maxResults=999)
+    .execute()
+)
 
-WANT = ['AGR18', 'AGR20', 'AGR22']
-KNOWN = ['n/a', 'did not collect', None]
+WANT = ["AGR18", "AGR20", "AGR22"]
+KNOWN = ["n/a", "did not collect", None]
 
-sz = len(res['items'])
-for i, item in enumerate(res['items']):
-    if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
+sz = len(res["items"])
+for i, item in enumerate(res["items"]):
+    if item["mimeType"] != "application/vnd.google-apps.spreadsheet":
         continue
-    spreadsheet = util.Spreadsheet(spr_client, item['id'])
+    spreadsheet = util.Spreadsheet(spr_client, item["id"])
     spreadsheet.get_worksheets()
     for year in spreadsheet.worksheets:
-        print('%3i/%3i sheet "%s" for "%s"' % (i + 1, sz, year, item['title']))
+        print('%3i/%3i sheet "%s" for "%s"' % (i + 1, sz, year, item["title"]))
         lf = spreadsheet.worksheets[year].get_list_feed()
         for rownum, entry in enumerate(lf.entry):
             dirty = False
@@ -34,12 +37,12 @@ for i, item in enumerate(res['items']):
                     continue
                 if value.strip().startswith("["):
                     continue
-                if value == '%':
-                    newvalue = 'g kg-1'
+                if value == "%":
+                    newvalue = "g kg-1"
                 elif NUM.match(value):
-                    newvalue = str(float(value.replace("%", "")) * 10.)
+                    newvalue = str(float(value.replace("%", "")) * 10.0)
                 else:
-                    print 'what', value
+                    print(f"what {value}")
                     newvalue = value
                 if newvalue != value:
                     entry.set_value(key, newvalue)

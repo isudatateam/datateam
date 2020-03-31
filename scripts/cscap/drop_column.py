@@ -1,15 +1,26 @@
 """Remove a column from all Agronomic Sheets!"""
 import pyiem.cscap_utils as util
 
-config = util.get_config()
 
-# Get me a client, stat
-spr_client = util.get_spreadsheet_client(config)
-drive_client = util.get_driveclient()
+def main():
+    """Go Main Go."""
+    config = util.get_config()
 
-res = drive_client.files().list(q="title contains 'Agronomic Data'").execute()
+    # Get me a client, stat
+    spr_client = util.get_spreadsheet_client(config)
+    drive_client = util.get_driveclient()
 
-for item in res['items']:
-    spreadsheet = util.Spreadsheet(spr_client, item['id'])
-    for yr in ["2011", "2012", "2013", "2014", "2015"]:
-        spreadsheet.worksheets[yr].del_column("AGR392")
+    res = (
+        drive_client.files()
+        .list(q="title contains 'Agronomic Data'")
+        .execute()
+    )
+
+    for item in res["items"]:
+        spreadsheet = util.Spreadsheet(spr_client, item["id"])
+        for yr in ["2011", "2012", "2013", "2014", "2015"]:
+            spreadsheet.worksheets[yr].del_column("AGR392")
+
+
+if __name__ == "__main__":
+    main()

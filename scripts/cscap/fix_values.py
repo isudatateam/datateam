@@ -7,24 +7,45 @@ spr_client = util.get_spreadsheet_client(config)
 drive = util.get_driveclient(config)
 
 # Fake last conditional to make it easy to reprocess one site...
-res = drive.files().list(q=("title contains 'Soil Bulk Density' or "
-                            "title contains 'Soil Nitrate Data' or "
-                            "title contains 'Soil Texture Data' or "
-                            "title contains 'Agronomic Data'"),
-                         maxResults=999).execute()
+res = (
+    drive.files()
+    .list(
+        q=(
+            "title contains 'Soil Bulk Density' or "
+            "title contains 'Soil Nitrate Data' or "
+            "title contains 'Soil Texture Data' or "
+            "title contains 'Agronomic Data'"
+        ),
+        maxResults=999,
+    )
+    .execute()
+)
 
-HEADERS = ['uniqueid', 'plotid', 'depth', 'tillage', 'rotation', 'soil6',
-           'nitrogen', 'drainage', 'rep', 'subsample', 'landscape',
-           'notes', 'herbicide', 'sampledate']
+HEADERS = [
+    "uniqueid",
+    "plotid",
+    "depth",
+    "tillage",
+    "rotation",
+    "soil6",
+    "nitrogen",
+    "drainage",
+    "rep",
+    "subsample",
+    "landscape",
+    "notes",
+    "herbicide",
+    "sampledate",
+]
 
-sz = len(res['items'])
-for i, item in enumerate(res['items']):
-    if item['mimeType'] != 'application/vnd.google-apps.spreadsheet':
+sz = len(res["items"])
+for i, item in enumerate(res["items"]):
+    if item["mimeType"] != "application/vnd.google-apps.spreadsheet":
         continue
-    spreadsheet = util.Spreadsheet(spr_client, item['id'])
+    spreadsheet = util.Spreadsheet(spr_client, item["id"])
     spreadsheet.get_worksheets()
     for year in spreadsheet.worksheets:
-        print('%3i/%3i sheet "%s" for "%s"' % (i + 1, sz, year, item['title']))
+        print('%3i/%3i sheet "%s" for "%s"' % (i + 1, sz, year, item["title"]))
         lf = spreadsheet.worksheets[year].get_list_feed()
         for rownum, entry in enumerate(lf.entry):
             dirty = False
@@ -35,23 +56,35 @@ for i, item in enumerate(res['items']):
                 newvalue = value
                 if value is None:
                     continue
-                if value in ['N/A', 'NA', 'n/a', 'Grass, no crop']:
-                    newvalue = 'n/a'
-                elif value in ['.', '-', '..']:
-                    newvalue = '.'
-                elif value in ['Did not collect', 'DID NOT COLLECT',
-                               'Did Not Collect', 'fire loss', 'dnc',
-                               'did  not collect', 'Not collected',
-                               'Farm sold', 'DNC', 'Drowned out',
-                               'Farm was not available', 'did not collect',
-                               'outlier', 'not collected', '#NUM!',
-                               'no sample', 'missing',
-                               'didi not collect']:
-                    newvalue = 'did not collect'
+                if value in ["N/A", "NA", "n/a", "Grass, no crop"]:
+                    newvalue = "n/a"
+                elif value in [".", "-", ".."]:
+                    newvalue = "."
+                elif value in [
+                    "Did not collect",
+                    "DID NOT COLLECT",
+                    "Did Not Collect",
+                    "fire loss",
+                    "dnc",
+                    "did  not collect",
+                    "Not collected",
+                    "Farm sold",
+                    "DNC",
+                    "Drowned out",
+                    "Farm was not available",
+                    "did not collect",
+                    "outlier",
+                    "not collected",
+                    "#NUM!",
+                    "no sample",
+                    "missing",
+                    "didi not collect",
+                ]:
+                    newvalue = "did not collect"
                 else:
                     try:
                         float(value)
-                    except:
+                    except Exception:
                         if rownum > 1:
                             print("    invalid key:%s val:%s" % (key, value))
                         continue
