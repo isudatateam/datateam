@@ -7,13 +7,12 @@ action = ss.Sheets.list_sheets(include_all=True)
 for sheet in action.data:
     if not sheet.name.startswith("CSCAP Site Edits Needed_"):
         continue
-    # print sheet.id, sheet.name
     s = ss.Sheets.get_sheet(sheet.id)
     titles = []
     for col in s.columns:
         titles.append(col.title)
-    idx = titles.index('DONE')
-    sidx = titles.index('Site')
+    idx = titles.index("DONE")
+    sidx = titles.index("Site")
     hits = 0
     cnt = 0
     site = sheet.name.split("_", 1)[1]
@@ -26,5 +25,4 @@ for sheet in action.data:
         if row.cells[idx].value is True:
             hits += 1
         cnt += 1
-    print "%s,%s,%s,%.2f" % (site, hits, cnt,
-                             hits / float(cnt) * 100.)
+    print("%s,%s,%s,%.2f" % (site, hits, cnt, hits / float(cnt) * 100.0))
