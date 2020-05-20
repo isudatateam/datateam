@@ -1,31 +1,38 @@
-COLORS = {'UD': '#36454F',
-          'ND': '#36454F',
-          'CD': '#FFDF00',
-          'FD': '#000080',
-          'SD': '#ff0000',
-          'SH': '#FFA500',
-          'SI': '#ADD8E6',
-          'CA': '#4169E1',
-          'SB': '#00ff00',
-          'TDB': '#FFC0CB',
-          'n/a': '#FFC0CB',
-          }
+"""Some common stuff."""
 
-CODES = {'UD': 'Undrained (No Drainage)',
-         'ND': 'No Drainage',
-         'FD': 'Free Drainage (Conventional Drainage)',
-         'CD': 'Controlled Drainage (Managed Drainage)',
-         'SD': 'Surface Drainage',
-         'SH': 'Shallow Drainage',
-         'SI': 'Controlled Drainage with Subirrigation',
-         'CA': 'Automated Controlled Drainage',
-         'SB': 'Saturated Buffer',
-         'TBD': 'To Be Determined',
-         'n/a': 'Not Available or Not Applicable'}
+COLORS = {
+    "UD": "#36454F",
+    "ND": "#36454F",
+    "CD": "#FFDF00",
+    "FD": "#000080",
+    "SD": "#ff0000",
+    "SH": "#FFA500",
+    "SI": "#ADD8E6",
+    "CA": "#4169E1",
+    "SB": "#00ff00",
+    "TDB": "#FFC0CB",
+    "n/a": "#FFC0CB",
+}
 
-ERRMSG = ("No data found. Check the start date falls within the "
-          "applicable date range for the research site. "
-          "If yes, try expanding the number of days included.")
+CODES = {
+    "UD": "Undrained (No Drainage)",
+    "ND": "No Drainage",
+    "FD": "Free Drainage (Conventional Drainage)",
+    "CD": "Controlled Drainage (Managed Drainage)",
+    "SD": "Surface Drainage",
+    "SH": "Shallow Drainage",
+    "SI": "Controlled Drainage with Subirrigation",
+    "CA": "Automated Controlled Drainage",
+    "SB": "Saturated Buffer",
+    "TBD": "To Be Determined",
+    "n/a": "Not Available or Not Applicable",
+}
+
+ERRMSG = (
+    "No data found. Check the start date falls within the "
+    "applicable date range for the research site. "
+    "If yes, try expanding the number of days included."
+)
 
 
 def getColor(label, i):
@@ -35,5 +42,5 @@ def getColor(label, i):
       label (str): the label of interest
     """
     if label in COLORS:
-        return "color: '%s'" % (COLORS[label], )
-    return "colorIndex: %s" % (i+1, )
+        return f"color: '{COLORS[label]}'"
+    return f"colorIndex: {i + 1}"
