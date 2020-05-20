@@ -1,17 +1,15 @@
-#!/usr/bin/env python
 """Plot!"""
 # pylint: disable=abstract-class-instantiated
 import sys
-from io import BytesIO
-import cgi
 import os
 
 import pandas as pd
+from paste.request import parse_formvars
 from pandas.io.sql import read_sql
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
 
-from common import CODES, getColor
+sys.path.append("/opt/datateam/htdocs/td")
+from common import CODES, getColor, send_error
 
 LINESTYLE = [
     "-",
@@ -41,22 +39,6 @@ LINESTYLE = [
 ]
 
 
-def send_error(viewopt, msg):
-    """" """
-    if viewopt == "js":
-        ssw("Content-type: application/javascript\n\n")
-        ssw("alert('No data found, sorry');")
-        sys.exit()
-    fig, ax = plt.subplots(1, 1)
-    ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha="center")
-    ssw("Content-type: image/png\n\n")
-    ram = BytesIO()
-    fig.savefig(ram, format="png")
-    ram.seek(0)
-    ssw(ram.read())
-    sys.exit()
-
-
 def get_vardesc(varname):
     """Get the heading for the variable."""
     pgconn = get_dbconn("td")
@@ -73,15 +55,15 @@ def get_vardesc(varname):
     return cursor.fetchone()
 
 
-def make_plot(form):
+def make_plot(form, start_response):
     """Make the plot"""
     pgconn = get_dbconn("td")
-    uniqueid = form.getfirst("site", "ISUAG")
-    varname = form.getfirst("varname", "AGR17")
+    uniqueid = form.get("site", "ISUAG")
+    varname = form.get("varname", "AGR17")
     (varlabel, varunits) = get_vardesc(varname)
 
-    group = int(form.getfirst("group", 0))
-    viewopt = form.getfirst("view", "plot")
+    group = int(form.get("group", 0))
+    viewopt = form.get("view", "plot")
     df = read_sql(
         """SELECT value, year, plotid from agronomic_data
         WHERE uniqueid = %s and varname = %s and value is not null
@@ -93,15 +75,15 @@ def make_plot(form):
         index_col=None,
     )
     if df.empty:
-        send_error(viewopt, "No / Not Enough Data Found, sorry!")
+        return send_error(
+            start_response, viewopt, "No / Not Enough Data Found, sorry!"
+        )
     df["value"] = pd.to_numeric(df["value"], errors="coerce")
     linecol = "plotid"
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
-            """
-            SELECT * from plotids where siteid = %s
-        """,
+            "SELECT * from plotids where siteid = %s",
             pgconn,
             params=(uniqueid,),
             index_col="plotid",
@@ -123,31 +105,40 @@ def make_plot(form):
     if viewopt not in ["plot", "js"]:
         df.rename(columns=dict(value=varname), inplace=True)
         if viewopt == "html":
-            ssw("Content-type: text/html\n\n")
-            ssw(df.to_html(index=False))
-            return
+            start_response("200 OK", [("Content-type", "text/html")])
+            return df.to_html(index=False).encode("utf-8")
         if viewopt == "csv":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                ("Content-Disposition: attachment; " "filename=%s_%s.csv\n\n")
-                % (uniqueid, varname)
+            start_response(
+                "200 OK",
+                [
+                    ("Content-type", "application/octet-stream"),
+                    (
+                        "Content-Disposition",
+                        "attachment; filename=%s_%s.csv" % (uniqueid, varname),
+                    ),
+                ],
             )
-            ssw(df.to_csv(index=False))
-            return
+            return df.to_csv(index=False).encode("utf-8")
         if viewopt == "excel":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                ("Content-Disposition: attachment; " "filename=%s_%s.xlsx\n\n")
-                % (uniqueid, varname)
+            start_response(
+                "200 OK",
+                [
+                    ("Content-type", "application/octet-stream"),
+                    (
+                        "Content-Disposition",
+                        "attachment; filename=%s_%s.xlsx"
+                        % (uniqueid, varname),
+                    ),
+                ],
             )
             with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
                 df.to_excel(writer, "Data", index=False)
-            ssw(open("/tmp/ss.xlsx", "rb").read())
+            res = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
-            return
+            return res
 
     # Begin highcharts output
-    ssw("Content-type: application/javascript\n\n")
+    start_response("200 OK", [("Content-type", "application/javascript")])
     title = "Agronomic Data for Site: %s" % (uniqueid,)
     arr = []
     plot_ids = df[linecol].unique()
@@ -181,7 +172,7 @@ def make_plot(form):
             .replace("nan", "null")
         )
     series = ",".join(arr)
-    ssw(
+    res = (
         """
 $("#hc").highcharts({
     title: {text: '"""
@@ -212,13 +203,10 @@ $("#hc").highcharts({
 });
     """
     )
+    return res.encode("utf-8")
 
 
-def main():
+def application(environ, start_response):
     """Do Something"""
-    form = cgi.FieldStorage()
-    make_plot(form)
-
-
-if __name__ == "__main__":
-    main()
+    form = parse_formvars(environ)
+    return [make_plot(form, start_response)]

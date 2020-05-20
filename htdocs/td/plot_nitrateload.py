@@ -1,18 +1,17 @@
-#!/usr/bin/env python
 """Plot!"""
 # pylint: disable=abstract-class-instantiated
 import sys
-from io import BytesIO
-import cgi
 import datetime
 import os
 
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn, ssw
-from common import CODES, getColor, ERRMSG
+from paste.request import parse_formvars
+from pyiem.util import get_dbconn
+
+sys.path.append("/opt/datateam/htdocs/td")
+from common import CODES, getColor, send_error
 
 LINESTYLE = [
     "-",
@@ -42,40 +41,24 @@ LINESTYLE = [
 ]
 
 
-def send_error(viewopt, msg):
-    """" """
-    if viewopt == "js":
-        ssw("Content-type: application/javascript\n\n")
-        ssw(f"alert('{ERRMSG}');")
-        sys.exit()
-    fig, ax = plt.subplots(1, 1)
-    ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha="center")
-    ssw("Content-type: image/png\n\n")
-    ram = BytesIO()
-    fig.savefig(ram, format="png")
-    ram.seek(0)
-    ssw(ram.read())
-    sys.exit()
-
-
-def make_plot(form):
+def make_plot(form, start_response):
     """Make the plot"""
     pgconn = get_dbconn("td")
-    (uniqueid, plotid) = form.getfirst("site", "ISUAG::302E").split("::")
+    (uniqueid, plotid) = form.get("site", "ISUAG::302E").split("::")
 
     sts = datetime.datetime.strptime(
-        form.getfirst("date", "2014-01-01"), "%Y-%m-%d"
+        form.get("date", "2014-01-01"), "%Y-%m-%d"
     )
-    days = int(form.getfirst("days", 1))
-    group = int(form.getfirst("group", 0))
+    days = int(form.get("days", 1))
+    group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
     tzname = (
         "America/Chicago"
         if uniqueid in ["ISUAG", "SERF", "GILMORE"]
         else "America/New_York"
     )
-    viewopt = form.getfirst("view", "plot")
-    ptype = form.getfirst("ptype", "1")
+    viewopt = form.get("view", "plot")
+    ptype = form.get("ptype", "1")
     if ptype == "1":
         df = read_sql(
             """SELECT valid at time zone 'UTC' as v, plotid,
@@ -98,7 +81,9 @@ def make_plot(form):
             params=(uniqueid, sts.date(), ets.date()),
         )
     if len(df.index) < 3:
-        send_error(viewopt, "No / Not Enough Data Found, sorry!")
+        send_error(
+            start_response, viewopt, "No / Not Enough Data Found, sorry!"
+        )
     linecol = "plotid"
     if group == 1:
         # Generate the plotid lookup table
@@ -131,47 +116,51 @@ def make_plot(form):
             columns=dict(v="timestamp", load="Load (kg ha-1)"), inplace=True
         )
         if viewopt == "html":
-            ssw("Content-type: text/html\n\n")
-            ssw(df.to_html(index=False))
-            return
+            start_response("200 OK", [("Content-type", "text/html")])
+            return df.to_html(index=False).encode("utf-8")
         if viewopt == "csv":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s_%s.csv\n\n"
-                )
-                % (
-                    uniqueid,
-                    plotid,
-                    sts.strftime("%Y%m%d"),
-                    ets.strftime("%Y%m%d"),
-                )
+            start_response(
+                "200 OK",
+                [
+                    ("Content-type", "application/octet-stream"),
+                    (
+                        "Content-Disposition",
+                        "attachment; filename=%s_%s_%s_%s.csv"
+                        % (
+                            uniqueid,
+                            plotid,
+                            sts.strftime("%Y%m%d"),
+                            ets.strftime("%Y%m%d"),
+                        ),
+                    ),
+                ],
             )
-            ssw(df.to_csv(index=False))
-            return
+            return df.to_csv(index=False).encode("utf-8")
         if viewopt == "excel":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s_%s.xlsx\n\n"
-                )
-                % (
-                    uniqueid,
-                    plotid,
-                    sts.strftime("%Y%m%d"),
-                    ets.strftime("%Y%m%d"),
-                )
+            start_response(
+                "200 OK",
+                [
+                    ("Content-type", "application/octet-stream"),
+                    (
+                        "Content-Disposition",
+                        "attachment; filename=%s_%s_%s_%s.xlsx"
+                        % (
+                            uniqueid,
+                            plotid,
+                            sts.strftime("%Y%m%d"),
+                            ets.strftime("%Y%m%d"),
+                        ),
+                    ),
+                ],
             )
             with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
                 df.to_excel(writer, "Data", index=False)
-            ssw(open("/tmp/ss.xlsx", "rb").read())
+            res = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
-            return
+            return res
 
     # Begin highcharts output
-    ssw("Content-type: application/javascript\n\n")
+    start_response("200 OK", [("Content-type", "application/javascript")])
     title = ("Nitrate Load for Site: %s (%s to %s)") % (
         uniqueid,
         sts.strftime("%-d %b %Y"),
@@ -213,7 +202,7 @@ def make_plot(form):
             .replace("nan", "null")
         )
     series = ",".join(s)
-    ssw(
+    res = (
         """
 $("#hc").highcharts({
     title: {text: '"""
@@ -241,13 +230,10 @@ $("#hc").highcharts({
 });
     """
     )
+    return res.encode("utf-8")
 
 
-def main():
+def application(environ, start_response):
     """Do Something"""
-    form = cgi.FieldStorage()
-    make_plot(form)
-
-
-if __name__ == "__main__":
-    main()
+    form = parse_formvars(environ)
+    return [make_plot(form, start_response)]

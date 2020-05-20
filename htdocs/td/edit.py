@@ -1,16 +1,15 @@
-#!/usr/bin/env python
 """Generalized accepting of a data edit!
 
 UPSTREAM is /td/edit.py, so edit there and copy to admin :/
 """
-import cgi
 import os
 import sys
 import datetime
 import json
 
 import pytz
-from pyiem.util import get_dbconn, ssw
+from paste.request import parse_formvars
+from pyiem.util import get_dbconn
 
 
 def decagon_logic(uniqueid_in, plotid_in):
@@ -39,23 +38,23 @@ def decagon_logic(uniqueid_in, plotid_in):
     return uniqueid, plotid, column
 
 
-def main():
+def application(environ, start_response):
     """Do Something"""
-    form = cgi.FieldStorage()
-    remote_user = os.environ.get("REMOTE_USER", "anonymous")
-    ssw("Content-type: application/json\n\n")
+    form = parse_formvars(environ)
+    remote_user = environ.get("REMOTE_USER", "anonymous")
+    start_response("200 OK", [("Content-type", "application/json")])
 
     # Figure out what we are editing
-    table = form.getfirst("table")
+    table = form.get("table")
     valid = datetime.datetime.strptime(
         form.getfirst("valid")[:19], "%Y-%m-%dT%H:%M:%S"
     )
     valid = valid.replace(tzinfo=pytz.utc)
-    column = form.getfirst("column")
-    uniqueid = form.getfirst("uniqueid")
-    plotid = form.getfirst("plotid")
-    value = form.getfirst("value")
-    comment = form.getfirst("comment")
+    column = form.get("column")
+    uniqueid = form.get("uniqueid")
+    plotid = form.get("plotid")
+    value = form.get("value")
+    comment = form.get("comment")
     if value == "null":
         value = None
     if table == "decagon_data":
@@ -90,9 +89,4 @@ def main():
     )
     cursor.close()
     pgconn.commit()
-    ssw(json.dumps(res))
-
-
-if __name__ == "__main__":
-    main()
-    # print decagon_logic("ISUAG::302", "10 cm VSM")
+    return [json.dumps(res).encode("utf-8")]

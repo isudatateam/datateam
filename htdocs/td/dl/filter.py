@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """This is our fancy pants filter function.
 
 We end up return a JSON document that lists out what is possible
@@ -10,10 +9,10 @@ We end up return a JSON document that lists out what is possible
 """
 import json
 import sys
-import cgi
 
+from paste.request import parse_formvars
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
 AGG = {
@@ -79,8 +78,8 @@ def agg(arr):
 
 
 def do_filter(form):
+    """Do the filtering fun."""
     pgconn = get_dbconn("td")
-    cursor = pgconn.cursor()
     res = {
         "treatments": [],
         "agronomic": [],
@@ -90,14 +89,14 @@ def do_filter(form):
         "ipm": [],
         "year": [],
     }
-    sites = agg(form.getlist("sites[]"))
-    treatments = agg(form.getlist("treatments[]"))
-    agronomic = agg(form.getlist("agronomic[]"))
-    soil = agg(form.getlist("soil[]"))
-    ghg = agg(form.getlist("ghg[]"))
-    water = agg(form.getlist("water[]"))
-    ipm = agg(form.getlist("ipm[]"))
-    year = agg(form.getlist("year[]"))
+    sites = agg(form.getall("sites[]"))
+    treatments = agg(form.getall("treatments[]"))
+    agronomic = agg(form.getall("agronomic[]"))
+    soil = agg(form.getall("soil[]"))
+    ghg = agg(form.getall("ghg[]"))
+    # water = agg(form.get("water[]"))
+    # ipm = agg(form.get("ipm[]"))
+    # year = agg(form.get("year[]"))
 
     # build a list of treatments based on the sites selected
     df = read_sql(
@@ -121,16 +120,16 @@ def do_filter(form):
     a = {}
     arsql = []
     args = [tuple(sites)]
-    for l, col in zip(
+    for code, col in zip(
         ["TIL", "ROT", "DWM", "NIT", "LND"],
         ["tillage", "rotation", "drainage", "nitrogen", "landscape"],
     ):
-        a[l] = [b for b in treatments if b.startswith(l)]
-        if l == "LND":
-            a[l].append("n/a")
-        if len(a[l]) > 0:
+        a[code] = [b for b in treatments if b.startswith(code)]
+        if code == "LND":
+            a[code].append("n/a")
+        if len(a[code]) > 0:
             arsql.append(" %s in %%s" % (col,))
-            args.append(tuple(a[l]))
+            args.append(tuple(a[code]))
     if len(arsql) == 0:
         sql = ""
     else:
@@ -138,12 +137,10 @@ def do_filter(form):
         sql = sql + " and ".join(arsql)
 
     df = read_sql(
-        """
+        f"""
     with myplotids as (
         SELECT uniqueid, plotid, nitrogen from plotids
-        WHERE uniqueid in %s """
-        + sql
-        + """
+        WHERE uniqueid in %s {sql}
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
@@ -158,12 +155,10 @@ def do_filter(form):
 
     # build a list of soil data based on the plotids and sites
     df = read_sql(
-        """
+        f"""
     with myplotids as (
         SELECT uniqueid, plotid from plotids
-        WHERE uniqueid in %s """
-        + sql
-        + """
+        WHERE uniqueid in %s {sql}
     )
     SELECT distinct varname from soil_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
@@ -253,13 +248,9 @@ def do_filter(form):
     return res
 
 
-def main():
+def application(environ, start_response):
     """Do Stuff"""
-    ssw("Content-type: application/json\n\n")
-    form = cgi.FieldStorage()
+    start_response("200 OK", [("Content-type", "application/json")])
+    form = parse_formvars(environ)
     res = do_filter(form)
-    ssw(json.dumps(res))
-
-
-if __name__ == "__main__":
-    main()
+    return [json.dumps(res).encode("utf-8")]

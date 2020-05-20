@@ -1,4 +1,7 @@
 """Some common stuff."""
+from io import BytesIO
+
+from pyiem.plot.use_agg import plt
 
 COLORS = {
     "UD": "#36454F",
@@ -44,3 +47,17 @@ def getColor(label, i):
     if label in COLORS:
         return f"color: '{COLORS[label]}'"
     return f"colorIndex: {i + 1}"
+
+
+def send_error(start_response, viewopt, msg=ERRMSG):
+    """" """
+    if viewopt == "js":
+        start_response("200 OK", [("Content-type", "application/javascript")])
+        return b"alert('No data found, sorry');"
+    fig, ax = plt.subplots(1, 1)
+    ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha="center")
+    start_response("200 OK", [("Content-type", "image/png")])
+    ram = BytesIO()
+    fig.savefig(ram, format="png")
+    ram.seek(0)
+    return ram.read()

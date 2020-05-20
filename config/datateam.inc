@@ -34,7 +34,9 @@
   <Directory "/opt/datateam/htdocs/td">
     SetEnv DATATEAM_APP td
 
-    AddHandler cgi-script .py
+    # Default handler for python scripts
+    WSGIProcessGroup iemwsgi_ap
+    AddHandler wsgi-script .py
     Options +ExecCGI
 
     RewriteEngine On

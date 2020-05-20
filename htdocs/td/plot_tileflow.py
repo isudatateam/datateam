@@ -1,18 +1,17 @@
-#!/usr/bin/env python
 """Plot!"""
 # pylint: disable=abstract-class-instantiated
 import sys
-from io import BytesIO
-import cgi
 import datetime
 import os
 
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn, ssw
-from common import CODES, getColor, ERRMSG
+from paste.request import parse_formvars
+from pyiem.util import get_dbconn
+
+sys.path.append("/opt/datateam/htdocs/td")
+from common import CODES, getColor, send_error
 
 LINESTYLE = [
     "-",
@@ -42,22 +41,6 @@ LINESTYLE = [
 ]
 
 
-def send_error(viewopt, msg):
-    """" """
-    if viewopt == "js":
-        ssw("Content-type: application/javascript\n\n")
-        ssw(f"alert('{ERRMSG}');")
-        sys.exit()
-    fig, ax = plt.subplots(1, 1)
-    ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha="center")
-    ssw("Content-type: image/png\n\n")
-    ram = BytesIO()
-    fig.savefig(ram, format="png")
-    ram.seek(0)
-    ssw(ram.read())
-    sys.exit()
-
-
 def get_weather(pgconn, uniqueid, sts, ets):
     """Retreive the daily precipitation"""
     # Convert ids
@@ -65,9 +48,8 @@ def get_weather(pgconn, uniqueid, sts, ets):
     if uniqueid not in ["SERF_IA", "SERF_SD", "DEFI_R"]:
         dbid = uniqueid.split("_")[0]
     df = read_sql(
-        """SELECT valid, precip_mm from weather_daily
-    WHERE siteid = %s and valid >= %s and valid <= %s ORDER by valid ASC
-    """,
+        "SELECT valid, precip_mm from weather_daily "
+        "WHERE siteid = %s and valid >= %s and valid <= %s ORDER by valid ASC",
         pgconn,
         index_col="valid",
         params=(dbid, sts.date(), ets.date()),
@@ -79,16 +61,16 @@ def get_weather(pgconn, uniqueid, sts, ets):
     return df
 
 
-def make_plot(form):
+def make_plot(form, start_response):
     """Make the plot"""
     pgconn = get_dbconn("td")
-    uniqueid = form.getfirst("site", "ISUAG")
+    uniqueid = form.get("site", "ISUAG")
 
     sts = datetime.datetime.strptime(
-        form.getfirst("date", "2014-01-01"), "%Y-%m-%d"
+        form.get("date", "2014-01-01"), "%Y-%m-%d"
     )
-    days = int(form.getfirst("days", 1))
-    group = int(form.getfirst("group", 0))
+    days = int(form.get("days", 1))
+    group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
     wxdf = get_weather(pgconn, uniqueid, sts, ets)
     tzname = (
@@ -96,8 +78,8 @@ def make_plot(form):
         if uniqueid in ["ISUAG", "SERF", "GILMORE"]
         else "America/New_York"
     )
-    viewopt = form.getfirst("view", "plot")
-    ptype = form.getfirst("ptype", "1")
+    viewopt = form.get("view", "plot")
+    ptype = form.get("ptype", "1")
     if ptype == "1":
         df = read_sql(
             """SELECT valid at time zone 'UTC' as v, plotid,
@@ -144,14 +126,14 @@ def make_plot(form):
         )
         df["discharge_f"] = "-"
     if len(df.index) < 3:
-        send_error(viewopt, "No / Not Enough Data Found, sorry!")
+        send_error(
+            start_response, viewopt, "No / Not Enough Data Found, sorry!"
+        )
     linecol = "plotid"
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
-            """
-            SELECT * from plotids where siteid = %s
-        """,
+            "SELECT * from plotids where siteid = %s",
             pgconn,
             params=(uniqueid,),
             index_col="plotid",
@@ -181,38 +163,50 @@ def make_plot(form):
             inplace=True,
         )
         if viewopt == "html":
-            ssw("Content-type: text/html\n\n")
-            ssw(df.to_html(index=False))
-            return
+            start_response("200 OK", [("Content-type", "text/html")])
+            return df.to_html(index=False).encode("utf-8")
         if viewopt == "csv":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s.csv\n\n"
-                )
-                % (uniqueid, sts.strftime("%Y%m%d"), ets.strftime("%Y%m%d"))
+            start_response(
+                "200 OK",
+                [
+                    ("Content-type", "application/octet-stream"),
+                    (
+                        "Content-Disposition",
+                        "attachment; filename=%s_%s_%s.csv"
+                        % (
+                            uniqueid,
+                            sts.strftime("%Y%m%d"),
+                            ets.strftime("%Y%m%d"),
+                        ),
+                    ),
+                ],
             )
-            ssw(df.to_csv(index=False))
-            return
+            return df.to_csv(index=False).encode("utf-8")
         if viewopt == "excel":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s.xlsx\n\n"
-                )
-                % (uniqueid, sts.strftime("%Y%m%d"), ets.strftime("%Y%m%d"))
+            start_response(
+                "200 OK",
+                [
+                    ("Content-type", "application/octet-stream"),
+                    (
+                        "Content-Disposition",
+                        "attachment; filename=%s_%s_%s.xlsx"
+                        % (
+                            uniqueid,
+                            sts.strftime("%Y%m%d"),
+                            ets.strftime("%Y%m%d"),
+                        ),
+                    ),
+                ],
             )
             with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
                 df.to_excel(writer, "Data", index=False)
-            ssw(open("/tmp/ss.xlsx", "rb").read())
+            res = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
-            return
+            return res
 
     # Begin highcharts output
-    ssw("Content-type: application/javascript\n\n")
-    title = ("Tile Flow for Site: %s (%s to %s)") % (
+    start_response("200 OK", [("Content-type", "application/javascript")])
+    title = "Tile Flow for Site: %s (%s to %s)" % (
         uniqueid,
         sts.strftime("%-d %b %Y"),
         ets.strftime("%-d %b %Y"),
@@ -275,7 +269,7 @@ def make_plot(form):
             .replace("nan", "null")
         )
     series = ",".join(s)
-    ssw(
+    res = (
         """
 $("#hc").highcharts({
     title: {text: '"""
@@ -321,25 +315,10 @@ $("#hc").highcharts({
 });
     """
     )
+    return res.encode("utf-8")
 
 
-def main():
+def application(environ, start_response):
     """Do Something"""
-    form = cgi.FieldStorage()
-    make_plot(form)
-
-
-if __name__ == "__main__":
-    main()
-
-
-def test_wx():
-    """Test that we can fetch data."""
-    pgconn = get_dbconn("td")
-    wxdf = get_weather(
-        pgconn,
-        "CLAY_C",
-        datetime.datetime(2015, 4, 20),
-        datetime.datetime(2016, 1, 1),
-    )
-    assert wxdf.empty
+    form = parse_formvars(environ)
+    return [make_plot(form, start_response)]

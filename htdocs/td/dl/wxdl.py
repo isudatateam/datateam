@@ -1,12 +1,11 @@
-#!/usr/bin/env python
 """Download weather data, please"""
 import os
-import cgi
 import datetime
 
 import pandas as pd
+from paste.request import parse_formvars
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
 from pyiem.datatypes import distance, temperature
 
 VARDF = {
@@ -51,12 +50,12 @@ def sane_date(year, month, day):
 def get_cgi_dates(form):
     """ Figure out which dates are requested via the form, we shall attempt
     to account for invalid dates provided! """
-    y1 = int(form.getfirst("year1"))
-    m1 = int(form.getfirst("month1"))
-    d1 = int(form.getfirst("day1"))
-    y2 = int(form.getfirst("year2"))
-    m2 = int(form.getfirst("month2"))
-    d2 = int(form.getfirst("day2"))
+    y1 = int(form.get("year1"))
+    m1 = int(form.get("month1"))
+    d1 = int(form.get("day1"))
+    y2 = int(form.get("year2"))
+    m2 = int(form.get("month2"))
+    d2 = int(form.get("day2"))
 
     ets = sane_date(y2, m2, d2)
     archive_end = datetime.date.today() - datetime.timedelta(days=1)
@@ -69,7 +68,7 @@ def get_cgi_dates(form):
 def do_work(form):
     """do great things"""
     pgconn = get_dbconn("td")
-    stations = form.getlist("stations")
+    stations = form.getall("stations")
     if not stations:
         stations.append("XXX")
     sts, ets = get_cgi_dates(form)
@@ -109,17 +108,18 @@ def do_work(form):
     writer.close()
 
     fn = ",".join(stations)
-    ssw("Content-type: application/vnd.ms-excel\n")
-    ssw(("Content-Disposition: attachment;Filename=wx_%s.xls\n\n") % (fn,))
-    ssw(open("/tmp/ss.xlsx", "rb").read())
+    res = open("/tmp/ss.xlsx", "rb").read()
     os.unlink("/tmp/ss.xlsx")
+    return res, fn
 
 
-def main():
+def application(environ, start_response):
     """Do Stuff"""
-    form = cgi.FieldStorage()
-    do_work(form)
-
-
-if __name__ == "__main__":
-    main()
+    form = parse_formvars(environ)
+    res, fn = do_work(form)
+    headers = [
+        ("Content-type", "application/vnd.ms-excel"),
+        ("Content-Disposition", "attachment;filename=wx_%s.xls" % (fn,)),
+    ]
+    start_response("200 OK", headers)
+    return [res]
