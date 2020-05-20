@@ -1,4 +1,0 @@
-SetEnv DATATEAM_APP td
-
-AddHandler cgi-script .py
-Options +ExecCGI
