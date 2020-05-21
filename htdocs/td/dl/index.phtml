@@ -432,6 +432,13 @@ function build_sites_ui(){
 	}
 	return $s;
 }
+function build_water_ui(){
+	$s = <<<EOF
+
+    <p>Work In Progress.</p>
+EOF;
+	return $s;
+}
 
 function build_year_ui(){
 	$s = <<<EOF
@@ -450,84 +457,6 @@ function build_year_ui(){
 	<input type="checkbox" value="2015" data-year="2015" name="year[]" id="Y2015">
 	<label for="Y2015" class="control-label">2015</label>
 	
-	</div>
-	</div>
-EOF;
-	return $s;
-}
-
-function build_ghg_ui(){
-	$s = <<<EOF
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Variables</div>
-	<div class="panel-body">
-	
-	<input type="checkbox" value="GHG01" data-ghg="GHG01" name="ghg[]" id="GHG01">
-	<label for="GHG01" class="control-label">Carbon Dioxide (CO<sub>2</sub>-C) flux</label>
-	<input type="checkbox" value="GHG02" data-ghg="GHG02" name="ghg[]" id="GHG02">
-	<label for="GHG02" class="control-label">Carbon Dioxide (CO<sub>2</sub>) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG03" data-ghg="GHG03" name="ghg[]" id="GHG03">
-	<label for="GHG03" class="control-label">Nitrous Oxide (N<sub>2</sub>O-N) flux</label>
-	<input type="checkbox" value="GHG04" data-ghg="GHG04" name="ghg[]" id="GHG04">
-	<label for="GHG04" class="control-label">Nitrous Oxide (N<sub>2</sub>O) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG05" data-ghg="GHG05" name="ghg[]" id="GHG05">
-	<label for="GHG05" class="control-label">Ammonia (NH<sub>3</sub>-N) flux</label>
-	<input type="checkbox" value="GHG06" data-ghg="GHG06" name="ghg[]" id="GHG06">
-	<label for="GHG06" class="control-label">Ammonia (NH<sub>3</sub>) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG07" data-ghg="GHG07" name="ghg[]" id="GHG07">
-	<label for="GHG07" class="control-label">Methane (CH<sub>4</sub>-C) flux</label>
-	<input type="checkbox" value="GHG08" data-ghg="GHG08" name="ghg[]" id="GHG08">
-	<label for="GHG08" class="control-label">Methane (CH<sub>4</sub>) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG11" data-ghg="GHG11" name="ghg[]" id="GHG11">
-	<label for="GHG11" class="control-label">Volumetric soil moisture at 5 cm</label>
-	<input type="checkbox" value="GHG12" data-ghg="GHG12" name="ghg[]" id="GHG12">
-	<label for="GHG12" class="control-label">Soil Temperature at 5 cm</label>
-	<input type="checkbox" value="GHG13" data-ghg="GHG13" name="ghg[]" id="GHG13">
-	<label for="GHG13" class="control-label">Soil Nitrate (NO<sub>3</sub>-N) at 0-10 cm</label>
-	<input type="checkbox" value="GHG14" data-ghg="GHG14" name="ghg[]" id="GHG14">
-	<label for="GHG14" class="control-label">Soil Ammonium (NH<sub>4</sub>-N) at 0-10 cm</label>
-	
-	</div>
-	</div>
-EOF;
-	return $s;
-}
-
-function build_ipm_ui(){
-	$s = <<<EOF
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Variables</div>
-	<div class="panel-body">
-
-	<input type="checkbox" value="IPM01" data-ipm="IPM01" name="ipm[]" id="IPM01">
-	<label for="IPM01" class="control-label">Insect Sampling Methods</label>
-	<input type="checkbox" value="IPM02" data-ipm="IPM02" name="ipm[]" id="IPM02">
-	<label for="IPM02" class="control-label">Insect Common Name</label>
-	<input type="checkbox" value="IPM03" data-ipm="IPM03" name="ipm[]" id="IPM03">
-	<label for="IPM03" class="control-label">Insect Class</label>
-	<input type="checkbox" value="IPM04" data-ipm="IPM04" name="ipm[]" id="IPM04">
-	<label for="IPM04" class="control-label">Insect Order</label>
-	<input type="checkbox" value="IPM05" data-ipm="IPM05" name="ipm[]" id="IPM05">
-	<label for="IPM05" class="control-label">Insect Family</label>
-	<input type="checkbox" value="IPM06" data-ipm="IPM06" name="ipm[]" id="IPM06">
-	<label for="IPM06" class="control-label">Insect Species</label>
-	<input type="checkbox" value="IPM07" data-ipm="IPM07" name="ipm[]" id="IPM07">
-	<label for="IPM07" class="control-label">Insect Population</label>
-	<input type="checkbox" value="IPM08" data-ipm="IPM08" name="ipm[]" id="IPM08">
-	<label for="IPM08" class="control-label">Insect population measurement unit</label>
-	<input type="checkbox" value="IPM09" data-ipm="IPM09" name="ipm[]" id="IPM09">
-	<label for="IPM09" class="control-label">Plant Sample Number</label>
-	<input type="checkbox" value="IPM10" data-ipm="IPM10" name="ipm[]" id="IPM10">
-	<label for="IPM10" class="control-label">Plant sampled</label>
-	<input type="checkbox" value="IPM11" data-ipm="IPM11" name="ipm[]" id="IPM11">
-	<label for="IPM11" class="control-label">Plant component assessed for damage</label>
-	<input type="checkbox" value="IPM12" data-ipm="IPM12" name="ipm[]" id="IPM12">
-	<label for="IPM12" class="control-label">Disease/Damage type</label>
-	<input type="checkbox" value="IPM13" data-ipm="IPM13" name="ipm[]" id="IPM13">
-	<label for="IPM13" class="control-label">Position assessed</label>
-	<input type="checkbox" value="IPM14" data-ipm="IPM14" name="ipm[]" id="IPM14">
-	<label for="IPM14" class="control-label">Visual rating of damage due to disease or insect</label>
-			
 	</div>
 	</div>
 EOF;
@@ -568,7 +497,7 @@ EOF;
 
 require_once "../../../include/myview.php";
 $t = new MyView();
-$t->title = "CSCAP Project Data Download";
+$t->title = "Transforming Drainage Project Data Download";
 $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
@@ -587,14 +516,13 @@ EOF;
 
 $sitesui = build_sites_ui();
 $treatmentui = build_treatments_ui();
+$waterui = build_water_ui();
 $agronomicui = build_agronomic_ui();
 $soilui = build_soil_ui();
 $yearui = build_year_ui();
 $shmui = build_shm_ui();
 $publisting = build_publications();
 $theseslisting = build_theses();
-$ghgui = build_ghg_ui();
-$ipmui = build_ipm_ui();
 $sitestable = file_get_contents('sites.html');
 
 $wxdatacontent = <<<EOM
@@ -608,7 +536,7 @@ $wxdatacontent = <<<EOM
 
   
  <div role="tabpanel" class="tab-pane active" id="wx2">
-<p>Supplementary weather data are available for Sustainable Corn CAP research sites 
+<p>Supplementary weather data are available for Transforming Drainage research sites 
 and are provided from nearby weather networks. These data are most appropriate 
 to use with these research sites because of proximity. The data are collected 
 from a variety of sources, including the National Climatic Data Center, 
@@ -966,7 +894,6 @@ $t->content = <<<EOF
     <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Research Data</a></li>
     <li role="presentation"><a href="#wdata" aria-controls="data" role="tab" data-toggle="tab">Water Data, Tools</a></li>
     <li role="presentation"><a href="#wxdata" aria-controls="data" role="tab" data-toggle="tab">Weather Data</a></li>
-    <li role="presentation"><a href="#sdata" aria-controls="data" role="tab" data-toggle="tab">Soc Econ Data</a></li>
     <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
   </ul>
   
@@ -977,10 +904,9 @@ $t->content = <<<EOF
 <div class="btn-group fauxtabs" role="group" aria-label="Pages">
   <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
   <button type="button" class="btn btn-default" id="treatments-btn">Treatments</button>
+  <button type="button" class="btn btn-default" id="water-btn">Water</button>
   <button type="button" class="btn btn-default" id="agronomic-btn">Agronomic</button>
   <button type="button" class="btn btn-default" id="soil-btn">Soil</button>
-  <button type="button" class="btn btn-default" id="ghg-btn">GHG</button>
-  <button type="button" class="btn btn-default" id="ipm-btn">IPM</button>
   <button type="button" class="btn btn-default" id="year-btn">Year</button>
   <button type="button" class="btn btn-default" id="shm-btn">Management and Metadata</button>
   <button type="button" class="btn btn-default" id="option-btn">Export Options</button>
@@ -1005,6 +931,20 @@ It is recommended to “Select All” sites if you want to retain the most optio
 
 {$treatmentui}
 </div>
+
+<div id="water-ui" style="display: block;">
+<div class="pull-right">
+<button id="water-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
+</div>
+<div class="clearfix"></div>
+
+<p>This download tool will auto-populate options in the following tabs based on the research sites selected below. 
+It is recommended to “Select All” sites if you want to retain the most options moving forward.</p>
+
+{$waterui}
+
+</div>
+
 <div id="agronomic-ui" style="display: none;">
 <div class="pull-right">
   <button id="agronomic-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
@@ -1027,35 +967,6 @@ unavailable in grey.</p>
 <div class="clearfix"></div>
 
 {$soilui}
-</div>
-
-<div id="ghg-ui" style="display: none;">
-<div class="pull-right">
-  <button id="ghg-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
-</div>
-<div class="clearfix"></div>
-
-<p>For sites and treatments you’ve selected, available greenhouse gas data will be identified by black text; 
-unavailable in grey. The soil data listed here were collected at the same time as the greenhouse 
-gas measurement; these are distinct for those under the Soil tab.</p>
-
-<div class="clearfix"></div>
-
-{$ghgui}
-</div>
-
-<div id="ipm-ui" style="display: none;">
-<div class="pull-right">
-  <button id="ipm-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
-</div>
-<div class="clearfix"></div>
-
-<p>For sites and treatments you’ve selected, available insects (pest and beneficial) and plant diseases data 
-will be identified by black text; unavailable in grey.</p>
-
-<div class="clearfix"></div>
-
-{$ipmui}
 </div>
 
 <div id="year-ui" style="display: none;">
@@ -1210,7 +1121,7 @@ for requests to articles below that are subscription-only.</blockquote></p>
     <div role="tabpanel" class="tab-pane" id="p2">
 <p><blockquote>Many biophysical and social science graduate students were 
 supported by and contributed to the scientific discoveries and publications of 
-the Sustainable Corn CAP team. Their theses and dissertations are provided here 
+the Transforming Drainage team. Their theses and dissertations are provided here 
 via links to their major University library. If a web link is not provided, 
 contact <a href="mailto:sustainablecorn@iastate.edu">sustainablecorn@iastate.edu</a>
 for a PDF copy.</blockquote></p>
@@ -1219,29 +1130,7 @@ for a PDF copy.</blockquote></p>
     </div>
     
     <div role="tabpanel" class="tab-pane" id="p3">
-<p><blockquote>The Sustainable Corn CAP published a technical report series highlighting 
-the team’s research, extension, education, and management findings. These are available 
-in electronic and print format:</blockquote></p>
-    <ul>
-	<li><a href="https://store.extension.iastate.edu/product/14878" target="_blank">Climate and Managing Corn-Soybean 
-	Agroecosystems 1: Findings, Implications and Recommendations</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/15130" target="_blank">Climate and Managing Corn-Soybean 
-	Agroecosystems 2: Findings, Implications and Recommendations</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/14504" target="_blank">Climate Change and Agricultural Extension; 
-	Building Capacity for Land Grant Extension Services to Address the Agricultural Impacts of Climate Change 
-	and the Adaptive Management Needs of Agricultural Stakeholders (vol. 3)</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/14913" target="_blank">Agri-Climate Education; Preparing 
-	the Next Generation (vol. 4)</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/15140" target="_blank">Project and Research Management: 
-	Integrating Systems, Data, and People in Multidisciplinary Work (vol. 5)</a></li>
-    </ul>
 
-<p>Project Director, Lois Wright Morton, co-published a primer for project directors of large teams. 
-This publication is hosted on the USDA NIFA website:</p>
-    <ul>
-	<li><a href="https://nifa.usda.gov/leading-transdisciplinary-projects" target="_blank">Leading Large Transdisciplinary 
-	Projects Addressing Social-Ecological Systems: A Primer for Project Directors</a></li>
-    </ul>
 
     </div>
 </div>
@@ -1272,40 +1161,6 @@ sustainablecorn@iastate.edu</a> for access to this data.</p>
     </div><!-- ./wdata -->
     <div role="tabpanel" class="tab-pane" id="wxdata">
     {$wxdatacontent}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="sdata">
-
-<div class="clearfix"><p>&nbsp;</p></div>
-
-<p>Social economic research was conducted and included a survey of 4,778 farmers 
-in 11 Corn Belt states and 156 one-hour, in-person farmer interviews. The data 
-cannot be released due to anonymity issues but are available in aggregated 
-format across watersheds in the region. These aggregated data and maps are 
-available in two publications:</p>
-
-<p><a href="https://store.extension.iastate.edu/Product/14459" target="_blank">   
-Farmer Perspectives on Agriculture and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 1</a></p>
-
-<p>This first atlas (Volume 1) provides data regarding farmer beliefs and 
-concerns about climate change, attitudes toward adaptation and mitigation, 
-perceived capacity to deal with the impacts and recent experiences with extreme 
-weather events. Delineated by watershed, this collection of tables and maps 
-provides the results of a USDA-NIFA-supported survey, conducted in 2012, of 
-4,778 farmers in 11 Corn-belt states.</p>
-
-<p><a href="https://store.extension.iastate.edu/Product/14458" target="_blank">
-Farmer Perspectives on Agricultural Practices, Information, and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 2</a></p>
-
-<p>This second atlas (Volume 2) provides additional results from a 2012 survey of 
-4,778 farmers in 11 Corn-belt states. Here, the focus is upon farmers' 
-specific behaviors, beliefs about climate and weather, and the tools they 
-utilize to make farm decisions. You will find information covering timing of 
-farming practices and farming decisions, whether and how farmers use weather 
-information when making farming decisions; a detailed look at the influence of 
-agricultural advisors in farmer decision making processes; farmers' personal 
-experiences regarding weather and risks; and plans and efforts of farmers to 
-adapt to and manage for weather and climate variability and risk.</p>
-
     </div>
 </div>
 
