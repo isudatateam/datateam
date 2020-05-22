@@ -377,7 +377,7 @@ function build_publications(){
 		$s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a>%s</p>\n",
 				$strong,
 				$row['authors'], $row["year"], $row['title'],
-				$row["journal_or_source"], cullna($row["vol"]),
+				$row["journal_or_source"], cullna($row["voliss"]),
 		      cullna($row["pg_no."]),
 				$row["online_source"], $row["online_source"], $endstrong);
 	}
