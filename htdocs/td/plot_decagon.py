@@ -77,6 +77,9 @@ def make_plot(form, start_response):
     ptype = form.get("ptype", "1")
     plotid_limit = "and plotid = '%s'" % (plotid,)
     depth = form.get("depth", "all")
+    missing = form.get("missing", "M")
+    custom_missing = form.get("custom_missing", "M")
+    missing = missing if missing != "__custom__" else custom_missing
     if depth != "all":
         plotid_limit = ""
     if ptype == "1":
@@ -154,6 +157,7 @@ def make_plot(form, start_response):
         df["v"] = df["v"].apply(lambda x: x.tz_convert(tzname))
 
     if viewopt != "js":
+        df = df.fillna(missing)
         df["v"] = df["v"].dt.strftime("%Y-%m-%d %H:%M")
         df.rename(
             columns=dict(

@@ -8,6 +8,9 @@ $date = isset($_GET["date"]) ? $_GET["date"]: '2014-01-10';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $group = isset($_GET["group"]) ? $_GET["group"]: '0';
+$missing = isset($_GET["missing"]) ? $_GET["missing"]: "M";
+$custom_missing = isset($_GET["custom_missing"]) ? $_GET["custom_missing"]: "";
+
 $errmsg = "";
 if (strlen($date) != 10){
 	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
@@ -57,12 +60,24 @@ $ar = Array(
 		'excel' => 'Download as Excel File'
 		);
 $viewselect = make_select('view', $view, $ar);
+$ar = Array(
+    "M" => "M",
+    "N/A" => "N/A",
+    "NaN" => "NaN",
+    "NULL" => "NULL",
+    " " => " ",
+    "." => ".",
+    "-999" => "-999",
+    "__custom__" => "Custom Value",
+);
+$missselect = make_select('missing', $missing, $ar);
+    
 
 $jsextra = "";
 if ($view != 'plot'){
 	$imageurl = sprintf("plot_nitrateload.py?site=%s&amp;date=%s&amp;days=%s".
-			"&amp;ptype=%s&amp;view=%s&amp;group=%s", 
-		$site, $date, $days, $ptype, $view, $group);
+			"&amp;ptype=%s&amp;view=%s&amp;group=%s&missing=%s&custom_missing=%s", 
+		$site, $date, $days, $ptype, $view, $group, $missing, $custom_missing);
 	$uri = sprintf("http://datateam.local/td/%s", $imageurl);
 	if ($view == 'html'){
 		$data = file_get_contents($uri);
@@ -101,6 +116,14 @@ $(document).ready(function(){
 		changeYear: true,
 		minDate: new Date(1990, 0, 1),
 		maxDate: new Date(2018, 0, 1)});		
+    $("select[name='missing']").change(function(){
+        if ($(this).val() == '__custom__'){
+            $("#missingvalue_opt").css('display', 'block');
+        } else {
+            $("#missingvalue_opt").css('display', 'none');
+        }
+    });
+            
 });
 </script>
 EOF;
@@ -143,7 +166,18 @@ USDA-NIFA funded project:
 <tbody><tr>
 <td><input type="text" name="days" value="{$days}" size="4" /></td>
 <td>{$ptypeselect}</td>
-<td>{$viewselect}</td>
+<td>{$viewselect}
+<br />
+<div>
+    <label for="missingvalue">How to represent missing values:</label>
+{$missselect}
+</div>
+
+<div id="missingvalue_opt" style="display: none;">
+    <label for="missingcustom">Enter Custom Missing Value:</label>
+    <input value="{$custom_missing}" type="text" name="custom_missing" id="missingcustom">
+</div>
+</td>
 </tr></tbody>
 </table>
 
