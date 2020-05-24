@@ -15,6 +15,9 @@ if (strlen($date) != 10){
 }
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 1;
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
+$missing = isset($_GET["missing"]) ? $_GET["missing"]: "M";
+$custom_missing = isset($_GET["custom_missing"]) ? $_GET["custom_missing"]: "";
+
 
 /* with data as (select uniqueid, plotid, min(date(valid)),
  max(date(valid)) from decagon_data GROUP by uniqueid, plotid)
@@ -86,9 +89,23 @@ $ar = Array(
 		);
 $depthselect = make_select('depth', $depth, $ar);
 
+$ar = Array(
+    "M" => "M",
+    "N/A" => "N/A",
+    "NaN" => "NaN",
+    "NULL" => "NULL",
+    " " => " ",
+    "." => ".",
+    "-999" => "-999",
+    "__custom__" => "Custom Value",
+);
+$missselect = make_select('missing', $missing, $ar);
+
 if ($view != 'plot'){
-	$imageurl = sprintf("plot_decagon.py?site=%s&date=%s&days=%s&ptype=%s&view=%s&depth=%s", 
-		$site, $date, $days, $ptype, $view, $depth);
+	$imageurl = sprintf(
+        "plot_decagon.py?site=%s&date=%s&days=%s&ptype=%s&view=%s&depth=%s&".
+        "missing=%s&custom_missing=%s", 
+		$site, $date, $days, $ptype, $view, $depth, $missing, $custom_missing);
 	$uri = sprintf("http://datateam.local/td/%s", $imageurl);
 	if ($view == 'html'){
 		$data = file_get_contents($uri);
@@ -133,7 +150,16 @@ $(document).ready(function(){
 		changeYear: true,
 		minDate: new Date(2011, 0, 1),
 		maxDate: new Date(2017, 1, 1)});		
-});
+
+    $("select[name='missing']").change(function(){
+        if ($(this).val() == '__custom__'){
+                $("#missingvalue_opt").css('display', 'block');
+        } else {
+                $("#missingvalue_opt").css('display', 'none');
+        }
+    });
+
+    });
 </script>
 EOF;
 $t->content =  <<<EOF
@@ -163,12 +189,28 @@ USDA-NIFA funded project:
 </tr></tbody></table>
 
 <table class="table table-bordered">
-<thead><tr><th>Number of Days to Plot</th>
-<th>Time-series Aggregation:</th><th>View and Download Options</th></tr></thead>
+<thead>
+<tr>
+    <th>Number of Days to Plot:</th>
+    <th>Time-series Aggregation:</th>
+    <th>View and Download Options:</th>
+</tr>
+</thead>
 <tbody><tr>
 <td><input type="text" name="days" value="{$days}" size="4" /></td>
 <td>{$ptypeselect}</td>
-<td>{$viewselect}</td>
+<td>{$viewselect}
+<br />
+<div>
+    <label for="missingvalue">How to represent missing values:</label>
+{$missselect}
+</div>
+
+<div id="missingvalue_opt" style="display: none;">
+    <label for="missingcustom">Enter Custom Missing Value:</label>
+    <input value="{$custom_missing}" type="text" name="custom_missing" id="missingcustom">
+</div>
+</td>
 </tr></tbody>
 </table>
 

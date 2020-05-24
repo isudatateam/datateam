@@ -59,6 +59,9 @@ def make_plot(form, start_response):
     )
     viewopt = form.get("view", "plot")
     ptype = form.get("ptype", "1")
+    missing = form.get("missing", "M")
+    custom_missing = form.get("custom_missing", "M")
+    missing = missing if missing != "__custom__" else custom_missing
     if ptype == "1":
         df = read_sql(
             """SELECT valid at time zone 'UTC' as v, plotid,
@@ -111,6 +114,7 @@ def make_plot(form, start_response):
         )
 
     if viewopt not in ["plot", "js"]:
+        df = df.fillna(missing)
         df["v"] = df["v"].dt.strftime("%Y-%m-%d %H:%M")
         df.rename(
             columns=dict(v="timestamp", load="Load (kg ha-1)"), inplace=True
