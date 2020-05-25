@@ -342,6 +342,47 @@ EOF;
 	return $s;
 }
 
+function build_sites(){
+	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
+	$rs = pg_query(
+        $pgconn,
+        "select * from meta_site_history ORDER by siteid");
+    $s = <<<EOM
+    <table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+		<td><p><b>Research Site Code</b></p></td>
+		<td><p><b>Principal Investigator</b></p></td>
+		<td>
+			<p><b>Research
+			Site Official Name</b></p>
+		</td>
+		<td>
+			<p><b>Institution</b></p>
+		</td>
+		<td nowrap>
+			<p><b>Plot Map</b></p>
+		</td>
+		<td>
+			<p><b>Photographs</b></p>
+		</td>
+    </tr>
+    </thead>
+EOM;
+	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+        $purl = "https://drive.google.com/drive/folders/". $row["drive_photos_folder"];
+        $murl = "https://drive.google.com/drive/folders/". $row["drive_maps_folder"];
+        $s .= sprintf("<tr><th>%s</th><td>%s</td><td>%s</td><td>%s</td>".
+            "<td><a href=\"%s\">Folder Link</a></td>".
+            "<td><a href=\"%s\">Folder Link</a></td></tr>\n",
+                $row['siteid'], $row["lead_pi"], $row["official_farm_name"],
+                $row["pi_institution"], $murl, $purl);
+	}
+	$s .= "</table>\n";
+	return $s;
+}
+
+
 function build_theses(){
 	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
 	$rs = pg_query($pgconn, "select * from theses ORDER by authors");
@@ -523,7 +564,7 @@ $yearui = build_year_ui();
 $shmui = build_shm_ui();
 $publisting = build_publications();
 $theseslisting = build_theses();
-$sitestable = file_get_contents('sites.html');
+$sitestable = build_sites();
 
 $wxdatacontent = <<<EOM
 <br />
@@ -1091,6 +1132,22 @@ timeout shown, but an email will still be delivered with the data.</div>
 		<div role="tabpanel" class="tab-pane active" id="sites">
 
 <iframe src="https://www.google.com/maps/d/embed?mid=1Ubw9c2nAILMhNFclLT0IxNI1yFw&amp;z=5&amp;ll=42.62%2C-88.72" width="640" height="480"></iframe>
+
+<h4>Plot Map Considerations</h4>
+
+<ul>
+<li>Site maps included below will often include plot numbers; these align with 
+the plot identifiers listed with the data.</li>
+
+<li>The maps however may contain treatment codes that do not match the data;
+these are unique to that location and were changed afterwards to align with
+codes used across Transforming Drainage sites.</li>
+
+<li>Some experiments include treatments beyond those that were part of the 
+Transforming Drainage which can be seen in the plot map.</li>
+
+</ul>
+<br />
 
     {$sitestable}
 
