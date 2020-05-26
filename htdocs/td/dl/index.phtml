@@ -427,50 +427,40 @@ function build_publications(){
 }
 
 function build_sites_ui(){
-	$states = Array("IA" => "Iowa",
-		"MN" => "Minnesota",
-		"WI" => "Wisconsin",
-		"IL" => "Illinois",
-		"MO" => "Missouri",
-		"IN" => "Indiana",
-		"MI" => "Michigan",
-		"OH" => "Ohio");
-	$pgconn = pg_connect("dbname=mesosite host=iemdb-mesosite.local user=nobody");
-	$rs = pg_query($pgconn, "SELECT * from stations where network = 'TD'".
-			" and id !~* 'ONFARM' and ".
-			"id not in ('VICMS', 'NAEW.Y102', 'NAEW.Y103', 'NAEW.WS115', ".
-			" 'NAEW.WS123', 'NAEW.WS127') ORDER by name ASC");
-	$data = Array();
+	$groups = Array();
+	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
+    $rs = pg_query(
+        $pgconn,
+        "SELECT * from meta_site_history ORDER by siteid ASC");
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$data[$row["state"]][$row["id"]] = $row["name"];
+        $drp = $row["drainage_retention_practice"];
+        if (! array_key_exists($drp, $groups)){
+            $groups[$drp] = Array();
+        }
+        $groups[$drp][] = $row;
 	}
-	$keys = array_keys($data);
-	asort($keys);
-	$s = '';
-	$q = -1;	
-	foreach($keys as $v => $k){
-		$q += 1;
-		if ($q % 3 == 0){
-			$s .= "<div class=\"col-md-4\">\n";
-		}
+	$headers = Array(
+        "Saturated Buffers" => "Saturated Buffers",
+        "Controlled Drainage" => "Controlled Drainage",
+        "DW Recycle" => "Drainage Water Recycling",
+        "Other" => "Other",
+    );
+    $s = "";
+	foreach($headers as $k => $v){
+		$s .= "<div class=\"col-md-4\">\n";
 		$s .= sprintf("<div class=\"panel panel-default\">".
   "<div class=\"panel-heading\">".
-  "<input type=\"checkbox\" class=\"state-check\" value=\"%s\">%s</div>".
-  "<div class=\"panel-body\">\n", $k, $states[$k]);
-		foreach($data[$k] as $v2 => $k2){
+  "<input type=\"checkbox\" class=\"state-check\" value=\"%s\"> %s</div>".
+  "<div class=\"panel-body\">\n", $k, $v);
+		foreach($groups[$k] as $k2 => $v2){
 			$s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
 			    "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
-                "<label for=\"ST%s\" class=\"control-label\">%s</label>",
-				$v2, $v2, $k, $v2, $v2);
-		}
-		$s .= "</div></div>\n";
-		if ($q % 3 == 2){
-			$s .= "</div>\n";
-		}
-	}
-	if ($q % 3 != 2){
-		$s .= "</div>\n";
-	}
+                "<label for=\"ST%s\" class=\"control-label\">[%s] %s</label>",
+                $v2["siteid"], $v2["siteid"], $k, $v2["siteid"],
+                $v2["siteid"], $v2["official_farm_name"]);
+        }
+        $s .= "</div></div></div>\n";
+    }
 	return $s;
 }
 function build_water_ui(){
