@@ -64,36 +64,31 @@ def make_plot(form, start_response):
     missing = missing if missing != "__custom__" else custom_missing
     if ptype == "1":
         df = read_sql(
-            """SELECT valid at time zone 'UTC' as v, plotid,
-        depth_mm_qc as depth, coalesce(depth_mm_qcflag, '') as depth_f
-        from watertable_data WHERE uniqueid = %s
-        and valid between %s and %s ORDER by valid ASC
-        """,
+            "SELECT date as v, coalesce(plotid, location) as plotid, "
+            "water_table_depth as depth from water_table_data "
+            "WHERE siteid = %s and date between %s and %s ORDER by date ASC",
             pgconn,
             params=(uniqueid, sts.date(), ets.date()),
         )
     elif ptype in ["3", "4"]:
         res = "hour" if ptype == "3" else "week"
         df = read_sql(
-            f"""SELECT
-        date_trunc('{res}', valid at time zone 'UTC') as v, plotid,
-        avg(depth_mm_qc) as depth
-        from watertable_data WHERE uniqueid = %s
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
-        """,
+            f"SELECT date_trunc('{res}', date) as v, "
+            "coalesce(plotid, location) as plotid, "
+            "avg(water_table_depth) as depth from water_table_data "
+            "WHERE siteid = %s and date between %s and %s "
+            "GROUP by v, plotid ORDER by v ASC",
             pgconn,
             params=(uniqueid, sts.date(), ets.date()),
         )
         df["depth_f"] = "-"
     else:
         df = read_sql(
-            """SELECT date(valid at time zone %s) as v, plotid,
-        avg(depth_mm_qc) as depth
-        from watertable_data WHERE uniqueid = %s
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
-        """,
+            "SELECT date as v, plotid, avg(water_table_depth) as depth "
+            "from water_table_data WHERE siteid = %s "
+            "and date between %s and %s GROUP by v, plotid ORDER by v ASC ",
             pgconn,
-            params=(tzname, uniqueid, sts.date(), ets.date()),
+            params=(uniqueid, sts.date(), ets.date()),
         )
         df["depth_f"] = "-"
     if len(df.index) < 3:
@@ -122,10 +117,6 @@ def make_plot(form, start_response):
         df = df.groupby(["treatment", "v"]).mean()
         df.reset_index(inplace=True)
         linecol = "treatment"
-    if ptype not in ["2"]:
-        df["v"] = df["v"].apply(
-            lambda x: x.tz_localize("UTC").tz_convert(tzname)
-        )
 
     if viewopt not in ["plot", "js"]:
         df = df.fillna(missing)
