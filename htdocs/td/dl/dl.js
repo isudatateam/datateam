@@ -1,5 +1,5 @@
 var TABS = ['sites', 'treatments', 'water', 'agronomic', 'soil',
-	'year', 'shm', 'option'];
+	'shm', 'option'];
 var CURRENTTAB = 0;
 
 function applyFilter(data){
@@ -32,20 +32,11 @@ function applyFilter(data){
 	});
 	$("#soil-ui input[type=checkbox]:disabled").prop('checked', false);
 
-
-	$('#year-ui input').prop('disabled', true);
-	$.each(data.year, function(idx, v){
-		//console.log("YEAR: " + v);
-		$("#year-ui input[data-year='"+v+"']").prop('disabled', false);
-	});
-	$("#year-ui input[type=checkbox]:disabled").prop('checked', false);
-		
-	
 }
 
 function build_data(){
 	var data = {sites: [], treatments: [], agronomic: [], soil: [],
-			water: [], year: [], management: [], option: []};
+			water: [], management: [], option: []};
 
 	// Which sites are checked
 	$('#sites-ui input:checked').each(function(idx, elem){

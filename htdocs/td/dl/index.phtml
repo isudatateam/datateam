@@ -471,29 +471,6 @@ EOF;
 	return $s;
 }
 
-function build_year_ui(){
-	$s = <<<EOF
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Years</div>
-	<div class="panel-body">
-	
-	<input type="checkbox" value="2011" data-year="2011" name="year[]" id="Y2011">
-	<label for="Y2011" class="control-label">2011</label>
-	<input type="checkbox" value="2012" data-year="2012" name="year[]" id="Y2012">
-	<label for="Y2012" class="control-label">2012</label>
-	<input type="checkbox" value="2013" data-year="2013" name="year[]" id="Y2013">
-	<label for="Y2013" class="control-label">2013</label>
-	<input type="checkbox" value="2014" data-year="2014" name="year[]" id="Y2014">
-	<label for="Y2014" class="control-label">2014</label>
-	<input type="checkbox" value="2015" data-year="2015" name="year[]" id="Y2015">
-	<label for="Y2015" class="control-label">2015</label>
-	
-	</div>
-	</div>
-EOF;
-	return $s;
-}
-
 function build_shm_ui(){
 	$s = <<<EOF
 
@@ -550,7 +527,6 @@ $treatmentui = build_treatments_ui();
 $waterui = build_water_ui();
 $agronomicui = build_agronomic_ui();
 $soilui = build_soil_ui();
-$yearui = build_year_ui();
 $shmui = build_shm_ui();
 $publisting = build_publications();
 $theseslisting = build_theses();
@@ -938,7 +914,6 @@ $t->content = <<<EOF
   <button type="button" class="btn btn-default" id="water-btn">Water</button>
   <button type="button" class="btn btn-default" id="agronomic-btn">Agronomic</button>
   <button type="button" class="btn btn-default" id="soil-btn">Soil</button>
-  <button type="button" class="btn btn-default" id="year-btn">Year</button>
   <button type="button" class="btn btn-default" id="shm-btn">Management and Metadata</button>
   <button type="button" class="btn btn-default" id="option-btn">Export Options</button>
 </div>
@@ -998,20 +973,6 @@ unavailable in grey.</p>
 <div class="clearfix"></div>
 
 {$soilui}
-</div>
-
-<div id="year-ui" style="display: none;">
-<div class="pull-right">
-  <button id="year-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
-</div>
-<div class="clearfix"></div>
-
-<p>For sites and treatments you’ve selected, available years of data 
-will be identified by black text; unavailable in grey.</p>
-
-<div class="clearfix"></div>
-
-{$yearui}
 </div>
 
 <div id="shm-ui" style="display: none;">
