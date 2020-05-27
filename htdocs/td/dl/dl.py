@@ -249,7 +249,7 @@ def do_metadata_master(pgconn, writer, sites, missing):
     worksheet.set_column("L:R", 12)
 
 
-def do_ghg(pgconn, writer, sites, ghg, years, missing):
+def do_ghg(pgconn, writer, sites, ghg, missing):
     """get GHG data"""
     cols = ", ".join(['%s as "%s"' % (s, s) for s in ghg])
     df = read_sql(
@@ -259,11 +259,11 @@ def do_ghg(pgconn, writer, sites, ghg, years, missing):
     from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
-    and d.uniqueid in %s and d.year in %s
+    and d.uniqueid in %s
     ORDER by d.uniqueid, year, date, plotid
     """,
         pgconn,
-        params=(tuple(sites), tuple(years)),
+        params=(tuple(sites),),
         index_col=None,
     )
     df.fillna(missing, inplace=True)
@@ -271,7 +271,7 @@ def do_ghg(pgconn, writer, sites, ghg, years, missing):
     worksheet.set_column("C:C", 12)
 
 
-def do_ipm(pgconn, writer, sites, ipm, years, missing):
+def do_ipm(pgconn, writer, sites, ipm, missing):
     """get IPM data"""
     cols = ", ".join(ipm)
     df = read_sql(
@@ -280,11 +280,11 @@ def do_ipm(pgconn, writer, sites, ipm, years, missing):
     from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and d.year in %s
+    d.uniqueid in %s
     ORDER by d.uniqueid, year, date, plotid
     """,
         pgconn,
-        params=(tuple(sites), tuple(years)),
+        params=(tuple(sites),),
         index_col=None,
     )
     df.fillna(missing, inplace=True)
@@ -293,9 +293,7 @@ def do_ipm(pgconn, writer, sites, ipm, years, missing):
     worksheet.set_column("C:C", 12)
 
 
-def do_agronomic(
-    pgconn, writer, sites, agronomic, years, detectlimit, missing
-):
+def do_agronomic(pgconn, writer, sites, agronomic, detectlimit, missing):
     """get agronomic data"""
     df = read_sql(
         """
@@ -303,11 +301,11 @@ def do_agronomic(
     from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and year in %s and varname in %s
+    d.uniqueid in %s and varname in %s
     ORDER by uniqueid, year, plotid
     """,
         pgconn,
-        params=(tuple(sites), tuple(years), tuple(agronomic)),
+        params=(tuple(sites), tuple(agronomic)),
         index_col=None,
     )
     df["value"] = df["value"].apply(lambda x: conv(x, detectlimit))
@@ -369,7 +367,7 @@ def add_bling(pgconn, writer, df, sheetname, tabname):
     return df, worksheet
 
 
-def do_soil(pgconn, writer, sites, soil, years, detectlimit, missing):
+def do_soil(pgconn, writer, sites, soil, detectlimit, missing):
     """get soil data"""
     # pprint("do_soil: " + str(soil))
     # pprint("do_soil: " + str(sites))
@@ -382,11 +380,11 @@ def do_soil(pgconn, writer, sites, soil, years, detectlimit, missing):
     from soil_data d JOIN plotids p ON (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and year in %s and varname in %s
+    d.uniqueid in %s and varname in %s
     ORDER by uniqueid, year, plotid, subsample
     """,
         pgconn,
-        params=(tuple(sites), tuple(years), tuple(soil)),
+        params=(tuple(sites), tuple(soil)),
         index_col=None,
     )
     pprint("do_soil() query done")
@@ -445,7 +443,7 @@ def do_soil(pgconn, writer, sites, soil, years, detectlimit, missing):
     worksheet.set_column("B:B", 12, format1)
 
 
-def do_operations(pgconn, writer, sites, years, missing):
+def do_operations(pgconn, writer, sites, missing):
     """Return a DataFrame for the operations"""
     opdf = read_sql(
         """
@@ -460,11 +458,11 @@ def do_operations(pgconn, writer, sites, years, missing):
     -- These are deleted below
     nitrogen, phosphorus, phosphate, potassium,
     potash, sulfur, calcium, magnesium, zinc, iron
-    from operations where uniqueid in %s and cropyear in %s
+    from operations where uniqueid in %s
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """,
         pgconn,
-        params=(tuple(sites), tuple(years)),
+        params=(tuple(sites),),
     )
     opdf["productrate"] = pd.to_numeric(opdf["productrate"], errors="coerce")
     for fert in FERTELEM:
@@ -498,7 +496,7 @@ def do_operations(pgconn, writer, sites, years, missing):
     worksheet.set_column("M:N", 12)
 
 
-def do_management(pgconn, writer, sites, years):
+def do_management(pgconn, writer, sites):
     """Return a DataFrame for the management"""
     opdf = read_sql(
         """
@@ -506,16 +504,16 @@ def do_management(pgconn, writer, sites, years):
     irrigationmethod, residueremoval, residuehow, residuebiomassweight,
     residuebiomassmoisture, residueplantingpercentage, residuetype,
     limeyear, comments
-    from management where uniqueid in %s and cropyear in %s
+    from management where uniqueid in %s
     ORDER by cropyear ASC
     """,
         pgconn,
-        params=(tuple(sites), tuple(years)),
+        params=(tuple(sites),),
     )
     opdf.to_excel(writer, "Residue, Irrigation", index=False)
 
 
-def do_pesticides(pgconn, writer, sites, years):
+def do_pesticides(pgconn, writer, sites):
     """Return a DataFrame for the pesticides"""
     opdf = read_sql(
         """
@@ -527,12 +525,12 @@ def do_pesticides(pgconn, writer, sites, years):
     product3, rate3, rateunit3,
     product4, rate4, rateunit4,
     adjuvant1, adjuvant2, comments
-    from pesticides where uniqueid in %s and cropyear in %s and
+    from pesticides where uniqueid in %s and
     operation != 'seed'
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """,
         pgconn,
-        params=(tuple(sites), tuple(years)),
+        params=(tuple(sites),),
     )
     valid2date(opdf)
     opdf, worksheet = add_bling(
@@ -657,16 +655,11 @@ def do_work(form):
     ghg = redup(form.get("ghg[]"))
     # water = redup(form.getlist('water[]'))
     ipm = redup(form.get("ipm[]"))
-    years = redup(form.get("year[]"))
-    if not years:
-        years = ["2011", "2012", "2013", "2014", "2015"]
     shm = redup(form.get("shm[]"))
     missing = form.get("missing", "M")
     if missing == "__custom__":
         missing = form.get("custom_missing", "M")
     pprint("Missing is %s" % (missing,))
-    if years:
-        years = [str(s) for s in range(2011, 2016)]
     detectlimit = form.get("detectlimit", "1")
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine="xlsxwriter")
@@ -683,32 +676,30 @@ def do_work(form):
 
     # Measurement Data
     if agronomic:
-        do_agronomic(
-            pgconn, writer, sites, agronomic, years, detectlimit, missing
-        )
+        do_agronomic(pgconn, writer, sites, agronomic, detectlimit, missing)
         pprint("do_agronomic() is done")
     if soil:
-        do_soil(pgconn, writer, sites, soil, years, detectlimit, missing)
+        do_soil(pgconn, writer, sites, soil, detectlimit, missing)
         pprint("do_soil() is done")
     if ghg:
-        do_ghg(pgconn, writer, sites, ghg, years, missing)
+        do_ghg(pgconn, writer, sites, ghg, missing)
         pprint("do_ghg() is done")
     if ipm:
-        do_ipm(pgconn, writer, sites, ipm, years, missing)
+        do_ipm(pgconn, writer, sites, ipm, missing)
         pprint("do_ipm() is done")
 
     # Management
     # Field Operations
     if "SHM1" in shm:
-        do_operations(pgconn, writer, sites, years, missing)
+        do_operations(pgconn, writer, sites, missing)
         pprint("do_operations() is done")
     # Pesticides
     if "SHM2" in shm:
-        do_pesticides(pgconn, writer, sites, years)
+        do_pesticides(pgconn, writer, sites)
         pprint("do_pesticides() is done")
     # Residue and Irrigation
     if "SHM3" in shm:
-        do_management(pgconn, writer, sites, years)
+        do_management(pgconn, writer, sites)
         pprint("do_management() is done")
     # Site Metadata
     if "SHM8" in shm:
