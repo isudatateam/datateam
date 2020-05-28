@@ -44,15 +44,12 @@ LINESTYLE = [
 def get_weather(pgconn, uniqueid, sts, ets):
     """Retreive the daily precipitation"""
     # Convert ids
-    dbid = uniqueid
-    if uniqueid not in ["SERF_IA", "SERF_SD", "DEFI_R"]:
-        dbid = uniqueid.split("_")[0]
     df = read_sql(
-        "SELECT valid, precip_mm from weather_daily "
-        "WHERE siteid = %s and valid >= %s and valid <= %s ORDER by valid ASC",
+        "SELECT date, precipitation from weather_data "
+        "WHERE siteid = %s and date >= %s and date <= %s ORDER by date ASC",
         pgconn,
-        index_col="valid",
-        params=(dbid, sts.date(), ets.date()),
+        index_col="date",
+        params=(uniqueid, sts.date(), ets.date()),
     )
     df.index = pd.DatetimeIndex(df.index.values)
     df["ticks"] = (
@@ -73,11 +70,6 @@ def make_plot(form, start_response):
     group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
     wxdf = get_weather(pgconn, uniqueid, sts, ets)
-    tzname = (
-        "America/Chicago"
-        if uniqueid in ["ISUAG", "SERF", "GILMORE"]
-        else "America/New_York"
-    )
     viewopt = form.get("view", "plot")
     ptype = form.get("ptype", "1")
     missing = form.get("missing", "M")
@@ -85,12 +77,9 @@ def make_plot(form, start_response):
     missing = missing if missing != "__custom__" else custom_missing
     if ptype == "1":
         df = read_sql(
-            """SELECT valid at time zone 'UTC' as v, plotid,
-        discharge_mm_qc as discharge,
-        coalesce(discharge_mm_qcflag, '') as discharge_f
-        from tileflow_data WHERE uniqueid = %s
-        and valid between %s and %s ORDER by valid ASC
-        """,
+            "SELECT date, coalesce(plotid, location) as plotid, discharge "
+            "from tile_flow_and_n_loads_data WHERE siteid = %s "
+            "and date between %s and %s ORDER by date ASC",
             pgconn,
             params=(uniqueid, sts.date(), ets.date()),
         )
@@ -105,12 +94,11 @@ def make_plot(form, start_response):
                 // 10 ** 6
             )
         df = read_sql(
-            """SELECT
-        date_trunc('month', valid at time zone 'UTC') as v, plotid,
-        sum(discharge_mm_qc) as discharge
-        from tileflow_data WHERE uniqueid = %s
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
-        """,
+            "SELECT date_trunc('month', date) as v, "
+            "coalesce(plotid, location) as plotid, "
+            "sum(discharge) as discharge from tile_flow_and_n_loads_data "
+            "WHERE siteid = %s "
+            "and date between %s and %s GROUP by v, plotid ORDER by v ASC",
             pgconn,
             params=(uniqueid, sts.date(), ets.date()),
         )
@@ -118,12 +106,10 @@ def make_plot(form, start_response):
     elif ptype == "3":
         # Daily Aggregate
         df = read_sql(
-            """SELECT
-        date_trunc('day', valid at time zone 'UTC') as v, plotid,
-        sum(discharge_mm_qc) as discharge
-        from tileflow_data WHERE uniqueid = %s
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
-        """,
+            "SELECT date as v, coalesce(plotid, location) as plotid, "
+            "sum(discharge) as discharge "
+            "from tileflow_data WHERE siteid = %s "
+            "and date between %s and %s GROUP by v, plotid ORDER by v ASC",
             pgconn,
             params=(uniqueid, sts.date(), ets.date()),
         )
@@ -136,7 +122,7 @@ def make_plot(form, start_response):
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
-            "SELECT * from plotids where siteid = %s",
+            "SELECT * from meta_plot_identifiers where siteid = %s",
             pgconn,
             params=(uniqueid,),
             index_col="plotid",
@@ -154,10 +140,6 @@ def make_plot(form, start_response):
         df = df.groupby(["treatment", "v"]).mean()
         df.reset_index(inplace=True)
         linecol = "treatment"
-    if ptype not in ["2", "3"]:
-        df["v"] = df["v"].apply(
-            lambda x: x.tz_localize("UTC").tz_convert(tzname)
-        )
 
     if viewopt not in ["plot", "js"]:
         df = df.fillna(missing)
@@ -220,10 +202,12 @@ def make_plot(form, start_response):
     plot_ids.sort()
     if group == "1":
         plot_ids = plot_ids[::-1]
-    df["ticks"] = df["v"].astype(np.int64) // 10 ** 6
+    df["ticks"] = pd.to_datetime(df["date"]).astype(np.int64) // 10 ** 6
     seriestype = "line" if ptype in ["1", "3"] else "column"
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
+        if df2.empty:
+            continue
         s.append(
             (
                 """{type: '"""
@@ -262,7 +246,7 @@ def make_plot(form, start_response):
                     [
                         [a, b]
                         for a, b in zip(
-                            wxdf["ticks"].values, wxdf["precip_mm"].values
+                            wxdf["ticks"].values, wxdf["precipitation"].values
                         )
                     ]
                 )
