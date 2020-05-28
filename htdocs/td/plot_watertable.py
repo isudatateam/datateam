@@ -51,11 +51,6 @@ def make_plot(form, start_response):
     days = int(form.get("days", 1))
     ets = sts + datetime.timedelta(days=days)
     pgconn = get_dbconn("td")
-    tzname = (
-        "America/Chicago"
-        if uniqueid in ["ISUAG", "SERF", "GILMORE"]
-        else "America/New_York"
-    )
     viewopt = form.get("view", "plot")
     ptype = form.get("ptype", "1")
     group = int(form.get("group", 0))

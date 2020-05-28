@@ -70,11 +70,6 @@ def make_plot(form, start_response):
     group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
     wxdf = get_weather(pgconn, uniqueid, sts, ets)
-    tzname = (
-        "America/Chicago"
-        if uniqueid in ["ISUAG", "SERF", "GILMORE"]
-        else "America/New_York"
-    )
     viewopt = form.get("view", "plot")
     ptype = form.get("ptype", "1")
     missing = form.get("missing", "M")
