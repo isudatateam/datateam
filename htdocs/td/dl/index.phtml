@@ -84,35 +84,35 @@ function build_agronomic_ui(){
 <div class="row"><div class="col-md-4">
 
 <div class="panel panel-default">
-  <div class="panel-heading">Corn</div>
+  <div class="panel-heading">To Be Determined</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR32" data-agronomic="AGR32" name="agronomic[]" id="AGR32">
-<label for="AGR32" class="control-label">Corn cob biomass at R6</label>
-	<input type="checkbox" value="AGR24" data-agronomic="AGR24" name="agronomic[]" id="AGR24">
-<label for="AGR24" class="control-label">Corn cob total C at R6</label>
-	<input type="checkbox" value="AGR26" data-agronomic="AGR26" name="agronomic[]" id="AGR26">
-<label for="AGR26" class="control-label">Corn cob total N at R6</label>
-	<input type="checkbox" value="AGR1" data-agronomic="AGR1" name="agronomic[]" id="AGR1">
-<label for="AGR1" class="control-label">Corn final plant population</label>
-	<input type="checkbox" value="AGR33" data-agronomic="AGR33" name="agronomic[]" id="AGR33">
-<label for="AGR33" class="control-label">Corn grain biomass at R6</label>
-	<input type="checkbox" value="AGR18" data-agronomic="AGR18" name="agronomic[]" id="AGR18">
-<label for="AGR18" class="control-label">Corn grain moisture</label>
-	<input type="checkbox" value="AGR23" data-agronomic="AGR23" name="agronomic[]" id="AGR23">
-<label for="AGR23" class="control-label">Corn grain total C at R6</label>
-	<input type="checkbox" value="AGR25" data-agronomic="AGR25" name="agronomic[]" id="AGR25">
-<label for="AGR25" class="control-label">Corn grain total N at R6</label>
-	<input type="checkbox" value="AGR17" data-agronomic="AGR17" name="agronomic[]" id="AGR17">
-<label for="AGR17" class="control-label">Corn grain yield at 15.5% MB</label>
-	<input type="checkbox" value="AGR4" data-agronomic="AGR4" name="agronomic[]" id="AGR4">
-<label for="AGR4" class="control-label">Corn vegetative biomass at R6</label>
-	<input type="checkbox" value="AGR9" data-agronomic="AGR9" name="agronomic[]" id="AGR9">
-<label for="AGR9" class="control-label">Corn vegetative biomass total C at R6</label>
-	<input type="checkbox" value="AGR10" data-agronomic="AGR10" name="agronomic[]" id="AGR10">
-<label for="AGR10" class="control-label">Corn vegetative biomass total N at R6</label>
-	<input type="checkbox" value="AGR3" data-agronomic="AGR3" name="agronomic[]" id="AGR3">
-<label for="AGR3" class="control-label">Mid-season canopy N sensing</label>
+<input type="checkbox" value="leaf_area_index"
+ data-agronomic="leaf_area_index" name="agronomic[]" id="leaf_area_index">
+<label for="leaf_area_index" class="control-label">Leaf Area Index</label>
+
+<input type="checkbox" value="final_plant_population"
+ data-agronomic="final_plant_population" name="agronomic[]" id="final_plant_population">
+<label for="final_plant_population" class="control-label">Final Plant Population</label>
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Crop Yield</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="grain_moisture"
+ data-agronomic="grain_moisture" name="agronomic[]" id="grain_moisture">
+<label for="grain_moisture" class="control-label">Grain Moisture</label>
+
+<input type="checkbox" value="crop_yield"
+ data-agronomic="crop_yield" name="agronomic[]" id="crop_yield">
+<label for="crop_yield" class="control-label">Crop Yield</label>
+
+<input type="checkbox" value="biomass_yield"
+ data-agronomic="biomass_yield" name="agronomic[]" id="biomass_yield">
+<label for="biomass_yield" class="control-label">Biomass Yield</label>
 
   </div>
 </div>
@@ -120,169 +120,184 @@ function build_agronomic_ui(){
 </div><div class="col-md-4">
 
 <div class="panel panel-default">
-  <div class="panel-heading">Cover Crop</div>
+  <div class="panel-heading">Plant and Grain Biomass</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR39" data-agronomic="AGR39" name="agronomic[]" id="AGR39">
-<label for="AGR39" class="control-label">Cover crop (rye) and weedy biomass at termination (spring)</label>
-	<input type="checkbox" value="AGR7" data-agronomic="AGR7" name="agronomic[]" id="AGR7">
-<label for="AGR7" class="control-label">Cover crop (rye) biomass at termination (spring) (no significant weeds)</label>
-	<input type="checkbox" value="AGR6" data-agronomic="AGR6" name="agronomic[]" id="AGR6">
-<label for="AGR6" class="control-label">Cover crop (rye) biomass in late fall (no significant weeds)</label>
-	<input type="checkbox" value="AGR41" data-agronomic="AGR41" name="agronomic[]" id="AGR41">
-<label for="AGR41" class="control-label">Red clover or mixed cover crop biomass in late fall of previous year</label>
-	<input type="checkbox" value="AGR43" data-agronomic="AGR43" name="agronomic[]" id="AGR43">
-<label for="AGR43" class="control-label">Red clover or mixed cover crop total C in late fall of previous year</label>
-	<input type="checkbox" value="AGR46" data-agronomic="AGR46" name="agronomic[]" id="AGR46">
-<label for="AGR46" class="control-label">Red clover or mixed cover crop total C in spring of spreadsheet year</label>
-	<input type="checkbox" value="AGR42" data-agronomic="AGR42" name="agronomic[]" id="AGR42">
-<label for="AGR42" class="control-label">Red clover or mixed cover crop total N in late fall of previous year</label>
-	<input type="checkbox" value="AGR13" data-agronomic="AGR13" name="agronomic[]" id="AGR13">
-<label for="AGR13" class="control-label">Rye biomass total C at fall</label>
-	<input type="checkbox" value="AGR15" data-agronomic="AGR15" name="agronomic[]" id="AGR15">
-<label for="AGR15" class="control-label">Rye biomass total C at spring</label>
-	<input type="checkbox" value="AGR14" data-agronomic="AGR14" name="agronomic[]" id="AGR14">
-<label for="AGR14" class="control-label">Rye biomass total N at fall</label>
-	<input type="checkbox" value="AGR16" data-agronomic="AGR16" name="agronomic[]" id="AGR16">
-<label for="AGR6" class="control-label">Rye biomass total N at spring</label>
-	<input type="checkbox" value="AGR40" data-agronomic="AGR40" name="agronomic[]" id="AGR40">
-<label for="AGR40" class="control-label">Weedy biomass (only) at termination (spring)</label>
+<input type="checkbox" value="whole_plant_biomass"
+ data-agronomic="whole_plant_biomass" name="agronomic[]" id="whole_plant_biomass">
+<label for="whole_plant_biomass" class="control-label">Whole Plant Biomass</label>
 
+<input type="checkbox" value="vegetative_biomass"
+ data-agronomic="vegetative_biomass" name="agronomic[]" id="vegetative_biomass">
+<label for="vegetative_biomass" class="control-label">Vegetative Biomass</label>
+
+<input type="checkbox" value="grain_biomass"
+ data-agronomic="grain_biomass" name="agronomic[]" id="grain_biomass">
+<label for="grain_biomass" class="control-label">Grain Biomass</label>
+
+<input type="checkbox" value="corn_cob_biomass"
+ data-agronomic="corn_cob_biomass" name="agronomic[]" id="corn_cob_biomass">
+<label for="corn_cob_biomass" class="control-label">Corn Cob Biomass</label>
 
   </div>
 </div>
-
 
 </div><div class="col-md-4">
 
 <div class="panel panel-default">
-  <div class="panel-heading">Soybean</div>
+  <div class="panel-heading">Total Nitrogen Content</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR2" data-agronomic="AGR2" name="agronomic[]" id="AGR2">
-<label for="AGR2" class="control-label">Soybean final plant population</label>
-	<input type="checkbox" value="AGR34" data-agronomic="AGR34" name="agronomic[]" id="AGR34">
-<label for="AGR34" class="control-label">Soybean grain biomass at R8</label>
-	<input type="checkbox" value="AGR20" data-agronomic="AGR20" name="agronomic[]" id="AGR20">
-<label for="AGR20" class="control-label">Soybean grain moisture</label>
-	<input type="checkbox" value="AGR27" data-agronomic="AGR27" name="agronomic[]" id="AGR27">
-<label for="AGR27" class="control-label">Soybean grain total C at R8</label>
-	<input type="checkbox" value="AGR28" data-agronomic="AGR28" name="agronomic[]" id="AGR28">
-<label for="AGR28" class="control-label">Soybean grain total N at R8</label>
-	<input type="checkbox" value="AGR19" data-agronomic="AGR19" name="agronomic[]" id="AGR19">
-<label for="AGR19" class="control-label">Soybean grain yield at 13.0% MB</label>
-	<input type="checkbox" value="AGR5" data-agronomic="AGR5" name="agronomic[]" id="AGR5">
-<label for="AGR5" class="control-label">Soybean vegetative biomass at R8</label>
-	<input type="checkbox" value="AGR11" data-agronomic="AGR11" name="agronomic[]" id="AGR11">
-<label for="AGR11" class="control-label">Soybean vegetative biomass total C at R8</label>
-	<input type="checkbox" value="AGR12" data-agronomic="AGR12" name="agronomic[]" id="AGR12">
-<label for="AGR12" class="control-label">Soybean vegetative biomass total N at R8</label>
+<input type="checkbox" value="whole_plant_total_N"
+ data-agronomic="whole_plant_total_N" name="agronomic[]" id="whole_plant_total_N">
+<label for="whole_plant_total_N" class="control-label">Whole Plant Total N</label>
 
+<input type="checkbox" value="vegetative_total_N"
+ data-agronomic="vegetative_total_N" name="agronomic[]" id="vegetative_total_N">
+<label for="vegetative_total_N" class="control-label">Vegetative Total N</label>
+
+<input type="checkbox" value="grain_total_N"
+ data-agronomic="grain_total_N" name="agronomic[]" id="grain_total_N">
+<label for="grain_total_N" class="control-label">Grain Total N</label>
+
+<input type="checkbox" value="corn_cob_total_N"
+ data-agronomic="corn_cob_total_N" name="agronomic[]" id="corn_cob_total_N">
+<label for="corn_cob_total_N" class="control-label">Corn Cob Total N</label>
 
   </div>
 </div>
 
 <div class="panel panel-default">
-  <div class="panel-heading">Wheat</div>
+  <div class="panel-heading">Total Carbon Content</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR22" data-agronomic="AGR22" name="agronomic[]" id="AGR22">
-<label for="AGR22" class="control-label">Wheat grain moisture</label>
-	<input type="checkbox" value="AGR21" data-agronomic="AGR21" name="agronomic[]" id="AGR21">
-<label for="AGR21" class="control-label">Wheat grain yield at 13.5% MB</label>
+<input type="checkbox" value="whole_plant_total_C"
+ data-agronomic="whole_plant_total_C" name="agronomic[]" id="whole_plant_total_C">
+<label for="whole_plant_total_C" class="control-label">Whole Plant Total C</label>
+
+<input type="checkbox" value="vegetative_total_C"
+ data-agronomic="vegetative_total_C" name="agronomic[]" id="vegetative_total_C">
+<label for="vegetative_total_C" class="control-label">Vegetative Total C</label>
+
+<input type="checkbox" value="grain_total_C"
+ data-agronomic="grain_total_C" name="agronomic[]" id="grain_total_C">
+<label for="grain_total_C" class="control-label">Grain Total C</label>
+
+<input type="checkbox" value="corn_cob_total_C"
+ data-agronomic="corn_cob_total_C" name="agronomic[]" id="corn_cob_total_C">
+<label for="corn_cob_total_C" class="control-label">Corn Cob Total C</label>
 
   </div>
 </div>
-
-
 
 </div></div>
 EOF;
 	return $s;
 }
 
+function gen($ar, $label){
+    $s = "";
+    foreach($ar as $key => $value)
+    {
+        $s .= sprintf("<input type=\"checkbox\" value=\"%s\" ".
+            "data-%s=\"%s\" name=\"%s[]\" id=\"%s\">".
+            "<label for=\"%s\" class=\"control-label\">%s</label>",
+            $key, $label, $key, $label, $key, $key, $value);
+    }
+    return $s;
+}
+
 function build_soil_ui(){
-	$s = <<<EOF
+    $ar = Array(
+        "soil_texture" => "Soil Texture",
+        "percent_sand" => "Percent Sand",
+        "percent_silt" => "Percent Silt",
+        "percent_clay" => "Percent Clay",
+    );
+    $st = gen($ar, "soil");
+
+    $ar = Array(
+        "bulk_density" => "Bulk Density",
+        "hydraulic_conductivity" => "Hydraulic Conductivitiy",
+        "infiltration_rate" => "Infiltration Rate",
+        "matric_potential" => "Matric Potential",
+        "water_content" => "Water Content",
+        "som" => "Soil Organic Matter",
+        "ph_water" => "Water pH",
+        "ph_salt" => "Salt pH",
+        "lime_index" => "Lime Index",
+        "neutralizable_acidity" => "Neutralizable Acidity",
+        "cec" => "CEC",
+        "k_saturation" => "K Saturation",
+        "ca_saturation" => "Ca Saturation",
+        "mg_saturation" => "Mg Saturation",
+        "na_saturation" => "Na Saturation",
+        "k_concentration" => "K Concentration",
+        "ca_concentation" => "Ca Concentration",
+        "mg_concentration" => "Mg Concentration",
+        "na_concentration" => "Na Concentration",
+        "k_amount" => "K Amount",
+        "ca_amount" => "Ca Amount",
+        "mg_amount" => "Mg Amount",
+        "sar" => "SAR",
+        "salinity_paste" => "Salinity Paste",
+        "salinity_water" => "Salinity Water",        
+    );
+    $sp = gen($ar, "soil");
+
+    $ar = Array(
+        "soc" => "Soil Organic Carbon",      
+    );
+    $sc = gen($ar, "soil");
+
+    $ar = Array(
+        "total_N" => "Total N",
+        "no3_concentration" => "N03 Concentration",
+        "nh4_concentration" => "NH4 Concentration",
+        "no3_amount" => "NO3 Amount",
+        "nh4_amount" => "NH4 Amount",
+        "p_b1_concentration" => "P B1 Concentration",
+        "p_m3_concentration" => "P M3 Concentration",
+        "p_b1_amount" => "P B1 Amount",
+        "p_m3_amount" => "P M3 Amount",
+    );
+    $sn = gen($ar, "soil");
+
+    $s = <<<EOF
 <div class="row"><div class="col-md-4">
 
 <div class="panel panel-default">
-  <div class="panel-heading">Water Retention</div>
+  <div class="panel-heading">Soil Texture</div>
   <div class="panel-body">
-
-	<input type="checkbox" value="_S1" data-soil="_S1" name="soil[]" id="_S1">
-<label for="_S1" class="control-label">Water retention</label>
-
+    ${st}
   </div>
 </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">Soil Nitrogen</div>
-  <div class="panel-body">
-
-	<input type="checkbox" value="SOIL22" data-soil="SOIL22" name="soil[]" id="SOIL22">
-<label for="SOIL22" class="control-label">Soil Ammonium</label>
-	<input type="checkbox" value="SOIL15" data-soil="SOIL15" name="soil[]" id="SOIL15">
-<label for="SOIL15" class="control-label">Soil Nitrate</label>
-	<input type="checkbox" value="SOIL14" data-soil="SOIL14" name="soil[]" id="SOIL14">
-<label for="SOIL14" class="control-label">Total N</label>
-
-  </div>
-</div>
 
 </div><div class="col-md-4">
 
 <div class="panel panel-default">
   <div class="panel-heading">Soil Properties</div>
   <div class="panel-body">
-
-	<input type="checkbox" value="SOIL7" data-soil="SOIL7" name="soil[]" id="SOIL7">
-<label for="SOIL7" class="control-label">Aggregate stability</label>
-	<input type="checkbox" value="SOIL12" data-soil="SOIL12" name="soil[]" id="SOIL12">
-<label for="SOIL12" class="control-label">Cation Exchange Capacity (CEC)</label>
-	<input type="checkbox" value="SOIL1" data-soil="SOIL1" name="soil[]" id="SOIL1">
-<label for="SOIL1" class="control-label">Dry bulk density (BD)</label>
-	<input type="checkbox" value="SOIL3" data-soil="SOIL3" name="soil[]" id="SOIL3">
-<label for="SOIL3" class="control-label">Infiltration rate</label>
-	<input type="checkbox" value="SOIL11" data-soil="SOIL11" name="soil[]" id="SOIL11">
-<label for="SOIL11" class="control-label">Soil pH</label>
-	<input type="checkbox" value="_S19" data-soil="_S19" name="soil[]" id="_S19">
-<label for="_S19" class="control-label">Soil Fertility Routine Analysis</label>
-	<input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
-<label for="SOIL6" class="control-label">Soil texture</label>
-
+    ${sp}
   </div>
 </div>
 
 </div><div class="col-md-4">
 
-
-<div class="panel panel-default">
-  <div class="panel-heading">Soil Texture</div>
-  <div class="panel-body">
-
-	<input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
-<label for="SOIL6" class="control-label">Soil Texture Name</label>
-	<input type="checkbox" value="SOIL28" data-soil="SOIL28" name="soil[]" id="SOIL28">
-<label for="SOIL28" class="control-label">Percent Clay</label>
-	<input type="checkbox" value="SOIL26" data-soil="SOIL26" name="soil[]" id="SOIL26">
-<label for="SOIL26" class="control-label">Percent Sand</label>
-	<input type="checkbox" value="SOIL27" data-soil="SOIL27" name="soil[]" id="SOIL27">
-<label for="SOIL27" class="control-label">Percent Silt</label>
-
-
-  </div>
-</div>
-
 <div class="panel panel-default">
   <div class="panel-heading">Soil Carbon</div>
   <div class="panel-body">
-
-	<input type="checkbox" value="SOIL13" data-soil="SOIL13" name="soil[]" id="SOIL13">
-<label for="SOIL13" class="control-label">Soil Organic Carbon (SOC)</label>
-
+    ${sc}
   </div>
 </div>
 
+<div class="panel panel-default">
+  <div class="panel-heading">Soil Nitrogen</div>
+  <div class="panel-body">
+    ${sn}
+  </div>
+</div>
 
 
 </div></div>
@@ -412,11 +427,70 @@ function build_sites_ui(){
 	return $s;
 }
 function build_water_ui(){
-	$s = <<<EOF
+    $ar = Array(
+        "soil_moisture" => "Soil Moisture",
+        "soil_temperature" => "Soil Temperature",
+        "soil_ec" => "Soil EC",
+    );
+    $sm = gen($ar, "water");
 
-    <p>Work In Progress.</p>
+    $ar = Array(
+        "tile_flow" => "Tile Flow",
+        "discharge" => "Discharge",
+        "nitrate_N_load" => "Nitrate N Load",
+        "nitrate_N_removed" => "Nitrate N Removed",
+        "tile_flow_filled" => "Tile Flow Filled",
+        "nitrate_N_load_filled" => "Nitrate N Load Filled",
+    );
+    $tfl = gen($ar, "water");
+
+    $ar = Array(
+        "nitrate_N_concentration" => "Nitrate N Concentration",
+        "ammonia_N_concentration" => "Ammonia N Concentration",
+        "total_N_filtered_concentration" => "Total N Filtered Concentration",
+        "total_N_unfiltered_concentration" => "Total N Unfiltered Concentration",
+        "ortho_P_filtered_concentration" => "Ortho P Filtered Concentration",
+        "ortho_P_unfiltered_concentration" => "Ortho P Unfiltered Concentration",
+        "total_P_filtered_concentration" => "Total P Filtered Concentration",
+        "total_P_unfiltered_concentration" => "Total P Unfiltered Concentration",
+        "pH" => "pH",
+        "water_ec" => "Water EC",
+    );
+    $wq = gen($ar, "water");
+
+    $s = <<<EOF
+<div class="row"><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Soil Moisture</div>
+  <div class="panel-body">
+    ${sm}
+  </div>
+</div>
+
+
+</div><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Tile Flow and Load</div>
+  <div class="panel-body">
+    ${tfl}
+  </div>
+</div>
+
+</div><div class="col-md-4">
+
+<div class="panel panel-default">
+  <div class="panel-heading">Water Quality</div>
+  <div class="panel-body">
+    ${wq}
+  </div>
+</div>
+
+
+</div></div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_shm_ui(){
@@ -886,7 +960,7 @@ It is recommended to “Select All” sites if you want to retain the most optio
 {$treatmentui}
 </div>
 
-<div id="water-ui" style="display: block;">
+<div id="water-ui" style="display: none;">
 <div class="pull-right">
 <button id="water-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
