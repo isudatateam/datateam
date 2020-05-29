@@ -6,125 +6,73 @@ function build_treatments_ui(){
 <p>For sites you’ve selected, available treatments will be identified by black text; unavailable in grey.</p>
 <div class="clearfix"></div>
 
-<div class="row"><div class="col-md-4">
+<div class="row"><div class="col-md-6">
 
 
 <div class="panel panel-default">
-  <div class="panel-heading">Continuous Crop Systems</div>
+  <div class="panel-heading">Drainage Water Management</div>
   <div class="panel-body">
 
-<input type="checkbox" value="_T5" data-treatment="_T5" name="treatments[]" id="_T5">
-<label for="_T5" class="control-label">Continuous corn</label>
+<input type="checkbox" value="Non-Drained" data-treatment="Non-Drained"
+ name="treatments[]" id="Non_Drained">
+<label for="Non_Drained" class="control-label">Non-Drained</label>
 
-<input type="checkbox" value="_T6" data-treatment="_T6" name="treatments[]" id="_T6">
-<label for="_T6" class="control-label">Continuous corn with rye cover</label>
+<input type="checkbox" value="Controlled Drainage" data-treatment="Controlled Drainage"
+ name="treatments[]" id="Controlled_Drainage">
+<label for="Controlled_Drainage" class="control-label">Controlled Drainage</label>
 
-<input type="checkbox" value="ROT2" data-treatment="ROT2" name="treatments[]" id="ROT2">
-<label for="ROT2" class="control-label">Continuous soybean</label>
+<input type="checkbox" value="Controlled Drainage with Subirrigation"
+ data-treatment="Controlled Drainage with Subirrigation"
+ name="treatments[]" id="Controlled_Drainage_with_Subirrigation">
+<label for="Controlled_Drainage_with_Subirrigation" class="control-label">Controlled Drainage with Subirrigation</label>
 
-<input type="checkbox" value="ROT39" data-treatment="ROT39" name="treatments[]" id="ROT39">
-<label for="ROT39" class="control-label">Continuous soybean with rye cover</label>
+<input type="checkbox" value="Free Drainage" data-treatment="Free Drainage"
+ name="treatments[]" id="Free_Drainage">
+<label for="Free_Drainage" class="control-label">Free Drainage</label>
+
+<input type="checkbox" value="Surface Drainage" data-treatment="Surface Drainage"
+ name="treatments[]" id="Surface_Drainage">
+<label for="Surface_Drainage" class="control-label">Surface Drainage</label>
+
+<input type="checkbox" value="Shallow Drainage" data-treatment="Shallow Drainage"
+ name="treatments[]" id="Shallow_Drainage">
+<label for="Shallow_Drainage" class="control-label">Shallow Drainage</label>
+
+<input type="checkbox" value="Saturated Buffer" data-treatment="Saturated Buffer"
+ name="treatments[]" id="Saturated_Buffer">
+<label for="Saturated_Buffer" class="control-label">Saturated Buffer</label>
 
   </div>
 </div>
 
+</div><div class="col-md-6">
+
 <div class="panel panel-default">
-  <div class="panel-heading">Rotated Crop Systems</div>
+  <div class="panel-heading">Drainage Water Recycle</div>
   <div class="panel-body">
 
-<input type="checkbox" value="_T1" data-treatment="_T1" name="treatments[]" id="_T1">
-<label for="_T1" class="control-label">Corn-soybean</label>
+  <input type="checkbox" value="Non-Irrigated"
+   data-treatment="Non-Irrigated"
+   name="treatments[]" id="Non-Irrigated">
+<label for="Non-Irrigated" class="control-label">Non-Irrigated</label>
 
-<input type="checkbox" value="_T2" data-treatment="_T2" name="treatments[]" id="_T2">
-<label for="_T2" class="control-label">Corn-soybean-wheat</label>
+<input type="checkbox" value="Drip Irrigation"
+data-treatment="Drip Irrigation"
+name="treatments[]" id="Drip Irrigation">
+<label for="Drip Irrigation" class="control-label">Drip Irrigation</label>
 
-<input type="checkbox" value="_T3" data-treatment="_T3" name="treatments[]" id="_T3">
-<label for="_T3" class="control-label">Corn-soybean-wheat/red clover or mixed cover crop</label>
+<input type="checkbox" value="Overhead Irrigation"
+data-treatment="Overhead Irrigation"
+name="treatments[]" id="Overhead Irrigation">
+<label for="Overhead Irrigation" class="control-label">Overhead Irrigation</label>
 
-<input type="checkbox" value="_T4" data-treatment="_T4" name="treatments[]" id="_T4">
-<label for="_T4" class="control-label">Corn-soybean with rye cover</label>
-
-<!-- <input type="checkbox" value="ROT41" data-treatment="ROT41" name="treatments[]" id="ROT41"> -->
-<!-- <label for="ROT41" class="control-label">Corn-corn-soybean-corn-soybean</label> -->
+<input type="checkbox" value="Subsurface Irrigation"
+data-treatment="Subsurface Irrigation"
+name="treatments[]" id="Subsurface Irrigation">
+<label for="Subsurface Irrigation" class="control-label">Subsurface Irrigation</label>
 
   </div>
 </div>
-
-<div class="panel panel-default">
-  <div class="panel-heading">Prairie</div>
-  <div class="panel-body">
-
-<input type="checkbox" value="_T7" data-treatment="_T7" name="treatments[]" id="_T7">
-<label for="_T7" class="control-label">Prairie</label>
-
-  </div>
-</div>
-
-</div><div class="col-md-4">
-
-<div class="panel panel-default">
-  <div class="panel-heading">Drainage</div>
-  <div class="panel-body">
-
-<input type="checkbox" value="DWM3" data-treatment="DWM3" name="treatments[]" id="DWM3">
-<label for="DWM3" class="control-label">Controlled drainage ("managed")</label>
-<input type="checkbox" value="DWM2" data-treatment="DWM2" name="treatments[]" id="DWM2">
-<label for="DWM2" class="control-label">Conventional drainage ("free")</label>
-<input type="checkbox" value="DWM5" data-treatment="DWM5" name="treatments[]" id="DWM5">
-<label for="DWM5" class="control-label">Drainage with subirrigation</label>
-<input type="checkbox" value="DWM1" data-treatment="DWM1" name="treatments[]" id="DWM1">
-<label for="DWM1" class="control-label">No drainage</label>
-<input type="checkbox" value="DWM4" data-treatment="DWM4" name="treatments[]" id="DWM4">
-<label for="DWM4" class="control-label">Shallow drainage</label>
-
-  </div>
-</div>
-
-<div class="panel panel-default">
-  <div class="panel-heading">Tillage</div>
-  <div class="panel-body">
-
-<input type="checkbox" value="TIL2" data-treatment="TIL2" name="treatments[]" id="TIL2">
-<label for="TIL2" class="control-label">Tillage</label>
-<input type="checkbox" value="TIL1" data-treatment="TIL1" name="treatments[]" id="TIL1">
-<label for="TIL1" class="control-label">No-tillage</label>
-
-  </div>
-</div>
-
-</div><div class="col-md-4">
-
-<div class="panel panel-default">
-  <div class="panel-heading">Nitrogen</div>
-  <div class="panel-body">
-
-<input type="checkbox" value="NIT2" data-treatment="NIT2" name="treatments[]" id="NIT2">
-<label for="NIT2" class="control-label">MRTN application of N fertilizer</label>
-<input type="checkbox" value="NIT1" data-treatment="NIT1" name="treatments[]" id="NIT1">
-<label for="NIT1" class="control-label">No N fertilizer applied</label>
-<input type="checkbox" value="NIT3" data-treatment="NIT3" name="treatments[]" id="NIT3">
-<label for="NIT3" class="control-label">Sensor based N application - MO/OH recommendation</label>
-<input type="checkbox" value="NIT4" data-treatment="NIT4" name="treatments[]" id="NIT4">
-<label for="NIT4" class="control-label">Sensor based N application - OK recommendation</label>
-
-
-  </div>
-</div>
-
-<div class="panel panel-default">
-  <div class="panel-heading">Landscape</div>
-  <div class="panel-body">
-
-<input type="checkbox" value="LND1" data-treatment="LND1" name="treatments[]" id="LND1">
-<label for="LND1" class="control-label">Near-summit</label>
-<input type="checkbox" value="LND2" data-treatment="LND2" name="treatments[]" id="LND2">
-<label for="LND2" class="control-label">Side slope</label>
-<input type="checkbox" value="LND3" data-treatment="LND3" name="treatments[]" id="LND3">
-<label for="LND3" class="control-label">Toe slope</label>
-
-  </div>
-</div>
-
 
 </div></div>
 EOF;
