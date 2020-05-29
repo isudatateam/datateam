@@ -90,160 +90,23 @@ def do_filter(form):
         "year": [],
     }
     sites = agg(form.getall("sites[]"))
-    treatments = agg(form.getall("treatments[]"))
-    agronomic = agg(form.getall("agronomic[]"))
-    soil = agg(form.getall("soil[]"))
-    ghg = agg(form.getall("ghg[]"))
+    # treatments = agg(form.getall("treatments[]"))
+    # agronomic = agg(form.getall("agronomic[]"))
+    # soil = agg(form.getall("soil[]"))
+    # ghg = agg(form.getall("ghg[]"))
     # water = agg(form.get("water[]"))
     # ipm = agg(form.get("ipm[]"))
     # year = agg(form.get("year[]"))
 
     # build a list of treatments based on the sites selected
     df = read_sql(
-        """
-        SELECT distinct tillage, rotation, drainage, nitrogen,
-        landscape from plotids where uniqueid in %s
-        """,
+        "select distinct dwm from meta_treatment_identifier where "
+        "siteid in %s and dwm is not null",
         pgconn,
         params=(tuple(sites),),
         index_col=None,
     )
-    arr = []
-    for col in ["tillage", "rotation", "drainage", "nitrogen", "landscape"]:
-        for v in df[col].unique():
-            if v is None:
-                continue
-            arr.append(v)
-    res["treatments"] = redup(arr)
-
-    # build a list of agronomic data based on the plotids and sites
-    a = {}
-    arsql = []
-    args = [tuple(sites)]
-    for code, col in zip(
-        ["TIL", "ROT", "DWM", "NIT", "LND"],
-        ["tillage", "rotation", "drainage", "nitrogen", "landscape"],
-    ):
-        a[code] = [b for b in treatments if b.startswith(code)]
-        if code == "LND":
-            a[code].append("n/a")
-        if len(a[code]) > 0:
-            arsql.append(" %s in %%s" % (col,))
-            args.append(tuple(a[code]))
-    if len(arsql) == 0:
-        sql = ""
-    else:
-        sql = " and "
-        sql = sql + " and ".join(arsql)
-
-    df = read_sql(
-        f"""
-    with myplotids as (
-        SELECT uniqueid, plotid, nitrogen from plotids
-        WHERE uniqueid in %s {sql}
-    )
-    SELECT distinct varname from agronomic_data a, myplotids p
-    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
-    a.value not in ('n/a', 'did not collect')
-    """,
-        pgconn,
-        params=args,
-        index_col=None,
-    )
-    if not df.empty:
-        res["agronomic"] = redup(df["varname"].values.tolist())
-
-    # build a list of soil data based on the plotids and sites
-    df = read_sql(
-        f"""
-    with myplotids as (
-        SELECT uniqueid, plotid from plotids
-        WHERE uniqueid in %s {sql}
-    )
-    SELECT distinct varname from soil_data a, myplotids p
-    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
-    a.value not in ('n/a', 'did not collect')
-    """,
-        pgconn,
-        params=args,
-        index_col=None,
-    )
-    if not df.empty:
-        res["soil"] = redup(df["varname"].values.tolist())
-
-    # Figure out which GHG variables we have
-    df = read_sql(
-        """
-    with myplotids as (
-        SELECT uniqueid, plotid from plotids
-        WHERE uniqueid in %s
-    )
-    SELECT * from ghg_data a, myplotids p
-    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
-    """,
-        pgconn,
-        params=(tuple(sites),),
-        index_col=None,
-    )
-    if not df.empty:
-        for i in range(1, 17):
-            col = "ghg%02i" % (i,)
-            if len(df[df[col].notnull()].index) > 0:
-                res["ghg"].append(col.upper())
-
-    # Figure out which IPM variables we have
-    df = read_sql(
-        """
-    with myplotids as (
-        SELECT uniqueid, plotid from plotids
-        WHERE uniqueid in %s
-    )
-    SELECT * from ipm_data a, myplotids p
-    WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
-    """,
-        pgconn,
-        params=(tuple(sites),),
-        index_col=None,
-    )
-    if not df.empty:
-        for i in range(1, 15):
-            col = "ipm%02i" % (i,)
-            if len(df[df[col].notnull()].index) > 0:
-                res["ipm"].append(col.upper())
-
-    # Compute which years we have data for these locations
-    _g = [" %s is not null " % (g,) for g in ghg if g != "ZZZ"]
-    ghglimiter = "1 = 2"
-    if _g:
-        ghglimiter = "( %s )" % ("or".join(_g),)
-    df = read_sql(
-        f"""
-    WITH soil_years as (
-        SELECT distinct year from soil_data where varname in %s
-        and uniqueid in %s and value not in ('n/a', 'did not collect')),
-    agronomic_years as (
-        SELECT distinct year from agronomic_data where varname in %s
-        and uniqueid in %s and value not in ('n/a', 'did not collect')),
-    ghg_years as (
-        SELECT distinct year from ghg_data where uniqueid in %s
-        and {ghglimiter}),
-    agg as (SELECT year from soil_years UNION select year from agronomic_years
-        UNION select year from ghg_years)
-
-    SELECT distinct year from agg ORDER by year
-    """,
-        pgconn,
-        params=(
-            tuple(soil),
-            tuple(sites),
-            tuple(agronomic),
-            tuple(sites),
-            tuple(sites),
-        ),
-        index_col=None,
-    )
-    for _, row in df.iterrows():
-        res["year"].append(float(row["year"]))
+    res["treatments"] = df["dwm"].tolist()
 
     return res
 
