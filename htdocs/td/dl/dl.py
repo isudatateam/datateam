@@ -74,60 +74,9 @@ FERTELEM = [
     "iron",
 ]
 KGH_LBA = 1.12085
-# -----------------------------------------------------------------------------
-# NOTE: filter.py is upstream for this table, copy to dl.py
-AGG = {
-    "_T1": ["ROT4", "ROT5", "ROT54"],
-    "_T2": ["ROT8", "ROT7", "ROT6"],
-    "_T3": ["ROT16", "ROT15", "ROT17"],
-    "_T4": ["ROT37", "ROT36", "ROT55", "ROT59"],
-    "_T5": ["ROT61", "ROT56", "ROT1"],
-    "_T6": ["ROT57", "ROT58", "ROT38"],
-    "_T7": ["ROT40", "ROT50"],
-    "_S1": [
-        "SOIL41",
-        "SOIL34",
-        "SOIL29",
-        "SOIL30",
-        "SOIL31",
-        "SOIL2",
-        "SOIL35",
-        "SOIL32",
-        "SOIL42",
-        "SOIL33",
-        "SOIL39",
-    ],
-    "_S19": [
-        "SOIL19.8",
-        "SOIL19.11",
-        "SOIL19.12",
-        "SOIL19.1",
-        "SOIL19.10",
-        "SOIL19.2",
-        "SOIL19.5",
-        "SOIL19.7",
-        "SOIL19.6",
-        "SOIL19.13",
-    ],
-}
+
 # runtime storage
 MEMORY = dict(stamp=datetime.datetime.utcnow())
-ROT_CODES = {
-    "ROT10": "ROT7v",
-    "ROT11": "ROT8v",
-    "ROT41": "ROT5v",
-    "ROT50": "ROT40v",
-    "ROT9": "ROT6v",
-    "ROT58": "ROT38v",
-    "ROT60": "ROT36v",
-    "ROT61": "ROT5v",
-    "ROT62": "ROT7v",
-    "ROT54": "ROT5v",
-    "ROT57": "ROT37v",
-    "ROT55": "ROT37v",
-    "ROT56": "ROT1v",
-}
-TIL_CODES = {"TIL4": "TIL1v"}
 
 
 def get_vardf(pgconn, tabname):
@@ -164,16 +113,6 @@ def valid2date(df):
     """If dataframe has valid in columns, rename it to date"""
     if "valid" in df.columns:
         df.rename(columns={"valid": "date"}, inplace=True)
-
-
-def redup(arr):
-    """Replace any codes that are collapsed by the above"""
-    additional = []
-    for key in arr:
-        if key in AGG:
-            additional.extend(AGG[key])
-    pprint("dedup added %s to %s" % (str(additional), str(arr)))
-    return arr + additional
 
 
 def conv(value, detectlimit):
@@ -574,10 +513,6 @@ def do_plotids(pgconn, writer, sites):
         pgconn,
         params=(tuple(sites),),
     )
-    # Fake rotation codes
-    opdf.replace({"rotation": ROT_CODES}, inplace=True)
-    # Fake tillage codes
-    opdf.replace({"tillage": TIL_CODES}, inplace=True)
     opdf, worksheet = add_bling(
         pgconn,
         writer,
@@ -646,31 +581,31 @@ def do_work(form):
     """do great things"""
     pgconn = get_dbconn("td")
     email = form.get("email")
-    sites = form.get("sites[]")
+    sites = form.getall("sites[]")
     if not sites:
         sites.append("XXX")
-    # treatments = form.getlist('treatments[]')
-    agronomic = redup(form.get("agronomic[]"))
-    soil = redup(form.get("soil[]"))
-    ghg = redup(form.get("ghg[]"))
-    # water = redup(form.getlist('water[]'))
-    ipm = redup(form.get("ipm[]"))
-    shm = redup(form.get("shm[]"))
+    agronomic = form.getall("agronomic[]")
+    soil = form.getall("soil[]")
+    ghg = form.getall("ghg[]")
+    # water = form.getall('water[]')
+    ipm = form.getall("ipm[]")
+    shm = form.getall("shm[]")
     missing = form.get("missing", "M")
     if missing == "__custom__":
         missing = form.get("custom_missing", "M")
     pprint("Missing is %s" % (missing,))
     detectlimit = form.get("detectlimit", "1")
 
-    writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine="xlsxwriter")
+    # pylint: disable=abstract-class-instantiated
+    writer = pd.ExcelWriter("/tmp/td.xlsx", engine="xlsxwriter")
 
     # First sheet is Data Dictionary
-    if "SHM5" in shm:
+    if "SHM5a" in shm:
         do_dictionary(pgconn, writer)
         pprint("do_dictionary() is done")
 
     # Sheet two is plot IDs
-    if "SHM4" in shm:
+    if "SHM4a" in shm:
         do_plotids(pgconn, writer, sites)
         pprint("do_plotids() is done")
 
@@ -690,34 +625,34 @@ def do_work(form):
 
     # Management
     # Field Operations
-    if "SHM1" in shm:
+    if "SHM1a" in shm:
         do_operations(pgconn, writer, sites, missing)
         pprint("do_operations() is done")
     # Pesticides
-    if "SHM2" in shm:
+    if "SHM2a" in shm:
         do_pesticides(pgconn, writer, sites)
         pprint("do_pesticides() is done")
     # Residue and Irrigation
-    if "SHM3" in shm:
+    if "SHM3a" in shm:
         do_management(pgconn, writer, sites)
         pprint("do_management() is done")
     # Site Metadata
-    if "SHM8" in shm:
+    if "SHM8a" in shm:
         do_metadata_master(pgconn, writer, sites, missing)
         pprint("do_metadata_master() is done")
     # Drainage Management
-    if "SHM7" in shm:
+    if "SHM7a" in shm:
         do_dwm(pgconn, writer, sites, missing)
         pprint("do_dwm() is done")
     # Notes
-    if "SHM6" in shm:
+    if "SHM6a" in shm:
         do_notes(pgconn, writer, sites, missing)
         pprint("do_notes() is done")
 
     # Send to client
     writer.close()
     msg = MIMEMultipart()
-    msg["Subject"] = "Sustainable Corn CAP Dataset"
+    msg["Subject"] = "Transforming Drainage Dataset"
     msg["From"] = "ISU Data Team <isudatateam@iastate.edu>"
     msg["To"] = email
     msg.preamble = "Data"
@@ -734,14 +669,7 @@ def do_work(form):
     )
 
     msg.attach(MIMEText(text))
-    # else:
-    #    msg.attach(MIMEText(EMAILTEXT))
-    #    part = MIMEBase('application', "octet-stream")
-    #    part.set_payload(open('/tmp/cscap.xlsx', 'rb').read())
-    #    encoders.encode_base64(part)
-    #    part.add_header('Content-Disposition',
-    #                    'attachment; filename="cscap.xlsx"')
-    #    msg.attach(part)
+
     _s = smtplib.SMTP("localhost")
     _s.sendmail(msg["From"], msg["To"], msg.as_string())
     _s.quit()
@@ -760,8 +688,8 @@ def application(environ, start_response):
     """Do Stuff"""
     form = parse_formvars(environ)
     agree = form.get("agree")
+    start_response("200 OK", [("Content-type", "text/plain")])
     if agree != "AGREE":
-        start_response("200 OK", [("Content-type", "text/plain")])
         return [b"You did not agree to download terms."]
 
     return [do_work(form)]
