@@ -4,50 +4,51 @@ require_once "../../include/require_auth.php";
 require_once "../../include/forms.php";
 require_once "../../include/myview.php";
 
-$site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC';
+$site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Story';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $group = isset($_GET["group"]) ? $_GET["group"]: '0';
 $errmsg = "";
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
-$varname = isset($_GET["varname"])? $_GET["varname"]: 'AGR17';
+$varname = isset($_GET["varname"])? $_GET["varname"]: 'crop_yield';
 
-/* with data as (select site, min(year),
- max(year) from agronomic_data GROUP by site)
+/* 
+ with data as (select siteid, min(year),
+ max(year) from agronomic_data GROUP by siteid)
  
- SELECT '"'|| site || '"=>"' || site ||' ('|| min ||' to '|| max ||') ['
+ SELECT '"'|| siteid || '"=>"' || siteid ||' ('|| min ||' to '|| max ||') ['
  || (max - min) + 1 ||' years]",' as d
- from data ORDER by d;;
+ from data ORDER by d;
 */
 $ar = Array(
-		//"ACRE"=>"ACRE (2007 to 2007) [1 years]",
-		"AUGLA"=>"AUGLA (2008 to 2012) [5 years]",
-		"BATH_A"=>"BATH_A (2015 to 2018) [4 years]",
-		"CLAY_C"=>"CLAY_C (2012 to 2016) [5 years]",
-		"CLAY_R"=>"CLAY_R (2012 to 2016) [5 years]",
-		"CLAY_U"=>"CLAY_U (2012 to 2016) [5 years]",
-		"CRAWF"=>"CRAWF (2006 to 2011) [6 years]",
-		"DEFI_M"=>"DEFI_M (2006 to 2012) [7 years]",
-		"DEFI_R"=>"DEFI_R (1997 to 2008) [12 years]",
-		"DPAC"=>"DPAC (2005 to 2018) [14 years]",
-		"FAIRM"=>"FAIRM (2008 to 2016) [9 years]",
-		"FULTON"=>"FULTON (1996 to 2008) [13 years]",
-		"HARDIN"=>"HARDIN (2007 to 2012) [6 years]",
-		"HARDIN_NW"=>"HARDIN_NW (2006 to 2011) [6 years]",
-		"HENRY"=>"HENRY (2006 to 2011) [6 years]",
-		"HICKS_B"=>"HICKS_B (2006 to 2018) [13 years]",
-		"MUDS1"=>"MUDS1 (2002 to 2018) [17 years]",
-		"MUDS2"=>"MUDS2 (2010 to 2017) [8 years]",
-		"MUDS3_NEW"=>"MUDS3_NEW (2016 to 2018) [3 years]",
-		//"MUDS3_OLD"=>"MUDS3_OLD (2010 to 2013) [4 years]",
-		"MUDS4"=>"MUDS4 (2010 to 2013) [4 years]",
-		"SERF_IA"=>"SERF_IA (2007 to 2018) [12 years]",
-		"SERF_SD"=>"SERF_SD (2016 to 2017) [2 years]",
-		"STJOHNS"=>"STJOHNS (2007 to 2015) [9 years]",
-		"STORY"=>"STORY (2006 to 2009) [4 years]",
-		"SWROC"=>"SWROC (2016 to 2018) [3 years]",
-		"TIDE_OLD"=>"TIDE_OLD (2007 to 2012) [6 years]",
-		//"UBWC"=>"UBWC (2005 to 2012) [8 years]",
-		"VANWERT"=>"VANWERT (1997 to 2008) [12 years]",
+    "IA_Story2"=>"IA_Story2 (2006 to 2009) [4 years]",
+    "IA_Washington"=>"IA_Washington (2007 to 2018) [12 years]",
+    "IN_Randolph"=>"IN_Randolph (2005 to 2017) [13 years]",
+    "IN_Tippecanoe"=>"IN_Tippecanoe (2007 to 2018) [12 years]",
+    "MN_Clay1"=>"MN_Clay1 (2012 to 2018) [7 years]",
+    "MN_Clay2"=>"MN_Clay2 (2012 to 2018) [7 years]",
+    "MN_Clay3"=>"MN_Clay3 (2012 to 2018) [7 years]",
+    "MN_Redwood1"=>"MN_Redwood1 (2006 to 2017) [12 years]",
+    "MN_Redwood3"=>"MN_Redwood3 (2016 to 2017) [2 years]",
+    "MN_Wilkin1"=>"MN_Wilkin1 (2017 to 2018) [2 years]",
+    "MN_Wilkin2"=>"MN_Wilkin2 (2017 to 2017) [1 years]",
+    "MO_Knox1"=>"MO_Knox1 (2010 to 2017) [8 years]",
+    "MO_Knox2"=>"MO_Knox2 (2015 to 2018) [4 years]",
+    "MO_Knox3"=>"MO_Knox3 (2011 to 2013) [3 years]",
+    "MO_Knox4"=>"MO_Knox4 (2010 to 2013) [4 years]",
+    "MO_Shelby"=>"MO_Shelby (2002 to 2018) [17 years]",
+    "NC_Washington"=>"NC_Washington (2007 to 2012) [6 years]",
+    "ND_Richland"=>"ND_Richland (2012 to 2018) [7 years]",
+    "OH_Auglaize1"=>"OH_Auglaize1 (2008 to 2012) [5 years]",
+    "OH_Auglaize2"=>"OH_Auglaize2 (2008 to 2015) [8 years]",
+    "OH_Crawford"=>"OH_Crawford (2007 to 2011) [5 years]",
+    "OH_Defiance1"=>"OH_Defiance1 (2006 to 2012) [7 years]",
+    "OH_Defiance2"=>"OH_Defiance2 (1997 to 2008) [12 years]",
+    "OH_Fulton"=>"OH_Fulton (1996 to 2008) [13 years]",
+    "OH_Hardin1"=>"OH_Hardin1 (2007 to 2012) [6 years]",
+    "OH_Hardin2"=>"OH_Hardin2 (2008 to 2011) [4 years]",
+    "OH_Henry"=>"OH_Henry (2008 to 2011) [4 years]",
+    "OH_VanWert"=>"OH_VanWert (1997 to 2008) [12 years]",
+    "SD_Clay"=>"SD_Clay (2016 to 2017) [2 years]",   
 		);
 $siteselect = make_select("site", $site, $ar);
 
