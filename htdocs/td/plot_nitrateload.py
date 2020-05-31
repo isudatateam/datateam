@@ -44,7 +44,7 @@ LINESTYLE = [
 def make_plot(form, start_response):
     """Make the plot"""
     pgconn = get_dbconn("td")
-    (uniqueid, plotid) = form.get("site", "ISUAG::302E").split("::")
+    siteid = form.get("site")
 
     sts = datetime.datetime.strptime(
         form.get("date", "2014-01-01"), "%Y-%m-%d"
@@ -52,11 +52,6 @@ def make_plot(form, start_response):
     days = int(form.get("days", 1))
     group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
-    tzname = (
-        "America/Chicago"
-        if uniqueid in ["ISUAG", "SERF", "GILMORE"]
-        else "America/New_York"
-    )
     viewopt = form.get("view", "plot")
     ptype = form.get("ptype", "1")
     missing = form.get("missing", "M")
@@ -64,24 +59,22 @@ def make_plot(form, start_response):
     missing = missing if missing != "__custom__" else custom_missing
     if ptype == "1":
         df = read_sql(
-            """SELECT valid at time zone 'UTC' as v, plotid,
-        wat20 as load
-        from nitrateload_data WHERE uniqueid = %s
-        and valid between %s and %s ORDER by valid ASC
-        """,
+            "SELECT date as v, coalesce(plotid, '') as plotid, "
+            "nitrate_n_load, nitrate_n_removed "
+            "nitrate_n_load_filled from tile_flow_and_n_loads_data WHERE "
+            "siteid = %s and date between %s and %s ORDER by date ASC",
             pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
+            params=(siteid, sts.date(), ets.date()),
         )
     elif ptype == "2":
         df = read_sql(
-            """SELECT
-        date_trunc('month', valid at time zone 'UTC') as v, plotid,
-        sum(wat20) as load
-        from nitrateload_data WHERE uniqueid = %s
-        and valid between %s and %s GROUP by v, plotid ORDER by v ASC
-        """,
+            "SELECT date_trunc(month from date) as v, "
+            "coalesce(plotid, '') as plotid, "
+            "nitrate_n_load, nitrate_n_removed "
+            "nitrate_n_load_filled from tile_flow_and_n_loads_data WHERE "
+            "siteid = %s and date between %s and %s ORDER by date ASC",
             pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
+            params=(siteid, sts.date(), ets.date()),
         )
     if len(df.index) < 3:
         send_error(
@@ -91,9 +84,10 @@ def make_plot(form, start_response):
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
-            "SELECT * from plotids where siteid = %s",
+            "SELECT coalesce(plotid, '') as plotid "
+            "from meta_plot_identifier where siteid = %s",
             pgconn,
-            params=(uniqueid,),
+            params=(siteid,),
             index_col="plotid",
         )
 
@@ -108,10 +102,6 @@ def make_plot(form, start_response):
         df = df.groupby(["treatment", "v"]).mean()
         df.reset_index(inplace=True)
         linecol = "treatment"
-    if ptype not in ["2"]:
-        df["v"] = df["v"].apply(
-            lambda x: x.tz_localize("UTC").tz_convert(tzname)
-        )
 
     if viewopt not in ["plot", "js"]:
         df = df.fillna(missing)
@@ -166,7 +156,7 @@ def make_plot(form, start_response):
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
     title = ("Nitrate Load for Site: %s (%s to %s)") % (
-        uniqueid,
+        siteid,
         sts.strftime("%-d %b %Y"),
         ets.strftime("%-d %b %Y"),
     )
@@ -175,7 +165,7 @@ def make_plot(form, start_response):
     plot_ids.sort()
     if group == "1":
         plot_ids = plot_ids[::-1]
-    df["ticks"] = df["v"].astype(np.int64) // 10 ** 6
+    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
     seriestype = "line" if ptype == "1" else "column"
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
@@ -195,7 +185,7 @@ def make_plot(form, start_response):
                     [
                         [a, b]
                         for a, b in zip(
-                            df2["ticks"].values, df2["load"].values
+                            df2["ticks"].values, df2["nitrate_n_load"].values
                         )
                     ]
                 )

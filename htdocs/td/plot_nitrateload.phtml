@@ -3,8 +3,8 @@ require_once "../../include/require_auth.php";
 include_once "../../include/forms.php";
 require_once "../../include/myview.php";
 
-$site = isset($_GET["site"]) ? $_GET["site"]: 'ACRE::Inlet_A';
-$date = isset($_GET["date"]) ? $_GET["date"]: '2014-01-10';
+$site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Boone';
+$date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $group = isset($_GET["group"]) ? $_GET["group"]: '0';
@@ -19,32 +19,51 @@ if (strlen($date) != 10){
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 1000;
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
 
-/* with data as (select uniqueid, min(date(valid)),
- max(date(valid)) from nitrateload_data GROUP by uniqueid)
+/*
+ with data as (select siteid, min(date),
+ max(date) from tile_flow_and_n_loads_data GROUP by siteid)
  
- SELECT '"'||uniqueid || '::A"=>"' || uniqueid || '  ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
+ SELECT '"'|| siteid || '"=>"' || siteid || '  ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
 $ar = Array(
-		"ACRE::A"=>"ACRE  (2007-08-20 to 2017-01-26) [3447 days]",
-		"BEAR::A"=>"BEAR  (2011-02-28 to 2016-12-09) [2111 days]",
-		//"CLAY_C::A"=>"CLAY_C  (2015-06-24 to 2015-06-24) [0 days]",
-		//"CLAY_R::A"=>"CLAY_R  (2015-04-27 to 2016-11-16) [569 days]",
-		"FAIRM::A"=>"FAIRM  (2012-05-09 to 2016-10-12) [1617 days]",
-		"MAASS::A"=>"MAASS  (2013-04-11 to 2016-12-08) [1337 days]",
-		"MUDS2::A"=>"MUDS2  (2010-07-04 to 2013-10-20) [1204 days]",
-		"MUDS3_OLD::A"=>"MUDS3_OLD  (2010-05-25 to 2013-09-29) [1223 days]",
-		"MUDS4::A"=>"MUDS4  (2010-07-06 to 2013-05-23) [1052 days]",
-		"SERF_IA::A"=>"SERF_IA  (2007-04-20 to 2016-12-09) [3521 days]",
-		"SERF_SD::A"=>"SERF_SD  (2015-05-13 to 2016-10-31) [537 days]",
-		"STORY::A"=>"STORY  (2006-01-01 to 2009-12-31) [1460 days]",
-		"TIDE_OLD::A"=>"TIDE_OLD  (2007-01-01 to 2011-12-31) [1825 days]",
-		"UBWC::A"=>"UBWC  (2005-01-01 to 2012-12-31) [2921 days]",
-		
-		
-		
-		
-		);
+    "IA_Boone"=>"IA_Boone  (2016-06-09 to 2018-12-31) [935 days]",
+    "IA_Grundy"=>"IA_Grundy  (2016-09-02 to 2018-12-31) [850 days]",
+    "IA_Hamilton1"=>"IA_Hamilton1  (2011-01-01 to 2018-12-31) [2921 days]",
+    "IA_Hamilton2"=>"IA_Hamilton2  (2016-01-01 to 2018-12-31) [1095 days]",
+    "IA_Hamilton3"=>"IA_Hamilton3  (2013-06-06 to 2018-12-31) [2034 days]",
+    "IA_Story1"=>"IA_Story1  (2016-05-06 to 2018-12-31) [969 days]",
+    "IA_Story2"=>"IA_Story2  (2006-01-01 to 2009-12-31) [1460 days]",
+    "IA_Tama"=>"IA_Tama  (2016-01-01 to 2018-12-31) [1095 days]",
+    "IA_Washington"=>"IA_Washington  (2007-01-01 to 2017-12-31) [4017 days]",
+    "IN_Randolph"=>"IN_Randolph  (2006-01-01 to 2017-12-31) [4382 days]",
+    "IN_Tippecanoe"=>"IN_Tippecanoe  (2007-11-04 to 2018-12-31) [4075 days]",
+    "MN_Clay1"=>"MN_Clay1  (2013-04-23 to 2018-10-18) [2004 days]",
+    "MN_Clay2"=>"MN_Clay2  (2013-04-30 to 2018-09-30) [1979 days]",
+    "MN_Redwood1"=>"MN_Redwood1  (2006-01-01 to 2017-12-31) [4382 days]",
+    "MN_Redwood3"=>"MN_Redwood3  (2016-01-01 to 2017-12-31) [730 days]",
+    "MN_Wilkin1"=>"MN_Wilkin1  (2017-01-01 to 2018-12-31) [729 days]",
+    "MN_Wilkin2"=>"MN_Wilkin2  (2017-01-01 to 2018-12-31) [729 days]",
+    "MN_Wilkin3"=>"MN_Wilkin3  (2018-01-01 to 2018-12-31) [364 days]",
+    "MO_Knox1"=>"MO_Knox1  (2010-07-04 to 2013-12-31) [1276 days]",
+    "MO_Knox2"=>"MO_Knox2  (2016-01-01 to 2017-12-31) [730 days]",
+    "MO_Knox3"=>"MO_Knox3  (2010-07-06 to 2013-12-31) [1274 days]",
+    "MO_Knox4"=>"MO_Knox4  (2010-05-25 to 2013-12-31) [1316 days]",
+    "NC_Washington"=>"NC_Washington  (2007-01-01 to 2011-12-31) [1825 days]",
+    "ND_Richland"=>"ND_Richland  (2013-04-08 to 2018-12-31) [2093 days]",
+    "OH_Auglaize1"=>"OH_Auglaize1  (2008-01-18 to 2014-12-31) [2539 days]",
+    "OH_Auglaize2"=>"OH_Auglaize2  (2009-01-01 to 2015-12-31) [2555 days]",
+    "OH_Crawford"=>"OH_Crawford  (2008-10-08 to 2014-12-31) [2275 days]",
+    "OH_Defiance1"=>"OH_Defiance1  (2008-01-01 to 2014-12-31) [2556 days]",
+    "OH_Defiance2"=>"OH_Defiance2  (1999-05-21 to 2008-11-19) [3470 days]",
+    "OH_Delaware"=>"OH_Delaware  (2005-01-01 to 2012-12-31) [2921 days]",
+    "OH_Fulton"=>"OH_Fulton  (2000-12-07 to 2011-01-01) [3677 days]",
+    "OH_Hardin1"=>"OH_Hardin1  (2008-01-01 to 2014-12-31) [2556 days]",
+    "OH_Hardin2"=>"OH_Hardin2  (2008-01-01 to 2014-12-31) [2556 days]",
+    "OH_Henry"=>"OH_Henry  (2008-01-01 to 2014-12-31) [2556 days]",
+    "OH_VanWert"=>"OH_VanWert  (2001-03-08 to 2009-11-10) [3169 days]",
+    "SD_Clay"=>"SD_Clay  (2015-01-01 to 2017-12-31) [1095 days]",
+	);
 $siteselect = make_select("site", $site, $ar);
 
 $ar = Array(
