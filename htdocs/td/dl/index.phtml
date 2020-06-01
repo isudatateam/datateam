@@ -1,5 +1,5 @@
-<?php 
-// require_once "../../../include/require_auth.php";
+<?php
+require_once "../../../include/forms.php";
 
 function build_treatments_ui(){
 	$s = <<<EOF
@@ -554,6 +554,8 @@ $publisting = build_publications();
 $theseslisting = build_theses();
 $sitestable = build_sites();
 
+$wxyear1 = yearSelect2(1996, 1996, "year1", null, 2018);
+$wxyear2 = yearSelect2(1996, 2018, "year2", null, 2018);
 $wxdatacontent = <<<EOM
 <br />
 <ul class="nav nav-tabs" role="tablist">
@@ -579,38 +581,50 @@ data and will produce updated values that are reprocessed into this archive.</p>
 <form method="GET" id="wxform" action="https://mesonet.agron.iastate.edu/cgi-bin/request/coop.py">
 <input type="hidden" name="network" value="IACLIMATE" id="network" />
 
+<!--
+select '<option value="'||a.climate_site||'">'||a.id||' ['||a.name||'] -- '||a.climate_site ||' '||b.name||'</option>' from stations a JOIN stations b on (a.climate_site = b.id) where a.network = 'TD' ORDER by a.id ASC;
+-->
 <p><strong>Select Research Site(s):</strong></p>
 <select id="station" name="station[]" size="5" multiple="" class="select">
-<option value="WI4961">ARL [Arlington, WI] -- WI4961 MADISON DANE RGNL AP</option>
-<option value="MO1791">BRADFORD.A [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
-<option value="MO1791">BRADFORD.B1 [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
-<option value="MO1791">BRADFORD.B2 [Columba, MO] -- MO1791 COLUMBIA RGNL AP</option>
-<option value="MO1791">BRADFORD.C [Columbia, MO] -- MO1791 COLUMBIA RGNL AP</option>
-<option value="IN2825">DPAC [Farmland, IN] -- IN2825 FARMLAND 5 NNW</option>
-<option value="MO4271">FREEMAN [Jefferson City, MO] -- MO4271 JEFFERSON CITY WTP</option>
-<option value="IA6719">GILMORE [Gilmore City, IA] -- IA6719 POCAHONTAS</option>
-<option value="MN8323">HICKS.B [Tracy, MN] -- MN8323 TRACY</option>
-<option value="MN8323">HICKS.G [Tracy, MN] -- MN8323 TRACY</option>
-<option value="MN8323">HICKS.P [Tracy, MN] -- MN8323 TRACY</option>
-<option value="OH3874">HOYTVILLE.LTR [Custar, OH] -- OH3874 HOYTVILLE 2 NE</option>
-<option value="IA0200">ISUAG [Boone, IA] -- IA0200 AMES-8-WSW</option>
-<option value="IA0200">ISUAG.USB [Boone, IA] -- IA0200 AMES-8-WSW</option>
-<option value="MI3504">KELLOGG [Hickory Corners, MI] -- MI3504 Gull Lake Biological Station</option>
-<option value="WI4546">LAN [Lancaster, WI] -- WI4546 LANCASTER 4 WSW</option>
-<option value="WI8241">MAR [Marshfield, WI] -- WI8241 STRATFORD 1 NW</option>
-<option value="MI2395">MASON [East Lansing, MI] -- MI2395 EAST LANSING 4 S</option>
-<option value="OH1905">NAEW.WS109 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
-<option value="OH1905">NAEW.WS111 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
-<option value="OH1905">NAEW.WS113 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
-<option value="OH1905">NAEW.WS118 [Coshocton, OH] -- OH1905 COSHOCTON AG RSCH STN</option>
-<option value="IL5768">NWREC [Monmouth, IL] -- IL5768 MONMOUTH</option>
-<option value="IL3717">ORR [Perry, IL] -- IL3717 Griggsville</option>
-<option value="IN6435">SEPAC [Butlerville, IN] -- IN6435 NORTH VERNON 2 ESE</option>
-<option value="IA8688">SERF [Crawfordsville, IA] -- IA8688 WASHINGTON</option>
-<option value="OH4551">STJOHNS [St. Johns, OH] -- OH4551 LIMA WWTP</option>
-<option value="OHTCMH">WATERMAN [Columbus, OH] -- OHTCMH Waterman Area</option>
-<option value="OH9312">WOOSTER.COV [Wooster, OH] -- OH9312 WOOSTER EXP STN</option>
-<option value="OH9312">WOOSTER.LTR [Wooster, OH] -- OH9312 WOOSTER EXP STN</option>
+<option value="IA0200">IA_Boone [Private Farm at Boone County  IA] -- IA0200 AMES-8-WSW</option>
+<option value="IA3487">IA_Grundy [Private Farm at Grundy County  IA] -- IA3487 GRUNDY-CENTER</option>
+<option value="IA0200">IA_Hamilton1 [Private Farm at Bear Creek (Site 1)] -- IA0200 AMES-8-WSW</option>
+<option value="IA0200">IA_Hamilton2 [Private Farm at Bear Creek (Site 2)] -- IA0200 AMES-8-WSW</option>
+<option value="IA8806">IA_Hamilton3 [Private Farm at Hamilton County  IA] -- IA8806 WEBSTER-CITY</option>
+<option value="IA0241">IA_Story1 [Private Farm at Hickory Grove] -- IA0241 ANKENY-3-S</option>
+<option value="IA0200">IA_Story2 [Private Farm at Story County  IA] -- IA0200 AMES-8-WSW</option>
+<option value="IA0600">IA_Tama [Private Farm at Rock Creek] -- IA0600 BELLE-PLAINE</option>
+<option value="IA8688">IA_Washington [Southeast Research and Demonstration Farm (SERF)] -- IA8688 WASHINGTON</option>
+<option value="IN2825">IN_Randolph [Davis Purdue Agricultural Center (DPAC)] -- IN2825 FARMLAND 5 NNW</option>
+<option value="IN9430">IN_Tippecanoe [Agronomy Center for Research and Education (ACRE)] -- IN9430 WEST LAFAYETTE 6 NW</option>
+<option value="MN0018">MN_Clay1 [Private Farm in Clay County  MN] -- MN0018 ADA</option>
+<option value="MN0018">MN_Clay2 [Private Farm in Clay County  MN] -- MN0018 ADA</option>
+<option value="MN0018">MN_Clay3 [Private Farm in Clay County  MN] -- MN0018 ADA</option>
+<option value="MN8323">MN_Redwood1 [Private farm at Redwood County  MN] -- MN8323 TRACY</option>
+<option value="MN8323">MN_Redwood2 [Private farm at Redwood County  MN] -- MN8323 TRACY</option>
+<option value="MN8520">MN_Redwood3 [Southwest Research and Outreach Center (SWROC)] -- MN8520 VESTA</option>
+<option value="MN6405">MN_Wilkin1 [Red River Valley Drainage Water Management (RRVDWM)] -- MN6405 PELICAN RAPIDS</option>
+<option value="MN6405">MN_Wilkin2 [Red River Valley Drainage Water Management (RRVDWM)] -- MN6405 PELICAN RAPIDS</option>
+<option value="MN6405">MN_Wilkin3 [Red River Valley Drainage Water Management (RRVDWM)] -- MN6405 PELICAN RAPIDS</option>
+<option value="MO2482">MO_Knox1 [Greenley Memorial Research Center] -- MO2482 EDINA</option>
+<option value="MO2482">MO_Knox2 [Greenley Memorial Research Center] -- MO2482 EDINA</option>
+<option value="MO2482">MO_Knox3 [Private Farm at Bee Ridge Township] -- MO2482 EDINA</option>
+<option value="MO2482">MO_Knox4 [Greenley Memorial Research Center] -- MO2482 EDINA</option>
+<option value="MO8051">MO_Shelby [Greenley Memorial Research Center - The Ross Jones Farm] -- MO8051 STEFFENVILLE</option>
+<option value="NC6853">NC_Washington [Tidewater Research Station] -- NC6853 PLYMOUTH 5 E</option>
+<option value="ND5754">ND_Richland [Private Farm in Richland County  ND] -- ND5754 MC LEOD 3 E</option>
+<option value="OH3915">OH_Auglaize1 [Private Farm in Auglaize County  OH] -- OH3915 HUNTSVILLE 3 N</option>
+<option value="OH4551">OH_Auglaize2 [Private Farm in Auglaize County  OH] -- OH4551 LIMA WWTP</option>
+<option value="OH1072">OH_Crawford [Private Farm in Crawford County  OH] -- OH1072 BUCYRUS</option>
+<option value="OH2098">OH_Defiance1 [Private Farm in Defiance County  OH] -- OH2098 DEFIANCE</option>
+<option value="OH2098">OH_Defiance2 [Wetland Reservoir Subirrigation Systems (WRSIS) Demonstration Si] -- OH2098 DEFIANCE</option>
+<option value="OH1404">OH_Delaware [The Upper Big Walnut Creek (UBWC) watershed] -- OH1404 CENTERBURG 2 SE</option>
+<option value="OH8822">OH_Fulton [Wetland Reservoir Subirrigation Systems (WRSIS) Demonstration Si] -- OH8822 WAUSEON WTP</option>
+<option value="OH4189">OH_Hardin1 [Private Farm in Hardin County  OH] -- OH4189 KENTON</option>
+<option value="OH2786">OH_Hardin2 [Private Farm in Hardin County  OH] -- OH2786 FINDLAY AP</option>
+<option value="OH8822">OH_Henry [Private Farm in Henry County  OH] -- OH8822 WAUSEON WTP</option>
+<option value="OH8609">OH_VanWert [Wetland Reservoir Subirrigation Systems (WRSIS) Demonstration Si] -- OH8609 VAN WERT 1 S</option>
+<option value="SD1579">SD_Clay [Southeast Research Farm (SERF)] -- SD1579 CENTERVILLE 6 SE</option>
 </select>
 
 <br />
@@ -792,31 +806,55 @@ is expected that the temperature and wind values will be near identical
 between the stations but the precipitation amounts will vary.</p>
 
 <form method="GET" id="wxform2" action="wxdl.py">
-
+<!--
+with data as (select siteid, min(date), max(date) from weather_data group by siteid) select '<option value="'||siteid ||  '">'|| siteid || ' '||' ('|| min ||' to '|| max ||')</option>' as d
+ from data ORDER by d;
+-->
 <p><strong>Select Research Site(s):</strong>
 <br />
 <select name="stations" size="5" multiple="" class="select">
-<option value="ARL">ARL [Arlington, WI] -- 2011-2015</option>
-<option value="DPAC">DPAC [Farmland, IN] -- 2011-Sep 2015</option>
-<option value="HICKS.P">HICKS.P [Tracy, MN] -- 2011-2015</option>
-<option value="LAN">LAN [Lancaster, WI] -- 2011-2014</option>
-<option value="MAR">MAR [Marshfield, WI] -- 2011-2014</option>
-<option value="NWREC">NWREC [Monmouth, IL] -- 2011-2015</option>
-<option value="ORR">ORR [Perry, IL] -- 2011-2015</option>
-<option value="SEPAC">SEPAC [Butlerville, IN] -- 2011-2015</option>
-<option value="SERF">SERF [Crawfordsville, IA] -- 2011-2015</option>
-<option value="STJOHNS">STJOHNS [St Johns, OH] -- 2011-2014</option>
+<option value="IA_Boone">IA_Boone  (2016-06-10 to 2018-12-31)</option>
+<option value="IA_Grundy">IA_Grundy  (2016-01-01 to 2018-12-31)</option>
+<option value="IA_Hamilton1">IA_Hamilton1  (2011-06-06 to 2018-12-31)</option>
+<option value="IA_Hamilton2">IA_Hamilton2  (2016-01-01 to 2018-12-31)</option>
+<option value="IA_Hamilton3">IA_Hamilton3  (2013-06-07 to 2018-12-31)</option>
+<option value="IA_Story1">IA_Story1  (2016-06-14 to 2018-12-31)</option>
+<option value="IA_Story2">IA_Story2  (2005-01-01 to 2013-04-30)</option>
+<option value="IA_Tama">IA_Tama  (2016-01-01 to 2018-12-31)</option>
+<option value="IA_Washington">IA_Washington  (2007-01-01 to 2018-12-31)</option>
+<option value="IN_Randolph">IN_Randolph  (2005-10-01 to 2017-12-31)</option>
+<option value="IN_Tippecanoe">IN_Tippecanoe  (1996-07-01 to 2018-12-31)</option>
+<option value="MN_Clay1">MN_Clay1  (2014-01-01 to 2018-12-31)</option>
+<option value="MN_Clay2">MN_Clay2  (2013-01-01 to 2018-12-31)</option>
+<option value="MN_Clay3">MN_Clay3  (2012-04-27 to 2012-08-09)</option>
+<option value="MN_Redwood1">MN_Redwood1  (2011-10-21 to 2015-12-31)</option>
+<option value="MN_Redwood3">MN_Redwood3  (2015-01-01 to 2017-12-31)</option>
+<option value="MO_Knox1">MO_Knox1  (2010-01-01 to 2017-12-31)</option>
+<option value="MO_Knox2">MO_Knox2  (2015-01-01 to 2018-12-31)</option>
+<option value="MO_Knox3">MO_Knox3  (2010-06-28 to 2013-12-31)</option>
+<option value="MO_Knox4">MO_Knox4  (2010-01-01 to 2013-12-31)</option>
+<option value="MO_Shelby">MO_Shelby  (2002-01-01 to 2018-12-31)</option>
+<option value="NC_Washington">NC_Washington  (2007-01-01 to 2012-12-31)</option>
+<option value="ND_Richland">ND_Richland  (2015-05-23 to 2018-11-07)</option>
+<option value="OH_Auglaize1">OH_Auglaize1  (2008-01-01 to 2011-09-30)</option>
+<option value="OH_Auglaize2">OH_Auglaize2  (2008-10-12 to 2014-10-29)</option>
+<option value="OH_Crawford">OH_Crawford  (2008-10-08 to 2010-12-16)</option>
+<option value="OH_Defiance1">OH_Defiance1  (2008-01-03 to 2011-09-30)</option>
+<option value="OH_Defiance2">OH_Defiance2  (1999-04-07 to 2009-05-21)</option>
+<option value="OH_Delaware">OH_Delaware  (2005-01-01 to 2012-12-31)</option>
+<option value="OH_Fulton">OH_Fulton  (2004-04-01 to 2011-03-02)</option>
+<option value="OH_Hardin1">OH_Hardin1  (2008-10-13 to 2010-12-16)</option>
+<option value="OH_Hardin2">OH_Hardin2  (2008-01-01 to 2009-12-31)</option>
+<option value="OH_Henry">OH_Henry  (2008-01-01 to 2010-12-31)</option>
+<option value="OH_VanWert">OH_VanWert  (2003-09-14 to 2009-11-10)</option>
+<option value="SD_Clay">SD_Clay  (2015-01-01 to 2017-12-31)</option>
 </select>
 </p>
 <p><strong>Select Time Period:</strong>
 
 <table><tr><th></th><th>Year</th><th>Month</th><th>Day</th></tr>
 <tr><td>Start:</td>
-<td><select id="year1" name="year1">
-<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
-<option value='2014'>2014</option>
-<option value='2015'>2015</option>
-</select></td>
+<td>{$wxyear1}</td>
 <td><select id="month1" name="month1">
 <option value='1' selected="selected">January</option>
 <option value='2' >February</option>
@@ -847,11 +885,7 @@ between the stations but the precipitation amounts will vary.</p>
 </select></td>
 </tr>
 <tr><td>End:</td>
-<td><select id="year2" name="year2">
-<option value='2011' >2011</option><option value='2012'>2012</option><option value='2013' >2013</option>
-<option value='2014'>2014</option>
-<option value='2015' selected="selected">2015</option>
-</select></td>
+<td>{$wxyear2}</td>
 <td><select id="month2" name="month2">
 <option value='1'>January</option>
 <option value='2' >February</option>
