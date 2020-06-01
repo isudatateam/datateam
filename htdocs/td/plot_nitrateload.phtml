@@ -74,14 +74,13 @@ $ar = Array(
 		'plot'=> 'View Plot',
 		'html' => 'View Raw Data in HTML Table'
 		);
-
-$missselect = make_select('missing', $missing, $ar);
+$viewselect = make_select('view', $view, $ar);
 
 $jsextra = "";
 if ($view != 'plot'){
 	$imageurl = sprintf("plot_nitrateload.py?site=%s&amp;date=%s&amp;days=%s".
-			"&amp;ptype=%s&amp;view=%s&amp;group=%s&missing=%s&custom_missing=%s", 
-		$site, $date, $days, $ptype, $view, $group, $missing, $custom_missing);
+			"&amp;ptype=%s&amp;view=%s&amp;group=%s",
+		$site, $date, $days, $ptype, $view, $group);
 	$uri = sprintf("http://datateam.local/td/%s", $imageurl);
 	if ($view == 'html'){
 		$data = file_get_contents($uri);
@@ -119,15 +118,7 @@ $(document).ready(function(){
 		changeMonth: true,
 		changeYear: true,
 		minDate: new Date(1990, 0, 1),
-		maxDate: new Date(2018, 0, 1)});		
-    $("select[name='missing']").change(function(){
-        if ($(this).val() == '__custom__'){
-            $("#missingvalue_opt").css('display', 'block');
-        } else {
-            $("#missingvalue_opt").css('display', 'none');
-        }
-    });
-            
+		maxDate: new Date(2018, 0, 1)});
 });
 </script>
 EOF;
