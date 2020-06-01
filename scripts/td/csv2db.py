@@ -98,6 +98,49 @@ NOT_REALCOLS = {
     "ortho_P_filtered_concentration",
     "ortho_P_unfiltered_concentration",
     "total_P_filtered_concentration",
+    "manure_rate",
+    "lead_PI",
+    "co_leaders",
+    "PI_institution",
+    "PI_institution_unit",
+    "official_farm_name",
+    "farm_field_name",
+    "state",
+    "county",
+    "city_nearest",
+    "site_area",
+    "experimental_design",
+    "drainage_retention_practice",
+    "source_of_irrigation_water_1",
+    "source_of_irrigation_water_2",
+    "type_of_water_storage_system",
+    "water_storage_capacity",
+    "lanscape_slope",
+    "tile_depth",
+    "tile_main_diameter",
+    "depth_of_restrictive_layer",
+    "tile_grade",
+    "drainage_coefficient",
+    "drainage_intensity",
+    "drainage_system_installation_year",
+    "control_structure_installation_year",
+    "buffer_vegetation_dominant",
+    "buffer_vegetation_secondary",
+    "soil_series_name_1",
+    "soil_series_description_1",
+    "soil_texture_series_1",
+    "soil_drainage_class_1",
+    "soil_taxonomic_class_1",
+    "soil_series_name_2",
+    "soil_series_description_2",
+    "soil_texture_series_2",
+    "soil_drainage_class_2",
+    "soil_taxonomic_class_2",
+    "soil_series_name_3",
+    "soil_series_description_3",
+    "soil_texture_series_3",
+    "soil_drainage_class_3",
+    "soil_taxonomic_class_3",
 }
 
 
@@ -151,6 +194,7 @@ def main(argv):
             LOG.info("failed to convert col: %s to numeric", col)
             failed = True
     if failed:
+        LOG.info("Aborting due to convert errors.")
         sys.exit()
     pgconn = get_dbconn("td")
     cursor = pgconn.cursor()
