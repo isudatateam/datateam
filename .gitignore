@@ -7,3 +7,5 @@
 *.xlsx
 *.csv
 /.vscode
+.Rproj.user
+datateam.Rproj
