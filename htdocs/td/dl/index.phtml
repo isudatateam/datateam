@@ -435,12 +435,12 @@ function build_water_ui(){
     $sm = gen($ar, "water");
 
     $ar = Array(
-        "tile_flow" => "Tile Flow",
+        "tile_flow" => "Tile Flow <sup>1</sup>",
         "discharge" => "Discharge",
-        "nitrate_N_load" => "Nitrate N Load",
+        "nitrate_N_load" => "Nitrate N Load <sup>1</sup>",
         "nitrate_N_removed" => "Nitrate N Removed",
-        "tile_flow_filled" => "Tile Flow Filled",
-        "nitrate_N_load_filled" => "Nitrate N Load Filled",
+        "tile_flow_filled" => "Tile Flow Filled <sup>2</sup>",
+        "nitrate_N_load_filled" => "Nitrate N Load Filled <sup>2</sup>",
     );
     $tfl = gen($ar, "water");
 
@@ -1002,6 +1002,13 @@ It is recommended to “Select All” sites if you want to retain the most optio
 It is recommended to “Select All” sites if you want to retain the most options moving forward.</p>
 
 {$waterui}
+
+<p>
+1 Data are provided for each in-field collection. However, based on equipment setup, some sites collect a composite sample which represents the sum for a series of days while other sites collect daily measurements.
+</p>
+<p>
+2 Data are provided on a daily basis with interpolations performed when needed based on gap-filling methods developed specifically by the Transforming Drainage team. This is the RECOMMENDED data to use unless you are familiar with interpolating time-series water data.
+</p>
 
 </div>
 
