@@ -1,66 +1,38 @@
 """Initialize site ids for the IEM database."""
-import pyiem.cscap_utils as util
-from pyiem.util import get_dbconn
 
-pgconn = get_dbconn("mesosite")
-cursor = pgconn.cursor()
+from pyiem.util import get_dbconn, logger
+from pandas.io.sql import read_sql
 
-config = util.get_config()
+LOG = logger()
 
-spr_client = util.get_spreadsheet_client(config)
 
-spreadsheet = util.Spreadsheet(
-    spr_client, "1oZ2NEmoa0XHSGTWKaBLt0DJK1kIbpWO6iSZ0I2OE2gA"
-)
-spreadsheet.get_worksheets()
-
-lf = spreadsheet.worksheets["Research Site Metadata"].get_list_feed()
-for entry in lf.entry:
-    data = entry.to_dict()
-    siteid = data["uniqueid"].strip()
-    name = (
-        "%s [%s]"
-        % (data["farmfieldname"][: (61 - len(data["leadpi"]))], data["leadpi"])
-    ).replace("\n", " ")
-    if data["latitudedd.d"] == "TBD":
-        print(f"Skipping {name} due to TBD location")
-        continue
-    cursor.execute(
-        """SELECT climate_site from stations where id = %s
-    and network = 'TD'
-    """,
-        (siteid,),
+def main():
+    """Go Main Go."""
+    mesosite = get_dbconn("mesosite")
+    cursor = mesosite.cursor()
+    cursor.execute("DELETE from stations where network = 'TD'")
+    LOG.info("Removed %s current mesosite station entries", cursor.rowcount)
+    tdpgconn = get_dbconn("td")
+    tdsites = read_sql(
+        "SELECT * from meta_site_history", tdpgconn, index_col="siteid"
     )
-    if cursor.rowcount == 0:
+    for siteid, row in tdsites.iterrows():
         cursor.execute(
-            """INSERT into stations (id, name, state, country,
-    network, online, geom, metasite) VALUES (%s, %s, %s, 'US',
-    'TD', 'f', %s, 't')""",
+            "INSERT into stations (id, name, state, country, "
+            "network, online, geom, metasite) VALUES (%s, %s, %s, 'US', "
+            "'TD', 'f', %s, 't')",
             (
                 siteid,
-                name,
-                data["state"],
-                "SRID=4326;POINT(%s %s)"
-                % (data["longitudeddd.d"], data["latitudedd.d"]),
+                row["official_farm_name"].replace(",", " ")[:64],
+                row["state"],
+                f"SRID=4326;POINT({row['longitude']} {row['latitude']})",
             ),
         )
-    else:
-        cursor.execute(
-            """UPDATE stations SET name = %s
-        WHERE id = %s and network = 'TD' RETURNING climate_site
-        """,
-            (name, siteid),
-        )
-        climatesite = cursor.fetchone()[0]
-        if (
-            climatesite is not None
-            and climatesite != ""
-            and climatesite != data["iemclimatesite"]
-        ):
-            entry.set_value("iemclimatesite", climatesite)
-            print(f"Setting climate site: {climatesite} for site: {siteid}")
-            util.exponential_backoff(spr_client.update, entry)
 
-cursor.close()
-pgconn.commit()
-pgconn.close()
+    cursor.close()
+    mesosite.commit()
+    mesosite.close()
+
+
+if __name__ == "__main__":
+    main()

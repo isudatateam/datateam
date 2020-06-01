@@ -1,4 +1,5 @@
 """Download weather data, please"""
+# pylint: disable=abstract-class-instantiated
 import os
 import datetime
 
@@ -6,35 +7,36 @@ import pandas as pd
 from paste.request import parse_formvars
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
-from pyiem.datatypes import distance, temperature
 
 VARDF = {
-    "uniqueid": "",
-    "day": "",
+    "siteid": "",
+    "date": "",
     "doy": "Day Of Year",
-    "sknt": "Wind Speed",
-    "drct": "Wind Direction",
-    "high": "High Temperature",
-    "highc": "High Temperature",
-    "low": "Low Temperature",
-    "lowc": "Low Temperature",
-    "srad_mj": "Solar Radiation",
-    "precip": "Precipitation",
-    "precipmm": "Precipitation",
+    "precipitation": "Precipitation",
+    "relative_humidity": "Relative Humidity",
+    "air_temp_avg": "Average Air Temperature",
+    "air_temp_min": "Low Air Temperature",
+    "air_temp_max": "High Air Temperature",
+    "solar_radiation": "Solar Radiation",
+    "wind_speed": "Wind Speed",
+    "wind_direction": "Wind Direction",
+    "et": "Evapotranspiratin",
+    "et_method": "Evapotranspiration Method",
 }
 UVARDF = {
-    "uniqueid": "",
-    "day": "",
-    "doy": "",
-    "sknt": "knots",
-    "drct": "degrees N",
-    "high": "F",
-    "highc": "C",
-    "low": "F",
-    "lowc": "C",
-    "srad_mj": "MJ/day",
-    "precip": "inch",
-    "precipmm": "mm",
+    "siteid": "",
+    "date": "",
+    "doy": "Day Of Year",
+    "precipitation": "mm",
+    "relative_humidity": "%",
+    "air_temp_avg": "C",
+    "air_temp_min": "C",
+    "air_temp_max": "C",
+    "solar_radiation": "MJ",
+    "wind_speed": "m/s",
+    "wind_direction": "degrees N",
+    "et": "mm",
+    "et_method": "",
 }
 
 
@@ -73,20 +75,13 @@ def do_work(form):
         stations.append("XXX")
     sts, ets = get_cgi_dates(form)
     df = read_sql(
-        """
-    SELECT station as uniqueid, valid as day, extract(doy from valid) as doy,
-    high, low, precip, sknt,
-    srad_mj, drct from weather_data_daily WHERE station in %s
-    and valid >= %s and valid <= %s
-    ORDER by station ASC, valid ASC
-    """,
+        "SELECT *, extract(doy from date) as doy from weather_data "
+        "WHERE siteid in %s and date >= %s and date <= %s "
+        "ORDER by siteid ASC, date ASC",
         pgconn,
         params=(tuple(stations), sts, ets),
         index_col=None,
     )
-    df["highc"] = temperature(df["high"].values, "F").value("C")
-    df["lowc"] = temperature(df["low"].values, "F").value("C")
-    df["precipmm"] = distance(df["precip"].values, "IN").value("MM")
 
     metarows = [{}, {}]
     cols = df.columns
@@ -119,7 +114,7 @@ def application(environ, start_response):
     res, fn = do_work(form)
     headers = [
         ("Content-type", "application/vnd.ms-excel"),
-        ("Content-Disposition", "attachment;filename=wx_%s.xls" % (fn,)),
+        ("Content-Disposition", f"attachment;filename=wx_{fn}.xls"),
     ]
     start_response("200 OK", headers)
     return [res]
