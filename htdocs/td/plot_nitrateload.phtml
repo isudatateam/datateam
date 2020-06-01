@@ -8,8 +8,6 @@ $date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $group = isset($_GET["group"]) ? $_GET["group"]: '0';
-$missing = isset($_GET["missing"]) ? $_GET["missing"]: "M";
-$custom_missing = isset($_GET["custom_missing"]) ? $_GET["custom_missing"]: "";
 
 $errmsg = "";
 if (strlen($date) != 10){
@@ -74,23 +72,10 @@ $ptypeselect = make_select("ptype", $ptype, $ar);
 
 $ar = Array(
 		'plot'=> 'View Plot',
-		'html' => 'View Raw Data in HTML Table',
-		'csv' => 'Download as CSV File',
-		'excel' => 'Download as Excel File'
+		'html' => 'View Raw Data in HTML Table'
 		);
-$viewselect = make_select('view', $view, $ar);
-$ar = Array(
-    "M" => "M",
-    "N/A" => "N/A",
-    "NaN" => "NaN",
-    "NULL" => "NULL",
-    " " => " ",
-    "." => ".",
-    "-999" => "-999",
-    "__custom__" => "Custom Value",
-);
+
 $missselect = make_select('missing', $missing, $ar);
-    
 
 $jsextra = "";
 if ($view != 'plot'){
@@ -185,18 +170,7 @@ USDA-NIFA funded project:
 <tbody><tr>
 <td><input type="text" name="days" value="{$days}" size="4" /></td>
 <td>{$ptypeselect}</td>
-<td>{$viewselect}
-<br />
-<div>
-    <label for="missingvalue">How to represent missing values:</label>
-{$missselect}
-</div>
-
-<div id="missingvalue_opt" style="display: none;">
-    <label for="missingcustom">Enter Custom Missing Value:</label>
-    <input value="{$custom_missing}" type="text" name="custom_missing" id="missingcustom">
-</div>
-</td>
+<td>{$viewselect}</td>
 </tr></tbody>
 </table>
 
@@ -208,23 +182,6 @@ USDA-NIFA funded project:
 <p><i>Pro Tip:</i> Click the legend name to de/select data series. 
 To zoom in, click and drag your mouse within the plot frame.</p>
 
-<h3>Frequently Asked Questions</h3>
-
-<ol>
-<li><strong>How are timezones handled?</strong><br />
-The timestamps presented should be valid for the local time zone of the sensor
-and are daylight saving time aware.  The daily aggregates should compute the
-daily summaries in the time zone of the station.
-</li>
-</ol>
-
-<h3>Observation Site Collection Interval</h3>
-
-<p>This table lists the observation time interval at each site:
-<pre>
- ST  SITE         INTERVAL
-
-</pre></p>
 
 EOF;
 $t->render('full.phtml');
