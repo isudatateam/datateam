@@ -38,6 +38,7 @@ LINESTYLE = [
     "-.",
     "-.",
 ]
+BYCOL = {"daily": "day", "monthly": "month", "yearly": "year"}
 
 
 def make_plot(form, start_response):
@@ -51,35 +52,21 @@ def make_plot(form, start_response):
     days = int(form.get("days", 1))
     group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
-    viewopt = form.get("view", "plot")
-    ptype = form.get("ptype", "1")
-    missing = form.get("missing", "M")
-    custom_missing = form.get("custom_missing", "M")
-    missing = missing if missing != "__custom__" else custom_missing
-    if ptype == "1":
-        df = read_sql(
-            "SELECT date as v, coalesce(plotid, location) as plotid, "
-            "nitrate_n_load, nitrate_n_removed "
-            "nitrate_n_load_filled from tile_flow_and_n_loads_data WHERE "
-            "siteid = %s and date between %s and %s ORDER by date ASC",
-            pgconn,
-            params=(siteid, sts.date(), ets.date()),
-        )
-    elif ptype == "2":
-        df = read_sql(
-            "SELECT date_trunc(month from date) as v, "
-            "coalesce(plotid, location) as plotid, "
-            "nitrate_n_load, nitrate_n_removed "
-            "nitrate_n_load_filled from tile_flow_and_n_loads_data WHERE "
-            "siteid = %s and date between %s and %s ORDER by date ASC",
-            pgconn,
-            params=(siteid, sts.date(), ets.date()),
-        )
+    by = form.get("by", "daily")
+    df = read_sql(
+        f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
+        "coalesce(plotid, location) as datum, "
+        "sum(nitrate_n_load) as nitrate_n_load "
+        "from tile_flow_and_n_loads_data WHERE "
+        "siteid = %s and date between %s and %s "
+        "and nitrate_n_load is not null GROUP by v, datum "
+        "ORDER by v ASC",
+        pgconn,
+        params=(siteid, sts.date(), ets.date()),
+    )
     if len(df.index) < 3:
-        send_error(
-            start_response, viewopt, "No / Not Enough Data Found, sorry!"
-        )
-    linecol = "plotid"
+        send_error(start_response, 1, "No / Not Enough Data Found, sorry!")
+    linecol = "datum"
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
@@ -102,16 +89,6 @@ def make_plot(form, start_response):
         df.reset_index(inplace=True)
         linecol = "treatment"
 
-    if viewopt not in ["plot", "js"]:
-        df = df.fillna(missing)
-        df["v"] = df["v"].dt.strftime("%Y-%m-%d %H:%M")
-        df.rename(
-            columns=dict(v="timestamp", load="Load (kg ha-1)"), inplace=True
-        )
-        if viewopt == "html":
-            start_response("200 OK", [("Content-type", "text/html")])
-            return df.to_html(index=False).encode("utf-8")
-
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
     title = ("Nitrate Load for Site: %s (%s to %s)") % (
@@ -125,7 +102,7 @@ def make_plot(form, start_response):
     if group == "1":
         plot_ids = plot_ids[::-1]
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
-    seriestype = "line" if ptype == "1" else "column"
+    seriestype = "line" if by == "daily" else "column"
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
         s.append(

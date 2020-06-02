@@ -44,7 +44,7 @@
     RewriteRule ^decagon_(.*)_(.*)_(.*)_(.*)_(.*).js$ plot_decagon.py?site=$1&date=$2&days=$3&ptype=$4&depth=$5&view=js
     RewriteRule ^watertable_(.*)_(.*)_(.*)_(.*)_(.*).js$ plot_watertable.py?site=$1&date=$2&days=$3&ptype=$4&view=js&group=$5
     RewriteRule ^tileflow_(.*)_(.*)_(.*)_(.*)_([10]).js$ plot_tileflow.py?site=$1&date=$2&days=$3&ptype=$4&view=js&group=$5
-    RewriteRule ^nitrateload_(.*)_(.*)_(.*)_(.*)_([10]).js$ plot_nitrateload.py?site=$1&date=$2&days=$3&ptype=$4&view=js&group=$5
+    RewriteRule ^nitrateload_(.*)_(.*)_(.*)_(.*)_([10]).js$ plot_nitrateload.py?site=$1&date=$2&days=$3&by=$4&view=js&group=$5
   </Directory>
 
 
