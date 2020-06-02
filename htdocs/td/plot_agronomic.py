@@ -1,7 +1,6 @@
 """Plot!"""
 # pylint: disable=abstract-class-instantiated
 import sys
-import os
 
 import pandas as pd
 from paste.request import parse_formvars
@@ -63,22 +62,19 @@ def make_plot(form, start_response):
     (varlabel, varunits) = get_vardesc(varname)
 
     group = int(form.get("group", 0))
-    viewopt = form.get("view", "plot")
     df = read_sql(
-        """SELECT value, year, plotid from agronomic_data
-        WHERE uniqueid = %s and varname = %s and value is not null
-        and value not in ('did not collect')
-        ORDER by plotid, year ASC
-        """,
+        "SELECT * from agronomic_data WHERE siteid = %s "
+        "ORDER by plotid, year ASC",
         pgconn,
-        params=(uniqueid, varname),
+        params=(uniqueid,),
         index_col=None,
     )
+    sys.stderr.write(uniqueid)
     if df.empty:
         return send_error(
-            start_response, viewopt, "No / Not Enough Data Found, sorry!"
+            start_response, "js", "No / Not Enough Data Found, sorry!"
         )
-    df["value"] = pd.to_numeric(df["value"], errors="coerce")
+    df["value"] = pd.to_numeric(df[varname], errors="coerce")
     linecol = "plotid"
     if group == 1:
         # Generate the plotid lookup table
@@ -101,41 +97,6 @@ def make_plot(form, start_response):
         df = df.groupby(["treatment", "year"]).mean()
         df.reset_index(inplace=True)
         linecol = "treatment"
-
-    if viewopt not in ["plot", "js"]:
-        df.rename(columns=dict(value=varname), inplace=True)
-        if viewopt == "html":
-            start_response("200 OK", [("Content-type", "text/html")])
-            return df.to_html(index=False).encode("utf-8")
-        if viewopt == "csv":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s.csv" % (uniqueid, varname),
-                    ),
-                ],
-            )
-            return df.to_csv(index=False).encode("utf-8")
-        if viewopt == "excel":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s.xlsx"
-                        % (uniqueid, varname),
-                    ),
-                ],
-            )
-            with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
-                df.to_excel(writer, "Data", index=False)
-            res = open("/tmp/ss.xlsx", "rb").read()
-            os.unlink("/tmp/ss.xlsx")
-            return res
 
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
