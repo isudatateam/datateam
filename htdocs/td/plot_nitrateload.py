@@ -2,7 +2,6 @@
 # pylint: disable=abstract-class-instantiated
 import sys
 import datetime
-import os
 
 import pandas as pd
 from pandas.io.sql import read_sql
@@ -59,7 +58,7 @@ def make_plot(form, start_response):
     missing = missing if missing != "__custom__" else custom_missing
     if ptype == "1":
         df = read_sql(
-            "SELECT date as v, coalesce(plotid, '') as plotid, "
+            "SELECT date as v, coalesce(plotid, location) as plotid, "
             "nitrate_n_load, nitrate_n_removed "
             "nitrate_n_load_filled from tile_flow_and_n_loads_data WHERE "
             "siteid = %s and date between %s and %s ORDER by date ASC",
@@ -69,7 +68,7 @@ def make_plot(form, start_response):
     elif ptype == "2":
         df = read_sql(
             "SELECT date_trunc(month from date) as v, "
-            "coalesce(plotid, '') as plotid, "
+            "coalesce(plotid, location) as plotid, "
             "nitrate_n_load, nitrate_n_removed "
             "nitrate_n_load_filled from tile_flow_and_n_loads_data WHERE "
             "siteid = %s and date between %s and %s ORDER by date ASC",
@@ -84,7 +83,7 @@ def make_plot(form, start_response):
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
-            "SELECT coalesce(plotid, '') as plotid "
+            "SELECT coalesce(plotid, location) as plotid "
             "from meta_plot_identifier where siteid = %s",
             pgconn,
             params=(siteid,),
@@ -112,46 +111,6 @@ def make_plot(form, start_response):
         if viewopt == "html":
             start_response("200 OK", [("Content-type", "text/html")])
             return df.to_html(index=False).encode("utf-8")
-        if viewopt == "csv":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s_%s_%s.csv"
-                        % (
-                            uniqueid,
-                            plotid,
-                            sts.strftime("%Y%m%d"),
-                            ets.strftime("%Y%m%d"),
-                        ),
-                    ),
-                ],
-            )
-            return df.to_csv(index=False).encode("utf-8")
-        if viewopt == "excel":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s_%s_%s.xlsx"
-                        % (
-                            uniqueid,
-                            plotid,
-                            sts.strftime("%Y%m%d"),
-                            ets.strftime("%Y%m%d"),
-                        ),
-                    ),
-                ],
-            )
-            with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
-                df.to_excel(writer, "Data", index=False)
-            res = open("/tmp/ss.xlsx", "rb").read()
-            os.unlink("/tmp/ss.xlsx")
-            return res
 
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
