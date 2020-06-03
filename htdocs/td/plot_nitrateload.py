@@ -53,41 +53,41 @@ def make_plot(form, start_response):
     group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
     by = form.get("by", "daily")
-    df = read_sql(
-        f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
-        "coalesce(plotid, location) as datum, "
-        "sum(nitrate_n_load) as nitrate_n_load "
-        "from tile_flow_and_n_loads_data WHERE "
-        "siteid = %s and date between %s and %s "
-        "and nitrate_n_load is not null GROUP by v, datum "
-        "ORDER by v ASC",
-        pgconn,
-        params=(siteid, sts.date(), ets.date()),
-    )
+    if group == 1:
+        df = read_sql(
+            "WITH data as ("
+            f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
+            "coalesce(plotid, location) as agg, "
+            "dwm_treatment as datum, "
+            "sum(nitrate_n_load) as nitrate_n_load "
+            "from tile_flow_and_n_loads_data WHERE "
+            "siteid = %s and date between %s and %s "
+            "and nitrate_n_load is not null and "
+            "dwm_treatment is not null and "
+            "dwm_treatment != 'Saturated Buffer' GROUP by v, agg, datum "
+            ") "
+            "SELECT v, datum, avg(nitrate_n_load) as nitrate_n_load "
+            "from data GROUP by v, datum "
+            "ORDER by v ASC",
+            pgconn,
+            params=(siteid, sts.date(), ets.date()),
+        )
+
+    else:
+        df = read_sql(
+            f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
+            "coalesce(plotid, location) as datum, "
+            "sum(nitrate_n_load) as nitrate_n_load "
+            "from tile_flow_and_n_loads_data WHERE "
+            "siteid = %s and date between %s and %s "
+            "and nitrate_n_load is not null GROUP by v, datum "
+            "ORDER by v ASC",
+            pgconn,
+            params=(siteid, sts.date(), ets.date()),
+        )
     if len(df.index) < 3:
         send_error(start_response, 1, "No / Not Enough Data Found, sorry!")
     linecol = "datum"
-    if group == 1:
-        # Generate the plotid lookup table
-        plotdf = read_sql(
-            "SELECT coalesce(plotid, location) as plotid "
-            "from meta_plot_identifier where siteid = %s",
-            pgconn,
-            params=(siteid,),
-            index_col="plotid",
-        )
-
-        def lookup(row):
-            try:
-                return plotdf.loc[row["plotid"], "y%s" % (row["v"].year,)]
-            except KeyError:
-                return row["plotid"]
-
-        df["treatment"] = df.apply(lookup, axis=1)
-        del df["plotid"]
-        df = df.groupby(["treatment", "v"]).mean()
-        df.reset_index(inplace=True)
-        linecol = "treatment"
 
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
