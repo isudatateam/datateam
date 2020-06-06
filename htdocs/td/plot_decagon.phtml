@@ -4,152 +4,99 @@ require_once "../../include/forms.php";
 require_once "../../include/myview.php";
 $HIGHCHARTS = "6.0.7";
 
-$site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC__NE';
+$site = isset($_GET["site"]) ? $_GET["site"]: 'IN_Randolph--NE';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-10';
-$view = isset($_GET['view']) ? $_GET['view']: 'plot';
-$depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $errmsg = "";
 if (strlen($date) != 10){
 	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
 	$date = '2014-06-10';
 }
-$days = isset($_GET["days"]) ? intval($_GET["days"]): 1;
-$ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
-$missing = isset($_GET["missing"]) ? $_GET["missing"]: "M";
-$custom_missing = isset($_GET["custom_missing"]) ? $_GET["custom_missing"]: "";
-
+$days = isset($_GET["days"]) ? intval($_GET["days"]): 100;
+$by = isset($_GET['by']) ? $_GET['by']: 'daily';
 
 /* 
  with data as (select siteid, coalesce(plotid, location, '') as pid, min(date),
  max(date) from soil_moisture_data GROUP by siteid, pid)
  
- SELECT '"'||siteid || '__'|| pid || '"=>"' || siteid || ' '||
+ SELECT '"'||siteid || '--'|| pid || '"=>"' || siteid || ' '||
  pid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
 $ar = Array(
-    "IA_Grundy__"=>"IA_Grundy  (2016-01-01 to 2018-12-31) [1095 days]",
-    "IA_Hamilton1__grass"=>"IA_Hamilton1 grass (2015-01-01 to 2018-12-31) [1460 days]",
-    "IA_Hamilton1__next to the control box"=>"IA_Hamilton1 next to the control box (2015-01-01 to 2018-12-31) [1460 days]",
-    "IA_Hamilton1__trees"=>"IA_Hamilton1 trees (2015-01-01 to 2018-12-31) [1460 days]",
-    "IA_Hamilton3__grass"=>"IA_Hamilton3 grass (2015-01-01 to 2018-12-31) [1460 days]",
-    "IA_Hamilton3__next to the control box"=>"IA_Hamilton3 next to the control box (2015-01-01 to 2018-12-31) [1460 days]",
-    "IA_Tama__"=>"IA_Tama  (2016-01-01 to 2018-12-31) [1095 days]",
-    "IA_Washington__S1"=>"IA_Washington S1 (2011-06-03 to 2017-12-31) [2403 days]",
-    "IA_Washington__S2"=>"IA_Washington S2 (2011-06-07 to 2017-05-03) [2157 days]",
-    "IA_Washington__S3"=>"IA_Washington S3 (2011-06-03 to 2017-05-03) [2161 days]",
-    "IA_Washington__S4"=>"IA_Washington S4 (2011-06-03 to 2017-12-31) [2403 days]",
-    "IA_Washington__S5"=>"IA_Washington S5 (2011-06-03 to 2017-12-31) [2403 days]",
-    "IA_Washington__S6"=>"IA_Washington S6 (2011-06-03 to 2017-12-31) [2403 days]",
-    "IA_Washington__S7"=>"IA_Washington S7 (2011-06-03 to 2018-02-08) [2442 days]",
-    "IA_Washington__S8"=>"IA_Washington S8 (2011-06-03 to 2017-12-31) [2403 days]",
-    "IN_Randolph__NE"=>"IN_Randolph NE (2011-07-01 to 2017-10-26) [2309 days]",
-    "IN_Randolph__NW"=>"IN_Randolph NW (2011-07-01 to 2017-10-26) [2309 days]",
-    "IN_Randolph__SE"=>"IN_Randolph SE (2011-07-01 to 2017-10-26) [2309 days]",
-    "IN_Randolph__SW"=>"IN_Randolph SW (2011-07-01 to 2017-10-26) [2309 days]",
-    "IN_Tippecanoe__Inlet_A"=>"IN_Tippecanoe Inlet_A (2011-08-02 to 2018-12-31) [2708 days]",
-    "IN_Tippecanoe__Inlet_B"=>"IN_Tippecanoe Inlet_B (2011-08-02 to 2015-03-23) [1329 days]",
-    "MN_Clay2__CD"=>"MN_Clay2 CD (2012-05-21 to 2018-12-19) [2403 days]",
-    "MN_Clay2__SI"=>"MN_Clay2 SI (2012-05-21 to 2015-10-01) [1228 days]",
-    "MN_Clay3__UD"=>"MN_Clay3 UD (2015-11-19 to 2018-12-31) [1138 days]",
-    "MN_Redwood1__BE"=>"MN_Redwood1 BE (2012-06-08 to 2017-12-31) [2032 days]",
-    "MN_Redwood1__BW"=>"MN_Redwood1 BW (2012-06-08 to 2017-12-31) [2032 days]",
-    "MN_Redwood2__"=>"MN_Redwood2  (2016-02-06 to 2017-09-25) [597 days]",
-    "MN_Redwood3__NPM10"=>"MN_Redwood3 NPM10 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM11"=>"MN_Redwood3 NPM11 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM12"=>"MN_Redwood3 NPM12 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM13"=>"MN_Redwood3 NPM13 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM14"=>"MN_Redwood3 NPM14 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM15"=>"MN_Redwood3 NPM15 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM16"=>"MN_Redwood3 NPM16 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM17"=>"MN_Redwood3 NPM17 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM18"=>"MN_Redwood3 NPM18 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM19"=>"MN_Redwood3 NPM19 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM1"=>"MN_Redwood3 NPM1 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM20"=>"MN_Redwood3 NPM20 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM21"=>"MN_Redwood3 NPM21 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM22"=>"MN_Redwood3 NPM22 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM23"=>"MN_Redwood3 NPM23 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM24"=>"MN_Redwood3 NPM24 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM2"=>"MN_Redwood3 NPM2 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM3"=>"MN_Redwood3 NPM3 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM4"=>"MN_Redwood3 NPM4 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM5"=>"MN_Redwood3 NPM5 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM6"=>"MN_Redwood3 NPM6 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM7"=>"MN_Redwood3 NPM7 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM8"=>"MN_Redwood3 NPM8 (2016-05-17 to 2017-09-29) [500 days]",
-    "MN_Redwood3__NPM9"=>"MN_Redwood3 NPM9 (2016-05-17 to 2017-09-29) [500 days]",
-    "ND_Richland__West"=>"ND_Richland West (2015-05-22 to 2018-12-31) [1319 days]",
-    "OH_Auglaize2__WN"=>"OH_Auglaize2 WN (2011-12-14 to 2015-11-20) [1437 days]",
-    "OH_Auglaize2__WS"=>"OH_Auglaize2 WS (2011-09-20 to 2015-11-20) [1522 days]",
-    "SD_Clay__Plot7"=>"SD_Clay Plot7 (2016-01-01 to 2017-12-31) [730 days]",
-    "SD_Clay__Plot8"=>"SD_Clay Plot8 (2016-01-01 to 2017-12-31) [730 days]",   
-		);
+    "IA_Grundy--"=>"IA_Grundy  (2016-01-01 to 2018-12-31) [1095 days]",
+    "IA_Hamilton1--grass"=>"IA_Hamilton1 grass (2015-01-01 to 2018-12-31) [1460 days]",
+    "IA_Hamilton1--next to the control box"=>"IA_Hamilton1 next to the control box (2015-01-01 to 2018-12-31) [1460 days]",
+    "IA_Hamilton1--trees"=>"IA_Hamilton1 trees (2015-01-01 to 2018-12-31) [1460 days]",
+    "IA_Hamilton3--grass"=>"IA_Hamilton3 grass (2015-01-01 to 2018-12-31) [1460 days]",
+    "IA_Hamilton3--next to the control box"=>"IA_Hamilton3 next to the control box (2015-01-01 to 2018-12-31) [1460 days]",
+    "IA_Tama--"=>"IA_Tama  (2016-01-01 to 2018-12-31) [1095 days]",
+    "IA_Washington--S1"=>"IA_Washington S1 (2011-06-03 to 2017-12-31) [2403 days]",
+    "IA_Washington--S2"=>"IA_Washington S2 (2011-06-07 to 2017-05-03) [2157 days]",
+    "IA_Washington--S3"=>"IA_Washington S3 (2011-06-03 to 2017-05-03) [2161 days]",
+    "IA_Washington--S4"=>"IA_Washington S4 (2011-06-03 to 2017-12-31) [2403 days]",
+    "IA_Washington--S5"=>"IA_Washington S5 (2011-06-03 to 2017-12-31) [2403 days]",
+    "IA_Washington--S6"=>"IA_Washington S6 (2011-06-03 to 2017-12-31) [2403 days]",
+    "IA_Washington--S7"=>"IA_Washington S7 (2011-06-03 to 2018-02-08) [2442 days]",
+    "IA_Washington--S8"=>"IA_Washington S8 (2011-06-03 to 2017-12-31) [2403 days]",
+    "IN_Randolph--NE"=>"IN_Randolph NE (2011-07-01 to 2017-10-26) [2309 days]",
+    "IN_Randolph--NW"=>"IN_Randolph NW (2011-07-01 to 2017-10-26) [2309 days]",
+    "IN_Randolph--SE"=>"IN_Randolph SE (2011-07-01 to 2017-10-26) [2309 days]",
+    "IN_Randolph--SW"=>"IN_Randolph SW (2011-07-01 to 2017-10-26) [2309 days]",
+    "IN_Tippecanoe--Inlet_A"=>"IN_Tippecanoe Inlet_A (2011-08-02 to 2018-12-31) [2708 days]",
+    "IN_Tippecanoe--Inlet_B"=>"IN_Tippecanoe Inlet_B (2011-08-02 to 2015-03-23) [1329 days]",
+    "MN_Clay2--CD"=>"MN_Clay2 CD (2012-05-21 to 2018-12-19) [2403 days]",
+    "MN_Clay2--SI"=>"MN_Clay2 SI (2012-05-21 to 2015-10-01) [1228 days]",
+    "MN_Clay3--UD"=>"MN_Clay3 UD (2015-11-19 to 2018-12-31) [1138 days]",
+    "MN_Redwood1--BE"=>"MN_Redwood1 BE (2012-06-08 to 2017-12-31) [2032 days]",
+    "MN_Redwood1--BW"=>"MN_Redwood1 BW (2012-06-08 to 2017-12-31) [2032 days]",
+    "MN_Redwood2--"=>"MN_Redwood2  (2016-02-06 to 2017-09-25) [597 days]",
+    "MN_Redwood3--NPM10"=>"MN_Redwood3 NPM10 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM11"=>"MN_Redwood3 NPM11 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM12"=>"MN_Redwood3 NPM12 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM13"=>"MN_Redwood3 NPM13 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM14"=>"MN_Redwood3 NPM14 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM15"=>"MN_Redwood3 NPM15 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM16"=>"MN_Redwood3 NPM16 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM17"=>"MN_Redwood3 NPM17 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM18"=>"MN_Redwood3 NPM18 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM19"=>"MN_Redwood3 NPM19 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM1"=>"MN_Redwood3 NPM1 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM20"=>"MN_Redwood3 NPM20 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM21"=>"MN_Redwood3 NPM21 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM22"=>"MN_Redwood3 NPM22 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM23"=>"MN_Redwood3 NPM23 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM24"=>"MN_Redwood3 NPM24 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM2"=>"MN_Redwood3 NPM2 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM3"=>"MN_Redwood3 NPM3 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM4"=>"MN_Redwood3 NPM4 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM5"=>"MN_Redwood3 NPM5 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM6"=>"MN_Redwood3 NPM6 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM7"=>"MN_Redwood3 NPM7 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM8"=>"MN_Redwood3 NPM8 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Redwood3--NPM9"=>"MN_Redwood3 NPM9 (2016-05-17 to 2017-09-29) [500 days]",
+    "ND_Richland--West"=>"ND_Richland West (2015-05-22 to 2018-12-31) [1319 days]",
+    "OH_Auglaize2--WN"=>"OH_Auglaize2 WN (2011-12-14 to 2015-11-20) [1437 days]",
+    "OH_Auglaize2--WS"=>"OH_Auglaize2 WS (2011-09-20 to 2015-11-20) [1522 days]",
+    "SD_Clay--Plot7"=>"SD_Clay Plot7 (2016-01-01 to 2017-12-31) [730 days]",
+    "SD_Clay--Plot8"=>"SD_Clay Plot8 (2016-01-01 to 2017-12-31) [730 days]",
+           );
 $siteselect = make_select("site", $site, $ar);
 
 $ar = Array(
-		'1' => 'Observations (no aggregation)',
-		'3' => 'Hourly Averages',
-		'2' => 'Daily Averages',
-		'4' => 'Weekly Averages',
+		'daily' => 'Daily (no aggregation)',
+		'monthly' => 'Monthly Averages',
+		'yearly' => 'Yearly Averages',
 		);
-$ptypeselect = make_select("ptype", $ptype, $ar);
+$byselect = make_select("by", $by, $ar);
 
-$ar = Array(
-		'plot'=> 'View Plot',
-		'html' => 'View Raw Data in HTML Table',
-		'csv' => 'Download as CSV File',
-		'excel' => 'Download as Excel File'
-		);
-$viewselect = make_select('view', $view, $ar);
-
-$ar = Array(
-		'all' => 'All Depths, one plot',
-		'1' => '10cm, all plots for site',
-		'2' => '20cm, all plots for site',
-		'3' => '40cm, all plots for site',
-		'4' => '60cm, all plots for site',
-		'5' => '100cm, all plots for site',
-		);
-$depthselect = make_select('depth', $depth, $ar);
-
-$ar = Array(
-    "M" => "M",
-    "N/A" => "N/A",
-    "NaN" => "NaN",
-    "NULL" => "NULL",
-    " " => " ",
-    "." => ".",
-    "-999" => "-999",
-    "__custom__" => "Custom Value",
-);
-$missselect = make_select('missing', $missing, $ar);
-
-if ($view != 'plot'){
-	$imageurl = sprintf(
-        "plot_decagon.py?site=%s&date=%s&days=%s&ptype=%s&view=%s&depth=%s&".
-        "missing=%s&custom_missing=%s", 
-		$site, $date, $days, $ptype, $view, $depth, $missing, $custom_missing);
-	$uri = sprintf("http://datateam.local/td/%s", $imageurl);
-	if ($view == 'html'){
-		$data = file_get_contents($uri);
-		$interface = $data;
-	} else{
-		Header(sprintf("Location: /td/%s", $imageurl));
-		die();
-	}
-	$jsextra = "";
-} else {
-	$jsurl = sprintf("decagon__%s__%s__%s__%s__%s.js", 
-		$site, $date, $days, $ptype, $depth);
-    $jsextra = "<script src=\"{$jsurl}\"></script>";
-    $interface = <<<EOF
+$jsurl = sprintf("decagon__%s__%s__%s__%s__%s.js", 
+    $site, $date, $days, $by, "all");
+$jsextra = "<script src=\"{$jsurl}\"></script>";
+$interface = <<<EOF
 <div id="hc1" style="width: 100%; height: 400px;"></div>
 <div id="hc2" style="width: 100%; height: 400px;"></div>
 EOF;
 	
-	
-}
 $t = new MyView();
 $t->thispage = "td-soilmoisture";
 $t->title = "TD Soil Moisture Data Plotting/Download";
@@ -173,15 +120,7 @@ $(document).ready(function(){
 		changeMonth: true,
 		changeYear: true,
 		minDate: new Date(2011, 0, 1),
-		maxDate: new Date(2017, 1, 1)});		
-
-    $("select[name='missing']").change(function(){
-        if ($(this).val() == '__custom__'){
-                $("#missingvalue_opt").css('display', 'block');
-        } else {
-                $("#missingvalue_opt").css('display', 'none');
-        }
-    });
+		maxDate: new Date(2017, 1, 1)});
 
     });
 </script>
@@ -204,11 +143,11 @@ USDA-NIFA funded project:
 
 <form method="GET" name="plot1">
 <table class="table table-bordered">
-<thead><tr><th>Select Site and Plot:</th><th>Depth Option:</th><th>Select Start Date</th>
+<thead><tr><th>Select Site and Plot:</th><th>Select Start Date</th>
 </tr></thead>
 <tbody><tr><td>
 {$siteselect}
-</td><td>{$depthselect}</td>
+</td>
 <td><input type="text" id="datepicker" name="date" value="{$date}" size="11" /></td>
 </tr></tbody></table>
 
@@ -217,24 +156,11 @@ USDA-NIFA funded project:
 <tr>
     <th>Number of Days to Plot:</th>
     <th>Time-series Aggregation:</th>
-    <th>View and Download Options:</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><input type="text" name="days" value="{$days}" size="4" /></td>
-<td>{$ptypeselect}</td>
-<td>{$viewselect}
-<br />
-<div>
-    <label for="missingvalue">How to represent missing values:</label>
-{$missselect}
-</div>
-
-<div id="missingvalue_opt" style="display: none;">
-    <label for="missingcustom">Enter Custom Missing Value:</label>
-    <input value="{$custom_missing}" type="text" name="custom_missing" id="missingcustom">
-</div>
-</td>
+<td>{$byselect}</td>
 </tr></tbody>
 </table>
 

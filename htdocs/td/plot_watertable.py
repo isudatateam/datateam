@@ -2,7 +2,6 @@
 # pylint: disable=abstract-class-instantiated
 import sys
 import datetime
-import os
 
 import pandas as pd
 from pandas.io.sql import read_sql
@@ -39,6 +38,7 @@ LINESTYLE = [
     "-.",
     "-.",
 ]
+BYCOL = {"daily": "day", "monthly": "month", "yearly": "year"}
 
 
 def make_plot(form, start_response):
@@ -51,46 +51,20 @@ def make_plot(form, start_response):
     days = int(form.get("days", 1))
     ets = sts + datetime.timedelta(days=days)
     pgconn = get_dbconn("td")
-    viewopt = form.get("view", "plot")
-    ptype = form.get("ptype", "1")
+    by = form.get("by", "daily")
     group = int(form.get("group", 0))
-    missing = form.get("missing", "M")
-    custom_missing = form.get("custom_missing", "M")
-    missing = missing if missing != "__custom__" else custom_missing
-    if ptype == "1":
-        df = read_sql(
-            "SELECT date as v, coalesce(plotid, location) as plotid, "
-            "water_table_depth as depth from water_table_data "
-            "WHERE siteid = %s and date between %s and %s ORDER by date ASC",
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
-    elif ptype in ["3", "4"]:
-        res = "hour" if ptype == "3" else "week"
-        df = read_sql(
-            f"SELECT date_trunc('{res}', date) as v, "
-            "coalesce(plotid, location) as plotid, "
-            "avg(water_table_depth) as depth from water_table_data "
-            "WHERE siteid = %s and date between %s and %s "
-            "GROUP by v, plotid ORDER by v ASC",
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
-        df["depth_f"] = "-"
-    else:
-        df = read_sql(
-            "SELECT date as v, plotid, avg(water_table_depth) as depth "
-            "from water_table_data WHERE siteid = %s "
-            "and date between %s and %s GROUP by v, plotid ORDER by v ASC ",
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
-        df["depth_f"] = "-"
+    df = read_sql(
+        f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
+        "coalesce(plotid, location) as datum, "
+        "average(water_table_depth) as depth from water_table_data "
+        "WHERE siteid = %s and date between %s and %s "
+        "GROUP by v, datum ORDER by v ASC",
+        pgconn,
+        params=(uniqueid, sts.date(), ets.date()),
+    )
     if len(df.index) < 3:
-        send_error(
-            start_response, viewopt, "No / Not Enough Data Found, sorry!"
-        )
-    linecol = "plotid"
+        send_error(start_response, "by", "No / Not Enough Data Found, sorry!")
+    linecol = "datum"
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
@@ -112,54 +86,6 @@ def make_plot(form, start_response):
         df = df.groupby(["treatment", "v"]).mean()
         df.reset_index(inplace=True)
         linecol = "treatment"
-
-    if viewopt not in ["plot", "js"]:
-        df = df.fillna(missing)
-        df["v"] = df["v"].dt.strftime("%Y-%m-%d %H:%M")
-        df.rename(
-            columns=dict(v="timestamp", depth="Depth (mm)"), inplace=True
-        )
-        if viewopt == "html":
-            start_response("200 OK", [("Content-type", "text/html")])
-            return df.to_html(index=False).encode("utf-8")
-        if viewopt == "csv":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s_%s.csv"
-                        % (
-                            uniqueid,
-                            sts.strftime("%Y%m%d"),
-                            ets.strftime("%Y%m%d"),
-                        ),
-                    ),
-                ],
-            )
-            return df.to_csv(index=False).encode("utf-8")
-        if viewopt == "excel":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s_%s.xlsx"
-                        % (
-                            uniqueid,
-                            sts.strftime("%Y%m%d"),
-                            ets.strftime("%Y%m%d"),
-                        ),
-                    ),
-                ],
-            )
-            with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
-                df.to_excel(writer, "Data", index=False)
-            res = open("/tmp/ss.xlsx", "rb").read()
-            os.unlink("/tmp/ss.xlsx")
-            return res
 
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])

@@ -9,15 +9,13 @@ $date = isset($_GET["date"]) ? $_GET["date"]: '2014-06-10';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $group = isset($_GET["group"]) ? $_GET["group"]: '0';
-$missing = isset($_GET["missing"]) ? $_GET["missing"]: "M";
-$custom_missing = isset($_GET["custom_missing"]) ? $_GET["custom_missing"]: "";
 $errmsg = "";
 if (strlen($date) != 10){
 	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
 	$date = '2014-06-10';
 }
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 100;
-$ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
+$by = isset($_GET['by']) ? $_GET['by']: 'daily';
 
 /*
  with data as (select siteid, min(date),
@@ -46,54 +44,19 @@ $ar = Array(
 $siteselect = make_select("site", $site, $ar);
 
 $ar = Array(
-		'1' => 'Observations (no aggregation)',
-		'3' => 'Hourly Averages',
-		'2' => 'Daily Averages',
-		'4' => 'Weekly Averages',
+		'daily' => 'Daily (no aggregation)',
+		'monthly' => 'Monthly Averages',
+		'yearly' => 'Yearly Averages',
 		);
-$ptypeselect = make_select("ptype", $ptype, $ar);
+$byselect = make_select("by", $by, $ar);
 
-$ar = Array(
-		'plot'=> 'View Plot',
-		'html' => 'View Raw Data in HTML Table',
-		'csv' => 'Download as CSV File',
-		'excel' => 'Download as Excel File'
-		);
-$viewselect = make_select('view', $view, $ar);
-
-$ar = Array(
-    "M" => "M",
-    "N/A" => "N/A",
-    "NaN" => "NaN",
-    "NULL" => "NULL",
-    " " => " ",
-    "." => ".",
-    "-999" => "-999",
-    "__custom__" => "Custom Value",
-);
-$missselect = make_select('missing', $missing, $ar);
-
-$jsextra = "";
-if ($view != 'plot'){
-    $imageurl = sprintf("plot_watertable.py?site=%s&date=%s&days=%s&ptype=%s". 
-        "&view=%s&amp;group=%s&missing=%s&custom_missing=%s", 
-		$site, $date, $days, $ptype, $view, $group, $missing, $custom_missing);
-	$uri = sprintf("http://datateam.local/td/%s", $imageurl);
-	if ($view == 'html'){
-		$data = file_get_contents($uri);
-		$interface = $data;
-	} else{
-		Header(sprintf("Location: /td/%s", $imageurl));
-		die();
-	}
-} else {
-	$jsurl = sprintf("watertable__%s__%s__%s__%s__%s.js", 
-		$site, $date, $days, $ptype, $group);
-	$jsextra = "<script src=\"{$jsurl}\"></script>";
-	$interface = <<<EOF
+$jsurl = sprintf("watertable__%s__%s__%s__%s__%s.js", 
+    $site, $date, $days, $by, $group);
+$jsextra = "<script src=\"{$jsurl}\"></script>";
+$interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
 EOF;
-}
+
 
 $t = new MyView();
 $t->thispage = "td-watertable";
@@ -120,13 +83,6 @@ $(document).ready(function(){
 		changeYear: true,
 		minDate: new Date(2006, 0, 1),
         maxDate: new Date(2016, 1, 1)});
-    $("select[name='missing']").change(function(){
-        if ($(this).val() == '__custom__'){
-            $("#missingvalue_opt").css('display', 'block');
-        } else {
-            $("#missingvalue_opt").css('display', 'none');
-        }
-    });	
 });
 </script>
 EOF;
@@ -158,22 +114,10 @@ select {
 
 <table class="table table-bordered">
 <thead><tr><th>Number of Days to Plot</th>
-<th>Time-series Aggregation:</th><th>View and Download Options</th></tr></thead>
+<th>Time-series Aggregation:</th></tr></thead>
 <tbody><tr>
 <td><input type="text" name="days" value="{$days}" size="4" /></td>
-<td>{$ptypeselect}</td>
-<td>{$viewselect}
-<br />
-<div>
-    <label for="missingvalue">How to represent missing values:</label>
-{$missselect}
-</div>
-
-<div id="missingvalue_opt" style="display: none;">
-    <label for="missingcustom">Enter Custom Missing Value:</label>
-    <input value="{$custom_missing}" type="text" name="custom_missing" id="missingcustom">
-</div>
-</td>
+<td>{$byselect}</td>
 </tr></tbody>
 </table>
 
