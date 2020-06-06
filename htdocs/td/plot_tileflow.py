@@ -2,7 +2,6 @@
 # pylint: disable=abstract-class-instantiated
 import sys
 import datetime
-import os
 
 import pandas as pd
 from pandas.io.sql import read_sql
@@ -39,6 +38,7 @@ LINESTYLE = [
     "-.",
     "-.",
 ]
+BYCOL = {"daily": "day", "monthly": "month", "yearly": "year"}
 
 
 def get_weather(pgconn, uniqueid, sts, ets):
@@ -70,55 +70,18 @@ def make_plot(form, start_response):
     group = int(form.get("group", 0))
     ets = sts + datetime.timedelta(days=days)
     wxdf = get_weather(pgconn, uniqueid, sts, ets)
-    viewopt = form.get("view", "plot")
-    ptype = form.get("ptype", "1")
-    missing = form.get("missing", "M")
-    custom_missing = form.get("custom_missing", "M")
-    missing = missing if missing != "__custom__" else custom_missing
-    if ptype == "1":
-        df = read_sql(
-            "SELECT date, coalesce(plotid, location) as plotid, discharge "
-            "from tile_flow_and_n_loads_data WHERE siteid = %s "
-            "and date between %s and %s ORDER by date ASC",
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
-    elif ptype == "2":
-        # resample the weather data
-        if not wxdf.empty:
-            wxdf = wxdf.resample(
-                "M", loffset=datetime.timedelta(days=-27)
-            ).sum()
-            wxdf["ticks"] = (
-                wxdf.index.values.astype("datetime64[ns]").astype(np.int64)
-                // 10 ** 6
-            )
-        df = read_sql(
-            "SELECT date_trunc('month', date) as v, "
-            "coalesce(plotid, location) as plotid, "
-            "sum(discharge) as discharge from tile_flow_and_n_loads_data "
-            "WHERE siteid = %s "
-            "and date between %s and %s GROUP by v, plotid ORDER by v ASC",
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
-        df["discharge_f"] = "-"
-    elif ptype == "3":
-        # Daily Aggregate
-        df = read_sql(
-            "SELECT date as v, coalesce(plotid, location) as plotid, "
-            "sum(discharge) as discharge "
-            "from tileflow_data WHERE siteid = %s "
-            "and date between %s and %s GROUP by v, plotid ORDER by v ASC",
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
-        df["discharge_f"] = "-"
+    by = form.get("by", "daily")
+    df = read_sql(
+        f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
+        "coalesce(plotid, location) as datum, sum(discharge) as discharge "
+        "from tile_flow_and_n_loads_data WHERE siteid = %s "
+        "and date between %s and %s GROUP by v, datum ORDER by v ASC",
+        pgconn,
+        params=(uniqueid, sts.date(), ets.date()),
+    )
     if len(df.index) < 3:
-        send_error(
-            start_response, viewopt, "No / Not Enough Data Found, sorry!"
-        )
-    linecol = "plotid"
+        send_error(start_response, "js", "No / Not Enough Data Found, sorry!")
+    linecol = "datum"
     if group == 1:
         # Generate the plotid lookup table
         plotdf = read_sql(
@@ -136,59 +99,10 @@ def make_plot(form, start_response):
                 return row["plotid"]
 
         df["treatment"] = df.apply(lookup, axis=1)
-        del df["plotid"]
+        del df["datum"]
         df = df.groupby(["treatment", "v"]).mean()
         df.reset_index(inplace=True)
         linecol = "treatment"
-
-    if viewopt not in ["plot", "js"]:
-        df = df.fillna(missing)
-        df["v"] = df["v"].dt.strftime("%Y-%m-%d %H:%M")
-        df.rename(
-            columns=dict(v="timestamp", discharge="Discharge (mm)"),
-            inplace=True,
-        )
-        if viewopt == "html":
-            start_response("200 OK", [("Content-type", "text/html")])
-            return df.to_html(index=False).encode("utf-8")
-        if viewopt == "csv":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s_%s.csv"
-                        % (
-                            uniqueid,
-                            sts.strftime("%Y%m%d"),
-                            ets.strftime("%Y%m%d"),
-                        ),
-                    ),
-                ],
-            )
-            return df.to_csv(index=False).encode("utf-8")
-        if viewopt == "excel":
-            start_response(
-                "200 OK",
-                [
-                    ("Content-type", "application/octet-stream"),
-                    (
-                        "Content-Disposition",
-                        "attachment; filename=%s_%s_%s.xlsx"
-                        % (
-                            uniqueid,
-                            sts.strftime("%Y%m%d"),
-                            ets.strftime("%Y%m%d"),
-                        ),
-                    ),
-                ],
-            )
-            with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
-                df.to_excel(writer, "Data", index=False)
-            res = open("/tmp/ss.xlsx", "rb").read()
-            os.unlink("/tmp/ss.xlsx")
-            return res
 
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
@@ -202,8 +116,8 @@ def make_plot(form, start_response):
     plot_ids.sort()
     if group == "1":
         plot_ids = plot_ids[::-1]
-    df["ticks"] = pd.to_datetime(df["date"]).astype(np.int64) // 10 ** 6
-    seriestype = "line" if ptype in ["1", "3"] else "column"
+    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
+    seriestype = "line" if by in ["daily"] else "column"
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
         if df2.empty:
