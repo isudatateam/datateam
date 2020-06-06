@@ -418,9 +418,9 @@ function build_sites_ui(){
 		foreach($groups[$k] as $k2 => $v2){
 			$s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
 			    "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
-                "<label for=\"ST%s\" class=\"control-label\">[%s] %s</label>",
+                "<label for=\"ST%s\" class=\"control-label\">%s</label>",
                 $v2["siteid"], $v2["siteid"], $k, $v2["siteid"],
-                $v2["siteid"], $v2["official_farm_name"]);
+                $v2["siteid"]);
         }
         $s .= "</div></div></div>\n";
     }
