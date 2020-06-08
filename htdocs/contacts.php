@@ -14,7 +14,7 @@ The team members listed below will answer your questions. We will determine if c
 research site faculty and staff members are necessary.</p>
 
 <p>Lori Abendroth<br>
-Sustainable Corn Project Manager, PI<br>
+Manager, PI<br>
 Agronomist<br>
 <a href="mailto:labend@iastate.edu">labend@iastate.edu</a></p>
 
@@ -28,8 +28,10 @@ Data Manager and Analyst<br>
 Agricultural Engineer<br>
 <a href="mailto:gio@iastate.edu">gio@iastate.edu</a></p>
 
-<p>Appreciation is extended to Suresh Lokhande, Katie Schwaegler, and Stephanie Bowden for their management 
-and review of Sustainable Corn CAP data, metadata, and supporting information during the project.
+<p>
+Appreciation is extended to Stephanie Bowden, Suresh Lokhande, and 
+Katie Schwaegler for their contributions in management and review of data, 
+metadata, photographs, and maps.
 </p>
 
 <p>&nbsp<p>
