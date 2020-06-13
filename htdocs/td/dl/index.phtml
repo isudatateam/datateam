@@ -348,7 +348,10 @@ EOM;
 
 function build_theses(){
 	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
-	$rs = pg_query($pgconn, "select * from theses ORDER by authors");
+	$rs = pg_query(
+        $pgconn,
+        "select *, (string_to_array(authors, ' '))[1] as sauthor from theses ".
+        "ORDER by sauthor, year ASC");
 	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 	    $srs = "";
@@ -360,7 +363,7 @@ function build_theses(){
 				$row['authors'], $row["year"], $row['title'],
 				$row["journal_or_source"], $srs);
 	}
-	$s .= "\n";
+    $s .= "\n";
 	return $s;
 }
 
@@ -372,8 +375,10 @@ function cullna($val){
 }
 function build_publications(){
 	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
-	$rs = pg_query($pgconn, "select * from refereed_journals ".
-			"ORDER by authors");
+	$rs = pg_query(
+        $pgconn,
+        "select *, (string_to_array(authors, ' '))[1] as sauthor from ".
+        "refereed_journals ORDER by sauthor, year ASC");
 	$s = "\n";
 	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
 		$strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
