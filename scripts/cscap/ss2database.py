@@ -11,7 +11,6 @@ pgconn = psycopg2.connect(
 ss = util.get_ssclient(config)
 
 JOB_LISTING = [
-    ["3879498232948612", "cscap_data_dictionary"],
     ["1292573529663364", "refereed_journals"],
     ["6868926064813956", "theses"],
     ["3644715322107780", "data_dictionary_export"],
