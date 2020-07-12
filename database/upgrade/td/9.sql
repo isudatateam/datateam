@@ -1,1 +1,0 @@
-ALTER TABLE soil_fert add cashcrop varchar;
