@@ -21,7 +21,7 @@ Agronomist<br>
 <p>Daryl Herzmann<br>
 Systems Administrator and Analyst<br>
 Agricultural Meteorologist<br>
-<a href="mailto:akrherz@iastate.edu">akrherz@iastsate.edu</a></p>
+<a href="mailto:akrherz@iastate.edu">akrherz@iastate.edu</a></p>
 
 <p>Giorgi Chighladze<br>
 Data Manager and Analyst<br>
