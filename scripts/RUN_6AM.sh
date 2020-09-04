@@ -27,7 +27,6 @@ cd /opt/datateam/scripts/cscap
 
 #python harvest_soil_fertility.py
 
-python email_daily_changes.py cscap
 python email_daily_changes.py td
 python email_daily_changes.py inrc
 python email_daily_changes.py nutrinet
