@@ -43,6 +43,9 @@ CFG = {
     "td": dict(
         emails=CONFIG["td"]["email_daily_list"], title="Transforming Drainage"
     ),
+    "ilsoil": dict(
+        emails=CONFIG["ilsoil"]["email_daily_list"], title="IL Soil Samples"
+    ),
 }
 LOCALTZ = pytz.timezone("America/Chicago")
 

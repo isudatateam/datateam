@@ -33,6 +33,7 @@ python email_daily_changes.py nutrinet
 python email_daily_changes.py kb
 python email_daily_changes.py ardn
 python email_daily_changes.py sepac
+python email_daily_changes.py ilsoil
 
 #python ss2database.py
 
