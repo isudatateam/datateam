@@ -339,6 +339,7 @@ EOM;
         $purl = "https://drive.google.com/drive/folders/". $row["drive_photos_folder"];
         $murl = "https://drive.google.com/drive/folders/". $row["drive_maps_folder"];
         $s .= sprintf("<tr><th>%s</th><td>%s</td><td>%s</td><td>%s</td>".
+            "<td></td>".
             "<td><a href=\"%s\"><i class=\"fa fa-map\"></i> Link</a></td>".
             "<td><a href=\"%s\"><i class=\"fa fa-camera\"></i> Link</a></td></tr>\n",
                 $row['siteid'], $row["lead_pi"], $row["official_farm_name"],
