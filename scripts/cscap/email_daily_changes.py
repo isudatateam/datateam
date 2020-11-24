@@ -224,7 +224,7 @@ def drive_changelog(regime, yesterday, html):
                     luser = item2["lastModifyingUser"]
                     hit = True
                     display_name = luser["displayName"]
-                    email_address = luser["emailAddress"]
+                    email_address = luser.get("emailAddress", "unknown")
                     if display_name == CONFIG["service_account"]:
                         display_name = "daryl's magic"
                         email_address = "akrherz@iastate.edu"
