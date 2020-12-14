@@ -22,6 +22,7 @@ CFG = {
     "cscap": dict(
         emails=CONFIG["cscap"]["email_daily_list"], title="Sustainable Corn"
     ),
+    "cig": dict(emails=CONFIG["cig"]["email_daily_list"], title="CIG"),
     "inrc": dict(
         emails=CONFIG["inrc"]["email_daily_list"],
         title="Integrating Social and Biophysical Indicators (ISBI)",
