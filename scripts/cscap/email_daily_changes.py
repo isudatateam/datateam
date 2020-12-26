@@ -2,7 +2,6 @@
   My purpose in life is to send an email each day with changes found
   on the Google Drive
 """
-from __future__ import print_function
 import sys
 import datetime
 import json
@@ -13,7 +12,9 @@ from email.mime.text import MIMEText
 from gdata.client import RequestError
 import pytz
 import pyiem.cscap_utils as util
+from pyiem.util import logger
 
+LOG = logger()
 CONFIG = util.get_config()
 FMIME = "application/vnd.google-apps.folder"
 FORM_MTYPE = "application/vnd.google-apps.form"
@@ -89,7 +90,6 @@ def sites_changelog(regime, yesterday, html):
             entry.updated.text, "%Y-%m-%dT%H:%M:%S.%fZ"
         )
         ts = ts.replace(tzinfo=pytz.UTC)
-        # print 'Sites ts: %s' % (ts,)
         if ts < yesterday:
             continue
         updated = ts.astimezone(LOCALTZ)
@@ -135,9 +135,12 @@ def drive_changelog(regime, yesterday, html):
             param["startChangeId"] = start_change_id
         if page_token:
             param["pageToken"] = page_token
-        print(
-            ("[%s] start_change_id: %s largestChangeId: %s page_token: %s")
-            % (regime, start_change_id, largestChangeId, page_token)
+        LOG.debug(
+            "[%s] start_change_id: %s largestChangeId: %s page_token: %s",
+            regime,
+            start_change_id,
+            largestChangeId,
+            page_token,
         )
         response = drive.changes().list(**param).execute()
         largestChangeId = response["largestChangeId"]
@@ -159,21 +162,21 @@ def drive_changelog(regime, yesterday, html):
             isproject = False
             for parent in item["file"]["parents"]:
                 if parent["id"] not in folders:
-                    print(
-                        ("[%s] file: %s has unknown parent: %s")
-                        % (regime, item["id"], parent["id"])
+                    LOG.info(
+                        "[%s] file: %s has unknown parent: %s",
+                        regime,
+                        item["id"],
+                        parent["id"],
                     )
                     continue
                 isproject = True
             if not isproject:
-                print(
-                    ("[%s] %s (%s) skipped as basefolders are: %s")
-                    % (
-                        regime,
-                        repr(item["file"]["title"]),
-                        item["file"]["mimeType"],
-                        item["file"]["parents"],
-                    )
+                LOG.info(
+                    "[%s] %s (%s) skipped as basefolders are: %s",
+                    regime,
+                    repr(item["file"]["title"]),
+                    item["file"]["mimeType"],
+                    item["file"]["parents"],
                 )
                 continue
             uri = item["file"]["alternateLink"]
@@ -203,13 +206,14 @@ def drive_changelog(regime, yesterday, html):
                         .execute()
                     )
                 except Exception:
-                    print(
-                        ("[%s] file %s (%s) failed revisions")
-                        % (regime, title, item["file"]["mimeType"])
+                    LOG.info(
+                        "[%s] file %s (%s) failed revisions",
+                        regime,
+                        title,
+                        item["file"]["mimeType"],
                     )
                     revisions = {"items": []}
                 for item2 in revisions["items"]:
-                    # print pprint(item2)
                     md = datetime.datetime.strptime(
                         item2["modifiedDate"][:19], "%Y-%m-%dT%H:%M:%S"
                     )
