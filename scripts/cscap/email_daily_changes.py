@@ -312,7 +312,7 @@ def main(argv):
         yesterday.strftime("%-d %b"),
         CFG[regime]["title"],
     )
-    msg["From"] = "mesonet@mesonet.agron.iastate.edu"
+    msg["From"] = "akrherz@iastate.edu"
     msg["To"] = ",".join(CFG[regime]["emails"])
 
     part2 = MIMEText(html, "html")
