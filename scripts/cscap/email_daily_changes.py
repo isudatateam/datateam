@@ -2,13 +2,16 @@
   My purpose in life is to send an email each day with changes found
   on the Google Drive
 """
+# stdlib
 import sys
 import datetime
 import json
 import smtplib
+import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+# third party
 from gdata.client import RequestError
 import pytz
 import pyiem.cscap_utils as util
@@ -319,9 +322,17 @@ def main(argv):
 
     msg.attach(part2)
 
-    p25 = smtplib.SMTP("mailhub.iastate.edu")
-    p25.sendmail(msg["From"], CFG[regime]["emails"], msg.as_string())
-    p25.quit()
+    attempt = 0
+    while attempt < 10:
+        try:
+            p25 = smtplib.SMTP("mailhub.iastate.edu")
+            p25.sendmail(msg["From"], CFG[regime]["emails"], msg.as_string())
+            p25.quit()
+            attempt = 10
+        except Exception as exp:
+            print(exp)
+            time.sleep(10)
+            attempt += 1
 
 
 if __name__ == "__main__":
