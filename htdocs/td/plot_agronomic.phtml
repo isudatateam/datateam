@@ -48,7 +48,7 @@ $ar = Array(
     "OH_VanWert"=>"OH_VanWert (1997 to 2008) [12 years]",
     "SD_Clay"=>"SD_Clay (2016 to 2017) [2 years]",   
 		);
-$siteselect = make_select("site", $site, $ar);
+$siteselect = td_site_select("site", $site, $ar);
 
 /*
  select '"'||code_column_heading||'" => "'|| short_description ||'",' from
