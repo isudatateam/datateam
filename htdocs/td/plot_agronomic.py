@@ -61,7 +61,7 @@ def make_plot(form, start_response):
     varname = form.get("varname", "AGR17")
     (varlabel, varunits) = get_vardesc(varname)
 
-    group = int(form.get("group", 0))
+    ungroup = int(form.get("ungroup", 0))
     df = read_sql(
         "SELECT * from agronomic_data WHERE siteid = %s "
         "ORDER by plotid, year ASC",
@@ -76,7 +76,7 @@ def make_plot(form, start_response):
         )
     df["value"] = pd.to_numeric(df[varname], errors="coerce")
     linecol = "plotid"
-    if group == 1:
+    if ungroup == 0:
         # Generate the plotid lookup table
         plotdf = read_sql(
             "SELECT * from plotids where siteid = %s",
@@ -104,7 +104,7 @@ def make_plot(form, start_response):
     arr = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
-    if group == 1:
+    if ungroup == 1:
         plot_ids = plot_ids[::-1]
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]

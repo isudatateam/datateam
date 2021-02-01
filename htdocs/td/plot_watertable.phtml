@@ -8,7 +8,7 @@ $site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Hamilton1';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2014-06-10';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
-$group = isset($_GET["group"]) ? $_GET["group"]: '0';
+$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
 $errmsg = "";
 if (strlen($date) != 10){
 	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
@@ -41,7 +41,7 @@ $ar = Array(
     "OH_Defiance2"=>"OH_Defiance2 (2000-03-09 to 2007-12-06) [2828 days]",
     "SD_Clay"=>"SD_Clay (2016-04-20 to 2016-11-04) [198 days]",   
 		);
-$siteselect = make_select("site", $site, $ar);
+$siteselect = td_site_select("site", $site, $ar);
 
 $ar = Array(
 		'daily' => 'Daily (no aggregation)',
@@ -51,7 +51,7 @@ $ar = Array(
 $byselect = make_select("by", $by, $ar);
 
 $jsurl = sprintf("watertable__%s__%s__%s__%s__%s.js", 
-    $site, $date, $days, $by, $group);
+    $site, $date, $days, $by, $ungroup);
 $jsextra = "<script src=\"{$jsurl}\"></script>";
 $interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
@@ -65,7 +65,7 @@ $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" /> 
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" /> 
 EOF;
-$groupselected = ($group == "1") ? " checked=\"checked\"": "";
+$ungroupselected = ($ungroup == "1") ? " checked=\"checked\"": "";
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
 <script src="/vendor/highcharts/${HIGHCHARTS}/highcharts.js"></script>
@@ -107,7 +107,7 @@ select {
 </tr></thead>
 <tbody><tr><td>
 {$siteselect}
-<br /><input type="checkbox" name="group" value="1"${groupselected}> Average plot values by their drainage treatment
+<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show plot values, instead of by treatment.
 </td>
 <td><input type="text" id="datepicker" name="date" value="{$date}" size="11" /></td>
 </tr></tbody></table>

@@ -52,7 +52,7 @@ def make_plot(form, start_response):
     ets = sts + datetime.timedelta(days=days)
     pgconn = get_dbconn("td")
     by = form.get("by", "daily")
-    group = int(form.get("group", 0))
+    ungroup = int(form.get("ungroup", 0))
     df = read_sql(
         f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
         "coalesce(plotid, location) as datum, "
@@ -65,7 +65,7 @@ def make_plot(form, start_response):
     if len(df.index) < 3:
         send_error(start_response, "by", "No / Not Enough Data Found, sorry!")
     linecol = "datum"
-    if group == 1:
+    if ungroup == 0:
         # Generate the plotid lookup table
         plotdf = read_sql(
             "SELECT * from wellids where siteid = %s",
@@ -97,7 +97,7 @@ def make_plot(form, start_response):
     s = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
-    if group == "1":
+    if ungroup == 0:
         plot_ids = plot_ids[::-1]
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
     for i, plotid in enumerate(plot_ids):

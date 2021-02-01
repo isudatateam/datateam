@@ -8,7 +8,7 @@ $site = isset($_GET["site"]) ? $_GET["site"]: 'SD_Clay';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
 $by = isset($_GET['by']) ? $_GET['by']: 'daily';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
-$group = isset($_GET["group"]) ? $_GET["group"]: '0';
+$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
 
 $errmsg = "";
 if (strlen($date) != 10){
@@ -58,11 +58,11 @@ $ar = Array(
     "OH_Hardin1"=>"OH_Hardin1  (2011-01-26 to 2014-12-29) [1433 days]",
     "SD_Clay"=>"SD_Clay  (2015-01-01 to 2017-06-07) [888 days]",   
 	);
-$siteselect = make_select("site", $site, $ar);
+$siteselect = td_site_select("site", $site, $ar);
 
 
 $jsurl = sprintf("nitrateload__%s__%s__%s__%s__%s.js", 
-    $site, $date, $days, $by, $group);
+    $site, $date, $days, $by, $ungroup);
 $jsextra = "<script src=\"{$jsurl}\"></script>";
 $interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
@@ -95,7 +95,7 @@ $(document).ready(function(){
 });
 </script>
 EOF;
-$groupselected = ($group == "1") ? " checked=\"checked\"": "";
+$ungroupselected = ($ungroup == "1") ? " checked=\"checked\"": "";
 $t->content =  <<<EOF
 <style>
 select {
@@ -134,12 +134,11 @@ USDA-NIFA funded project:
 
 </div>
 
-<h4>AGGREGATE</h4>
+<h4>DISAGGREGATE</h4>
 
 <div class="row">
 <div class="col-md-6">
-<strong>Average Plot Values:</strong>
-<br /><input type="checkbox" name="group" value="1"${groupselected}> by drainage treatment
+<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show plot values, instead of by treatment.
 
 </div>
 <div class="col-md-6">

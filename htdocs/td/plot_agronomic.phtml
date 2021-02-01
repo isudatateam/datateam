@@ -5,7 +5,7 @@ require_once "../../include/forms.php";
 require_once "../../include/myview.php";
 
 $site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Story2';
-$group = isset($_GET["group"]) ? $_GET["group"]: '0';
+$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
 $errmsg = "";
 $varname = isset($_GET["varname"])? $_GET["varname"]: 'crop_yield';
 
@@ -48,7 +48,7 @@ $ar = Array(
     "OH_VanWert"=>"OH_VanWert (1997 to 2008) [12 years]",
     "SD_Clay"=>"SD_Clay (2016 to 2017) [2 years]",   
 		);
-$siteselect = make_select("site", $site, $ar);
+$siteselect = td_site_select("site", $site, $ar);
 
 /*
  select '"'||code_column_heading||'" => "'|| short_description ||'",' from
@@ -88,7 +88,7 @@ $ar = Array(
 $varselect = make_select("varname", $varname, $ar);
 
 $jsurl = sprintf("agronomic__%s__%s__%s__%s.js",
-    $site, $varname, 1, $group);
+    $site, $varname, 1, $ungroup);
 $jsextra = "<script src=\"{$jsurl}\"></script>";
 $interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
@@ -113,7 +113,7 @@ $(document).ready(function(){
 });
 </script>
 EOF;
-$groupselected = ($group == "1") ? " checked=\"checked\"": "";
+$ungroupselected = ($ungroup == "1") ? " checked=\"checked\"": "";
 $t->content =  <<<EOF
 <style>
 select {
@@ -141,7 +141,7 @@ USDA-NIFA funded project:
 <tr>
 <td>
 {$siteselect}
-<br /><input type="checkbox" name="group" value="1"${groupselected}> Average plot values by their drainage treatment
+<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show Plot Values, instead of by treatment.
 </td>
 <td>
 {$varselect}

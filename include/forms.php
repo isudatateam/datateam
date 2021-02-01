@@ -2,7 +2,31 @@
 /**
  * Library for doing repetetive forms stuff
  */
-function make_select($name, $selected, $ar, $jscallback="", $cssclass=''){
+
+function td_site_select($name, $selected, $ar){
+    // Adds some sugar ontop of a select tool for TD
+    $groups = Array(
+        "Saturated Buffers" => array(),
+        "Controlled Drainage" => array(),
+        "DW Recycle" => array(),
+        "Other" => array(),
+    );
+    $pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
+    $rs = pg_query(
+        $pgconn,
+        "SELECT * from meta_site_history ORDER by siteid ASC");
+    for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+        $siteid = $row["siteid"];
+        if (!array_key_exists($siteid, $ar)){
+            continue;
+        }
+        $drp = $row["drainage_retention_practice"];
+        $groups[$drp][$siteid] = $ar[$siteid];
+    }
+    return make_select($name, $selected, $groups);
+}
+
+ function make_select($name, $selected, $ar, $jscallback="", $cssclass=''){
         // Create a simple HTML select box
         $s = sprintf("<select name=\"%s\"%s%s>\n", $name, 
                         ($jscallback != "")? " onChange=\"$jscallback(this.value)\"" : "",
