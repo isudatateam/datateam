@@ -8,7 +8,7 @@ $site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Boone';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
-$group = isset($_GET["group"]) ? $_GET["group"]: '0';
+$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
 $errmsg = "";
 if (strlen($date) != 10){
 	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
@@ -72,7 +72,7 @@ $ar = Array(
 $byselect = make_select("by", $by, $ar);
 
 $jsurl = sprintf("tileflow__%s__%s__%s__%s__%s.js", 
-		$site, $date, $days, $by, $group);
+		$site, $date, $days, $by, $ungroup);
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
 	$interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
@@ -108,7 +108,7 @@ $(document).ready(function(){
 });
 </script>
 EOF;
-$groupselected = ($group == "1") ? " checked=\"checked\"": "";
+$ungroupselected = ($ungroup == "1") ? " checked=\"checked\"": "";
 $t->content =  <<<EOF
 <style>
 select {
@@ -137,7 +137,7 @@ stations. Only tile flow data are currently available for export under "View and
 <tr>
 <td>
 {$siteselect}
-<br /><input type="checkbox" name="group" value="1"${groupselected}> Average plot values by their drainage treatment
+<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show plot values, instead of by treatment.
 </td>
 <td><input type="text" id="datepicker" name="date" value="{$date}" size="11" /></td>
 </tr></tbody></table>

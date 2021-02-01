@@ -67,7 +67,7 @@ def make_plot(form, start_response):
         form.get("date", "2014-01-01"), "%Y-%m-%d"
     )
     days = int(form.get("days", 1))
-    group = int(form.get("group", 0))
+    ungroup = int(form.get("ungroup", 0))
     ets = sts + datetime.timedelta(days=days)
     wxdf = get_weather(pgconn, uniqueid, sts, ets)
     by = form.get("by", "daily")
@@ -82,10 +82,10 @@ def make_plot(form, start_response):
     if len(df.index) < 3:
         send_error(start_response, "js", "No / Not Enough Data Found, sorry!")
     linecol = "datum"
-    if group == 1:
+    if ungroup == 0:
         # Generate the plotid lookup table
         plotdf = read_sql(
-            "SELECT * from meta_plot_identifiers where siteid = %s",
+            "SELECT * from meta_plot_identifier where siteid = %s",
             pgconn,
             params=(uniqueid,),
             index_col="plotid",
@@ -114,7 +114,7 @@ def make_plot(form, start_response):
     s = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
-    if group == "1":
+    if ungroup == "0":
         plot_ids = plot_ids[::-1]
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
     seriestype = "line" if by in ["daily"] else "column"

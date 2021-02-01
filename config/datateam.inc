@@ -40,11 +40,11 @@
     Options +ExecCGI
 
     RewriteEngine On
-    RewriteRule ^agronomic__(.*)__(.*)__(.*)__(.*).js$ plot_agronomic.py?site=$1&varname=$2&ptype=$3&view=js&group=$4
+    RewriteRule ^agronomic__(.*)__(.*)__(.*)__(.*).js$ plot_agronomic.py?site=$1&varname=$2&ptype=$3&view=js&ungroup=$4
     RewriteRule ^decagon__(.*)__(.*)__(.*)__(.*)__(.*).js$ plot_decagon.py?site=$1&date=$2&days=$3&ptype=$4&depth=$5&view=js
-    RewriteRule ^watertable__(.*)__(.*)__(.*)__(.*)_(.*).js$ plot_watertable.py?site=$1&date=$2&days=$3&ptype=$4&view=js&group=$5
-    RewriteRule ^tileflow__(.*)__(.*)__(.*)__(.*)__([10]).js$ plot_tileflow.py?site=$1&date=$2&days=$3&ptype=$4&view=js&group=$5
-    RewriteRule ^nitrateload__(.*)__(.*)__(.*)__(.*)__([10]).js$ plot_nitrateload.py?site=$1&date=$2&days=$3&by=$4&view=js&group=$5
+    RewriteRule ^watertable__(.*)__(.*)__(.*)__(.*)_(.*).js$ plot_watertable.py?site=$1&date=$2&days=$3&ptype=$4&view=js&ungroup=$5
+    RewriteRule ^tileflow__(.*)__(.*)__(.*)__(.*)__([10]).js$ plot_tileflow.py?site=$1&date=$2&days=$3&ptype=$4&view=js&ungroup=$5
+    RewriteRule ^nitrateload__(.*)__(.*)__(.*)__(.*)__([10]).js$ plot_nitrateload.py?site=$1&date=$2&days=$3&by=$4&view=js&ungroup=$5
   </Directory>
 
 

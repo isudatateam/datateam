@@ -50,10 +50,10 @@ def make_plot(form, start_response):
         form.get("date", "2014-01-01"), "%Y-%m-%d"
     )
     days = int(form.get("days", 1))
-    group = int(form.get("group", 0))
+    ungroup = int(form.get("ungroup", 0))
     ets = sts + datetime.timedelta(days=days)
     by = form.get("by", "daily")
-    if group == 1:
+    if ungroup == 0:
         df = read_sql(
             "WITH data as ("
             f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
@@ -99,7 +99,7 @@ def make_plot(form, start_response):
     s = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
-    if group == "1":
+    if ungroup == 1:
         plot_ids = plot_ids[::-1]
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
     seriestype = "line" if by == "daily" else "column"
