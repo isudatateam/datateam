@@ -13,19 +13,22 @@ research and metadata collected, and protocols should be directed to
 The team members listed below will answer your questions. We will determine if contacting the individual 
 research site faculty and staff members are necessary.</p>
 
-<p>Lori Abendroth<br>
-Manager, PI<br>
-Agronomist<br>
-<a href="mailto:labend@iastate.edu">labend@iastate.edu</a></p>
+<p>Lori Abendroth<br />
+Principal Investigator (2011-2020)<br />
+Research Agronomist (current)<br />
+USDA ARS, Cropping Systems and Water Quality Unit<br />
+<a href="mailto:lori.abendroth@usda.gov">lori.abendroth@usda.gov</a></p>
 
 <p>Daryl Herzmann<br>
 Systems Administrator and Analyst<br>
 Agricultural Meteorologist<br>
+Iowa State University<br />
 <a href="mailto:akrherz@iastate.edu">akrherz@iastate.edu</a></p>
 
 <p>Giorgi Chighladze<br>
 Data Manager and Analyst<br>
 Agricultural Engineer<br>
+Iowa State University<br />
 <a href="mailto:gio@iastate.edu">gio@iastate.edu</a></p>
 
 <p>
