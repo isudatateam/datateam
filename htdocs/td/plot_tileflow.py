@@ -10,7 +10,7 @@ from paste.request import parse_formvars
 from pyiem.util import get_dbconn
 
 sys.path.append("/opt/datateam/htdocs/td")
-from common import CODES, getColor, send_error
+from common import CODES, getColor, send_error, COPYWRITE
 
 LINESTYLE = [
     "-",
@@ -174,6 +174,9 @@ def make_plot(form, start_response):
     res = (
         """
 $("#hc").highcharts({
+    """
+        + COPYWRITE
+        + """
     title: {text: '"""
         + title
         + """'},

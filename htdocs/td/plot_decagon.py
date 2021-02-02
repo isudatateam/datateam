@@ -10,7 +10,7 @@ from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 
 sys.path.append("/opt/datateam/htdocs/td")
-from common import send_error
+from common import send_error, COPYWRITE
 
 LINESTYLE = [
     "-",
@@ -199,6 +199,9 @@ options = {
     res += (
         """
 charts[0] = new Highcharts.Chart($.extend(true, {}, options, {
+    """
+        + COPYWRITE
+        + """
     chart: { renderTo: 'hc1'},
     title: {text: '"""
         + title
@@ -209,6 +212,9 @@ charts[0] = new Highcharts.Chart($.extend(true, {}, options, {
         + """]
 }));
 charts[1] = new Highcharts.Chart($.extend(true, {}, options, {
+    """
+        + COPYWRITE
+        + """
     chart: { renderTo: 'hc2'},
     title: {text: '"""
         + title

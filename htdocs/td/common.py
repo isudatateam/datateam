@@ -3,6 +3,10 @@ from io import BytesIO
 
 from pyiem.plot.use_agg import plt
 
+COPYWRITE = """credits: {
+        position: {align: 'left', x: 15},
+        text: "© Transforming Drainage"
+    },"""
 COLORS = {
     "UD": "#36454F",
     "ND": "#36454F",
