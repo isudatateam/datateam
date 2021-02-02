@@ -38,7 +38,12 @@ LINESTYLE = [
     "-.",
     "-.",
 ]
-BYCOL = {"daily": "day", "monthly": "month", "yearly": "year"}
+BYCOL = {
+    "daily": "day",
+    "monthly": "month",
+    "yearly": "year",
+    "weekly": "week",
+}
 
 
 def make_plot(form, start_response):

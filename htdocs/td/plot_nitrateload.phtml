@@ -71,6 +71,7 @@ EOF;
 $dby = ($by == "daily") ? " CHECKED ": "";
 $mby = ($by == "monthly") ? " CHECKED ": "";
 $yby = ($by == "yearly") ? " CHECKED ": "";
+$wby = ($by == "weekly") ? " CHECKED ": "";
 $t = new MyView();
 $t->thispage = "td-nitrateload";
 $t->title = "TD Nitrate Load Data Plotting/Download";
@@ -145,6 +146,7 @@ USDA-NIFA funded project:
 <strong>Sum Values:</strong>
 <br />
 <input type="radio" name="by" value="daily"{$dby}> daily &nbsp;
+<input type="radio" name="by" value="weekly"{$wby}> weekly (Mon-Sun)&nbsp;
 <input type="radio" name="by" value="monthly"{$mby}> monthly &nbsp;
 <input type="radio" name="by" value="yearly"{$yby}> yearly
 
