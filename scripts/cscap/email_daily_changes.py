@@ -154,12 +154,16 @@ def drive_changelog(regime, yesterday, html):
             changestamp = item["id"]
             if item["deleted"]:
                 continue
+            # Files copied in could have a createdDate of interest, but old
+            # modification date
+            created = datetime.datetime.strptime(
+                item["file"]["createdDate"][:19], "%Y-%m-%dT%H:%M:%S"
+            ).replace(tzinfo=datetime.timezone.utc)
             # don't do more work when this file actually did not change
             modifiedDate = datetime.datetime.strptime(
                 item["file"]["modifiedDate"][:19], "%Y-%m-%dT%H:%M:%S"
-            )
-            modifiedDate = modifiedDate.replace(tzinfo=pytz.timezone("UTC"))
-            if modifiedDate < yesterday:
+            ).replace(tzinfo=datetime.timezone.utc)
+            if modifiedDate < yesterday and created < yesterday:
                 continue
             # Need to see which base folder this file is in!
             isproject = False
