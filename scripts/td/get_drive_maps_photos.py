@@ -19,7 +19,8 @@ def main():
         drive.files()
         .list(
             q=(
-                "'1MA6spcXyu_TeyZYkUSizks9fuQTSLC7m' in parents and "
+                "('1Xbv-V9xQLc2sYcCO30lyKQhjpizXoE4g' in parents or "
+                "'1bm9WXTfeFkSCXILU6qBeVskTn_Do2SeQ' in parents) and "
                 "mimeType='application/vnd.google-apps.folder'"
             )
         )
@@ -27,7 +28,11 @@ def main():
     )
     rows = []
     for item in res["items"]:
-        siteid, typename = item["title"].rsplit("_", 1)
+        tokens = item["title"].rsplit("_", 1)
+        if len(tokens) != 2:
+            LOG.info("Unknown title %s", item["title"])
+            continue
+        siteid, typename = tokens
         rows.append({"siteid": siteid, "res": typename, "id": item["id"]})
     df = pd.DataFrame(rows)
     df = df.pivot("siteid", "res", "id")
