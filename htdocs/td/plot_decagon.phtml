@@ -74,13 +74,14 @@ $ar = Array(
     "MN_Redwood3--NPM7"=>"MN_Redwood3 NPM7 (2016-05-17 to 2017-09-29) [500 days]",
     "MN_Redwood3--NPM8"=>"MN_Redwood3 NPM8 (2016-05-17 to 2017-09-29) [500 days]",
     "MN_Redwood3--NPM9"=>"MN_Redwood3 NPM9 (2016-05-17 to 2017-09-29) [500 days]",
+    "MN_Wilkin1--CD"=>"MN_Wilkin1 CD (2017-06-08 to 2018-12-31) [571 days]",
     "ND_Richland--West"=>"ND_Richland West (2015-05-22 to 2018-12-31) [1319 days]",
     "OH_Auglaize2--WN"=>"OH_Auglaize2 WN (2011-12-14 to 2015-11-20) [1437 days]",
     "OH_Auglaize2--WS"=>"OH_Auglaize2 WS (2011-09-20 to 2015-11-20) [1522 days]",
     "SD_Clay--Plot7"=>"SD_Clay Plot7 (2016-01-01 to 2017-12-31) [730 days]",
     "SD_Clay--Plot8"=>"SD_Clay Plot8 (2016-01-01 to 2017-12-31) [730 days]",
            );
-$siteselect = td_site_select("site", $site, $ar);
+$siteselect = make_select("site", $site, $ar);
 
 $ar = Array(
 		'daily' => 'Daily (no aggregation)',

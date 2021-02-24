@@ -166,7 +166,7 @@ options = {
         lines.append(
             """{
         name: '"""
-            + depth
+            + str(depth)
             + """ Temp',
         type: 'line',
         tooltip: {valueDecimal: 1},
@@ -183,7 +183,7 @@ options = {
         lines2.append(
             """{
         name: '"""
-            + depth
+            + str(depth)
             + """ Temp',
         type: 'line',
         tooltip: {valueDecimal: 1},

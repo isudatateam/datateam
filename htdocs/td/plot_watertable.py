@@ -56,7 +56,7 @@ def make_plot(form, start_response):
     df = read_sql(
         f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
         "coalesce(plotid, location) as datum, "
-        "average(water_table_depth) as depth from water_table_data "
+        "avg(water_table_depth) as depth from water_table_data "
         "WHERE siteid = %s and date between %s and %s "
         "GROUP by v, datum ORDER by v ASC",
         pgconn,
@@ -77,12 +77,12 @@ def make_plot(form, start_response):
         def lookup(row):
             """Likely better means in pandas for this, but alas"""
             try:
-                return plotdf.loc[row["plotid"], "y%s" % (row["v"].year,)]
+                return plotdf.loc[row["datum"], "y%s" % (row["v"].year,)]
             except KeyError:
-                return row["plotid"]
+                return row["datum"]
 
         df["treatment"] = df.apply(lookup, axis=1)
-        del df["plotid"]
+        del df["datum"]
         df = df.groupby(["treatment", "v"]).mean()
         df.reset_index(inplace=True)
         linecol = "treatment"

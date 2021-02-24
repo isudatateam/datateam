@@ -94,9 +94,9 @@ def make_plot(form, start_response):
         def lookup(row):
             """Lookup value."""
             try:
-                return plotdf.loc[row["plotid"], "y%s" % (row["v"].year,)]
+                return plotdf.loc[row["datum"], "dwm_treatment"]
             except KeyError:
-                return row["plotid"]
+                return row["datum"]
 
         df["treatment"] = df.apply(lookup, axis=1)
         del df["datum"]
