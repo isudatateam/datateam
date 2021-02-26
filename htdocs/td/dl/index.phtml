@@ -13,34 +13,43 @@ function build_treatments_ui(){
   <div class="panel-heading">Drainage Water Management</div>
   <div class="panel-body">
 
-<input type="checkbox" value="Non-Drained" data-treatment="Non-Drained"
+<input type="checkbox" value="non-drained" data-treatment="non-drained"
  name="treatments[]" id="Non_Drained">
 <label for="Non_Drained" class="control-label">Non-Drained</label>
 
-<input type="checkbox" value="Controlled Drainage" data-treatment="Controlled Drainage"
+<input type="checkbox" value="controlled drainage" data-treatment="controlled drainage"
  name="treatments[]" id="Controlled_Drainage">
 <label for="Controlled_Drainage" class="control-label">Controlled Drainage</label>
 
-<input type="checkbox" value="Controlled Drainage with Subirrigation"
- data-treatment="Controlled Drainage with Subirrigation"
+<input type="checkbox" value="controlled drainage with subirrigation"
+ data-treatment="controlled drainage with subirrigation"
  name="treatments[]" id="Controlled_Drainage_with_Subirrigation">
 <label for="Controlled_Drainage_with_Subirrigation" class="control-label">Controlled Drainage with Subirrigation</label>
 
-<input type="checkbox" value="Free Drainage" data-treatment="Free Drainage"
+<input type="checkbox" value="free drainage" data-treatment="free drainage"
  name="treatments[]" id="Free_Drainage">
 <label for="Free_Drainage" class="control-label">Free Drainage</label>
 
-<input type="checkbox" value="Surface Drainage" data-treatment="Surface Drainage"
- name="treatments[]" id="Surface_Drainage">
-<label for="Surface_Drainage" class="control-label">Surface Drainage</label>
+<input type="checkbox" value="free subsurface and surface drainage"
+data-treatment="free subsurface and surface drainage"
+ name="treatments[]" id="FSurface_Drainage">
+<label for="FSurface_Drainage" class="control-label">Free Subsurface and Surface Drainage</label>
 
-<input type="checkbox" value="Shallow Drainage" data-treatment="Shallow Drainage"
+<input type="checkbox" value="saturated buffer" data-treatment="saturated buffer"
+ name="treatments[]" id="Saturated_Buffers">
+<label for="Saturated_Buffers" class="control-label">Saturated Buffers</label>
+
+<input type="checkbox" value="shallow drainage" data-treatment="shallow drainage"
  name="treatments[]" id="Shallow_Drainage">
 <label for="Shallow_Drainage" class="control-label">Shallow Drainage</label>
 
-<input type="checkbox" value="Saturated Buffer" data-treatment="Saturated Buffer"
- name="treatments[]" id="Saturated_Buffer">
-<label for="Saturated_Buffer" class="control-label">Saturated Buffer</label>
+<input type="checkbox" value="surface drainage" data-treatment="surface drainage"
+ name="treatments[]" id="Surface_Drainage">
+<label for="Surface_Drainage" class="control-label">Surface Drainage</label>
+
+<input type="checkbox" value="varies" data-treatment="varies"
+ name="treatments[]" id="varies">
+<label for="varies" class="control-label">Varies</label>
 
   </div>
 </div>
@@ -51,23 +60,27 @@ function build_treatments_ui(){
   <div class="panel-heading">Drainage Water Recycle</div>
   <div class="panel-body">
 
-  <input type="checkbox" value="Non-Irrigated"
-   data-treatment="Non-Irrigated"
+<input type="checkbox" value="none" data-treatment="none"
    name="treatments[]" id="Non-Irrigated">
 <label for="Non-Irrigated" class="control-label">Non-Irrigated</label>
 
-<input type="checkbox" value="Drip Irrigation"
-data-treatment="Drip Irrigation"
-name="treatments[]" id="Drip Irrigation">
-<label for="Drip Irrigation" class="control-label">Drip Irrigation</label>
+<input type="checkbox" value="drip (excess)" data-treatment="drip (excess)"
+name="treatments[]" id="Drip Irrigation Excess">
+<label for="Drip Irrigation Excess" class="control-label">Drip Irrigation (Excess)</label>
 
-<input type="checkbox" value="Overhead Irrigation"
-data-treatment="Overhead Irrigation"
+<input type="checkbox" value="drip (full)" data-treatment="drip (full)"
+name="treatments[]" id="Drip Irrigation">
+<label for="Drip Irrigation" class="control-label">Drip Irrigation (Full)</label>
+
+<input type="checkbox" value="drip (limited)" data-treatment="drip (limited)"
+name="treatments[]" id="Drip Irrigation Limited">
+<label for="Drip Irrigation Limited" class="control-label">Drip Irrigation (Limited)</label>
+
+<input type="checkbox" value="overhead" data-treatment="overhead"
 name="treatments[]" id="Overhead Irrigation">
 <label for="Overhead Irrigation" class="control-label">Overhead Irrigation</label>
 
-<input type="checkbox" value="Subsurface Irrigation"
-data-treatment="Subsurface Irrigation"
+<input type="checkbox" value="subsurface" data-treatment="subsurface"
 name="treatments[]" id="Subsurface Irrigation">
 <label for="Subsurface Irrigation" class="control-label">Subsurface Irrigation</label>
 
@@ -148,20 +161,20 @@ function build_agronomic_ui(){
   <div class="panel-heading">Total Nitrogen Content</div>
   <div class="panel-body">
 
-<input type="checkbox" value="whole_plant_total_N"
- data-agronomic="whole_plant_total_N" name="agronomic[]" id="whole_plant_total_N">
+<input type="checkbox" value="whole_plant_total_n"
+ data-agronomic="whole_plant_total_n" name="agronomic[]" id="whole_plant_total_N">
 <label for="whole_plant_total_N" class="control-label">Whole Plant Total N</label>
 
-<input type="checkbox" value="vegetative_total_N"
- data-agronomic="vegetative_total_N" name="agronomic[]" id="vegetative_total_N">
+<input type="checkbox" value="vegetative_total_n"
+ data-agronomic="vegetative_total_n" name="agronomic[]" id="vegetative_total_N">
 <label for="vegetative_total_N" class="control-label">Vegetative Total N</label>
 
-<input type="checkbox" value="grain_total_N"
- data-agronomic="grain_total_N" name="agronomic[]" id="grain_total_N">
+<input type="checkbox" value="grain_total_n"
+ data-agronomic="grain_total_n" name="agronomic[]" id="grain_total_N">
 <label for="grain_total_N" class="control-label">Grain Total N</label>
 
-<input type="checkbox" value="corn_cob_total_N"
- data-agronomic="corn_cob_total_N" name="agronomic[]" id="corn_cob_total_N">
+<input type="checkbox" value="corn_cob_total_n"
+ data-agronomic="corn_cob_total_n" name="agronomic[]" id="corn_cob_total_N">
 <label for="corn_cob_total_N" class="control-label">Corn Cob Total N</label>
 
   </div>
@@ -171,20 +184,16 @@ function build_agronomic_ui(){
   <div class="panel-heading">Total Carbon Content</div>
   <div class="panel-body">
 
-<input type="checkbox" value="whole_plant_total_C"
- data-agronomic="whole_plant_total_C" name="agronomic[]" id="whole_plant_total_C">
-<label for="whole_plant_total_C" class="control-label">Whole Plant Total C</label>
-
-<input type="checkbox" value="vegetative_total_C"
- data-agronomic="vegetative_total_C" name="agronomic[]" id="vegetative_total_C">
+<input type="checkbox" value="vegetative_total_c"
+ data-agronomic="vegetative_total_c" name="agronomic[]" id="vegetative_total_C">
 <label for="vegetative_total_C" class="control-label">Vegetative Total C</label>
 
-<input type="checkbox" value="grain_total_C"
- data-agronomic="grain_total_C" name="agronomic[]" id="grain_total_C">
+<input type="checkbox" value="grain_total_c"
+ data-agronomic="grain_total_c" name="agronomic[]" id="grain_total_C">
 <label for="grain_total_C" class="control-label">Grain Total C</label>
 
-<input type="checkbox" value="corn_cob_total_C"
- data-agronomic="corn_cob_total_C" name="agronomic[]" id="corn_cob_total_C">
+<input type="checkbox" value="corn_cob_total_c"
+ data-agronomic="corn_cob_total_c" name="agronomic[]" id="corn_cob_total_C">
 <label for="corn_cob_total_C" class="control-label">Corn Cob Total C</label>
 
   </div>
@@ -251,7 +260,7 @@ function build_soil_ui(){
     $sc = gen($ar, "soil");
 
     $ar = Array(
-        "total_N" => "Total N",
+        "total_n" => "Total N",
         "no3_concentration" => "N03 Concentration",
         "nh4_concentration" => "NH4 Concentration",
         "no3_amount" => "NO3 Amount",
@@ -259,7 +268,6 @@ function build_soil_ui(){
         "p_b1_concentration" => "P B1 Concentration",
         "p_m3_concentration" => "P M3 Concentration",
         "p_b1_amount" => "P B1 Amount",
-        "p_m3_amount" => "P M3 Amount",
     );
     $sn = gen($ar, "soil");
 
@@ -468,22 +476,22 @@ function build_water_ui(){
         "tile_flow" => "Tile Flow <sup>1</sup>",
         "tile_flow_filled" => "Tile Flow Filled <sup>2</sup> (recommended)",
         "discharge" => "Discharge",
-        "nitrate_N_load" => "Nitrate N Load <sup>1</sup>",
-        "nitrate_N_load_filled" => "Nitrate N Load Filled <sup>2</sup> (recommended)",
-        "nitrate_N_removed" => "Nitrate N Removed",
+        "nitrate_n_load" => "Nitrate N Load <sup>1</sup>",
+        "nitrate_n_load_filled" => "Nitrate N Load Filled <sup>2</sup> (recommended)",
+        "nitrate_n_removed" => "Nitrate N Removed",
     );
     $tfl = gen($ar, "water");
 
     $ar = Array(
-        "nitrate_N_concentration" => "Nitrate N Concentration",
-        "ammonia_N_concentration" => "Ammonia N Concentration",
-        "total_N_filtered_concentration" => "Total N Filtered Concentration",
-        "total_N_unfiltered_concentration" => "Total N Unfiltered Concentration",
-        "ortho_P_filtered_concentration" => "Ortho P Filtered Concentration",
-        "ortho_P_unfiltered_concentration" => "Ortho P Unfiltered Concentration",
-        "total_P_filtered_concentration" => "Total P Filtered Concentration",
-        "total_P_unfiltered_concentration" => "Total P Unfiltered Concentration",
-        "pH" => "pH",
+        "nitrate_n_concentration" => "Nitrate N Concentration",
+        "ammonia_n_concentration" => "Ammonia N Concentration",
+        "total_n_filtered_concentration" => "Total N Filtered Concentration",
+        "total_n_unfiltered_concentration" => "Total N Unfiltered Concentration",
+        "ortho_p_filtered_concentration" => "Ortho P Filtered Concentration",
+        "ortho_p_unfiltered_concentration" => "Ortho P Unfiltered Concentration",
+        "total_p_filtered_concentration" => "Total P Filtered Concentration",
+        "total_p_unfiltered_concentration" => "Total P Unfiltered Concentration",
+        "ph" => "pH",
         "water_ec" => "Water EC",
     );
     $wq = gen($ar, "water");

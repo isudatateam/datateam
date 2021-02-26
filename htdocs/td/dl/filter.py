@@ -93,13 +93,15 @@ def do_filter(form):
 
     # build a list of treatments based on the sites selected
     df = read_sql(
-        "select distinct dwmid from meta_treatment_identifier where "
-        "siteid in %s and dwmid is not null",
+        "select distinct drainage_water_management, irrigation "
+        "from meta_treatment_identifier where "
+        "siteid in %s",
         pgconn,
         params=(tuple(sites),),
         index_col=None,
     )
-    res["treatments"] = df["dwmid"].tolist()
+    res["treatments"] = df["drainage_water_management"].unique().tolist()
+    res["treatments"].extend(df["irrigation"].unique().tolist())
 
     # Agronomic Filtering
     df = read_sql(
@@ -108,11 +110,9 @@ def do_filter(form):
         params=(tuple(sites),),
         index_col=None,
     )
-    arr = []
     for col, val in df.max().iteritems():
         if not pd.isnull(val):
-            arr.append(col)
-    res["agronomic"] = arr
+            res["agronomic"].append(col)
 
     # Soil Filtering
     df = read_sql(
@@ -121,11 +121,10 @@ def do_filter(form):
         params=(tuple(sites),),
         index_col=None,
     )
-    arr = []
-    for col, val in df.max().iteritems():
-        if not pd.isnull(val):
-            arr.append(col)
-    res["soil"] = arr
+    for col in df.columns:
+        if all(pd.isnull(df[col])):
+            continue
+        res["soil"].append(col)
 
     # Water Filtering
     df = read_sql(
@@ -162,9 +161,11 @@ def do_filter(form):
         params=(tuple(sites),),
         index_col=None,
     )
-    for col, val in df.max().iteritems():
-        if not pd.isnull(val):
-            res["water"].append(col)
+    # tricky non-numeric stuff here, sigh
+    for col in df.columns:
+        if all(pd.isnull(df[col])):
+            continue
+        res["water"].append(col)
 
     return res
 

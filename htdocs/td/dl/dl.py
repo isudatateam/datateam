@@ -6,7 +6,6 @@ select string_agg(column_name, ', ') from
 """
 import sys
 import os
-import re
 import datetime
 import shutil
 import smtplib
@@ -20,7 +19,6 @@ from pandas.io.sql import read_sql
 import numpy as np
 from pyiem.util import get_dbconn
 
-VARNAME_RE = re.compile(r"^[A-Z]+[0-9]$")
 EMAILTEXT = """
 Sustainable Corn CAP - Research and Management Data
 Requested: %s UTC
@@ -77,28 +75,6 @@ KGH_LBA = 1.12085
 
 # runtime storage
 MEMORY = dict(stamp=datetime.datetime.utcnow())
-
-
-def get_vardf(pgconn, tabname):
-    """Get a dataframe of descriptors for this tabname"""
-    return read_sql(
-        """
-        select element_or_value_display_name as varname,
-        number_of_decimal_places_to_round_up::numeric::int as round,
-        short_description, units from data_dictionary_export WHERE
-        spreadsheet_tab = %s
-    """,
-        pgconn,
-        params=(tabname,),
-        index_col="varname",
-    )
-
-
-def replace_varname(varname):
-    """We want varname to be zero padded, where appropriate"""
-    if VARNAME_RE.match(varname):
-        return "%s0%s" % (varname[:-1], varname[-1])
-    return varname
 
 
 def pprint(msg):
@@ -188,99 +164,27 @@ def do_metadata_master(pgconn, writer, sites, missing):
     worksheet.set_column("L:R", 12)
 
 
-def do_ghg(pgconn, writer, sites, ghg, missing):
-    """get GHG data"""
-    cols = ", ".join(['%s as "%s"' % (s, s) for s in ghg])
+def do_generic(pgconn, writer, tabtitle, tablename, sites, varnames, missing):
+    """generalized datatable dumper."""
     df = read_sql(
-        f"""
-    SELECT d.uniqueid, d.plotid, d.date, d.year, d.method, d.subsample,
-    d.position, {cols}
-    from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
-    d.plotid = p.plotid)
-    WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
-    and d.uniqueid in %s
-    ORDER by d.uniqueid, year, date, plotid
-    """,
+        f"SELECT * from {tablename} WHERE siteid in %s " "ORDER by siteid",
         pgconn,
         params=(tuple(sites),),
         index_col=None,
     )
-    df.fillna(missing, inplace=True)
-    df, worksheet = add_bling(pgconn, writer, df, "GHG", "GHG")
-    worksheet.set_column("C:C", 12)
-
-
-def do_ipm(pgconn, writer, sites, ipm, missing):
-    """get IPM data"""
-    cols = ", ".join(ipm)
-    df = read_sql(
-        f"""
-    SELECT d.uniqueid, d.plotid, d.date, d.year, {cols}
-    from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
-    d.plotid = p.plotid)
-    WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s
-    ORDER by d.uniqueid, year, date, plotid
-    """,
-        pgconn,
-        params=(tuple(sites),),
-        index_col=None,
-    )
-    df.fillna(missing, inplace=True)
-    df.columns = [s.upper() if s.startswith("ipm") else s for s in df.columns]
-    df, worksheet = add_bling(pgconn, writer, df, "IPM", "IPM")
-    worksheet.set_column("C:C", 12)
-
-
-def do_agronomic(pgconn, writer, sites, agronomic, detectlimit, missing):
-    """get agronomic data"""
-    df = read_sql(
-        """
-    SELECT d.uniqueid, d.plotid, d.varname, d.year, d.value
-    from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
-    d.plotid = p.plotid)
-    WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and varname in %s
-    ORDER by uniqueid, year, plotid
-    """,
-        pgconn,
-        params=(tuple(sites), tuple(agronomic)),
-        index_col=None,
-    )
-    df["value"] = df["value"].apply(lambda x: conv(x, detectlimit))
-    df = pd.pivot_table(
-        df,
-        index=("uniqueid", "plotid", "year"),
-        values="value",
-        columns=("varname",),
-        aggfunc=lambda x: " ".join(str(v) for v in x),
-    )
-    # fix column names
-    df.columns = map(replace_varname, df.columns)
-    vardf = get_vardf(pgconn, "Agronomic")
-    for colname in df.columns:
-        places = 0
-        if colname in vardf.index.values:
-            places = vardf.at[colname, "round"]
-        df[colname] = pd.to_numeric(df[colname], errors="coerce")
-        df[colname] = df[colname].apply(
-            (
-                lambda x: round(x, int(places))
-                if isinstance(x, (int, float))
-                else x
-            )
-        )
-    # reorder columns
-    cols = df.columns.values.tolist()
-    cols.sort()
-    df = df.reindex(cols, axis=1)
+    standard = ["siteid", "plotid", "location", "date", "comments", "year"]
+    # filter out unwanted columns
+    for col in df.columns:
+        if col in varnames or col in standard:
+            continue
+        df = df.drop(col, axis=1)
     # String aggregate above creates a mixture of None and "None"
-    df.replace(["None", None], np.nan, inplace=True)
-    df.dropna(how="all", inplace=True)
-    df.fillna(missing, inplace=True)
-    df.reset_index(inplace=True)
+    df = df.replace(["None", None], np.nan)
+    df = df.dropna(how="all")
+    df = df.fillna(missing)
+    df = df.reset_index()
     valid2date(df)
-    df, _worksheet = add_bling(pgconn, writer, df, "Agronomic", "Agronomic")
+    df, _worksheet = add_bling(pgconn, writer, df, tabtitle, tabtitle)
 
 
 def add_bling(pgconn, writer, df, sheetname, tabname):
@@ -288,15 +192,11 @@ def add_bling(pgconn, writer, df, sheetname, tabname):
     # Insert some headers rows
     metarows = [{}, {}]
     cols = df.columns
-    vardf = get_vardf(pgconn, tabname)
     for i, colname in enumerate(cols):
         if i == 0:
             metarows[0][colname] = "description"
             metarows[1][colname] = "units"
             continue
-        if colname in vardf.index:
-            metarows[0][colname] = vardf.at[colname, "short_description"]
-            metarows[1][colname] = vardf.at[colname, "units"]
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
     df = df.reindex(cols, axis=1)
@@ -304,82 +204,6 @@ def add_bling(pgconn, writer, df, sheetname, tabname):
     worksheet = writer.sheets[sheetname]
     worksheet.freeze_panes(3, 0)
     return df, worksheet
-
-
-def do_soil(pgconn, writer, sites, soil, detectlimit, missing):
-    """get soil data"""
-    # pprint("do_soil: " + str(soil))
-    # pprint("do_soil: " + str(sites))
-    # pprint("do_soil: " + str(years))
-    df = read_sql(
-        """
-    SELECT d.uniqueid, d.plotid, d.depth,
-    coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value,
-    coalesce(d.sampledate::text, '') as sampledate
-    from soil_data d JOIN plotids p ON (d.uniqueid = p.uniqueid and
-    d.plotid = p.plotid)
-    WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and varname in %s
-    ORDER by uniqueid, year, plotid, subsample
-    """,
-        pgconn,
-        params=(tuple(sites), tuple(soil)),
-        index_col=None,
-    )
-    pprint("do_soil() query done")
-    df["value"] = df["value"].apply(lambda x: conv(x, detectlimit))
-    pprint("do_soil() value replacement done")
-    df = pd.pivot_table(
-        df,
-        index=(
-            "uniqueid",
-            "plotid",
-            "depth",
-            "subsample",
-            "year",
-            "sampledate",
-        ),
-        values="value",
-        columns=("varname",),
-        aggfunc=lambda x: " ".join(str(v) for v in x),
-    )
-    # fix column names
-    df.columns = map(replace_varname, df.columns)
-    vardf = get_vardf(pgconn, "Soil")
-    for colname in df.columns:
-        places = 0
-        if colname in vardf.index.values:
-            places = vardf.at[colname, "round"]
-        if pd.isnull(places):
-            continue
-        df[colname] = pd.to_numeric(df[colname], errors="ignore")
-        df[colname] = df[colname].apply(
-            (
-                lambda x: round(x, int(places))
-                if isinstance(x, (int, float))
-                else x
-            )
-        )
-    # reorder columns
-    cols = df.columns.values.tolist()
-    cols.sort()
-    df = df.reindex(cols, axis=1)
-    # String aggregate above creates a mixture of None and "None"
-    df.replace(["None", None], np.nan, inplace=True)
-    pprint("do_soil() len of inbound df %s" % (len(df.index)))
-    df.dropna(how="all", inplace=True)
-    df.fillna(missing, inplace=True)
-    pprint("do_soil() len of outbound df %s" % (len(df.index)))
-    pprint("do_soil() pivot_table done")
-    df.reset_index(inplace=True)
-    df["sampledate"] = df["sampledate"].replace("", missing)
-    valid2date(df)
-    pprint("do_soil() valid2date done")
-    df, worksheet = add_bling(pgconn, writer, df, "Soil", "Soil")
-    pprint("do_soil() to_excel done")
-    workbook = writer.book
-    format1 = workbook.add_format({"num_format": "@"})
-    worksheet.set_column("B:B", 12, format1)
 
 
 def do_operations(pgconn, writer, sites, missing):
@@ -452,64 +276,11 @@ def do_management(pgconn, writer, sites):
     opdf.to_excel(writer, "Residue, Irrigation", index=False)
 
 
-def do_pesticides(pgconn, writer, sites):
-    """Return a DataFrame for the pesticides"""
-    opdf = read_sql(
-        """
-    SELECT uniqueid, cropyear, operation, valid, timing, method,
-    cropapplied,
-    cashcrop, totalrate, pressure,
-    product1, rate1, rateunit1,
-    product2, rate2, rateunit2,
-    product3, rate3, rateunit3,
-    product4, rate4, rateunit4,
-    adjuvant1, adjuvant2, comments
-    from pesticides where uniqueid in %s and
-    operation != 'seed'
-    ORDER by uniqueid ASC, cropyear ASC, valid ASC
-    """,
-        pgconn,
-        params=(tuple(sites),),
-    )
-    valid2date(opdf)
-    opdf, worksheet = add_bling(
-        pgconn, writer, opdf, "Pesticides", "Pesticides"
-    )
-    worksheet.set_column("D:D", 12)
-
-
 def do_plotids(pgconn, writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = read_sql(
-        """
-        SELECT uniqueid, rep, plotid, tillage, rotation,
-        drainage, nitrogen, landscape,
-        y2011 as "2011crop", y2012 as "2012crop", y2013 as "2013crop",
-        y2014 as "2014crop", y2015 as "2015crop",
-        agro as "agro_data", soil as "soil_data",
-        ghg as "ghg_data", ipmcscap as "ipmcscap_data",
-        ipmusb as "ipmusb_data",
-        soilseriesname1,
-        lower(soiltextureseries1) as soiltextureseries1,
-        soilseriesdescription1,
-        soiltaxonomicclass1,
-        soilseriesname2,
-        lower(soiltextureseries2) as soiltextureseries2,
-        soilseriesdescription2,
-        soiltaxonomicclass2,
-        soilseriesname3,
-        lower(soiltextureseries3) as soiltextureseries3,
-        soilseriesdescription3,
-        soiltaxonomicclass3,
-        soilseriesname4,
-        lower(soiltextureseries4) as soiltextureseries4,
-        soilseriesdescription4,
-        soiltaxonomicclass4
-        from plotids p LEFT JOIN xref_rotation x on (p.rotation = x.code)
-        where uniqueid in %s and
-        (herbicide != 'HERB2' or herbicide is null)
-        ORDER by uniqueid, plotid ASC
-    """,
+        "SELECT * from meta_plot_identifier where siteid in %s "
+        "ORDER by siteid, plotid ASC",
         pgconn,
         params=(tuple(sites),),
     )
@@ -577,6 +348,11 @@ def do_dwm(pgconn, writer, sites, missing):
     worksheet.set_column("H:H", 30)
 
 
+def compare(hascols, wanted):
+    """Does any of the following apply."""
+    return any([x in hascols for x in wanted])
+
+
 def do_work(form):
     """do great things"""
     pgconn = get_dbconn("td")
@@ -585,16 +361,14 @@ def do_work(form):
     if not sites:
         sites.append("XXX")
     agronomic = form.getall("agronomic[]")
+    water = form.getall("water[]")
     soil = form.getall("soil[]")
-    ghg = form.getall("ghg[]")
-    # water = form.getall('water[]')
-    ipm = form.getall("ipm[]")
     shm = form.getall("shm[]")
     missing = form.get("missing", "M")
     if missing == "__custom__":
         missing = form.get("custom_missing", "M")
     pprint("Missing is %s" % (missing,))
-    detectlimit = form.get("detectlimit", "1")
+    # detectlimit = form.get("detectlimit", "1")
 
     # pylint: disable=abstract-class-instantiated
     writer = pd.ExcelWriter("/tmp/td.xlsx", engine="xlsxwriter")
@@ -609,29 +383,87 @@ def do_work(form):
         do_plotids(pgconn, writer, sites)
         pprint("do_plotids() is done")
 
-    # Measurement Data
     if agronomic:
-        do_agronomic(pgconn, writer, sites, agronomic, detectlimit, missing)
-        pprint("do_agronomic() is done")
+        agronomic.extend(
+            [
+                "crop",
+            ]
+        )
+        do_generic(
+            pgconn,
+            writer,
+            "Agronomic",
+            "agronomic_data",
+            sites,
+            agronomic,
+            missing,
+        )
+        pprint("Agronomic is done")
+    if water:
+        water.extend(["depth", "dwm_treatment", "sample_type", "height"])
+        cols = ["soil_moisture", "soil_temperature", "soil_ec"]
+        if compare(cols, water):
+            do_generic(
+                pgconn,
+                writer,
+                "Soil Moisture",
+                "soil_moisture_data",
+                sites,
+                water,
+                missing,
+            )
+            pprint("Soil Moisture is done")
+        cols = (
+            "tile_flow discharge nitrate_n_load nitrate_n_removed "
+            "tile_flow_filled nitrate_n_load_filled"
+        ).split()
+        if compare(cols, water):
+            do_generic(
+                pgconn,
+                writer,
+                "Tile Flow and Load",
+                "tile_flow_and_n_loads_data",
+                sites,
+                water,
+                missing,
+            )
+            pprint("Tile Flow and Loads is done")
+        cols = (
+            "nitrate_n_concentration ammonia_n_concentration "
+            "total_n_filtered_concentration total_n_unfiltered_concentration "
+            "ortho_p_filtered_concentration ortho_p_unfiltered_concentration "
+            "total_p_filtered_concentration total_p_unfiltered_concentration "
+            "ph water_ec"
+        ).split()
+        if compare(cols, water):
+            do_generic(
+                pgconn,
+                writer,
+                "Water Quality",
+                "water_quality_data",
+                sites,
+                water,
+                missing,
+            )
+            pprint("Tile Flow and Loads is done")
     if soil:
-        do_soil(pgconn, writer, sites, soil, detectlimit, missing)
-        pprint("do_soil() is done")
-    if ghg:
-        do_ghg(pgconn, writer, sites, ghg, missing)
-        pprint("do_ghg() is done")
-    if ipm:
-        do_ipm(pgconn, writer, sites, ipm, missing)
-        pprint("do_ipm() is done")
+        do_generic(
+            pgconn,
+            writer,
+            "Soil",
+            "soil_properties_data",
+            sites,
+            soil,
+            missing,
+        )
+        pprint("Soil is done")
 
+    """
     # Management
     # Field Operations
     if "SHM1a" in shm:
         do_operations(pgconn, writer, sites, missing)
         pprint("do_operations() is done")
-    # Pesticides
-    if "SHM2a" in shm:
-        do_pesticides(pgconn, writer, sites)
-        pprint("do_pesticides() is done")
     # Residue and Irrigation
     if "SHM3a" in shm:
         do_management(pgconn, writer, sites)
@@ -648,7 +480,7 @@ def do_work(form):
     if "SHM6a" in shm:
         do_notes(pgconn, writer, sites, missing)
         pprint("do_notes() is done")
-
+    """
     # Send to client
     writer.close()
     msg = MIMEMultipart()
