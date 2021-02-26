@@ -93,13 +93,13 @@ def do_filter(form):
 
     # build a list of treatments based on the sites selected
     df = read_sql(
-        "select distinct dwm from meta_treatment_identifier where "
-        "siteid in %s and dwm is not null",
+        "select distinct dwmid from meta_treatment_identifier where "
+        "siteid in %s and dwmid is not null",
         pgconn,
         params=(tuple(sites),),
         index_col=None,
     )
-    res["treatments"] = df["dwm"].tolist()
+    res["treatments"] = df["dwmid"].tolist()
 
     # Agronomic Filtering
     df = read_sql(
