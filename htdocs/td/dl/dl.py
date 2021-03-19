@@ -20,10 +20,10 @@ import numpy as np
 from pyiem.util import get_dbconn
 
 EMAILTEXT = """
-Sustainable Corn CAP - Research and Management Data
+Transforming Drainage Research Data
 Requested: %s UTC
-Website: https://datateam.agron.iastate.edu/cscap/
-Contact: sustainablecorn@iastate.edu
+Website: https://www.drainagedata.org
+Contact: isudata@iastate.edu
 
 Please click here to download your spreadsheet file.
 
@@ -31,31 +31,29 @@ Please click here to download your spreadsheet file.
 
 Please reference this data set in publications as:
 
-Abendroth, Lori J., Daryl E. Herzmann, Giorgi Chighladze, Eileen J. Kladivko,
-Matthew J. Helmers, Laura Bowling, Michael Castellano, Richard M. Cruse,
-Warren A. Dick, Norman R. Fausey, Jane Frankenberger, Aaron J. Gassmann,
-Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller,
-Emerson D. Nafziger, Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer,
-Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017.
-Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190).
+Chighladze, G., L.J. Abendroth, D. Herzmann, M. Helmers, L. Ahiablame,
+B. Allred, L. Bowling, L. Brown, N. Fausey, J. Frankenberger, D. Jaynes,
+X. Jia, J. Kjaersgaard, K. King, E. Kladivko, K. Nelson, L. Pease,
+B. Reinhart, J. Strock, and M. Youssef 2021. Transforming Drainage
+Project Research Data (USDA-NIFA Award No. 2015-68007-23193).
 National Agricultural Library - ARS - USDA.
-https://dx.doi.org/10.15482/USDA.ADC/1411953
+https://doi.org/10.15482/USDA.ADC/1521092
 
-You are encouraged to contact the Sustainable Corn CAP personnel listed above
-to ensure proper data interpretation and may also consider co-authoring
-with them. You shall have no claim of ownership to any intellectual
-property rights in any part of the data, content, functions, features,
-code, data exploration tools, logos or other intellectual property
-comprising this database.
+You are encouraged to contact the Transforming Drainage Project personnel
+listed above to ensure proper data interpretation and may also consider
+co-authoring with them. You shall have no claim of ownership to any
+intellectual property rights in any part of the data, content, functions,
+features, code, data exploration tools, logos or other intellectual
+property comprising this database.
 
-The coauthors individually and the Sustainable Corn CAP collectively
+The coauthors individually and the Transforming Drainage Project collectively
 shall NOT be responsible or liable for the accuracy, reliability and
-completeness of any information included in the database nor for the
-suitability of its application for a particular purpose. Data users
-are encouraged to notify the coauthors regarding data quality
-and other issues concerning the data, tools, and functionality of this
-website. Contact sustainablecorn@iastate.edu with any questions or concerns
-regarding usage and application of the data available at this site.
+completeness of any information included in the database nor the
+suitability of its application for any particular purpose. Data users are
+encouraged to notify the coauthors regarding data quality and other issues
+concerning the data, tools, and functionality of this website. Contact
+isudatateam@iastate.edu with any questions or concerns regarding usage
+and application of the data available at this site.
 
 """
 
