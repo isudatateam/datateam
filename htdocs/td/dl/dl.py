@@ -12,8 +12,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-
-from paste.request import parse_formvars
+# Third Party
+from paste.request import parse_formvars, MultiDict
 import pandas as pd
 from pandas.io.sql import read_sql
 import numpy as np
@@ -115,12 +115,10 @@ def conv(value, detectlimit):
 def do_dictionary(pgconn, writer):
     """Add Data Dictionary to the spreadsheet"""
     df = read_sql(
-        "SELECT * from data_dictionary_export ORDER by ss_order ASC",
+        "SELECT * from data_dictionary ORDER by file_name ASC",
         pgconn,
         index_col=None,
     )
-    for col in ["ss_order", "number_of_decimal_places_to_round_up"]:
-        df.drop(col, axis=1, inplace=True)
     df.to_excel(writer, "Data Dictionary", index=False)
     # Increase column width
     worksheet = writer.sheets["Data Dictionary"]
@@ -156,13 +154,13 @@ def do_metadata_master(pgconn, writer, sites, missing):
     df.dropna(how="all", inplace=True)
     df.fillna(missing, inplace=True)
     df, worksheet = add_bling(
-        pgconn, writer, df, "Site Metadata", "Site Metadata"
+        pgconn, writer, df, "Site Metadata", "meta_site_characteristics.csv"
     )
     worksheet.set_column("A:A", 12)
     worksheet.set_column("L:R", 12)
 
 
-def do_generic(pgconn, writer, tabtitle, tablename, sites, varnames, missing):
+def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
     """generalized datatable dumper."""
     df = read_sql(
         f"SELECT * from {tablename} WHERE siteid in %s " "ORDER by siteid",
@@ -172,29 +170,37 @@ def do_generic(pgconn, writer, tabtitle, tablename, sites, varnames, missing):
     )
     standard = ["siteid", "plotid", "location", "date", "comments", "year"]
     # filter out unwanted columns
-    for col in df.columns:
-        if col in varnames or col in standard:
-            continue
-        df = df.drop(col, axis=1)
+    if "_ALL" not in varnames:
+        for col in df.columns:
+            if col in varnames or col in standard:
+                continue
+            df = df.drop(col, axis=1)
     # String aggregate above creates a mixture of None and "None"
-    df = df.replace(["None", None], np.nan)
-    df = df.dropna(how="all")
-    df = df.fillna(missing)
-    df = df.reset_index()
+    df = (
+        df.replace(["None", None], np.nan)
+        .dropna(how="all")
+        .fillna(missing)
+        .reset_index()
+    )
     valid2date(df)
-    df, _worksheet = add_bling(pgconn, writer, df, tabtitle, tabtitle)
+    df, _worksheet = add_bling(pgconn, writer, df, tt, fn)
 
 
-def add_bling(pgconn, writer, df, sheetname, tabname):
+def add_bling(pgconn, writer, df, sheetname, filename):
     """Do fancy things"""
     # Insert some headers rows
     metarows = [{}, {}]
     cols = df.columns
+    vardf = get_vardf(pgconn, filename)
     for i, colname in enumerate(cols):
         if i == 0:
             metarows[0][colname] = "description"
             metarows[1][colname] = "units"
             continue
+        if colname in vardf.index:
+            metarows[0][colname] = vardf.at[colname, "brief_description"]
+            metarows[1][colname] = vardf.at[colname, "units"]
+
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
     df = df.reindex(cols, axis=1)
@@ -202,76 +208,6 @@ def add_bling(pgconn, writer, df, sheetname, tabname):
     worksheet = writer.sheets[sheetname]
     worksheet.freeze_panes(3, 0)
     return df, worksheet
-
-
-def do_operations(pgconn, writer, sites, missing):
-    """Return a DataFrame for the operations"""
-    opdf = read_sql(
-        """
-    SELECT uniqueid, cropyear, operation, valid, cashcrop, croprot,
-    plantryemethod, planthybrid, plantmaturity, plantrate, plantrateunits,
-    terminatemethod, biomassdate1, biomassdate2, depth, limerate,
-    manuresource, manuremethod, manurerate,
-    manurerateunits, fertilizerform, fertilizercrop, fertilizerapptype,
-    fertilizerformulation, productrate, nitrogenelem, phosphoruselem,
-    potassiumelem, sulfurelem, zincelem, magnesiumelem, ironelem, calciumelem,
-    stabilizer, stabilizerused, stabilizername, comments,
-    -- These are deleted below
-    nitrogen, phosphorus, phosphate, potassium,
-    potash, sulfur, calcium, magnesium, zinc, iron
-    from operations where uniqueid in %s
-    ORDER by uniqueid ASC, cropyear ASC, valid ASC
-    """,
-        pgconn,
-        params=(tuple(sites),),
-    )
-    opdf["productrate"] = pd.to_numeric(opdf["productrate"], errors="coerce")
-    for fert in FERTELEM:
-        opdf[fert] = pd.to_numeric(opdf[fert], errors="coerce")
-    for col in ["biomassdate1", "biomassdate2", "valid"]:
-        opdf.at[opdf[col].isnull(), col] = missing
-
-    # __________________________________________________________
-    # case 1, values are > 0, so columns are in %
-    df = opdf[opdf["productrate"] > 0]
-    for elem in FERTELEM:
-        opdf.loc[df.index, elem] = (
-            df["productrate"] * KGH_LBA * df[elem] / 100.0
-        )
-    opdf.loc[df.index, "productrate"] = df["productrate"] * KGH_LBA
-
-    # ________________________________________________________
-    # case 2, value is -1 and so columns are in lbs / acre
-    df = opdf[opdf["productrate"] < 0]
-    opdf.loc[df.index, "productrate"] = None
-    for elem in FERTELEM:
-        opdf.loc[df.index, elem] = df[elem] * KGH_LBA
-        del opdf[elem]
-    valid2date(opdf)
-    del opdf["productrate"]
-    opdf, worksheet = add_bling(
-        pgconn, writer, opdf, "Field Operations", "Field Operations"
-    )
-    worksheet.set_column("C:C", 18)
-    worksheet.set_column("D:D", 12)
-    worksheet.set_column("M:N", 12)
-
-
-def do_management(pgconn, writer, sites):
-    """Return a DataFrame for the management"""
-    opdf = read_sql(
-        """
-    SELECT uniqueid, cropyear, notill, irrigation, irrigationamount,
-    irrigationmethod, residueremoval, residuehow, residuebiomassweight,
-    residuebiomassmoisture, residueplantingpercentage, residuetype,
-    limeyear, comments
-    from management where uniqueid in %s
-    ORDER by cropyear ASC
-    """,
-        pgconn,
-        params=(tuple(sites),),
-    )
-    opdf.to_excel(writer, "Residue, Irrigation", index=False)
 
 
 def do_plotids(pgconn, writer, sites):
@@ -287,7 +223,7 @@ def do_plotids(pgconn, writer, sites):
         writer,
         opdf[opdf.columns],
         "Plot Identifiers",
-        "Plot Identifiers",
+        "meta_plot_characteristics.csv",
     )
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
@@ -295,55 +231,18 @@ def do_plotids(pgconn, writer, sites):
     worksheet.set_column("B:B", 12, format1)
 
 
-def do_notes(pgconn, writer, sites, missing):
-    """Write notes to the spreadsheet"""
-    opdf = read_sql(
+def get_vardf(pgconn, filename):
+    """Get a dataframe of descriptors for this tabname"""
+    return read_sql(
         """
-        SELECT "primary" as uniqueid, overarching_data_category, data_type,
-        replace(growing_season, '.0', '') as growing_season,
-        comments
-        from highvalue_notes where "primary" in %s
-        ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC,
-        growing_season ASC
+        select element_or_value_display_name as varname,
+        brief_description, units from data_dictionary WHERE
+        file_name = %s
     """,
         pgconn,
-        params=(tuple(sites),),
+        params=(filename,),
+        index_col="varname",
     )
-    opdf.replace(["None", None, ""], np.nan, inplace=True)
-    opdf.dropna(how="all", inplace=True)
-    opdf.fillna(missing, inplace=True)
-    opdf[opdf.columns].to_excel(writer, "Notes", index=False)
-    # Increase column width
-    worksheet = writer.sheets["Notes"]
-    worksheet.set_column("B:B", 36)
-    worksheet.set_column("C:D", 18)
-    worksheet.set_column("E:G", 36)
-
-
-def do_dwm(pgconn, writer, sites, missing):
-    """Write dwm to the spreadsheet"""
-    opdf = read_sql(
-        """
-        SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
-        outletdepth, outletdate, comments
-        from dwm where uniqueid in %s
-        ORDER by uniqueid ASC, cropyear ASC
-    """,
-        pgconn,
-        params=(tuple(sites),),
-    )
-    opdf.replace(["None", None, ""], np.nan, inplace=True)
-    opdf.dropna(how="all", inplace=True)
-    opdf.fillna(missing, inplace=True)
-    _df, worksheet = add_bling(
-        pgconn,
-        writer,
-        opdf[opdf.columns],
-        "Drainage Control Structure Mngt",
-        "Drainage Control Structure Mngt",
-    )
-    worksheet.set_column("G:G", 12)
-    worksheet.set_column("H:H", 30)
 
 
 def compare(hascols, wanted):
@@ -369,15 +268,18 @@ def do_work(form):
     # detectlimit = form.get("detectlimit", "1")
 
     # pylint: disable=abstract-class-instantiated
-    writer = pd.ExcelWriter("/tmp/td.xlsx", engine="xlsxwriter")
+    tmpfn = "td_%s.xlsx" % (
+        datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"),
+    )
+    writer = pd.ExcelWriter(f"/tmp/{tmpfn}", engine="xlsxwriter")
 
     # First sheet is Data Dictionary
-    if "SHM5a" in shm:
+    if "SHM5" in shm or "_ALL" in shm:
         do_dictionary(pgconn, writer)
         pprint("do_dictionary() is done")
 
     # Sheet two is plot IDs
-    if "SHM4a" in shm:
+    if "SHM4" in shm or "_ALL" in shm:
         do_plotids(pgconn, writer, sites)
         pprint("do_plotids() is done")
 
@@ -391,6 +293,7 @@ def do_work(form):
             pgconn,
             writer,
             "Agronomic",
+            "agronomic_data.csv",
             "agronomic_data",
             sites,
             agronomic,
@@ -405,6 +308,7 @@ def do_work(form):
                 pgconn,
                 writer,
                 "Soil Moisture",
+                "soil_moisture_data.csv",
                 "soil_moisture_data",
                 sites,
                 water,
@@ -420,6 +324,7 @@ def do_work(form):
                 pgconn,
                 writer,
                 "Tile Flow and Load",
+                "drain_flow_and_N_loads_data.csv",
                 "tile_flow_and_n_loads_data",
                 sites,
                 water,
@@ -438,6 +343,7 @@ def do_work(form):
                 pgconn,
                 writer,
                 "Water Quality",
+                "water_quality_data.csv",
                 "water_quality_data",
                 sites,
                 water,
@@ -449,6 +355,7 @@ def do_work(form):
             pgconn,
             writer,
             "Soil",
+            "soil_properties_data.csv",
             "soil_properties_data",
             sites,
             soil,
@@ -456,29 +363,59 @@ def do_work(form):
         )
         pprint("Soil is done")
 
-    """
     # Management
-    # Field Operations
-    if "SHM1a" in shm:
-        do_operations(pgconn, writer, sites, missing)
+    # Planting
+    if "SHM1" in shm or "_ALL" in shm:
+        do_generic(
+            pgconn,
+            writer,
+            "Planting",
+            "mngt_planting_data.csv",
+            "mngt_planting_data",
+            sites,
+            ["_ALL"],
+            missing,
+        )
         pprint("do_operations() is done")
-    # Residue and Irrigation
-    if "SHM3a" in shm:
-        do_management(pgconn, writer, sites)
-        pprint("do_management() is done")
-    # Site Metadata
-    if "SHM8a" in shm:
-        do_metadata_master(pgconn, writer, sites, missing)
-        pprint("do_metadata_master() is done")
-    # Drainage Management
-    if "SHM7a" in shm:
-        do_dwm(pgconn, writer, sites, missing)
+    # DWM
+    if "SHM7" in shm or "_ALL" in shm:
+        do_generic(
+            pgconn,
+            writer,
+            "DWM",
+            "mngt_dwm_data.csv",
+            "mngt_dwm_data",
+            sites,
+            ["_ALL"],
+            missing,
+        )
         pprint("do_dwm() is done")
     # Notes
-    if "SHM6a" in shm:
-        do_notes(pgconn, writer, sites, missing)
+    if "SHM6" in shm or "_ALL" in shm:
+        do_generic(
+            pgconn,
+            writer,
+            "Notes",
+            "mngt_notes_data.csv",
+            "mngt_notes_data",
+            sites,
+            ["_ALL"],
+            missing,
+        )
         pprint("do_notes() is done")
-    """
+    # Notes
+    if "SHM8" in shm or "_ALL" in shm:
+        do_generic(
+            pgconn,
+            writer,
+            "Sites",
+            "meta_site_characteristics.csv",
+            "meta_site_characteristics",
+            sites,
+            ["_ALL"],
+            missing,
+        )
+        pprint("do_sites() is done")
     # Send to client
     writer.close()
     msg = MIMEMultipart()
@@ -488,11 +425,13 @@ def do_work(form):
     msg.preamble = "Data"
     # conservative limit of 8 MB
     # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
-    tmpfn = ("td_%s.xlsx") % (
-        datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"),
-    )
-    shutil.copyfile("/tmp/td.xlsx", "/var/webtmp/%s" % (tmpfn,))
-    uri = "https://datateam.agron.iastate.edu/tmp/%s" % (tmpfn,)
+    pprint(f"Created spreadsheet: /tmp/{tmpfn}")
+    try:
+        shutil.copyfile(f"/tmp/{tmpfn}", f"/var/webtmp/{tmpfn}")
+        os.unlink(f"/tmp/{tmpfn}")
+    except PermissionError:
+        pass
+    uri = f"https://datateam.agron.iastate.edu/tmp/{tmpfn}"
     text = EMAILTEXT % (
         datetime.datetime.utcnow().strftime("%d %B %Y %H:%M:%S"),
         uri,
@@ -500,10 +439,9 @@ def do_work(form):
 
     msg.attach(MIMEText(text))
 
-    _s = smtplib.SMTP("localhost")
-    _s.sendmail(msg["From"], msg["To"], msg.as_string())
-    _s.quit()
-    os.unlink("/tmp/td.xlsx")
+    if email is not None:
+        with smtplib.SMTP("localhost") as s:
+            s.sendmail(msg["From"], msg["To"], msg.as_string())
     cursor = pgconn.cursor()
     cursor.execute(
         "INSERT into website_downloads(email) values (%s)", (email,)
@@ -523,3 +461,16 @@ def application(environ, start_response):
         return [b"You did not agree to download terms."]
 
     return [do_work(form)]
+
+
+def test_crawling():
+    """Test that we can crawl."""
+    form = MultiDict(
+        [
+            ("agronomic[]", "_ALL"),
+            ("water[]", "_ALL"),
+            ("shm[]", "_ALL"),
+        ]
+    )
+    do_work(form)
+    assert False
