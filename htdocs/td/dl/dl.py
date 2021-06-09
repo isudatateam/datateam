@@ -119,14 +119,11 @@ def do_dictionary(pgconn, writer):
         pgconn,
         index_col=None,
     )
-    df.to_excel(writer, "Data Dictionary", index=False)
+    sheetname = "Data Dictionary"
+    df.to_excel(writer, sheetname, index=False)
     # Increase column width
-    worksheet = writer.sheets["Data Dictionary"]
-    worksheet.set_column("A:D", 36)
-    worksheet.set_column("E:E", 18)
-    worksheet.set_column("F:F", 36)
-    worksheet.set_column("G:J", 12)
-    worksheet.set_column("K:K", 60)
+    worksheet = writer.sheets[sheetname]
+    worksheet.set_column("A:Z", 36)
 
 
 def do_metadata_master(pgconn, writer, sites, missing):
@@ -156,8 +153,7 @@ def do_metadata_master(pgconn, writer, sites, missing):
     df, worksheet = add_bling(
         pgconn, writer, df, "Site Metadata", "meta_site_characteristics.csv"
     )
-    worksheet.set_column("A:A", 12)
-    worksheet.set_column("L:R", 12)
+    worksheet.set_column("A:Z", 36)
 
 
 def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
@@ -183,7 +179,8 @@ def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
         .reset_index()
     )
     valid2date(df)
-    df, _worksheet = add_bling(pgconn, writer, df, tt, fn)
+    df, worksheet = add_bling(pgconn, writer, df, tt, fn)
+    worksheet.set_column("A:Z", 36)
 
 
 def add_bling(pgconn, writer, df, sheetname, filename):
@@ -228,17 +225,15 @@ def do_plotids(pgconn, writer, sites):
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
     format1 = workbook.add_format({"num_format": "0"})
+    worksheet.set_column("A:Z", 36)
     worksheet.set_column("B:B", 12, format1)
 
 
 def get_vardf(pgconn, filename):
     """Get a dataframe of descriptors for this tabname"""
     return read_sql(
-        """
-        select element_or_value_display_name as varname,
-        brief_description, units from data_dictionary WHERE
-        file_name = %s
-    """,
+        "select element_or_value_display_name as varname, brief_description, "
+        "units from data_dictionary WHERE file_name = %s",
         pgconn,
         params=(filename,),
         index_col="varname",
@@ -423,8 +418,6 @@ def do_work(form):
     msg["From"] = "ISU Data Team <isudatateam@iastate.edu>"
     msg["To"] = email
     msg.preamble = "Data"
-    # conservative limit of 8 MB
-    # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
     pprint(f"Created spreadsheet: /tmp/{tmpfn}")
     try:
         shutil.copyfile(f"/tmp/{tmpfn}", f"/var/webtmp/{tmpfn}")
