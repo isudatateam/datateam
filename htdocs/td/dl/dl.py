@@ -123,7 +123,7 @@ def do_dictionary(pgconn, writer):
     df.to_excel(writer, sheetname, index=False)
     # Increase column width
     worksheet = writer.sheets[sheetname]
-    worksheet.set_column("A:Z", 36)
+    worksheet.set_column("A:Z", 30)
 
 
 def do_metadata_master(pgconn, writer, sites, missing):
@@ -153,7 +153,7 @@ def do_metadata_master(pgconn, writer, sites, missing):
     df, worksheet = add_bling(
         pgconn, writer, df, "Site Metadata", "meta_site_characteristics.csv"
     )
-    worksheet.set_column("A:Z", 36)
+    worksheet.set_column("A:Z", 30)
 
 
 def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
@@ -172,15 +172,10 @@ def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
                 continue
             df = df.drop(col, axis=1)
     # String aggregate above creates a mixture of None and "None"
-    df = (
-        df.replace(["None", None], np.nan)
-        .dropna(how="all")
-        .fillna(missing)
-        .reset_index()
-    )
+    df = df.replace(["None", None], np.nan).dropna(how="all").fillna(missing)
     valid2date(df)
     df, worksheet = add_bling(pgconn, writer, df, tt, fn)
-    worksheet.set_column("A:Z", 36)
+    worksheet.set_column("A:Z", 30)
 
 
 def add_bling(pgconn, writer, df, sheetname, filename):
@@ -200,7 +195,7 @@ def add_bling(pgconn, writer, df, sheetname, filename):
 
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
-    df = df.reindex(cols, axis=1)
+    df = df.reindex(columns=cols)
     df.to_excel(writer, sheetname, index=False)
     worksheet = writer.sheets[sheetname]
     worksheet.freeze_panes(3, 0)
@@ -225,7 +220,7 @@ def do_plotids(pgconn, writer, sites):
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
     format1 = workbook.add_format({"num_format": "0"})
-    worksheet.set_column("A:Z", 36)
+    worksheet.set_column("A:Z", 30)
     worksheet.set_column("B:B", 12, format1)
 
 
