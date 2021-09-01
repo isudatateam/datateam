@@ -97,7 +97,7 @@ function build_agronomic_ui(){
 <div class="row"><div class="col-md-4">
 
 <div class="panel panel-default">
-  <div class="panel-heading">To Be Determined</div>
+  <div class="panel-heading">Crop Density, Area</div>
   <div class="panel-body">
 
 <input type="checkbox" value="leaf_area_index"
@@ -110,23 +110,6 @@ function build_agronomic_ui(){
 
   </div>
 </div>
-
-<div class="panel panel-default">
-  <div class="panel-heading">Crop Yield</div>
-  <div class="panel-body">
-
-<input type="checkbox" value="grain_moisture"
- data-agronomic="grain_moisture" name="agronomic[]" id="grain_moisture">
-<label for="grain_moisture" class="control-label">Grain Moisture</label>
-
-<input type="checkbox" value="crop_yield"
- data-agronomic="crop_yield" name="agronomic[]" id="crop_yield">
-<label for="crop_yield" class="control-label">Crop Yield</label>
-
-  </div>
-</div>
-
-</div><div class="col-md-4">
 
 <div class="panel panel-default">
   <div class="panel-heading">Plant and Grain Biomass</div>
@@ -180,6 +163,9 @@ function build_agronomic_ui(){
   </div>
 </div>
 
+</div><div class="col-md-4">
+
+
 <div class="panel panel-default">
   <div class="panel-heading">Total Carbon Content</div>
   <div class="panel-body">
@@ -198,6 +184,22 @@ function build_agronomic_ui(){
 
   </div>
 </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Crop Yield</div>
+  <div class="panel-body">
+
+<input type="checkbox" value="grain_moisture"
+ data-agronomic="grain_moisture" name="agronomic[]" id="grain_moisture">
+<label for="grain_moisture" class="control-label">Grain Moisture</label>
+
+<input type="checkbox" value="crop_yield"
+ data-agronomic="crop_yield" name="agronomic[]" id="crop_yield">
+<label for="crop_yield" class="control-label">Crop Yield</label>
+
+  </div>
+</div>
+
 
 </div></div>
 EOF;
@@ -1243,19 +1245,19 @@ University library.</blockquote></p>
 		</div>
     <div role="tabpanel" class="tab-pane" id="wdata">
 
-<div class="row"><div class="col-md-6">
 <p>Reference this map of research sites to identify sites and practices of 
 interest for plotting in the visualization tools below. Not every measurement 
 is available for plotting given site differences.</p>
 
+<div class="row"><div class="col-md-6">
 <p><img src="/images/tdsites.png" class="img img-responsive" alt="Transforming Drainage Sites">
+</div></div>
 
-<br />View the <a href="https://drive.google.com/drive/folders/123nkLLWggCyXvdU37S9R0W91mDOw-u7Z" target="_blank">Google Map</a> 
+<br />View the <a href="https://www.google.com/maps/d/u/1/edit?mid=1Ubw9c2nAILMhNFclLT0IxNI1yFw&ll=40.143474335880995%2C-90.09503297118817&z=5" target="_blank">Google Map</a> 
 which has plots and infrastructure locations identified. Some sites are not
 included in the Google map because of privacy concerns for research
 located on farmer fields.
 </p>
-</div></div>
 
 <p>Measurements include:<br />
 <ul>
