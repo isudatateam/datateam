@@ -368,18 +368,17 @@ def do_work(form):
         )
         pprint("do_operations() is done")
     # DWM
-    if "SHM7" in shm or "_ALL" in shm:
-        do_generic(
-            pgconn,
-            writer,
-            "DWM",
-            "mngt_dwm_data.csv",
-            "mngt_dwm_data",
-            sites,
-            ["_ALL"],
-            missing,
-        )
-        pprint("do_dwm() is done")
+    do_generic(
+        pgconn,
+        writer,
+        "DWM",
+        "mngt_dwm_data.csv",
+        "mngt_dwm_data",
+        sites,
+        ["_ALL"],
+        missing,
+    )
+    pprint("do_dwm() is done")
     # Notes
     if "SHM6" in shm or "_ALL" in shm:
         do_generic(
