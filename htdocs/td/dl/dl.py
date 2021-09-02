@@ -340,6 +340,20 @@ def do_work(form):
                 missing,
             )
             pprint("Tile Flow and Loads is done")
+        cols = [
+            "water_table_depth",
+        ]
+        if compare(cols, water):
+            do_generic(
+                pgconn,
+                writer,
+                "Water Table",
+                "water_table_data.csv",
+                "water_table_data",
+                sites,
+                water,
+                missing,
+            )
     if soil:
         do_generic(
             pgconn,
