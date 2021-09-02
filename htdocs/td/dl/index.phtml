@@ -475,6 +475,12 @@ function build_water_ui(){
     $sm = gen($ar, "water");
 
     $ar = Array(
+        "water_table_depth" => "Water Table",
+    );
+    $wd = gen($ar, "water");
+
+
+    $ar = Array(
         "tile_flow" => "Tile Flow <sup>1</sup>",
         "tile_flow_filled" => "Tile Flow Filled <sup>2</sup> (recommended)",
         "discharge" => "Discharge",
@@ -505,6 +511,13 @@ function build_water_ui(){
   <div class="panel-heading">Soil Moisture</div>
   <div class="panel-body">
     ${sm}
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Water Data</div>
+  <div class="panel-body">
+    ${wd}
   </div>
 </div>
 

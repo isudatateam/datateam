@@ -126,6 +126,19 @@ def do_filter(form):
             continue
         res["soil"].append(col)
 
+    # Water Table Filtering
+    df = read_sql(
+        "select max(water_table_depth) as water_table_depth "
+        "from water_table_data where siteid in %s "
+        "GROUP by siteid",
+        pgconn,
+        params=(tuple(sites),),
+        index_col=None,
+    )
+    for col, val in df.max().iteritems():
+        if not pd.isnull(val):
+            res["water"].append(col)
+
     # Water Filtering
     df = read_sql(
         "select max(soil_moisture) as soil_moisture, "
