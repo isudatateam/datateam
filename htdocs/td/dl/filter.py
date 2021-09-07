@@ -139,6 +139,19 @@ def do_filter(form):
         if not pd.isnull(val):
             res["water"].append(col)
 
+    # Water Stage Filtering
+    df = read_sql(
+        "select max(stage) as water_stage "
+        "from water_stage_data where siteid in %s "
+        "GROUP by siteid",
+        pgconn,
+        params=(tuple(sites),),
+        index_col=None,
+    )
+    for col, val in df.max().iteritems():
+        if not pd.isnull(val):
+            res["water"].append(col)
+
     # Water Filtering
     df = read_sql(
         "select max(soil_moisture) as soil_moisture, "
