@@ -271,7 +271,16 @@ def do_work(form):
     # Sheet two is plot IDs
     if "SHM4" in shm or "_ALL" in shm:
         do_plotids(pgconn, writer, sites)
-        pprint("do_plotids() is done")
+        do_generic(
+            pgconn,
+            writer,
+            "Treatments",
+            "meta_treatment_identifier.csv",
+            "meta_treatment_identifier",
+            sites,
+            ["_ALL"],
+            missing,
+        )
 
     if agronomic:
         agronomic.extend(
@@ -354,6 +363,20 @@ def do_work(form):
                 water,
                 missing,
             )
+        cols = [
+            "water_stage",
+        ]
+        if compare(cols, water):
+            do_generic(
+                pgconn,
+                writer,
+                "Water Stage",
+                "water_stage_data.csv",
+                "water_stage_data",
+                sites,
+                water,
+                missing,
+            )
     if soil:
         do_generic(
             pgconn,
@@ -393,6 +416,19 @@ def do_work(form):
         missing,
     )
     pprint("do_dwm() is done")
+    # Methods
+    if "SHM1" in shm or "_ALL" in shm:
+        do_generic(
+            pgconn,
+            writer,
+            "Methods",
+            "meta_methods.csv",
+            "meta_methods",
+            sites,
+            ["_ALL"],
+            missing,
+        )
+
     # Notes
     if "SHM6" in shm or "_ALL" in shm:
         do_generic(
@@ -418,7 +454,16 @@ def do_work(form):
             ["_ALL"],
             missing,
         )
-        pprint("do_sites() is done")
+        do_generic(
+            pgconn,
+            writer,
+            "Plots",
+            "meta_plot_characteristics.csv",
+            "meta_plot_characteristics",
+            sites,
+            ["_ALL"],
+            missing,
+        )
     # Send to client
     writer.close()
     msg = MIMEMultipart()

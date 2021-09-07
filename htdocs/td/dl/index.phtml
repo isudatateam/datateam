@@ -475,6 +475,7 @@ function build_water_ui(){
     $sm = gen($ar, "water");
 
     $ar = Array(
+        "water_stage" => "Water Stage",
         "water_table_depth" => "Water Table",
     );
     $wd = gen($ar, "water");
@@ -565,6 +566,9 @@ interpretation. For this reason, all variables are selected by default.</p>
 
 	<input type="checkbox" value="SHM8" data-ipm="SHM8" name="shm[]" id="SHM8" checked="checked">
 	<label for="SHM8" class="control-label">Site Metadata and History</label>
+
+    <input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
+	<label for="SHM1" class="control-label">Methods</label>
 
     <input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
 	<label for="SHM1" class="control-label">Field Operations Data</label>
