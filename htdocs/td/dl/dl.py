@@ -393,17 +393,17 @@ def do_work(form):
     # Management
     # Planting
     if "SHM1" in shm or "_ALL" in shm:
-        do_generic(
-            pgconn,
-            writer,
-            "Planting",
-            "mngt_planting_data.csv",
-            "mngt_planting_data",
-            sites,
-            ["_ALL"],
-            missing,
-        )
-        pprint("do_operations() is done")
+        for mngt in "Planting Tillage Residue Fertilizing Harvesting".split():
+            do_generic(
+                pgconn,
+                writer,
+                mngt,
+                f"mngt_{mngt.lower()}_data.csv",
+                f"mngt_{mngt.lower()}_data",
+                sites,
+                ["_ALL"],
+                missing,
+            )
     # DWM
     do_generic(
         pgconn,
