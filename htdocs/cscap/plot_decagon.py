@@ -11,51 +11,81 @@ import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn, ssw
 
-ERRMSG = ("No data found. Check the start date falls within the "
-          "applicable date range for the research site. "
-          "If yes, try expanding the number of days included.")
-DEPTHS = [None, '10 cm', '20 cm', '40 cm', '60 cm', '100 cm']
+ERRMSG = (
+    "No data found. Check the start date falls within the "
+    "applicable date range for the research site. "
+    "If yes, try expanding the number of days included."
+)
+DEPTHS = [None, "10 cm", "20 cm", "40 cm", "60 cm", "100 cm"]
 
-LINESTYLE = ['-', '-', '-', '-', '-', '-',
-             '-', '-', '-.', '-.', '-.', '-.', '-.',
-             '-', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.', '-.']
+LINESTYLE = [
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+    "-.",
+]
 
 
 def send_error():
-    """" """
+    """ " """
     ssw("Content-type: application/javascript\n\n")
-    ssw("alert('"+ERRMSG+"');")
+    ssw("alert('" + ERRMSG + "');")
     sys.exit()
 
 
 def make_plot(form):
     """Make the plot"""
-    (uniqueid, plotid) = form.getfirst('site', 'ISUAG::302E').split("::")
-    if uniqueid in ['KELLOGG', 'MASON']:
-        DEPTHS[1] = '-'
-        DEPTHS[5] = '80 cm'
-    elif uniqueid == 'NAEW':
-        DEPTHS[1] = '5 cm'
-        DEPTHS[2] = '10 cm'
-        DEPTHS[3] = '20 cm'
-        DEPTHS[4] = '30 cm'
-        DEPTHS[5] = '50 cm'
+    (uniqueid, plotid) = form.getfirst("site", "ISUAG::302E").split("::")
+    if uniqueid in ["KELLOGG", "MASON"]:
+        DEPTHS[1] = "-"
+        DEPTHS[5] = "80 cm"
+    elif uniqueid == "NAEW":
+        DEPTHS[1] = "5 cm"
+        DEPTHS[2] = "10 cm"
+        DEPTHS[3] = "20 cm"
+        DEPTHS[4] = "30 cm"
+        DEPTHS[5] = "50 cm"
 
-    sts = datetime.datetime.strptime(form.getfirst('date', '2014-06-10'),
-                                     '%Y-%m-%d')
-    days = int(form.getfirst('days', 1))
+    sts = datetime.datetime.strptime(
+        form.getfirst("date", "2014-06-10"), "%Y-%m-%d"
+    )
+    days = int(form.getfirst("days", 1))
     ets = sts + datetime.timedelta(days=days)
-    pgconn = get_dbconn('sustainablecorn')
-    tzname = 'America/Chicago' if uniqueid in [
-        'ISUAG', 'SERF', 'GILMORE'] else 'America/New_York'
-    viewopt = form.getfirst('view', 'js')
-    ptype = form.getfirst('ptype', '1')
-    plotid_limit = "and plotid = '%s'" % (plotid, )
-    depth = form.getfirst('depth', 'all')
-    if depth != 'all':
+    pgconn = get_dbconn("sustainablecorn")
+    tzname = (
+        "America/Chicago"
+        if uniqueid in ["ISUAG", "SERF", "GILMORE"]
+        else "America/New_York"
+    )
+    viewopt = form.getfirst("view", "js")
+    ptype = form.getfirst("ptype", "1")
+    plotid_limit = "and plotid = '%s'" % (plotid,)
+    depth = form.getfirst("depth", "all")
+    if depth != "all":
         plotid_limit = ""
-    if ptype == '1':
-        df = read_sql("""SELECT uniqueid, plotid, valid as v,
+    if ptype == "1":
+        df = read_sql(
+            """SELECT uniqueid, plotid, valid as v,
         d1temp_qc as d1t,
         d2temp_qc as d2t,
         d3temp_qc as d3t,
@@ -66,95 +96,132 @@ def make_plot(form):
         d3moisture_qc as d3m,
         d4moisture_qc as d4m,
         d5moisture_qc as d5m
-        from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
+        from decagon_data WHERE uniqueid = %s """
+            + plotid_limit
+            + """
         and valid between %s and %s ORDER by valid ASC
-        """, pgconn, params=(uniqueid, sts.date(), ets.date()))
-        df['v'] = df['v'].apply(
-            lambda x: x.astimezone(pytz.timezone(tzname)))
+        """,
+            pgconn,
+            params=(uniqueid, sts.date(), ets.date()),
+        )
+        df["v"] = df["v"].apply(lambda x: x.astimezone(pytz.timezone(tzname)))
 
-    elif ptype in ['3', '4']:
-        res = 'hour' if ptype == '3' else 'week'
-        df = read_sql("""SELECT uniqueid, plotid,
-        timezone('UTC', date_trunc('"""+res+"""', valid at time zone 'UTC')) as v,
+    elif ptype in ["3", "4"]:
+        res = "hour" if ptype == "3" else "week"
+        df = read_sql(
+            """SELECT uniqueid, plotid,
+        timezone('UTC', date_trunc('"""
+            + res
+            + """', valid at time zone 'UTC')) as v,
         avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
         avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
         avg(d5moisture_qc) as d5m
-        from decagon_data WHERE uniqueid = %s """+plotid_limit+"""
+        from decagon_data WHERE uniqueid = %s """
+            + plotid_limit
+            + """
         and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
-        """, pgconn, params=(uniqueid, sts.date(), ets.date()))
-        df['v'] = pd.to_datetime(df['v'], utc=True)
+        """,
+            pgconn,
+            params=(uniqueid, sts.date(), ets.date()),
+        )
+        df["v"] = pd.to_datetime(df["v"], utc=True)
 
     else:
-        df = read_sql("""SELECT uniqueid, plotid,
+        df = read_sql(
+            """SELECT uniqueid, plotid,
         timezone('UTC', date_trunc('day', valid at time zone %s)) as v,
         avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
         avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
         avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
         avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
         avg(d5moisture_qc) as d5m
-        from decagon_data WHERE uniqueid = %s  """+plotid_limit+"""
+        from decagon_data WHERE uniqueid = %s  """
+            + plotid_limit
+            + """
         and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
-        """, pgconn, params=(tzname, uniqueid, sts.date(), ets.date()))
-        df['v'] = pd.to_datetime(df['v'], utc=True)
+        """,
+            pgconn,
+            params=(tzname, uniqueid, sts.date(), ets.date()),
+        )
+        df["v"] = pd.to_datetime(df["v"], utc=True)
 
     if len(df.index) < 3:
         send_error()
-    if ptype not in ['2']:
-        df['v'] = df['v'].apply(
-            lambda x: x.tz_convert(tzname))
+    if ptype not in ["2"]:
+        df["v"] = df["v"].apply(lambda x: x.tz_convert(tzname))
 
-    if viewopt != 'js':
-        df.rename(columns=dict(v='timestamp',
-                               d1t='%s Temp (C)' % (DEPTHS[1], ),
-                               d2t='%s Temp (C)' % (DEPTHS[2], ),
-                               d3t='%s Temp (C)' % (DEPTHS[3], ),
-                               d4t='%s Temp (C)' % (DEPTHS[4], ),
-                               d5t='%s Temp (C)' % (DEPTHS[5], ),
-                               d1m='%s Moisture (cm3/cm3)' % (DEPTHS[1], ),
-                               d2m='%s Moisture (cm3/cm3)' % (DEPTHS[2], ),
-                               d3m='%s Moisture (cm3/cm3)' % (DEPTHS[3], ),
-                               d4m='%s Moisture (cm3/cm3)' % (DEPTHS[4], ),
-                               d5m='%s Moisture (cm3/cm3)' % (DEPTHS[5], ),
-                               ),
-                  inplace=True)
-        if viewopt == 'html':
+    if viewopt != "js":
+        df.rename(
+            columns=dict(
+                v="timestamp",
+                d1t="%s Temp (C)" % (DEPTHS[1],),
+                d2t="%s Temp (C)" % (DEPTHS[2],),
+                d3t="%s Temp (C)" % (DEPTHS[3],),
+                d4t="%s Temp (C)" % (DEPTHS[4],),
+                d5t="%s Temp (C)" % (DEPTHS[5],),
+                d1m="%s Moisture (cm3/cm3)" % (DEPTHS[1],),
+                d2m="%s Moisture (cm3/cm3)" % (DEPTHS[2],),
+                d3m="%s Moisture (cm3/cm3)" % (DEPTHS[3],),
+                d4m="%s Moisture (cm3/cm3)" % (DEPTHS[4],),
+                d5m="%s Moisture (cm3/cm3)" % (DEPTHS[5],),
+            ),
+            inplace=True,
+        )
+        if viewopt == "html":
             ssw("Content-type: text/html\n\n")
             ssw(df.to_html(index=False))
             return
-        if viewopt == 'csv':
-            ssw('Content-type: application/octet-stream\n')
-            ssw(('Content-Disposition: attachment; '
-                 'filename=%s_%s_%s_%s.csv\n\n'
-                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                      ets.strftime("%Y%m%d")))
+        if viewopt == "csv":
+            ssw("Content-type: application/octet-stream\n")
+            ssw(
+                (
+                    "Content-Disposition: attachment; "
+                    "filename=%s_%s_%s_%s.csv\n\n"
+                )
+                % (
+                    uniqueid,
+                    plotid,
+                    sts.strftime("%Y%m%d"),
+                    ets.strftime("%Y%m%d"),
+                )
+            )
             ssw(df.to_csv(index=False))
             return
-        if viewopt == 'excel':
-            ssw('Content-type: application/octet-stream\n')
-            ssw(('Content-Disposition: attachment; '
-                 'filename=%s_%s_%s_%s.xlsx\n\n'
-                 ) % (uniqueid, plotid, sts.strftime("%Y%m%d"),
-                      ets.strftime("%Y%m%d")))
-            writer = pd.ExcelWriter('/tmp/ss.xlsx')
+        if viewopt == "excel":
+            ssw("Content-type: application/octet-stream\n")
+            ssw(
+                (
+                    "Content-Disposition: attachment; "
+                    "filename=%s_%s_%s_%s.xlsx\n\n"
+                )
+                % (
+                    uniqueid,
+                    plotid,
+                    sts.strftime("%Y%m%d"),
+                    ets.strftime("%Y%m%d"),
+                )
+            )
+            writer = pd.ExcelWriter("/tmp/ss.xlsx")
             # Prevent timezone troubles
-            df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
-            df.to_excel(writer, 'Data', index=False)
+            df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
+            df.to_excel(writer, "Data", index=False)
             writer.save()
-            ssw(open('/tmp/ss.xlsx', 'rb').read())
-            os.unlink('/tmp/ss.xlsx')
+            ssw(open("/tmp/ss.xlsx", "rb").read())
+            os.unlink("/tmp/ss.xlsx")
             return
 
     # Begin highcharts output
     lbl = "Plot:%s" % (plotid,)
-    if depth != 'all':
+    if depth != "all":
         lbl = "Depth:%s" % (DEPTHS[int(depth)],)
-    title = ("Decagon Temperature + Moisture for "
-             "Site:%s %s Period:%s to %s"
-             ) % (uniqueid, lbl, sts.date(), ets.date())
+    title = (
+        "Decagon Temperature + Moisture for " "Site:%s %s Period:%s to %s"
+    ) % (uniqueid, lbl, sts.date(), ets.date())
     ssw("Content-type: application/javascript\n\n")
-    ssw("""
+    ssw(
+        """
 /**
  * In order to synchronize tooltips and crosshairs, override the
  * built-in events with handlers defined on the parent element.
@@ -226,77 +293,112 @@ options = {
     }
 };
 
-""")
+"""
+    )
     # to_json can't handle serialization of dt
-    df['ticks'] = df['v'].astype(np.int64) // 10 ** 6
+    df["ticks"] = df["v"].astype(np.int64) // 10 ** 6
     lines = []
     lines2 = []
-    if depth == 'all':
-        for i, n in enumerate(['d1t', 'd2t', 'd3t', 'd4t', 'd5t']):
-            v = df[['ticks', n]].to_json(orient='values')
-            lines.append("""{
-            name: '"""+DEPTHS[i+1]+""" Temp',
+    if depth == "all":
+        for i, n in enumerate(["d1t", "d2t", "d3t", "d4t", "d5t"]):
+            v = df[["ticks", n]].to_json(orient="values")
+            lines.append(
+                """{
+            name: '"""
+                + DEPTHS[i + 1]
+                + """ Temp',
             type: 'line',
             connectNulls: true,
             tooltip: {valueDecimal: 1},
-            data: """+v+"""
+            data: """
+                + v
+                + """
             }
-            """)
-        for i, n in enumerate(['d1m', 'd2m', 'd3m', 'd4m', 'd5m']):
-            v = df[['ticks', n]].to_json(orient='values')
-            lines2.append("""{
-            name: '"""+DEPTHS[i+1]+""" VSM',
+            """
+            )
+        for i, n in enumerate(["d1m", "d2m", "d3m", "d4m", "d5m"]):
+            v = df[["ticks", n]].to_json(orient="values")
+            lines2.append(
+                """{
+            name: '"""
+                + DEPTHS[i + 1]
+                + """ VSM',
             type: 'line',
             connectNulls: true,
             tooltip: {valueDecimal: 3},
-            data: """+v+"""
+            data: """
+                + v
+                + """
             }
-            """)
+            """
+            )
     else:
-        dlevel = "d%st" % (depth, )
-        plot_ids = df['plotid'].unique()
+        dlevel = "d%st" % (depth,)
+        plot_ids = df["plotid"].unique()
         plot_ids.sort()
         for i, plotid in enumerate(plot_ids):
-            df2 = df[df['plotid'] == plotid]
-            v = df2[['ticks', dlevel]].to_json(orient='values')
-            lines.append("""{
-            name: '"""+plotid+"""',
+            df2 = df[df["plotid"] == plotid]
+            v = df2[["ticks", dlevel]].to_json(orient="values")
+            lines.append(
+                """{
+            name: '"""
+                + plotid
+                + """',
             type: 'line',
             connectNulls: true,
             tooltip: {valueDecimal: 3},
-            data: """+v+"""
+            data: """
+                + v
+                + """
             }
-            """)
-        dlevel = "d%sm" % (depth, )
-        plot_ids = df['plotid'].unique()
+            """
+            )
+        dlevel = "d%sm" % (depth,)
+        plot_ids = df["plotid"].unique()
         plot_ids.sort()
         for i, plotid in enumerate(plot_ids):
-            df2 = df[df['plotid'] == plotid]
-            v = df2[['ticks', dlevel]].to_json(orient='values')
-            lines2.append("""{
-            name: '"""+plotid+"""',
+            df2 = df[df["plotid"] == plotid]
+            v = df2[["ticks", dlevel]].to_json(orient="values")
+            lines2.append(
+                """{
+            name: '"""
+                + plotid
+                + """',
             type: 'line',
             connectNulls: true,
             tooltip: {valueDecimal: 3},
-            data: """+v+"""
+            data: """
+                + v
+                + """
             }
-            """)
+            """
+            )
     series = ",".join(lines)
     series2 = ",".join(lines2)
-    ssw("""
+    ssw(
+        """
 charts[0] = new Highcharts.Chart($.extend(true, {}, options, {
     chart: { renderTo: 'hc1'},
-    title: {text: '"""+title+"""'},
+    title: {text: '"""
+        + title
+        + """'},
     yAxis: {title: {text: 'Temperature [C]'}},
-    series: ["""+series+"""]
+    series: ["""
+        + series
+        + """]
 }));
 charts[1] = new Highcharts.Chart($.extend(true, {}, options, {
     chart: { renderTo: 'hc2'},
-    title: {text: '"""+title+"""'},
+    title: {text: '"""
+        + title
+        + """'},
     yAxis: {title: {text: 'Volumetric Soil Moisture [cm3/cm3]'}},
-    series: ["""+series2+"""]
+    series: ["""
+        + series2
+        + """]
 }));
-    """)
+    """
+    )
 
     # ax[1].set_xlabel("Time (%s Timezone)" % (tzname, ))
 
@@ -307,5 +409,5 @@ def main():
     make_plot(form)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

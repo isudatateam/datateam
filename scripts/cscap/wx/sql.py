@@ -1,9 +1,20 @@
 import psycopg2
-pgconn = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+
+pgconn = psycopg2.connect(database="coop", host="iemdb", user="nobody")
 cursor = pgconn.cursor()
 
-for mdl in ['cgcm3_t47', 'cgcm3_t63', 'cnrm', 'echam5', 'echo',
-            'giss_aom', 'hadcm3', 'hadgem', 'miroc_hi', 'pcm']:
+for mdl in [
+    "cgcm3_t47",
+    "cgcm3_t63",
+    "cnrm",
+    "echam5",
+    "echo",
+    "giss_aom",
+    "hadcm3",
+    "hadgem",
+    "miroc_hi",
+    "pcm",
+]:
     sql = """
     WITH obs as (
      SELECT avg((f2c(high)+f2c(low))/2.) as avgt, sum(precip) from alldata_ia where

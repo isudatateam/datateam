@@ -6,8 +6,15 @@ import datetime
 import pandas as pd
 from pyiem.util import get_dbconn
 
-CENTRAL_TIME = ['SERF_IA', 'BEAR', 'CLAY_U', 'CLAY_R',
-                'FAIRM', 'MAASS', 'SERF_SD']
+CENTRAL_TIME = [
+    "SERF_IA",
+    "BEAR",
+    "CLAY_U",
+    "CLAY_R",
+    "FAIRM",
+    "MAASS",
+    "SERF_SD",
+]
 
 
 def translate(df):
@@ -17,14 +24,14 @@ def translate(df):
     for colname in df.columns:
         tokens = colname.split()
         name = None
-        if colname.find('Measurement Time') > 0:
+        if colname.find("Measurement Time") > 0:
             name = "valid"
-        elif colname.startswith('Port '):
-            name = 'd%s' % (tokens[1].split(".")[0], )
-            if colname.find('Bulk') > 0:
+        elif colname.startswith("Port "):
+            name = "d%s" % (tokens[1].split(".")[0],)
+            if colname.find("Bulk") > 0:
                 name += "ec"
-            elif colname.find('VWC') > 0:
-                name += 'moisture'
+            elif colname.find("VWC") > 0:
+                name += "moisture"
             else:
                 name += "temp"
 
@@ -36,69 +43,161 @@ def translate(df):
 
 def process0(fn):
     """DPAC"""
-    df = pd.read_csv(fn, index_col=False, sep='\t')
-    df.columns = ['valid',
-                  'd1moisture', 'd1temp',  'd1ec',
-                  'd2moisture', 'd2temp',
-                  'd3moisture', 'd3temp',
-                  'd4moisture', 'd4temp',
-                  'd5moisture', 'd5temp',
-                  ]
-    df['valid'] = pd.to_datetime(df['valid'])
+    df = pd.read_csv(fn, index_col=False, sep="\t")
+    df.columns = [
+        "valid",
+        "d1moisture",
+        "d1temp",
+        "d1ec",
+        "d2moisture",
+        "d2temp",
+        "d3moisture",
+        "d3temp",
+        "d4moisture",
+        "d4temp",
+        "d5moisture",
+        "d5temp",
+    ]
+    df["valid"] = pd.to_datetime(df["valid"])
     return df
 
 
 def process1(fn):
     df = pd.read_csv(fn, skiprows=[0, 1, 2, 3, 5, 6], index_col=False)
-    df.columns = ['valid', 'bogus',
-                  'd1temp', 'd1moisture', 'd1ec',
-                  'd2temp', 'd2moisture', 'd2ec',
-                  'd3temp', 'd3moisture', 'd3ec',
-                  'd4temp', 'd4moisture', 'd4ec',
-                  'd5temp', 'd5moisture', 'd5ec',
-                  'd6temp', 'd6moisture', 'd6ec',
-                  'd7temp', 'd7moisture', 'd7ec',
-                  'd1temp_2', 'd1moisture_2', 'd1ec_2',
-                  'd2temp_2', 'd2moisture_2', 'd2ec_2',
-                  'd3temp_2', 'd3moisture_2', 'd3ec_2',
-                  'd4temp_2', 'd4moisture_2', 'd4ec_2',
-                  'd5temp_2', 'd5moisture_2', 'd5ec_2',
-                  'd6temp_2', 'd6moisture_2', 'd6ec_2',
-                  'd7temp_2', 'd7moisture_2', 'd7ec_2',
-                  'bogus', 'bogus', 'bogus', 'bogus', 'bogus', 'bogus'
-                  ]
-    df['valid'] = pd.to_datetime(df['valid'])
-    p1 = df[['valid',
-             'd1temp', 'd1moisture', 'd1ec',
-             'd2temp', 'd2moisture', 'd2ec',
-             'd3temp', 'd3moisture', 'd3ec',
-             'd4temp', 'd4moisture', 'd4ec',
-             'd5temp', 'd5moisture', 'd5ec',
-             'd6temp', 'd6moisture', 'd6ec',
-             'd7temp', 'd7moisture', 'd7ec']]
-    p2 = df[['valid',
-             'd1temp_2', 'd1moisture_2', 'd1ec_2',
-             'd2temp_2', 'd2moisture_2', 'd2ec_2',
-             'd3temp_2', 'd3moisture_2', 'd3ec_2',
-             'd4temp_2', 'd4moisture_2', 'd4ec_2',
-             'd5temp_2', 'd5moisture_2', 'd5ec_2',
-             'd6temp_2', 'd6moisture_2', 'd6ec_2',
-             'd7temp_2', 'd7moisture_2', 'd7ec_2']]
+    df.columns = [
+        "valid",
+        "bogus",
+        "d1temp",
+        "d1moisture",
+        "d1ec",
+        "d2temp",
+        "d2moisture",
+        "d2ec",
+        "d3temp",
+        "d3moisture",
+        "d3ec",
+        "d4temp",
+        "d4moisture",
+        "d4ec",
+        "d5temp",
+        "d5moisture",
+        "d5ec",
+        "d6temp",
+        "d6moisture",
+        "d6ec",
+        "d7temp",
+        "d7moisture",
+        "d7ec",
+        "d1temp_2",
+        "d1moisture_2",
+        "d1ec_2",
+        "d2temp_2",
+        "d2moisture_2",
+        "d2ec_2",
+        "d3temp_2",
+        "d3moisture_2",
+        "d3ec_2",
+        "d4temp_2",
+        "d4moisture_2",
+        "d4ec_2",
+        "d5temp_2",
+        "d5moisture_2",
+        "d5ec_2",
+        "d6temp_2",
+        "d6moisture_2",
+        "d6ec_2",
+        "d7temp_2",
+        "d7moisture_2",
+        "d7ec_2",
+        "bogus",
+        "bogus",
+        "bogus",
+        "bogus",
+        "bogus",
+        "bogus",
+    ]
+    df["valid"] = pd.to_datetime(df["valid"])
+    p1 = df[
+        [
+            "valid",
+            "d1temp",
+            "d1moisture",
+            "d1ec",
+            "d2temp",
+            "d2moisture",
+            "d2ec",
+            "d3temp",
+            "d3moisture",
+            "d3ec",
+            "d4temp",
+            "d4moisture",
+            "d4ec",
+            "d5temp",
+            "d5moisture",
+            "d5ec",
+            "d6temp",
+            "d6moisture",
+            "d6ec",
+            "d7temp",
+            "d7moisture",
+            "d7ec",
+        ]
+    ]
+    p2 = df[
+        [
+            "valid",
+            "d1temp_2",
+            "d1moisture_2",
+            "d1ec_2",
+            "d2temp_2",
+            "d2moisture_2",
+            "d2ec_2",
+            "d3temp_2",
+            "d3moisture_2",
+            "d3ec_2",
+            "d4temp_2",
+            "d4moisture_2",
+            "d4ec_2",
+            "d5temp_2",
+            "d5moisture_2",
+            "d5ec_2",
+            "d6temp_2",
+            "d6moisture_2",
+            "d6ec_2",
+            "d7temp_2",
+            "d7moisture_2",
+            "d7ec_2",
+        ]
+    ]
     p2.columns = p1.columns
-    return {'CD1': p1, 'CD2': p2}
+    return {"CD1": p1, "CD2": p2}
 
 
 def process2(fn):
     mydict = pd.read_excel(fn, sheet_name=None, index_col=False)
     df = pd.concat(mydict.values())
-    gdf = df[['Date', 'grass 3"', 'grass 6"', 'grass 12"',
-              'grass 24"', 'grass 36"']]
-    gdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
-                   'd4moisture', 'd5moisture']
-    tdf = df[['Date', 'trees 3"', 'trees 6"', 'trees 12"',
-              'trees 24"', 'trees 36"']]
-    tdf.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
-                   'd4moisture', 'd5moisture']
+    gdf = df[
+        ["Date", 'grass 3"', 'grass 6"', 'grass 12"', 'grass 24"', 'grass 36"']
+    ]
+    gdf.columns = [
+        "valid",
+        "d1moisture",
+        "d2moisture",
+        "d3moisture",
+        "d4moisture",
+        "d5moisture",
+    ]
+    tdf = df[
+        ["Date", 'trees 3"', 'trees 6"', 'trees 12"', 'trees 24"', 'trees 36"']
+    ]
+    tdf.columns = [
+        "valid",
+        "d1moisture",
+        "d2moisture",
+        "d3moisture",
+        "d4moisture",
+        "d5moisture",
+    ]
     return dict(trees=tdf, grass=gdf)
 
 
@@ -107,12 +206,14 @@ def process3(fn):
     mydict = pd.read_excel(fn, sheet_name=None, index_col=False)
     # Need to load up rows 0 and 1 into the column names
     for sheetname in mydict:
-        if sheetname in ['metadata', ]:
+        if sheetname in [
+            "metadata",
+        ]:
             continue
         df = mydict[sheetname]
         row0 = df.iloc[0, :]
         row1 = df.iloc[1, :]
-        reg = {df.columns[0]: 'valid'}
+        reg = {df.columns[0]: "valid"}
         for c, r0, r1 in zip(df.columns, row0, row1):
             reg[c] = "%s %s %s" % (c, r0, r1)
         df.rename(columns=reg, inplace=True)
@@ -122,180 +223,448 @@ def process3(fn):
 
 
 def process4(fn):
-    df = pd.read_excel(fn, skiprows=range(4), sheet_name='Data',
-                       index_col=False)
+    df = pd.read_excel(
+        fn, skiprows=range(4), sheet_name="Data", index_col=False
+    )
     # df = pd.read_csv(fn, skiprows=range(6), index_col=False)
-    df.columns = ['valid', 'bogus',
-                  'd1temp', 'd1moisture', 'd1ec', 'd1ec2',
-                  'd2temp', 'd2moisture', 'd2ec', 'd2ec2',
-                  'd3temp', 'd3moisture', 'd3ec', 'd3ec2',
-                  'd4temp', 'd4moisture', 'd4ec', 'd4ec2',
-                  'd5temp', 'd5moisture', 'd5ec', 'd5ec2',
-                  'd6temp', 'd6moisture', 'd6ec', 'd6ec2',
-                  'd7temp', 'd7moisture', 'd7ec', 'd7ec2',
-                  'd1temp_2', 'd1moisture_2', 'd1ec_2', 'd1ec2_2',
-                  'd2temp_2', 'd2moisture_2', 'd2ec_2', 'd2ec2_2',
-                  'd3temp_2', 'd3moisture_2', 'd3ec_2', 'd3ec2_2',
-                  'd4temp_2', 'd4moisture_2', 'd4ec_2', 'd4ec2_2',
-                  'd5temp_2', 'd5moisture_2', 'd5ec_2', 'd5ec2_2',
-                  'd6temp_2', 'd6moisture_2', 'd6ec_2', 'd6ec2_2',
-                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2',
-                  ]
-    df['valid'] = pd.to_datetime(df['valid'])
-    p1 = df[['valid',
-             'd1temp', 'd1moisture', 'd1ec',
-             'd2temp', 'd2moisture', 'd2ec',
-             'd3temp', 'd3moisture', 'd3ec',
-             'd4temp', 'd4moisture', 'd4ec',
-             'd5temp', 'd5moisture', 'd5ec',
-             'd6temp', 'd6moisture', 'd6ec',
-             'd7temp', 'd7moisture', 'd7ec']]
-    p2 = df[['valid',
-             'd1temp_2', 'd1moisture_2', 'd1ec_2',
-             'd2temp_2', 'd2moisture_2', 'd2ec_2',
-             'd3temp_2', 'd3moisture_2', 'd3ec_2',
-             'd4temp_2', 'd4moisture_2', 'd4ec_2',
-             'd5temp_2', 'd5moisture_2', 'd5ec_2',
-             'd6temp_2', 'd6moisture_2', 'd6ec_2',
-             'd7temp_2', 'd7moisture_2', 'd7ec_2']]
+    df.columns = [
+        "valid",
+        "bogus",
+        "d1temp",
+        "d1moisture",
+        "d1ec",
+        "d1ec2",
+        "d2temp",
+        "d2moisture",
+        "d2ec",
+        "d2ec2",
+        "d3temp",
+        "d3moisture",
+        "d3ec",
+        "d3ec2",
+        "d4temp",
+        "d4moisture",
+        "d4ec",
+        "d4ec2",
+        "d5temp",
+        "d5moisture",
+        "d5ec",
+        "d5ec2",
+        "d6temp",
+        "d6moisture",
+        "d6ec",
+        "d6ec2",
+        "d7temp",
+        "d7moisture",
+        "d7ec",
+        "d7ec2",
+        "d1temp_2",
+        "d1moisture_2",
+        "d1ec_2",
+        "d1ec2_2",
+        "d2temp_2",
+        "d2moisture_2",
+        "d2ec_2",
+        "d2ec2_2",
+        "d3temp_2",
+        "d3moisture_2",
+        "d3ec_2",
+        "d3ec2_2",
+        "d4temp_2",
+        "d4moisture_2",
+        "d4ec_2",
+        "d4ec2_2",
+        "d5temp_2",
+        "d5moisture_2",
+        "d5ec_2",
+        "d5ec2_2",
+        "d6temp_2",
+        "d6moisture_2",
+        "d6ec_2",
+        "d6ec2_2",
+        "d7temp_2",
+        "d7moisture_2",
+        "d7ec_2",
+        "d7ec2_2",
+    ]
+    df["valid"] = pd.to_datetime(df["valid"])
+    p1 = df[
+        [
+            "valid",
+            "d1temp",
+            "d1moisture",
+            "d1ec",
+            "d2temp",
+            "d2moisture",
+            "d2ec",
+            "d3temp",
+            "d3moisture",
+            "d3ec",
+            "d4temp",
+            "d4moisture",
+            "d4ec",
+            "d5temp",
+            "d5moisture",
+            "d5ec",
+            "d6temp",
+            "d6moisture",
+            "d6ec",
+            "d7temp",
+            "d7moisture",
+            "d7ec",
+        ]
+    ]
+    p2 = df[
+        [
+            "valid",
+            "d1temp_2",
+            "d1moisture_2",
+            "d1ec_2",
+            "d2temp_2",
+            "d2moisture_2",
+            "d2ec_2",
+            "d3temp_2",
+            "d3moisture_2",
+            "d3ec_2",
+            "d4temp_2",
+            "d4moisture_2",
+            "d4ec_2",
+            "d5temp_2",
+            "d5moisture_2",
+            "d5ec_2",
+            "d6temp_2",
+            "d6moisture_2",
+            "d6ec_2",
+            "d7temp_2",
+            "d7moisture_2",
+            "d7ec_2",
+        ]
+    ]
     p2.columns = p1.columns
-    return {'1': p1, '2': p2}
+    return {"1": p1, "2": p2}
 
 
 def process5(fn):
-    df = pd.read_excel(fn, skiprows=range(6), sheet_name='Data',
-                       index_col=False)
-    df.columns = ['valid', 'bogus',
-                  'd1temp', 'd1moisture', 'd1ec', 'd1ec2', 'b', 'b', 'b', 'b',
-                  'd2temp', 'd2moisture', 'd2ec', 'd2ec2', 'b', 'b', 'b', 'b',
-                  'd3temp', 'd3moisture', 'd3ec', 'd3ec2', 'b', 'b', 'b', 'b',
-                  'd4temp', 'd4moisture', 'd4ec', 'd4ec2', 'b', 'b', 'b', 'b',
-                  'd5temp', 'd5moisture', 'd5ec', 'd5ec2', 'b', 'b', 'b', 'b',
-                  'd6temp', 'd6moisture', 'd6ec', 'd6ec2', 'b', 'b', 'b', 'b',
-                  'd7temp', 'd7moisture', 'd7ec', 'd7ec2', 'b', 'b', 'b', 'b',
-                  'd1temp_2', 'd1moisture_2', 'd1ec_2', 'd1ec2_2',
-                  'b', 'b', 'b', 'b',
-                  'd2temp_2', 'd2moisture_2', 'd2ec_2', 'd2ec2_2',
-                  'b', 'b', 'b', 'b',
-                  'd3temp_2', 'd3moisture_2', 'd3ec_2', 'd3ec2_2',
-                  'b', 'b', 'b', 'b',
-                  'd4temp_2', 'd4moisture_2', 'd4ec_2', 'd4ec2_2',
-                  'b', 'b', 'b', 'b',
-                  'd5temp_2', 'd5moisture_2', 'd5ec_2', 'd5ec2_2',
-                  'b', 'b', 'b', 'b',
-                  'd6temp_2', 'd6moisture_2', 'd6ec_2', 'd6ec2_2',
-                  'b', 'b', 'b', 'b',
-                  'd7temp_2', 'd7moisture_2', 'd7ec_2', 'd7ec2_2',
-                  'b', 'b', 'b', 'b',
-                  'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
-                  'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
-                  ]
-    df['valid'] = pd.to_datetime(df['valid'], errors='coerce')
-    p1 = df[['valid',
-             'd1temp', 'd1moisture', 'd1ec',
-             'd2temp', 'd2moisture', 'd2ec',
-             'd3temp', 'd3moisture', 'd3ec',
-             'd4temp', 'd4moisture', 'd4ec',
-             'd5temp', 'd5moisture', 'd5ec',
-             'd6temp', 'd6moisture', 'd6ec',
-             'd7temp', 'd7moisture', 'd7ec']]
-    p2 = df[['valid',
-             'd1temp_2', 'd1moisture_2', 'd1ec_2',
-             'd2temp_2', 'd2moisture_2', 'd2ec_2',
-             'd3temp_2', 'd3moisture_2', 'd3ec_2',
-             'd4temp_2', 'd4moisture_2', 'd4ec_2',
-             'd5temp_2', 'd5moisture_2', 'd5ec_2',
-             'd6temp_2', 'd6moisture_2', 'd6ec_2',
-             'd7temp_2', 'd7moisture_2', 'd7ec_2']]
+    df = pd.read_excel(
+        fn, skiprows=range(6), sheet_name="Data", index_col=False
+    )
+    df.columns = [
+        "valid",
+        "bogus",
+        "d1temp",
+        "d1moisture",
+        "d1ec",
+        "d1ec2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d2temp",
+        "d2moisture",
+        "d2ec",
+        "d2ec2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d3temp",
+        "d3moisture",
+        "d3ec",
+        "d3ec2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d4temp",
+        "d4moisture",
+        "d4ec",
+        "d4ec2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d5temp",
+        "d5moisture",
+        "d5ec",
+        "d5ec2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d6temp",
+        "d6moisture",
+        "d6ec",
+        "d6ec2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d7temp",
+        "d7moisture",
+        "d7ec",
+        "d7ec2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d1temp_2",
+        "d1moisture_2",
+        "d1ec_2",
+        "d1ec2_2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d2temp_2",
+        "d2moisture_2",
+        "d2ec_2",
+        "d2ec2_2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d3temp_2",
+        "d3moisture_2",
+        "d3ec_2",
+        "d3ec2_2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d4temp_2",
+        "d4moisture_2",
+        "d4ec_2",
+        "d4ec2_2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d5temp_2",
+        "d5moisture_2",
+        "d5ec_2",
+        "d5ec2_2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d6temp_2",
+        "d6moisture_2",
+        "d6ec_2",
+        "d6ec2_2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "d7temp_2",
+        "d7moisture_2",
+        "d7ec_2",
+        "d7ec2_2",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+        "b",
+    ]
+    df["valid"] = pd.to_datetime(df["valid"], errors="coerce")
+    p1 = df[
+        [
+            "valid",
+            "d1temp",
+            "d1moisture",
+            "d1ec",
+            "d2temp",
+            "d2moisture",
+            "d2ec",
+            "d3temp",
+            "d3moisture",
+            "d3ec",
+            "d4temp",
+            "d4moisture",
+            "d4ec",
+            "d5temp",
+            "d5moisture",
+            "d5ec",
+            "d6temp",
+            "d6moisture",
+            "d6ec",
+            "d7temp",
+            "d7moisture",
+            "d7ec",
+        ]
+    ]
+    p2 = df[
+        [
+            "valid",
+            "d1temp_2",
+            "d1moisture_2",
+            "d1ec_2",
+            "d2temp_2",
+            "d2moisture_2",
+            "d2ec_2",
+            "d3temp_2",
+            "d3moisture_2",
+            "d3ec_2",
+            "d4temp_2",
+            "d4moisture_2",
+            "d4ec_2",
+            "d5temp_2",
+            "d5moisture_2",
+            "d5ec_2",
+            "d6temp_2",
+            "d6moisture_2",
+            "d6ec_2",
+            "d7temp_2",
+            "d7moisture_2",
+            "d7ec_2",
+        ]
+    ]
     p2.columns = p1.columns
-    return {'1': p1, '2': p2}
+    return {"1": p1, "2": p2}
 
 
 def process6(fn):
     """MAASS"""
     sm = pd.read_excel(fn, sheet_name=None)
     sm = pd.concat(sm.values())
-    sm.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
-                  'd4moisture', 'd5moisture']
-    sm = sm.set_index('valid')
+    sm.columns = [
+        "valid",
+        "d1moisture",
+        "d2moisture",
+        "d3moisture",
+        "d4moisture",
+        "d5moisture",
+    ]
+    sm = sm.set_index("valid")
 
-    st = pd.read_excel('Maass soil temperature.xlsx', skiprows=[1, ],
-                       sheet_name=None)
+    st = pd.read_excel(
+        "Maass soil temperature.xlsx",
+        skiprows=[
+            1,
+        ],
+        sheet_name=None,
+    )
     st = pd.concat(st.values())
-    st.columns = ['valid', 'd1temp', 'd2temp', 'd3temp',
-                  'd4temp', 'd5temp']
-    st = st.set_index('valid')
+    st.columns = ["valid", "d1temp", "d2temp", "d3temp", "d4temp", "d5temp"]
+    st = st.set_index("valid")
     df = st.join(sm)
     df = df.reset_index()
-    return {'1': df}
+    return {"1": df}
 
 
 def process7(fn):
     df = pd.read_csv(fn, index_col=False)
-    p7 = df[df['plotID'] == 7]
-    p8 = df[df['plotID'] == 8]
-    p7 = pd.pivot_table(p7, values='SM', index='date', columns='depth')
+    p7 = df[df["plotID"] == 7]
+    p8 = df[df["plotID"] == 8]
+    p7 = pd.pivot_table(p7, values="SM", index="date", columns="depth")
     p7.reset_index(inplace=True)
-    p7['date'] = pd.to_datetime(p7['date'])
-    p7.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
-                  'd4moisture', 'd5moisture']
+    p7["date"] = pd.to_datetime(p7["date"])
+    p7.columns = [
+        "valid",
+        "d1moisture",
+        "d2moisture",
+        "d3moisture",
+        "d4moisture",
+        "d5moisture",
+    ]
 
-    p8 = pd.pivot_table(p8, values='SM', index='date', columns='depth')
+    p8 = pd.pivot_table(p8, values="SM", index="date", columns="depth")
     p8.reset_index(inplace=True)
-    p8['date'] = pd.to_datetime(p8['date'])
-    p8.columns = ['valid', 'd1moisture', 'd2moisture', 'd3moisture',
-                  'd4moisture', 'd5moisture']
+    p8["date"] = pd.to_datetime(p8["date"])
+    p8.columns = [
+        "valid",
+        "d1moisture",
+        "d2moisture",
+        "d3moisture",
+        "d4moisture",
+        "d5moisture",
+    ]
 
-    return {'7': p7, '8': p8}
+    return {"7": p7, "8": p8}
 
 
 def process8(filename):
     """CLAY_R, FAIRM"""
     df = pd.read_csv(filename, index_col=False)
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
     # df['plotid'] = df['plotid'] + df['location'].astype('str')
     # df.drop(['location', 'uniqueid'], axis=1, inplace=True)
-    df.drop('uniqueid', axis=1, inplace=True)
-    conv = {'5 cm': 1, '15 cm': 2, '30 cm': 3, '45 cm': 4, '60 cm': 5,
-            '75 cm': 6, '90 cm': 7}
-    remap = {'timestamp': 'valid'}
+    df.drop("uniqueid", axis=1, inplace=True)
+    conv = {
+        "5 cm": 1,
+        "15 cm": 2,
+        "30 cm": 3,
+        "45 cm": 4,
+        "60 cm": 5,
+        "75 cm": 6,
+        "90 cm": 7,
+    }
+    remap = {"timestamp": "valid"}
     for key in conv:
-        for prefix, newval in zip(['soil_moisture', 'soil_temp', 'soil_ec'],
-                                  ['moisture', 'temp', 'ec']):
-            remap["%s %s" % (prefix, key)] = 'd%s%s' % (conv[key], newval)
+        for prefix, newval in zip(
+            ["soil_moisture", "soil_temp", "soil_ec"],
+            ["moisture", "temp", "ec"],
+        ):
+            remap["%s %s" % (prefix, key)] = "d%s%s" % (conv[key], newval)
 
-    df2 = pd.pivot_table(df, values=['soil_moisture', 'soil_temp', 'soil_ec'],
-                         columns=['depth'], index=['plotid', 'timestamp'])
-    df2.columns = [' '.join(col).strip() for col in df2.columns.values]
+    df2 = pd.pivot_table(
+        df,
+        values=["soil_moisture", "soil_temp", "soil_ec"],
+        columns=["depth"],
+        index=["plotid", "timestamp"],
+    )
+    df2.columns = [" ".join(col).strip() for col in df2.columns.values]
     df2.reset_index(inplace=True)
     df2.rename(columns=remap, inplace=True)
     res = {}
-    for plotid in df['plotid'].unique():
-        res[plotid] = df2[df2['plotid'] == plotid].copy()
+    for plotid in df["plotid"].unique():
+        res[plotid] = df2[df2["plotid"] == plotid].copy()
 
     return res
 
 
 def database_save(uniqueid, plot, df):
-    pgconn = get_dbconn('td')
+    pgconn = get_dbconn("td")
     cursor = pgconn.cursor()
     for i, row in df.iterrows():
-        if (not isinstance(row['valid'], datetime.datetime) or
-                pd.isnull(row['valid'])):
-            print('Row df.index=%s, valid=%s, culling' % (i, row['valid']))
+        if not isinstance(row["valid"], datetime.datetime) or pd.isnull(
+            row["valid"]
+        ):
+            print("Row df.index=%s, valid=%s, culling" % (i, row["valid"]))
             df.drop(i, inplace=True)
-    minvalid = df['valid'].min()
-    maxvalid = df['valid'].max()
+    minvalid = df["valid"].min()
+    maxvalid = df["valid"].max()
     print("Time Domain: %s - %s" % (minvalid, maxvalid))
 
     tzoff = "05" if uniqueid not in CENTRAL_TIME else "06"
-    cursor.execute("""
+    cursor.execute(
+        """
         DELETE from decagon_data WHERE
         uniqueid = %s and plotid = %s and valid >= %s and valid <= %s
-    """, (uniqueid, plot, minvalid.strftime("%Y-%m-%d %H:%M-"+tzoff),
-          maxvalid.strftime("%Y-%m-%d %H:%M-"+tzoff)))
+    """,
+        (
+            uniqueid,
+            plot,
+            minvalid.strftime("%Y-%m-%d %H:%M-" + tzoff),
+            maxvalid.strftime("%Y-%m-%d %H:%M-" + tzoff),
+        ),
+    )
     if cursor.rowcount > 0:
-        print("DELETED %s rows previously saved!" % (cursor.rowcount, ))
+        print("DELETED %s rows previously saved!" % (cursor.rowcount,))
         if minvalid.year < 2011 or maxvalid.year > 2018:
             print("Aborting, due to valid bounds outside of domain")
             sys.exit()
@@ -303,10 +672,10 @@ def database_save(uniqueid, plot, df):
     def v(row, name):
         val = row.get(name)
         if val is None:
-            return 'null'
+            return "null"
         if isinstance(val, (str, unicode)):
-            if val.strip().lower() in ['nan', '-999']:
-                return 'null'
+            if val.strip().lower() in ["nan", "-999"]:
+                return "null"
             return val
         elif isinstance(val, pd.core.series.Series):
             print(val)
@@ -314,16 +683,20 @@ def database_save(uniqueid, plot, df):
             sys.exit()
         try:
             if pd.isnull(val):
-                return 'null'
+                return "null"
         except Exception, exp:
             print(exp)
-            print(('Plot: %s Val: %s[%s] Name: %s Valid: %s'
-                   ) % (plot, val, type(val), name, row['valid']))
+            print(
+                ("Plot: %s Val: %s[%s] Name: %s Valid: %s")
+                % (plot, val, type(val), name, row["valid"])
+            )
             # sys.exit()
-            return 'null'
+            return "null"
         return val
+
     for _, row in df.iterrows():
-        cursor.execute("""
+        cursor.execute(
+            """
         INSERT into decagon_data(uniqueid, plotid, valid, d1moisture, d1temp,
         d1ec, d2moisture, d2temp, d3moisture, d3temp, d4moisture, d4temp,
         d5moisture, d5temp, d1moisture_qc, d1temp_qc,
@@ -336,19 +709,39 @@ def database_save(uniqueid, plot, df):
         %s, %s, %s, %s,
         %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, %s)
-        """ % (uniqueid, plot, row['valid'].strftime("%Y-%m-%d %H:%M-"+tzoff),
-               v(row, 'd1moisture'), v(row, 'd1temp'), v(row, 'd1ec'),
-               v(row, 'd2moisture'), v(row, 'd2temp'),
-               v(row, 'd3moisture'), v(row, 'd3temp'),
-               v(row, 'd4moisture'), v(row, 'd4temp'),
-               v(row, 'd5moisture'), v(row, 'd5temp'),
-               v(row, 'd1moisture'), v(row, 'd1temp'), v(row, 'd1ec'),
-               v(row, 'd2moisture'), v(row, 'd2temp'),
-               v(row, 'd3moisture'), v(row, 'd3temp'),
-               v(row, 'd4moisture'), v(row, 'd4temp'),
-               v(row, 'd5moisture'), v(row, 'd5temp'),
-               v(row, 'd6moisture'), v(row, 'd6temp'),
-               v(row, 'd7moisture'), v(row, 'd7temp')))
+        """
+            % (
+                uniqueid,
+                plot,
+                row["valid"].strftime("%Y-%m-%d %H:%M-" + tzoff),
+                v(row, "d1moisture"),
+                v(row, "d1temp"),
+                v(row, "d1ec"),
+                v(row, "d2moisture"),
+                v(row, "d2temp"),
+                v(row, "d3moisture"),
+                v(row, "d3temp"),
+                v(row, "d4moisture"),
+                v(row, "d4temp"),
+                v(row, "d5moisture"),
+                v(row, "d5temp"),
+                v(row, "d1moisture"),
+                v(row, "d1temp"),
+                v(row, "d1ec"),
+                v(row, "d2moisture"),
+                v(row, "d2temp"),
+                v(row, "d3moisture"),
+                v(row, "d3temp"),
+                v(row, "d4moisture"),
+                v(row, "d4temp"),
+                v(row, "d5moisture"),
+                v(row, "d5temp"),
+                v(row, "d6moisture"),
+                v(row, "d6temp"),
+                v(row, "d7moisture"),
+                v(row, "d7temp"),
+            )
+        )
 
     cursor.close()
     pgconn.commit()
@@ -361,35 +754,38 @@ def main(argv):
     fn = argv[2]
     uniqueid = argv[3]
     plot = argv[4]
-    if fmt == '0':
+    if fmt == "0":
         df = process0(fn)
-    elif fmt == '1':
+    elif fmt == "1":
         df = process1(fn)
-    elif fmt == '2':
+    elif fmt == "2":
         df = process2(fn)
-    elif fmt == '3':
+    elif fmt == "3":
         df = process3(fn)
-    elif fmt == '4':
+    elif fmt == "4":
         df = process4(fn)
-    elif fmt == '5':
+    elif fmt == "5":
         df = process5(fn)
-    elif fmt == '6':
+    elif fmt == "6":
         df = process6(fn)
-    elif fmt == '7':
+    elif fmt == "7":
         df = process7(fn)
-    elif fmt == '8':
+    elif fmt == "8":
         df = process8(fn)
     if isinstance(df, dict):
         for plot in df:
-            print(("File: %s[%s] found: %s lines for columns %s"
-                   ) % (fn, plot, len(df[plot].index),
-                        df[plot].columns))
+            print(
+                ("File: %s[%s] found: %s lines for columns %s")
+                % (fn, plot, len(df[plot].index), df[plot].columns)
+            )
             database_save(uniqueid, plot, df[plot])
     else:
-        print(("File: %s found: %s lines for columns %s"
-               ) % (fn, len(df.index), df.columns))
+        print(
+            ("File: %s found: %s lines for columns %s")
+            % (fn, len(df.index), df.columns)
+        )
         database_save(uniqueid, plot, df)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

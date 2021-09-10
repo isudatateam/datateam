@@ -41,8 +41,8 @@ UVARDF = {
 
 
 def sane_date(year, month, day):
-    """ Attempt to account for usage of days outside of the bounds for
-    a given month """
+    """Attempt to account for usage of days outside of the bounds for
+    a given month"""
     # Calculate the last date of the given month
     nextmonth = datetime.date(year, month, 1) + datetime.timedelta(days=35)
     lastday = nextmonth.replace(day=1) - datetime.timedelta(days=1)
@@ -50,8 +50,8 @@ def sane_date(year, month, day):
 
 
 def get_cgi_dates(form):
-    """ Figure out which dates are requested via the form, we shall attempt
-    to account for invalid dates provided! """
+    """Figure out which dates are requested via the form, we shall attempt
+    to account for invalid dates provided!"""
     y1 = int(form.get("year1"))
     m1 = int(form.get("month1"))
     d1 = int(form.get("day1"))

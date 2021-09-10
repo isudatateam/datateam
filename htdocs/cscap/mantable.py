@@ -9,41 +9,58 @@ import os
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn, ssw
 
-DBCONN = get_dbconn('sustainablecorn')
+DBCONN = get_dbconn("sustainablecorn")
 cursor = DBCONN.cursor()
 
 ALL = " ALL SITES"
 varorder = []
 varlookup = {}
 
-COVER_SITES = ['MASON', 'KELLOGG', 'GILMORE', 'ISUAG', 'WOOSTER.COV',
-               'SEPAC', 'BRADFORD.B1', 'BRADFORD.B2',
-               'BRADFORD.C', 'FREEMAN']
+COVER_SITES = [
+    "MASON",
+    "KELLOGG",
+    "GILMORE",
+    "ISUAG",
+    "WOOSTER.COV",
+    "SEPAC",
+    "BRADFORD.B1",
+    "BRADFORD.B2",
+    "BRADFORD.C",
+    "FREEMAN",
+]
 D7 = datetime.timedelta(days=7)
 
 
 def reload_data():
-    """ Run the sync script to download data from Google """
+    """Run the sync script to download data from Google"""
     os.chdir("/opt/datateam/scripts/cscap")
-    proc = subprocess.Popen("python harvest_management.py", shell=True,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(
+        "python harvest_management.py",
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
     return """<div class="alert alert-info">
     Here is the result of sync process<br />
     <pre>%s %s</pre>
-    </div>""" % (proc.stdout.read(), proc.stderr.read())
+    </div>""" % (
+        proc.stdout.read(),
+        proc.stderr.read(),
+    )
 
 
 def main():
     """Go Main"""
-    ssw('Content-type: text/html\n\n')
+    ssw("Content-type: text/html\n\n")
 
     form = cgi.FieldStorage()
     reloadres = ""
-    if form.getfirst('reload') is not None:
+    if form.getfirst("reload") is not None:
         reloadres += reload_data()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT uniqueid, valid, cropyear, operation, biomassdate1,
         biomassdate2, fertilizercrop, cashcrop from operations
         WHERE operation in ('harvest_corn', 'harvest_soy', 'plant_rye',
@@ -52,7 +69,8 @@ def main():
         'plant_corn', 'plant_soy', 'fertilizer_synthetic')
         and cropyear != '2016' and valid is not null
         ORDER by operation DESC, valid ASC
-    """)
+    """
+    )
     data = {}
     for row in cursor:
         site = row[0]
@@ -65,73 +83,81 @@ def main():
         # cashcrop = row[7]
         if site not in data:
             data[site] = {}
-            for cy in ['2011', '2012', '2013', '2014', '2015']:
-                data[site][cy] = {'harvest_soy': '',
-                                  'harvest_corn': '',
-                                  'plant_rye': '',
-                                  'plant_rye-corn-res': '',
-                                  'plant_rye-soy-res': '',
-                                  'plant_corn': None,
-                                  'plant_soy': None,
-                                  'fall_sample_soilnitrate_corn': '',
-                                  'fall_sample_soilnitrate_soy': '',
-                                  'spring_sample_soilnitrate_corn': '',
-                                  'spring_sample_soilnitrate_soy': '',
-                                  'termination_rye_corn': '',
-                                  'termination_rye_soy': '',
-                                  'fertilizer_synthetic_starter': '',
-                                  'fertilizer_synthetic_sidedress': '',
-                                  'fertilizer_synthetic_preplant': '',
-                                  'fertilizer_synthetic_fall': '',
-                                  'spring_sample_covercrop_corn': '',
-                                  'spring_sample_covercrop_soy': '',
-                                  'fall_sample_covercrop_corn': '',
-                                  'fal_sample_covercrop_soy': ''}
+            for cy in ["2011", "2012", "2013", "2014", "2015"]:
+                data[site][cy] = {
+                    "harvest_soy": "",
+                    "harvest_corn": "",
+                    "plant_rye": "",
+                    "plant_rye-corn-res": "",
+                    "plant_rye-soy-res": "",
+                    "plant_corn": None,
+                    "plant_soy": None,
+                    "fall_sample_soilnitrate_corn": "",
+                    "fall_sample_soilnitrate_soy": "",
+                    "spring_sample_soilnitrate_corn": "",
+                    "spring_sample_soilnitrate_soy": "",
+                    "termination_rye_corn": "",
+                    "termination_rye_soy": "",
+                    "fertilizer_synthetic_starter": "",
+                    "fertilizer_synthetic_sidedress": "",
+                    "fertilizer_synthetic_preplant": "",
+                    "fertilizer_synthetic_fall": "",
+                    "spring_sample_covercrop_corn": "",
+                    "spring_sample_covercrop_soy": "",
+                    "fall_sample_covercrop_corn": "",
+                    "fal_sample_covercrop_soy": "",
+                }
         _d = data[site][cropyear]
-        if operation == 'plant_rye':
-            for op2 in ['plant_rye-soy-res', 'plant_rye-corn-res']:
+        if operation == "plant_rye":
+            for op2 in ["plant_rye-soy-res", "plant_rye-corn-res"]:
                 _d[op2] = valid
-        elif operation.startswith('termination_rye'):
-            if operation.endswith('soy') and biomassdate1 is not None:
-                _d['spring_sample_covercrop_soy'] = biomassdate1
+        elif operation.startswith("termination_rye"):
+            if operation.endswith("soy") and biomassdate1 is not None:
+                _d["spring_sample_covercrop_soy"] = biomassdate1
             elif biomassdate1 is not None:
-                _d['spring_sample_covercrop_corn'] = biomassdate1
+                _d["spring_sample_covercrop_corn"] = biomassdate1
             _d[operation] = valid
-        elif (operation == 'fertilizer_synthetic' and
-                fertilizercrop in [None, 'multiple', 'corn', 'other']):
-            plantcorndate = _d['plant_corn']
+        elif operation == "fertilizer_synthetic" and fertilizercrop in [
+            None,
+            "multiple",
+            "corn",
+            "other",
+        ]:
+            plantcorndate = _d["plant_corn"]
             # sys.stderr.write("%s %s %s %s %s\n" % (plantcorndate, valid,
             #                                       fertilizercrop, site,
             #                                       cropyear))
             if plantcorndate is None:
-                sys.stderr.write(("ERROR! No plant corn for %s %s\n"
-                                  ) % (site, cropyear))
+                sys.stderr.write(
+                    ("ERROR! No plant corn for %s %s\n") % (site, cropyear)
+                )
                 continue
             if valid.year < plantcorndate.year:
-                _d[operation+"_fall"] = valid
+                _d[operation + "_fall"] = valid
             elif valid == plantcorndate:
-                _d[operation+"_starter"] = valid
+                _d[operation + "_starter"] = valid
             elif valid < (plantcorndate + D7):
-                _d[operation+"_preplant"] = valid
+                _d[operation + "_preplant"] = valid
             else:
-                _d[operation+"_sidedress"] = valid
+                _d[operation + "_sidedress"] = valid
 
-        elif operation in ['sample_soilnitrate', 'sample_covercrop']:
+        elif operation in ["sample_soilnitrate", "sample_covercrop"]:
             # We only want 'fall' events
-            season = 'fall_'
+            season = "fall_"
             if valid.month in [6, 7, 8]:
                 continue
             elif valid.month < 6:
-                season = 'spring_'
-            if _d[season+operation+'_soy'] != '':
-                _d[season+operation+'_corn'] = valid
+                season = "spring_"
+            if _d[season + operation + "_soy"] != "":
+                _d[season + operation + "_corn"] = valid
             else:
-                data[site][cropyear][season+operation+'_soy'] = valid
+                data[site][cropyear][season + operation + "_soy"] = valid
         else:
             data[site][cropyear][operation] = valid
 
     table0 = ""
-    df = read_sql("""
+    df = read_sql(
+        """
     WITH sites as (
         SELECT uniqueid, latitude, longitude, officialfarmname
         from metadata_master),
@@ -145,92 +171,106 @@ def main():
     p.soilseriesname1, p.soiltaxonomicclass1,
     p.soilseriesname2, p.soiltaxonomicclass2 from sites s JOIN plots2 p
     on (s.uniqueid = p.uniqueid) ORDER by s.uniqueid ASC
-    """, DBCONN, index_col='uniqueid')
+    """,
+        DBCONN,
+        index_col="uniqueid",
+    )
     for uniqueid, row in df.iterrows():
         if uniqueid not in COVER_SITES:
             continue
-        table0 += ("<tr><td>%s</td><td>%s</td><td>%s</td>"
-                   "<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>"
-                   "</tr>"
-                   ) % (uniqueid, row['officialfarmname'],
-                        row['latitude'], row['longitude'],
-                        row['soilseriesname1'], row['soiltaxonomicclass1'],
-                        row['soilseriesname2'] or '--',
-                        row['soiltaxonomicclass2'] or '--')
+        table0 += (
+            "<tr><td>%s</td><td>%s</td><td>%s</td>"
+            "<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>"
+            "</tr>"
+        ) % (
+            uniqueid,
+            row["officialfarmname"],
+            row["latitude"],
+            row["longitude"],
+            row["soilseriesname1"],
+            row["soiltaxonomicclass1"],
+            row["soilseriesname2"] or "--",
+            row["soiltaxonomicclass2"] or "--",
+        )
 
     table = ""
     for site in COVER_SITES:  # data.keys():
         table += "<tr><td>%s</td>" % (site,)
-        for yr in ['2011', '2012', '2013', '2014', '2015']:
-            for op in ['harvest_corn', 'harvest_soy']:
-                table += "<td>%s</td>" % (
-                        data[site].get(yr, {}).get(op, ''),)
-            yr2 = str(int(yr)+1)
-            if yr != '2015':
-                for op in ['plant_rye-corn-res', 'plant_rye-soy-res']:
+        for yr in ["2011", "2012", "2013", "2014", "2015"]:
+            for op in ["harvest_corn", "harvest_soy"]:
+                table += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
+            yr2 = str(int(yr) + 1)
+            if yr != "2015":
+                for op in ["plant_rye-corn-res", "plant_rye-soy-res"]:
                     table += "<td>%s</td>" % (
-                            data[site].get(yr2, {}).get(op, ''),)
+                        data[site].get(yr2, {}).get(op, ""),
+                    )
         table += "</tr>"
 
     # ---------------------------------------------------------------
     table2 = ""
     for site in COVER_SITES:  # data.keys():
         table2 += "<tr><td>%s</td>" % (site,)
-        for yr in ['2011', '2012', '2013', '2014', '2015']:
-            for op in ['fall_sample_soilnitrate_corn',
-                       'fall_sample_soilnitrate_soy']:
+        for yr in ["2011", "2012", "2013", "2014", "2015"]:
+            for op in [
+                "fall_sample_soilnitrate_corn",
+                "fall_sample_soilnitrate_soy",
+            ]:
+                table2 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
+            yr2 = str(int(yr) + 1)
+            for op in [
+                "fall_sample_covercrop_corn",
+                "fall_sample_covercrop_soy",
+            ]:
                 table2 += "<td>%s</td>" % (
-                        data[site].get(yr, {}).get(op, ''),)
-            yr2 = str(int(yr)+1)
-            for op in ['fall_sample_covercrop_corn',
-                       'fall_sample_covercrop_soy']:
-                table2 += "<td>%s</td>" % (
-                        data[site].get(yr2, {}).get(op, ''),)
+                    data[site].get(yr2, {}).get(op, ""),
+                )
         table2 += "</tr>"
 
     # ---------------------------------------------------------------
     table3 = ""
     for site in COVER_SITES:  # data.keys():
         table3 += "<tr><td>%s</td>" % (site,)
-        for yr in ['2012', '2013', '2014', '2015']:
-            for op in ['spring_sample_covercrop_corn',
-                       'spring_sample_covercrop_soy']:
-                table3 += "<td>%s</td>" % (
-                        data[site].get(yr, {}).get(op, ''),)
-            for op in ['spring_sample_soilnitrate_corn',
-                       'spring_sample_soilnitrate_soy']:
-                table3 += "<td>%s</td>" % (
-                        data[site].get(yr, {}).get(op, ''),)
-            for op in ['termination_rye_corn', 'termination_rye_soy']:
-                table3 += "<td>%s</td>" % (
-                        data[site].get(yr, {}).get(op, ''),)
+        for yr in ["2012", "2013", "2014", "2015"]:
+            for op in [
+                "spring_sample_covercrop_corn",
+                "spring_sample_covercrop_soy",
+            ]:
+                table3 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
+            for op in [
+                "spring_sample_soilnitrate_corn",
+                "spring_sample_soilnitrate_soy",
+            ]:
+                table3 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
+            for op in ["termination_rye_corn", "termination_rye_soy"]:
+                table3 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
         table3 += "</tr>"
 
     # ---------------------------------------------------------------
     table4 = ""
     for site in COVER_SITES:  # data.keys():
         table4 += "<tr><td>%s</td>" % (site,)
-        for yr in ['2011', '2012', '2013', '2014', '2015']:
-            for op in ['plant_corn',
-                       'plant_soy']:
-                table4 += "<td>%s</td>" % (
-                        data[site].get(yr, {}).get(op, ''),)
+        for yr in ["2011", "2012", "2013", "2014", "2015"]:
+            for op in ["plant_corn", "plant_soy"]:
+                table4 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
         table4 += "</tr>"
 
     # ---------------------------------------------------------------
     table5 = ""
     for site in COVER_SITES:  # data.keys():
         table5 += "<tr><td>%s</td>" % (site,)
-        for yr in ['2011', '2012', '2013', '2014', '2015']:
-            for op in ['fertilizer_synthetic_fall',
-                       'fertilizer_synthetic_preplant',
-                       'fertilizer_synthetic_starter',
-                       'fertilizer_synthetic_sidedress']:
-                table5 += "<td>%s</td>" % (
-                        data[site].get(yr, {}).get(op, ''),)
+        for yr in ["2011", "2012", "2013", "2014", "2015"]:
+            for op in [
+                "fertilizer_synthetic_fall",
+                "fertilizer_synthetic_preplant",
+                "fertilizer_synthetic_starter",
+                "fertilizer_synthetic_sidedress",
+            ]:
+                table5 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
         table5 += "</tr>"
 
-    ssw("""<!DOCTYPE html>
+    ssw(
+        """<!DOCTYPE html>
 <html lang='en'>
 <head>
  <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -432,8 +472,10 @@ Google Data to the ISU Database Server.  You can <br />
 
 </body>
 </html>
-    """ % (reloadres, table0, table, table2, table3, table4, table5))
+    """
+        % (reloadres, table0, table, table2, table3, table4, table5)
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
