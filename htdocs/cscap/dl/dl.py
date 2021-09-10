@@ -27,7 +27,7 @@ EMAILTEXT = """
 Sustainable Corn CAP - Research and Management Data
 Requested: %s UTC
 Website: https://datateam.agron.iastate.edu/cscap/
-Contact: sustainablecorn@iastate.edu
+Contact: isudatateam@iastate.edu
 
 Please click here to download your spreadsheet file.
 
@@ -58,7 +58,7 @@ completeness of any information included in the database nor for the
 suitability of its application for a particular purpose. Data users
 are encouraged to notify the coauthors regarding data quality
 and other issues concerning the data, tools, and functionality of this
-website. Contact sustainablecorn@iastate.edu with any questions or concerns
+website. Contact isudatateam@iastate.edu with any questions or concerns
 regarding usage and application of the data available at this site.
 
 """
