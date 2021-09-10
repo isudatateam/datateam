@@ -13,7 +13,7 @@ def has_or_create_worksheet(ssclient, sheet, title, rows, cols):
 
 
 def has_or_create_sheet(drive, colfolder, title):
-    """ Create or find this sheet!"""
+    """Create or find this sheet!"""
     res = util.exponential_backoff(
         drive.files()
         .list(

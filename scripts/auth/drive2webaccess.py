@@ -5,46 +5,65 @@ import pyiem.cscap_utils as utils
 from pyiem.util import get_dbconn
 import psycopg2
 
-pgconn = get_dbconn('sustainablecorn')
+pgconn = get_dbconn("sustainablecorn")
 cursor = pgconn.cursor()
 
 
 removed = 0
 config = utils.get_config()
-for project in ['td', 'cscap']:
-    cursor.execute("""
+for project in ["td", "cscap"]:
+    cursor.execute(
+        """
     SELECT access_level from website_access_levels where appid = %s
-    """, (project, ))
+    """,
+        (project,),
+    )
     access_level = cursor.fetchone()[0]
     CURRENT = []
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT email from website_users WHERE access_level = %s
-        """, (access_level, ))
+        """,
+        (access_level,),
+    )
     for row in cursor:
         CURRENT.append(row[0])
     drive = utils.get_driveclient(config, project)
-    perms = drive.permissions().list(
-                fileId=config[project]['basefolder']).execute()
-    for item in perms.get('items', []):
+    perms = (
+        drive.permissions()
+        .list(fileId=config[project]["basefolder"])
+        .execute()
+    )
+    for item in perms.get("items", []):
         # Unclear what type of permission this is that does not have this
         # set, maybe a file with an allow for anybody that has the link to it
-        if 'emailAddress' not in item:
+        if "emailAddress" not in item:
             continue
-        email = item['emailAddress'].lower()
+        email = item["emailAddress"].lower()
         if email not in CURRENT:
-            print(("Adding email: '%s' project: '%s' for datateam access"
-                   ) % (email, project))
-            cursor.execute("""INSERT into website_users(email, access_level)
-            VALUES (%s, %s)""", (email, access_level))
+            print(
+                ("Adding email: '%s' project: '%s' for datateam access")
+                % (email, project)
+            )
+            cursor.execute(
+                """INSERT into website_users(email, access_level)
+            VALUES (%s, %s)""",
+                (email, access_level),
+            )
         else:
             CURRENT.remove(email)
 
     for email in CURRENT:
-        print(("Removing email: '%s' project: %s for datateam access"
-               ) % (email, project))
-        cursor.execute("""
+        print(
+            ("Removing email: '%s' project: %s for datateam access")
+            % (email, project)
+        )
+        cursor.execute(
+            """
             DELETE from website_users where email = %s
-            and access_level = %s""", (email, access_level))
+            and access_level = %s""",
+            (email, access_level),
+        )
         removed += 1
 
 cursor.close()

@@ -63,24 +63,56 @@ regarding usage and application of the data available at this site.
 
 """
 
-PGCONN = get_dbconn('sustainablecorn')
-FERTELEM = ['nitrogen', 'phosphorus', 'phosphate', 'potassium',
-            'potash', 'sulfur', 'calcium', 'magnesium', 'zinc', 'iron']
+PGCONN = get_dbconn("sustainablecorn")
+FERTELEM = [
+    "nitrogen",
+    "phosphorus",
+    "phosphate",
+    "potassium",
+    "potash",
+    "sulfur",
+    "calcium",
+    "magnesium",
+    "zinc",
+    "iron",
+]
 KGH_LBA = 1.12085
 # -----------------------------------------------------------------------------
 # NOTE: filter.py is upstream for this table, copy to dl.py
-AGG = {"_T1": ['ROT4', 'ROT5', 'ROT54'],
-       "_T2": ["ROT8", 'ROT7', 'ROT6'],
-       "_T3": ["ROT16", "ROT15", "ROT17"],
-       "_T4": ["ROT37", "ROT36", "ROT55", "ROT59"],
-       "_T5": ["ROT61", "ROT56", "ROT1"],
-       "_T6": ["ROT57", "ROT58", "ROT38"],
-       "_T7": ["ROT40", "ROT50"],
-       "_S1": ["SOIL41", "SOIL34", "SOIL29", "SOIL30", "SOIL31", "SOIL2",
-               "SOIL35", "SOIL32", "SOIL42", "SOIL33", "SOIL39"],
-       "_S19": ["SOIL19.8", "SOIL19.11", "SOIL19.12", "SOIL19.1",
-                "SOIL19.10", "SOIL19.2", "SOIL19.5", "SOIL19.7", "SOIL19.6",
-                "SOIL19.13"]}
+AGG = {
+    "_T1": ["ROT4", "ROT5", "ROT54"],
+    "_T2": ["ROT8", "ROT7", "ROT6"],
+    "_T3": ["ROT16", "ROT15", "ROT17"],
+    "_T4": ["ROT37", "ROT36", "ROT55", "ROT59"],
+    "_T5": ["ROT61", "ROT56", "ROT1"],
+    "_T6": ["ROT57", "ROT58", "ROT38"],
+    "_T7": ["ROT40", "ROT50"],
+    "_S1": [
+        "SOIL41",
+        "SOIL34",
+        "SOIL29",
+        "SOIL30",
+        "SOIL31",
+        "SOIL2",
+        "SOIL35",
+        "SOIL32",
+        "SOIL42",
+        "SOIL33",
+        "SOIL39",
+    ],
+    "_S19": [
+        "SOIL19.8",
+        "SOIL19.11",
+        "SOIL19.12",
+        "SOIL19.1",
+        "SOIL19.10",
+        "SOIL19.2",
+        "SOIL19.5",
+        "SOIL19.7",
+        "SOIL19.6",
+        "SOIL19.13",
+    ],
+}
 # runtime storage
 MEMORY = dict(stamp=datetime.datetime.utcnow())
 ROT_CODES = {
@@ -97,20 +129,25 @@ ROT_CODES = {
     "ROT57": "ROT37v",
     "ROT55": "ROT37v",
     "ROT56": "ROT1v",
-    }
+}
 TIL_CODES = {
     "TIL4": "TIL1v",
-    }
+}
 
 
 def get_vardf(tabname):
     """Get a dataframe of descriptors for this tabname"""
-    return read_sql("""
+    return read_sql(
+        """
         select element_or_value_display_name as varname,
         number_of_decimal_places_to_round_up::numeric::int as round,
         short_description, units from data_dictionary_export WHERE
         spreadsheet_tab = %s
-    """, PGCONN, params=(tabname, ), index_col='varname')
+    """,
+        PGCONN,
+        params=(tabname,),
+        index_col="varname",
+    )
 
 
 def replace_varname(varname):
@@ -123,15 +160,15 @@ def replace_varname(varname):
 def pprint(msg):
     """log a pretty message for my debugging fun"""
     utcnow = datetime.datetime.utcnow()
-    delta = (utcnow - MEMORY['stamp']).total_seconds()
-    MEMORY['stamp'] = utcnow
+    delta = (utcnow - MEMORY["stamp"]).total_seconds()
+    MEMORY["stamp"] = utcnow
     sys.stderr.write("timedelta: %.3f %s\n" % (delta, msg))
 
 
 def valid2date(df):
     """If dataframe has valid in columns, rename it to date"""
-    if 'valid' in df.columns:
-        df.rename(columns={'valid': 'date'}, inplace=True)
+    if "valid" in df.columns:
+        df.rename(columns={"valid": "date"}, inplace=True)
 
 
 def redup(arr):
@@ -147,16 +184,16 @@ def redup(arr):
 def conv(value, detectlimit):
     """Convert a value into something that gets returned"""
     # Careful here, we need to keep missing values for a later replacement
-    if value is None or value == '':
+    if value is None or value == "":
         return None
-    if value in ['n/a', 'did not collect']:
+    if value in ["n/a", "did not collect"]:
         return None
     if value.startswith("<"):
         if detectlimit == "1":
             return value
         floatval = float(value[1:])
         if detectlimit == "2":
-            return floatval / 2.
+            return floatval / 2.0
         if detectlimit == "3":
             return floatval / 2 ** 0.5
         if detectlimit == "4":
@@ -169,25 +206,30 @@ def conv(value, detectlimit):
 
 def do_dictionary(writer):
     """Add Data Dictionary to the spreadsheet"""
-    df = read_sql("""
+    df = read_sql(
+        """
         SELECT * from data_dictionary_export
         ORDER by ss_order ASC
-    """, PGCONN, index_col=None)
-    for col in ['ss_order', 'number_of_decimal_places_to_round_up']:
+    """,
+        PGCONN,
+        index_col=None,
+    )
+    for col in ["ss_order", "number_of_decimal_places_to_round_up"]:
         df.drop(col, axis=1, inplace=True)
-    df.to_excel(writer, 'Data Dictionary', index=False)
+    df.to_excel(writer, "Data Dictionary", index=False)
     # Increase column width
-    worksheet = writer.sheets['Data Dictionary']
-    worksheet.set_column('A:D', 36)
-    worksheet.set_column('E:E', 18)
-    worksheet.set_column('F:F', 36)
-    worksheet.set_column('G:J', 12)
-    worksheet.set_column('K:K', 60)
+    worksheet = writer.sheets["Data Dictionary"]
+    worksheet.set_column("A:D", 36)
+    worksheet.set_column("E:E", 18)
+    worksheet.set_column("F:F", 36)
+    worksheet.set_column("G:J", 12)
+    worksheet.set_column("K:K", 60)
 
 
 def do_metadata_master(writer, sites, missing):
     """get Metadata master data"""
-    df = read_sql("""
+    df = read_sql(
+        """
     SELECT uniqueid,
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
     selon as "SE Lon", selat as "SE Lat", nelon as "NE Lon", nelat as "NE Lat",
@@ -200,87 +242,116 @@ def do_metadata_master(writer, sites, missing):
     from metadata_master
     WHERE uniqueid in %s
     ORDER by uniqueid
-    """, PGCONN, params=(tuple(sites), ), index_col=None)
-    df.replace(['None', None, ''], np.nan, inplace=True)
-    df.dropna(how='all', inplace=True)
+    """,
+        PGCONN,
+        params=(tuple(sites),),
+        index_col=None,
+    )
+    df.replace(["None", None, ""], np.nan, inplace=True)
+    df.dropna(how="all", inplace=True)
     df.fillna(missing, inplace=True)
-    df, worksheet = add_bling(writer, df, 'Site Metadata', 'Site Metadata')
-    worksheet.set_column('A:A', 12)
-    worksheet.set_column('L:R', 12)
+    df, worksheet = add_bling(writer, df, "Site Metadata", "Site Metadata")
+    worksheet.set_column("A:A", 12)
+    worksheet.set_column("L:R", 12)
 
 
 def do_ghg(writer, sites, ghg, years, missing):
     """get GHG data"""
     cols = ", ".join(['%s as "%s"' % (s, s) for s in ghg])
-    df = read_sql("""
+    df = read_sql(
+        """
     SELECT d.uniqueid, d.plotid, d.date, d.year, d.method, d.subsample,
-    d.position, """ + cols + """
+    d.position, """
+        + cols
+        + """
     from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
     and d.uniqueid in %s and d.year in %s
     ORDER by d.uniqueid, year, date, plotid
-    """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
+    """,
+        PGCONN,
+        params=(tuple(sites), tuple(years)),
+        index_col=None,
+    )
     df.fillna(missing, inplace=True)
-    df, worksheet = add_bling(writer, df, 'GHG', 'GHG')
-    worksheet.set_column('C:C', 12)
+    df, worksheet = add_bling(writer, df, "GHG", "GHG")
+    worksheet.set_column("C:C", 12)
 
 
 def do_ipm(writer, sites, ipm, years, missing):
     """get IPM data"""
     cols = ", ".join(ipm)
-    df = read_sql("""
-    SELECT d.uniqueid, d.plotid, d.date, d.year, """ + cols + """
+    df = read_sql(
+        """
+    SELECT d.uniqueid, d.plotid, d.date, d.year, """
+        + cols
+        + """
     from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
     d.uniqueid in %s and d.year in %s
     ORDER by d.uniqueid, year, date, plotid
-    """, PGCONN, params=(tuple(sites), tuple(years)), index_col=None)
+    """,
+        PGCONN,
+        params=(tuple(sites), tuple(years)),
+        index_col=None,
+    )
     df.fillna(missing, inplace=True)
-    df.columns = [s.upper() if s.startswith("ipm") else s
-                  for s in df.columns]
-    df, worksheet = add_bling(writer, df, 'IPM', 'IPM')
-    worksheet.set_column('C:C', 12)
+    df.columns = [s.upper() if s.startswith("ipm") else s for s in df.columns]
+    df, worksheet = add_bling(writer, df, "IPM", "IPM")
+    worksheet.set_column("C:C", 12)
 
 
 def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     """get agronomic data"""
-    df = read_sql("""
+    df = read_sql(
+        """
     SELECT d.uniqueid, d.plotid, d.varname, d.year, d.value
     from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
     d.uniqueid in %s and year in %s and varname in %s
     ORDER by uniqueid, year, plotid
-    """, PGCONN, params=(tuple(sites), tuple(years),
-                         tuple(agronomic)), index_col=None)
-    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
-    df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'year'),
-                        values='value', columns=('varname',),
-                        aggfunc=lambda x: ' '.join(str(v) for v in x))
+    """,
+        PGCONN,
+        params=(tuple(sites), tuple(years), tuple(agronomic)),
+        index_col=None,
+    )
+    df["value"] = df["value"].apply(lambda x: conv(x, detectlimit))
+    df = pd.pivot_table(
+        df,
+        index=("uniqueid", "plotid", "year"),
+        values="value",
+        columns=("varname",),
+        aggfunc=lambda x: " ".join(str(v) for v in x),
+    )
     # fix column names
     df.columns = map(replace_varname, df.columns)
-    vardf = get_vardf('Agronomic')
+    vardf = get_vardf("Agronomic")
     for colname in df.columns:
         places = 0
         if colname in vardf.index.values:
-            places = vardf.at[colname, 'round']
-        df[colname] = pd.to_numeric(df[colname], errors='coerce')
-        df[colname] = df[colname].apply((lambda x: round(x, int(places))
-                                         if isinstance(x, (int, float))
-                                         else x))
+            places = vardf.at[colname, "round"]
+        df[colname] = pd.to_numeric(df[colname], errors="coerce")
+        df[colname] = df[colname].apply(
+            (
+                lambda x: round(x, int(places))
+                if isinstance(x, (int, float))
+                else x
+            )
+        )
     # reorder columns
     cols = df.columns.values.tolist()
     cols.sort()
     df = df.reindex(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
-    df.replace(['None', None], np.nan, inplace=True)
-    df.dropna(how='all', inplace=True)
+    df.replace(["None", None], np.nan, inplace=True)
+    df.dropna(how="all", inplace=True)
     df.fillna(missing, inplace=True)
     df.reset_index(inplace=True)
     valid2date(df)
-    df, _worksheet = add_bling(writer, df, 'Agronomic', 'Agronomic')
+    df, _worksheet = add_bling(writer, df, "Agronomic", "Agronomic")
 
 
 def add_bling(writer, df, sheetname, tabname):
@@ -291,12 +362,12 @@ def add_bling(writer, df, sheetname, tabname):
     vardf = get_vardf(tabname)
     for i, colname in enumerate(cols):
         if i == 0:
-            metarows[0][colname] = 'description'
-            metarows[1][colname] = 'units'
+            metarows[0][colname] = "description"
+            metarows[1][colname] = "units"
             continue
         if colname in vardf.index:
-            metarows[0][colname] = vardf.at[colname, 'short_description']
-            metarows[1][colname] = vardf.at[colname, 'units']
+            metarows[0][colname] = vardf.at[colname, "short_description"]
+            metarows[1][colname] = vardf.at[colname, "units"]
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
     df = df.reindex(cols, axis=1)
@@ -311,7 +382,8 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     # pprint("do_soil: " + str(soil))
     # pprint("do_soil: " + str(sites))
     # pprint("do_soil: " + str(years))
-    df = read_sql("""
+    df = read_sql(
+        """
     SELECT d.uniqueid, d.plotid, d.depth,
     coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value,
     coalesce(d.sampledate::text, '') as sampledate
@@ -320,53 +392,85 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
     d.uniqueid in %s and year in %s and varname in %s
     ORDER by uniqueid, year, plotid, subsample
-    """, PGCONN, params=(tuple(sites), tuple(years),
-                         tuple(soil)), index_col=None)
+    """,
+        PGCONN,
+        params=(tuple(sites), tuple(years), tuple(soil)),
+        index_col=None,
+    )
     pprint("do_soil() query done")
-    df['value'] = df['value'].apply(lambda x: conv(x, detectlimit))
+    df["value"] = df["value"].apply(lambda x: conv(x, detectlimit))
     pprint("do_soil() value replacement done")
-    df = pd.pivot_table(df, index=('uniqueid', 'plotid', 'depth', 'subsample',
-                                   'year', 'sampledate'),
-                        values='value', columns=('varname',),
-                        aggfunc=lambda x: ' '.join(str(v) for v in x))
+    df = pd.pivot_table(
+        df,
+        index=(
+            "uniqueid",
+            "plotid",
+            "depth",
+            "subsample",
+            "year",
+            "sampledate",
+        ),
+        values="value",
+        columns=("varname",),
+        aggfunc=lambda x: " ".join(str(v) for v in x),
+    )
     # fix column names
     df.columns = map(replace_varname, df.columns)
-    vardf = get_vardf('Soil')
+    vardf = get_vardf("Soil")
     for colname in df.columns:
         places = 0
         if colname in vardf.index.values:
-            places = vardf.at[colname, 'round']
+            places = vardf.at[colname, "round"]
         if pd.isnull(places):
             continue
-        df[colname] = pd.to_numeric(df[colname], errors='ignore')
-        df[colname] = df[colname].apply((lambda x: round(x, int(places))
-                                         if isinstance(x, (int, float))
-                                         else x))
+        df[colname] = pd.to_numeric(df[colname], errors="ignore")
+        df[colname] = df[colname].apply(
+            (
+                lambda x: round(x, int(places))
+                if isinstance(x, (int, float))
+                else x
+            )
+        )
     # reorder columns
     cols = df.columns.values.tolist()
     cols.sort()
     df = df.reindex(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
-    df.replace(['None', None], np.nan, inplace=True)
-    pprint("do_soil() len of inbound df %s" % (len(df.index, )))
-    df.dropna(how='all', inplace=True)
+    df.replace(["None", None], np.nan, inplace=True)
+    pprint(
+        "do_soil() len of inbound df %s"
+        % (
+            len(
+                df.index,
+            )
+        )
+    )
+    df.dropna(how="all", inplace=True)
     df.fillna(missing, inplace=True)
-    pprint("do_soil() len of outbound df %s" % (len(df.index, )))
+    pprint(
+        "do_soil() len of outbound df %s"
+        % (
+            len(
+                df.index,
+            )
+        )
+    )
     pprint("do_soil() pivot_table done")
     df.reset_index(inplace=True)
-    df['sampledate'] = df['sampledate'].replace('', missing)
+    df["sampledate"] = df["sampledate"].replace("", missing)
     valid2date(df)
     pprint("do_soil() valid2date done")
-    df, worksheet = add_bling(writer, df, 'Soil', 'Soil')
+    df, worksheet = add_bling(writer, df, "Soil", "Soil")
     pprint("do_soil() to_excel done")
     workbook = writer.book
-    format1 = workbook.add_format({'num_format': '@'})
-    worksheet.set_column('B:B', 12, format1)
+    format1 = workbook.add_format({"num_format": "@"})
+    worksheet.set_column("B:B", 12, format1)
 
 
 def do_operations(writer, sites, years, missing):
     """Return a DataFrame for the operations"""
-    opdf = read_sql("""
+    opdf = read_sql(
+        """
     SELECT uniqueid, cropyear, operation, valid, cashcrop, croprot,
     plantryemethod, planthybrid, plantmaturity, plantrate, plantrateunits,
     terminatemethod, biomassdate1, biomassdate2, depth, limerate,
@@ -380,54 +484,63 @@ def do_operations(writer, sites, years, missing):
     potash, sulfur, calcium, magnesium, zinc, iron
     from operations where uniqueid in %s and cropyear in %s
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
-    """, PGCONN, params=(tuple(sites), tuple(years)))
-    opdf['productrate'] = pd.to_numeric(opdf['productrate'],
-                                        errors='coerce')
+    """,
+        PGCONN,
+        params=(tuple(sites), tuple(years)),
+    )
+    opdf["productrate"] = pd.to_numeric(opdf["productrate"], errors="coerce")
     for fert in FERTELEM:
-        opdf[fert] = pd.to_numeric(opdf[fert], errors='coerce')
-    for col in ['biomassdate1', 'biomassdate2', 'valid']:
+        opdf[fert] = pd.to_numeric(opdf[fert], errors="coerce")
+    for col in ["biomassdate1", "biomassdate2", "valid"]:
         opdf.at[opdf[col].isnull(), col] = missing
 
     # __________________________________________________________
     # case 1, values are > 0, so columns are in %
-    df = opdf[opdf['productrate'] > 0]
+    df = opdf[opdf["productrate"] > 0]
     for elem in FERTELEM:
-        opdf.loc[df.index, elem] = (df['productrate'] * KGH_LBA *
-                                    df[elem] / 100.)
-    opdf.loc[df.index, 'productrate'] = df['productrate'] * KGH_LBA
+        opdf.loc[df.index, elem] = (
+            df["productrate"] * KGH_LBA * df[elem] / 100.0
+        )
+    opdf.loc[df.index, "productrate"] = df["productrate"] * KGH_LBA
 
     # ________________________________________________________
     # case 2, value is -1 and so columns are in lbs / acre
-    df = opdf[opdf['productrate'] < 0]
-    opdf.loc[df.index, 'productrate'] = None
+    df = opdf[opdf["productrate"] < 0]
+    opdf.loc[df.index, "productrate"] = None
     for elem in FERTELEM:
         opdf.loc[df.index, elem] = df[elem] * KGH_LBA
         del opdf[elem]
     valid2date(opdf)
-    del opdf['productrate']
-    opdf, worksheet = add_bling(writer, opdf, 'Field Operations',
-                                'Field Operations')
-    worksheet.set_column('C:C', 18)
-    worksheet.set_column('D:D', 12)
-    worksheet.set_column('M:N', 12)
+    del opdf["productrate"]
+    opdf, worksheet = add_bling(
+        writer, opdf, "Field Operations", "Field Operations"
+    )
+    worksheet.set_column("C:C", 18)
+    worksheet.set_column("D:D", 12)
+    worksheet.set_column("M:N", 12)
 
 
 def do_management(writer, sites, years):
     """Return a DataFrame for the management"""
-    opdf = read_sql("""
+    opdf = read_sql(
+        """
     SELECT uniqueid, cropyear, notill, irrigation, irrigationamount,
     irrigationmethod, residueremoval, residuehow, residuebiomassweight,
     residuebiomassmoisture, residueplantingpercentage, residuetype,
     limeyear, comments
     from management where uniqueid in %s and cropyear in %s
     ORDER by cropyear ASC
-    """, PGCONN, params=(tuple(sites), tuple(years)))
-    opdf.to_excel(writer, 'Residue, Irrigation', index=False)
+    """,
+        PGCONN,
+        params=(tuple(sites), tuple(years)),
+    )
+    opdf.to_excel(writer, "Residue, Irrigation", index=False)
 
 
 def do_pesticides(writer, sites, years):
     """Return a DataFrame for the pesticides"""
-    opdf = read_sql("""
+    opdf = read_sql(
+        """
     SELECT uniqueid, cropyear, operation, valid, timing, method,
     cropapplied,
     cashcrop, totalrate, pressure,
@@ -439,16 +552,19 @@ def do_pesticides(writer, sites, years):
     from pesticides where uniqueid in %s and cropyear in %s and
     operation != 'seed'
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
-    """, PGCONN, params=(tuple(sites), tuple(years)))
+    """,
+        PGCONN,
+        params=(tuple(sites), tuple(years)),
+    )
     valid2date(opdf)
-    opdf, worksheet = add_bling(writer, opdf, 'Pesticides',
-                                'Pesticides')
-    worksheet.set_column('D:D', 12)
+    opdf, worksheet = add_bling(writer, opdf, "Pesticides", "Pesticides")
+    worksheet.set_column("D:D", 12)
 
 
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
-    opdf = read_sql("""
+    opdf = read_sql(
+        """
         SELECT uniqueid, rep, plotid, tillage, rotation,
         drainage, nitrogen, landscape,
         y2011 as "2011crop", y2012 as "2012crop", y2013 as "2013crop",
@@ -476,96 +592,111 @@ def do_plotids(writer, sites):
         where uniqueid in %s and
         (herbicide != 'HERB2' or herbicide is null)
         ORDER by uniqueid, plotid ASC
-    """, PGCONN, params=(tuple(sites), ))
+    """,
+        PGCONN,
+        params=(tuple(sites),),
+    )
     # Fake rotation codes
-    opdf.replace({'rotation': ROT_CODES}, inplace=True)
+    opdf.replace({"rotation": ROT_CODES}, inplace=True)
     # Fake tillage codes
-    opdf.replace({'tillage': TIL_CODES}, inplace=True)
-    opdf, worksheet = add_bling(writer, opdf[opdf.columns], 'Plot Identifiers',
-                                'Plot Identifiers')
+    opdf.replace({"tillage": TIL_CODES}, inplace=True)
+    opdf, worksheet = add_bling(
+        writer, opdf[opdf.columns], "Plot Identifiers", "Plot Identifiers"
+    )
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
-    format1 = workbook.add_format({'num_format': '0'})
-    worksheet.set_column('B:B', 12, format1)
+    format1 = workbook.add_format({"num_format": "0"})
+    worksheet.set_column("B:B", 12, format1)
 
 
 def do_notes(writer, sites, missing):
     """Write notes to the spreadsheet"""
-    opdf = read_sql("""
+    opdf = read_sql(
+        """
         SELECT "primary" as uniqueid, overarching_data_category, data_type,
         replace(growing_season, '.0', '') as growing_season,
         comments
         from highvalue_notes where "primary" in %s
         ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC,
         growing_season ASC
-    """, PGCONN, params=(tuple(sites), ))
-    opdf.replace(['None', None, ''], np.nan, inplace=True)
-    opdf.dropna(how='all', inplace=True)
+    """,
+        PGCONN,
+        params=(tuple(sites),),
+    )
+    opdf.replace(["None", None, ""], np.nan, inplace=True)
+    opdf.dropna(how="all", inplace=True)
     opdf.fillna(missing, inplace=True)
-    opdf[opdf.columns].to_excel(writer, 'Notes', index=False)
+    opdf[opdf.columns].to_excel(writer, "Notes", index=False)
     # Increase column width
-    worksheet = writer.sheets['Notes']
-    worksheet.set_column('B:B', 36)
-    worksheet.set_column('C:D', 18)
-    worksheet.set_column('E:G', 36)
+    worksheet = writer.sheets["Notes"]
+    worksheet.set_column("B:B", 36)
+    worksheet.set_column("C:D", 18)
+    worksheet.set_column("E:G", 36)
 
 
 def do_dwm(writer, sites, missing):
     """Write dwm to the spreadsheet"""
-    opdf = read_sql("""
+    opdf = read_sql(
+        """
         SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
         outletdepth, outletdate, comments
         from dwm where uniqueid in %s
         ORDER by uniqueid ASC, cropyear ASC
-    """, PGCONN, params=(tuple(sites), ))
-    opdf.replace(['None', None, ''], np.nan, inplace=True)
-    opdf.dropna(how='all', inplace=True)
+    """,
+        PGCONN,
+        params=(tuple(sites),),
+    )
+    opdf.replace(["None", None, ""], np.nan, inplace=True)
+    opdf.dropna(how="all", inplace=True)
     opdf.fillna(missing, inplace=True)
-    _df, worksheet = add_bling(writer, opdf[opdf.columns],
-                               'Drainage Control Structure Mngt',
-                               'Drainage Control Structure Mngt')
-    worksheet.set_column('G:G', 12)
-    worksheet.set_column('H:H', 30)
+    _df, worksheet = add_bling(
+        writer,
+        opdf[opdf.columns],
+        "Drainage Control Structure Mngt",
+        "Drainage Control Structure Mngt",
+    )
+    worksheet.set_column("G:G", 12)
+    worksheet.set_column("H:H", 30)
 
 
 def do_work(form):
     """do great things"""
-    agree = form.getfirst('agree')
-    if agree != 'AGREE':
+    agree = form.getfirst("agree")
+    if agree != "AGREE":
         ssw("Content-type: text/plain\n\n")
         ssw("You did not agree to download terms.")
         return
-    email = form.getfirst('email')
-    sites = form.getlist('sites[]')
+    email = form.getfirst("email")
+    sites = form.getlist("sites[]")
     if not sites:
         sites.append("XXX")
     # treatments = form.getlist('treatments[]')
-    agronomic = redup(form.getlist('agronomic[]'))
-    soil = redup(form.getlist('soil[]'))
-    ghg = redup(form.getlist('ghg[]'))
+    agronomic = redup(form.getlist("agronomic[]"))
+    soil = redup(form.getlist("soil[]"))
+    ghg = redup(form.getlist("ghg[]"))
     # water = redup(form.getlist('water[]'))
-    ipm = redup(form.getlist('ipm[]'))
-    years = redup(form.getlist('year[]'))
+    ipm = redup(form.getlist("ipm[]"))
+    years = redup(form.getlist("year[]"))
     if not years:
-        years = ['2011', '2012', '2013', '2014', '2015']
-    shm = redup(form.getlist('shm[]'))
-    missing = form.getfirst('missing', "M")
-    if missing == '__custom__':
-        missing = form.getfirst('custom_missing', 'M')
-    pprint("Missing is %s" % (missing, ))
+        years = ["2011", "2012", "2013", "2014", "2015"]
+    shm = redup(form.getlist("shm[]"))
+    missing = form.getfirst("missing", "M")
+    if missing == "__custom__":
+        missing = form.getfirst("custom_missing", "M")
+    pprint("Missing is %s" % (missing,))
     if years:
         years = [str(s) for s in range(2011, 2016)]
-    detectlimit = form.getfirst('detectlimit', "1")
+    detectlimit = form.getfirst("detectlimit", "1")
 
-    writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine="xlsxwriter")
 
     # First sheet is Data Dictionary
-    if 'SHM5' in shm:
+    if "SHM5" in shm:
         do_dictionary(writer)
         pprint("do_dictionary() is done")
 
     # Sheet two is plot IDs
-    if 'SHM4' in shm:
+    if "SHM4" in shm:
         do_plotids(writer, sites)
         pprint("do_plotids() is done")
 
@@ -589,42 +720,44 @@ def do_work(form):
         do_operations(writer, sites, years, missing)
         pprint("do_operations() is done")
     # Pesticides
-    if 'SHM2' in shm:
+    if "SHM2" in shm:
         do_pesticides(writer, sites, years)
         pprint("do_pesticides() is done")
     # Residue and Irrigation
-    if 'SHM3' in shm:
+    if "SHM3" in shm:
         do_management(writer, sites, years)
         pprint("do_management() is done")
     # Site Metadata
-    if 'SHM8' in shm:
+    if "SHM8" in shm:
         do_metadata_master(writer, sites, missing)
         pprint("do_metadata_master() is done")
     # Drainage Management
-    if 'SHM7' in shm:
+    if "SHM7" in shm:
         do_dwm(writer, sites, missing)
         pprint("do_dwm() is done")
     # Notes
-    if 'SHM6' in shm:
+    if "SHM6" in shm:
         do_notes(writer, sites, missing)
         pprint("do_notes() is done")
 
     # Send to client
     writer.close()
     msg = MIMEMultipart()
-    msg['Subject'] = "Sustainable Corn CAP Dataset"
-    msg['From'] = 'ISU Data Team <isudatateam@iastate.edu>'
+    msg["Subject"] = "Sustainable Corn CAP Dataset"
+    msg["From"] = "ISU Data Team <isudatateam@iastate.edu>"
     msg["To"] = email
-    msg.preamble = 'Data'
+    msg.preamble = "Data"
     # conservative limit of 8 MB
     # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
-    tmpfn = ('cscap_%s.xlsx'
-             ) % (datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), )
-    shutil.copyfile('/tmp/cscap.xlsx', '/var/webtmp/%s' % (tmpfn, ))
-    uri = "https://datateam.agron.iastate.edu/tmp/%s" % (tmpfn, )
-    text = EMAILTEXT % (datetime.datetime.utcnow(
-        ).strftime("%d %B %Y %H:%M:%S"),
-                        uri)
+    tmpfn = ("cscap_%s.xlsx") % (
+        datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"),
+    )
+    shutil.copyfile("/tmp/cscap.xlsx", "/var/webtmp/%s" % (tmpfn,))
+    uri = "https://datateam.agron.iastate.edu/tmp/%s" % (tmpfn,)
+    text = EMAILTEXT % (
+        datetime.datetime.utcnow().strftime("%d %B %Y %H:%M:%S"),
+        uri,
+    )
 
     msg.attach(MIMEText(text))
     # else:
@@ -635,15 +768,18 @@ def do_work(form):
     #    part.add_header('Content-Disposition',
     #                    'attachment; filename="cscap.xlsx"')
     #    msg.attach(part)
-    _s = smtplib.SMTP('localhost')
-    _s.sendmail(msg['From'], msg['To'], msg.as_string())
+    _s = smtplib.SMTP("localhost")
+    _s.sendmail(msg["From"], msg["To"], msg.as_string())
     _s.quit()
-    os.unlink('/tmp/cscap.xlsx')
+    os.unlink("/tmp/cscap.xlsx")
     ssw("Content-type: text/plain\n\n")
     ssw("Email Delivered!")
     cursor = PGCONN.cursor()
-    cursor.execute("""INSERT into website_downloads(email) values (%s)
-    """, (email, ))
+    cursor.execute(
+        """INSERT into website_downloads(email) values (%s)
+    """,
+        (email,),
+    )
     cursor.close()
     PGCONN.commit()
     pprint("is done!!!")
@@ -655,7 +791,7 @@ def main():
     do_work(form)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # do_soil(None, ['MASON', ],
     #        ['SOIL15', ],
     #        ['2015', ], '', 'daryl')

@@ -1,21 +1,28 @@
 import psycopg2
-COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+
+COOP = psycopg2.connect(database="coop", host="iemdb", user="nobody")
 ccursor = COOP.cursor()
 
-SUSTAIN = psycopg2.connect(database='sustainablecorn', host='iemdb', user='nobody')
+SUSTAIN = psycopg2.connect(
+    database="sustainablecorn", host="iemdb", user="nobody"
+)
 scursor = SUSTAIN.cursor()
 
 import ConfigParser
 import sys
-sys.path.insert(0, '../')
+
+sys.path.insert(0, "../")
 import util
+
 config = ConfigParser.ConfigParser()
-config.read('../mytokens.cfg')
+config.read("../mytokens.cfg")
 
 sitemeta = util.get_site_metadata(config)
 
-scursor.execute("""SELECT uniqueid, valid, operation, biomassdate1, biomassdate2
- from operations where operation ~* 'rye' ORDER by valid ASC""")
+scursor.execute(
+    """SELECT uniqueid, valid, operation, biomassdate1, biomassdate2
+ from operations where operation ~* 'rye' ORDER by valid ASC"""
+)
 
 biodates1 = {}
 biodates2 = {}
@@ -36,49 +43,77 @@ for row in scursor:
     operation = row[2]
     bm1 = row[3]
     bm2 = row[4]
-    #print "%-15.15s %-20s %10s %10s %10s" % (site, operation, valid, bm1, bm2)
-    if operation.find('termination') == 0:
+    # print "%-15.15s %-20s %10s %10s %10s" % (site, operation, valid, bm1, bm2)
+    if operation.find("termination") == 0:
         cropyear = valid.year
-        termdates[site][cropyear].append( [valid, bm1, bm2] )
-    if operation.find('plant') == 0:
+        termdates[site][cropyear].append([valid, bm1, bm2])
+    if operation.find("plant") == 0:
         cropyear = valid.year + 1
-        plantdates[site][cropyear].append( valid )
-        
+        plantdates[site][cropyear].append(valid)
+
 for site in plantdates.keys():
-    climate_site = sitemeta[site]['climate_site']
+    climate_site = sitemeta[site]["climate_site"]
     table = "alldata_%s" % (climate_site[:2],)
-    for yr in range(2011,2014):
+    for yr in range(2011, 2014):
         for plantdate in plantdates[site][yr]:
             for (termdate, bm1, bm2) in termdates[site][yr]:
-                ccursor.execute("""
+                ccursor.execute(
+                    """
     SELECT sum(precip), sum(gddxx(0,100,f2c(low)::real,f2c(high)::real)),
     sum(gddxx(4,100,f2c(low)::real,f2c(high)::real))
-    from """+table+""" WHERE station = %s and
+    from """
+                    + table
+                    + """ WHERE station = %s and
     day between %s and %s
-                """, (climate_site, plantdate, termdate))
+                """,
+                    (climate_site, plantdate, termdate),
+                )
                 row = ccursor.fetchone()
-                ccursor.execute("""
+                ccursor.execute(
+                    """
     SELECT sum(precip), sum(gddxx(0,100,f2c(low)::real,f2c(high)::real)),
     sum(gddxx(4,100,f2c(low)::real,f2c(high)::real)) 
-    from """+table+""" WHERE station = %s and
+    from """
+                    + table
+                    + """ WHERE station = %s and
     day between %s and %s
-                """, (climate_site, plantdate, bm1))
+                """,
+                    (climate_site, plantdate, bm1),
+                )
                 row2 = ccursor.fetchone()
                 if bm2:
-                    ccursor.execute("""
+                    ccursor.execute(
+                        """
     SELECT sum(precip), sum(gddxx(0,100,f2c(low)::real,f2c(high)::real)),
     sum(gddxx(4,100,f2c(low)::real,f2c(high)::real)) 
-    from """+table+""" WHERE station = %s and
+    from """
+                        + table
+                        + """ WHERE station = %s and
     day between %s and %s
-                """, (climate_site, plantdate, bm1))
+                """,
+                        (climate_site, plantdate, bm1),
+                    )
                     row3 = ccursor.fetchone()
                 else:
-                    row3 = [0,0,0]
-                print("%-12.12s, %s, %s, %5.2f, %4.0f, %4.0f, %5.2f, %4.0f, %4.0f, %5.2f, %4.0f, %4.0f, %s, %s, %s, %s" % (site, sitemeta[site]['climate_site'],
-                                                yr, 
-                                                row[0], row[1], row[2],
-                                                row2[0], row2[1], row2[2],
-                                                row3[0], row3[1], row3[2],
-                                                plantdate, termdate, bm1,
-                                                bm2 or ""))
-        
+                    row3 = [0, 0, 0]
+                print(
+                    "%-12.12s, %s, %s, %5.2f, %4.0f, %4.0f, %5.2f, %4.0f, %4.0f, %5.2f, %4.0f, %4.0f, %s, %s, %s, %s"
+                    % (
+                        site,
+                        sitemeta[site]["climate_site"],
+                        yr,
+                        row[0],
+                        row[1],
+                        row[2],
+                        row2[0],
+                        row2[1],
+                        row2[2],
+                        row3[0],
+                        row3[1],
+                        row3[2],
+                        plantdate,
+                        termdate,
+                        bm1,
+                        bm2 or "",
+                    )
+                )

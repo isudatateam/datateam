@@ -22,7 +22,7 @@ def get_entries():
 
 
 def fill_missing_timestamps():
-    """ Fill in any missing timestamps """
+    """Fill in any missing timestamps"""
     cursor = pgconn.cursor()
     entries = get_entries()
     for (uniqueid, plotid) in entries:
@@ -58,7 +58,7 @@ def fill_missing_timestamps():
 
 
 def bounds_check():
-    """ Values need to be physical! """
+    """Values need to be physical!"""
     cursor = pgconn.cursor()
     entries = get_entries()
     for (uniqueid, plotid) in entries:
@@ -102,7 +102,7 @@ def bounds_check():
 
 
 def ticker_temp():
-    """ QC any values that tick too quickly over some period of time"""
+    """QC any values that tick too quickly over some period of time"""
     cursor = pgconn.cursor()
     entries = get_entries()
     n = "temp"
@@ -166,7 +166,7 @@ def ticker_temp():
 
 
 def replace999():
-    """ Simple replacement of -999 values with nulls """
+    """Simple replacement of -999 values with nulls"""
     for v in range(1, 6):
         for n in ["moisture", "temp", "ec"]:
             if v > 1 and n == "ec":

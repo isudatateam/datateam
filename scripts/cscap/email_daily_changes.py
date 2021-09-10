@@ -117,7 +117,7 @@ def sites_changelog(regime, yesterday, html):
 
 
 def drive_changelog(regime, yesterday, html):
-    """ Do something """
+    """Do something"""
     drive = util.get_driveclient(CONFIG, regime)
     folders = util.get_folders(drive)
     start_change_id = CONFIG[regime]["changestamp"]

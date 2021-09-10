@@ -20,7 +20,7 @@ drive_client = util.get_driveclient(config)
 
 
 def adjust_sdc(sitekey, varname):
-    """ Change what we do here """
+    """Change what we do here"""
     for entry in spr_client.get_list_feed(
         "1PKK-vWuOryYFOSYSgt4TosrjIDX_F-opHOvrEo5q-i4", "od6"
     ).entry:

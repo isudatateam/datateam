@@ -4,14 +4,16 @@ import datetime
 
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn, ssw
-DBCONN = get_dbconn('sustainablecorn')
+
+DBCONN = get_dbconn("sustainablecorn")
 cursor = DBCONN.cursor()
 
 
 def get_data(mode, data, arr):
-    ''' Do stuff '''
-    table = 'agronomic_data' if mode == 'agronomic' else 'soil_data'
-    cursor.execute("""SELECT uniqueid,
+    """Do stuff"""
+    table = "agronomic_data" if mode == "agronomic" else "soil_data"
+    cursor.execute(
+        """SELECT uniqueid,
     -- We have some number
     sum(case when lower(value) not in ('.','','did not collect','n/a') and
         value is not null then 1 else 0 end),
@@ -22,41 +24,54 @@ def get_data(mode, data, arr):
         then 1 else 0 end),
     -- We have a null
     sum(case when value is null then 1 else 0 end),
-    count(*) from """+table+"""
+    count(*) from """
+        + table
+        + """
     WHERE (value is Null or lower(value) != 'n/a')
-    GROUP by uniqueid""")
+    GROUP by uniqueid"""
+    )
     for row in cursor:
-        for site in [row[0], '_ALL']:
-            entry = data.setdefault(site, dict(hits=0, dots=0, other=0,
-                                               nulls=0, tot=0, all=0,
-                                               hits2=0, other2=0))
+        for site in [row[0], "_ALL"]:
+            entry = data.setdefault(
+                site,
+                dict(
+                    hits=0,
+                    dots=0,
+                    other=0,
+                    nulls=0,
+                    tot=0,
+                    all=0,
+                    hits2=0,
+                    other2=0,
+                ),
+            )
             tot = 0
-            entry['hits2'] += row[1]
-            entry['other2'] += row[3]
+            entry["hits2"] += row[1]
+            entry["other2"] += row[3]
             if arr[0]:
-                entry['hits'] += row[1]
+                entry["hits"] += row[1]
                 tot += row[1]
             if arr[1]:
-                entry['dots'] += row[2]
+                entry["dots"] += row[2]
                 tot += row[2]
             if arr[2]:
-                entry['other'] += row[3]
+                entry["other"] += row[3]
                 # tot += row[3]
             if arr[3]:
-                entry['nulls'] += row[4]
+                entry["nulls"] += row[4]
                 tot += row[4]
-            entry['tot'] += tot
-            entry['all'] += (row[5] - row[3])
+            entry["tot"] += tot
+            entry["all"] += row[5] - row[3]
 
 
 def make_progress(row):
-    ''' return string for progress bar '''
+    """return string for progress bar"""
     if row is None:
-        return ''
-    hits = row['hits'] / float(row['tot']) * 100.0
-    dots = row['dots'] / float(row['tot']) * 100.0
+        return ""
+    hits = row["hits"] / float(row["tot"]) * 100.0
+    dots = row["dots"] / float(row["tot"]) * 100.0
     # other = row['other'] / float(row['tot']) * 100.0
-    nulls = row['nulls'] / float(row['tot']) * 100.0
+    nulls = row["nulls"] / float(row["tot"]) * 100.0
     return """<div class="progress">
   <div class="progress-bar progress-bar-success" style="width: %.1f%%">
     <span>%s</span>
@@ -67,14 +82,21 @@ def make_progress(row):
   <div class="progress-bar progress-bar-danger" style="width: %.1f%%">
     <span>%s</span>
   </div>
-</div>""" % (hits - 0.05, row['hits'], dots - 0.05, row['dots'],
-             # other - 0.05, row['other'],
-             nulls - 0.05, row['nulls'])
+</div>""" % (
+        hits - 0.05,
+        row["hits"],
+        dots - 0.05,
+        row["dots"],
+        # other - 0.05, row['other'],
+        nulls - 0.05,
+        row["nulls"],
+    )
 
 
 def do_site(site):
     """Print out a simple listing of trouble"""
-    df = read_sql("""
+    df = read_sql(
+        """
     with ag as (
         select year, varname, value, count(*) from agronomic_data
         where uniqueid = %s and (value is null or value in ('', '.'))
@@ -85,40 +107,48 @@ def do_site(site):
         GROUP by year, varname, value)
 
     SELECT * from ag UNION select * from soil ORDER by year ASC, varname ASC
-    """, DBCONN, params=(site, site), index_col=None)
+    """,
+        DBCONN,
+        params=(site, site),
+        index_col=None,
+    )
     ssw("Content-type: text/plain\n\n")
     ssw("CSCAP Variable Progress Report\n")
     ssw("Site: %s\n" % (site,))
-    ssw("Generated: %s\n" % (
-        datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), ))
-    ssw("Total Missing: %s\n" % (df['count'].sum(),))
-    ssw("%4s %-10s %-10s %-6s\n" % ('YEAR', 'VARNAME', 'VALUE', 'COUNT'))
+    ssw(
+        "Generated: %s\n"
+        % (datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),)
+    )
+    ssw("Total Missing: %s\n" % (df["count"].sum(),))
+    ssw("%4s %-10s %-10s %-6s\n" % ("YEAR", "VARNAME", "VALUE", "COUNT"))
 
     def nice(val):
         if val is None:
-            return 'Empty'
-        if val == '':
-            return 'Empty'
-        if val == '.':
+            return "Empty"
+        if val == "":
+            return "Empty"
+        if val == ".":
             return "Period"
         return val
 
     for _, row in df.iterrows():
-        ssw("%s %-10s %-10s %-6s\n" % (row['year'], row['varname'],
-                                       nice(row['value']), row['count']))
+        ssw(
+            "%s %-10s %-10s %-6s\n"
+            % (row["year"], row["varname"], nice(row["value"]), row["count"])
+        )
 
 
 def main():
     form = cgi.FieldStorage()
-    if 'site' in form:
-        do_site(form.getfirst('site'))
+    if "site" in form:
+        do_site(form.getfirst("site"))
         return
     # mode = form.getfirst('mode', 'agronomic')
-    show_has = (form.getfirst('has', '0') == '1')
-    show_period = (form.getfirst('period', '0') == '1')
-    show_dnc = (form.getfirst('dnc', '0') == '1')
-    show_no = (form.getfirst('no', '0') == '1')
-    if form.getfirst('a') is None:
+    show_has = form.getfirst("has", "0") == "1"
+    show_period = form.getfirst("period", "0") == "1"
+    show_dnc = form.getfirst("dnc", "0") == "1"
+    show_no = form.getfirst("no", "0") == "1"
+    if form.getfirst("a") is None:
         show_has = True
         show_period = True
         show_dnc = True
@@ -130,13 +160,14 @@ def main():
     show_no = True
     data = {}
     arr = [show_has, show_period, show_dnc, show_no]
-    get_data('agronomic', data, arr)
-    get_data('soils', data, arr)
+    get_data("agronomic", data, arr)
+    get_data("soils", data, arr)
 
     sites = list(data.keys())
     sites.sort()
-    ssw('Content-type: text/html\n\n')
-    ssw("""<!DOCTYPE html>
+    ssw("Content-type: text/html\n\n")
+    ssw(
+        """<!DOCTYPE html>
 <html lang='en'>
 <head>
 <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -185,35 +216,39 @@ def main():
     <th width="10%%">Count</th>
     <th width="10%%">Percent Done</th>
 </tr></thead>
-    """ % ('' if not show_has else ' checked="checked"',
-           '' if not show_period else ' checked="checked"',
-           '' if not show_dnc else ' checked="checked"',
-           '' if not show_no else ' checked="checked"'
-           ))
+    """
+        % (
+            "" if not show_has else ' checked="checked"',
+            "" if not show_period else ' checked="checked"',
+            "" if not show_dnc else ' checked="checked"',
+            "" if not show_no else ' checked="checked"',
+        )
+    )
     for sid in sites:
-        if sid == '_ALL':
+        if sid == "_ALL":
             continue
-        ssw("""
+        ssw(
+            """
         <tr><th>
 <a href="siteprogress.py?site=%s">
 <i class="glyphicon glyphicon-search"></i> %s</a></th>
-        """ % (sid, sid))
+        """
+            % (sid, sid)
+        )
         row = data[sid]
-        ssw('<td>%s</td>' % (make_progress(row)))
-        ssw("<td>%.0f</td>" % (row['tot'], ))
-        ssw("<td>%.0f%%</td>" % (((row['hits2']) /
-                                   float(row['all'])) * 100.))
+        ssw("<td>%s</td>" % (make_progress(row)))
+        ssw("<td>%.0f</td>" % (row["tot"],))
+        ssw("<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0))
         ssw("</tr>\n\n")
     sid = "_ALL"
     ssw("""<tr><th>%s</th>""" % (sid,))
     row = data[sid]
-    ssw('<td>%s</td>' % (make_progress(row)))
-    ssw("<td>%.0f</td>" % (row['tot'], ))
-    ssw("<td>%.0f%%</td>" % (((row['hits2']) /
-                               float(row['all'])) * 100.))
+    ssw("<td>%s</td>" % (make_progress(row)))
+    ssw("<td>%.0f</td>" % (row["tot"],))
+    ssw("<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0))
     ssw("</tr>\n\n")
     ssw("</table>")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
