@@ -4,8 +4,8 @@ The code in this repository is used by a team of collaborators at Iowa State Uni
 
 The [ISU Data Team](https://datateam.agron.iastate.edu) homepage is a public facing website offering a number of download and exploration tools from two USDA-NIFA funded grants.
 
-- [Sustainable Corn](https://sustainablecorn.org) "CSCAP"
-- [Transforming Drainage](https://transformingdrainage.org) "TD"
+- [Sustainable Corn](https://datateam.agron.iastate.edu/cscap/) "CSCAP"
+- [Transforming Drainage](https://datateam.agron.iastate.edu/td/) "TD"
 
 ## Code Repository Layout
 
