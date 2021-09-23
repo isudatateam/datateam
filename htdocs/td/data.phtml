@@ -1,38 +1,3 @@
 <?php 
-// require_once "../../include/require_auth.php";
-require_once "../../include/myview.php";
-$t = new MyView();
-$t->title = "Transforming Drainage Data and Tools";
-$t->content = <<<EOF
-<p>&nbsp;</p>
-
-<h3>Transforming Drainage Project Team Research Data</h3>
-
-<div class="row">
-<div class="col-md-1">&nbsp;</div>
-<div class="col-md-5">
-<div class="jumbotron" style="margin: 0px; padding: 10px;">
-  <h2>Visualization and Plotting Tools</h2>
-  <p>Interactive plotting tool with downloadable figures.</p>
-  <p><a class="btn btn-primary btn-lg" href="/td/dl/#tab_wdata" role="button">View Tools</a></p>
-</div>
-</div>
-<div class="col-md-5">
-<div class="jumbotron" style="margin: 0px; padding: 10px;">
-  <h2>Research Data from Experimental Sites</h2>
-  <p>Download the data you need.</p>
-  <p><a class="btn btn-primary btn-lg" href="/td/dl/#tab_sites" role="button">View Download</a></p>
-</div>
-</div>
-<div class="col-md-1">&nbsp;</div>
-</div>
-
-
-<div class="clearfix"></div>
-<p>&nbsp;</p>
-<img src="/images/tdbanner.png" class="img img-responsive" alt="TD Banner">
-<div class="clearfix"></div>
-
-EOF;
-$t->render('single.phtml');
+header("Location: /td/dl/#tab_sites");
 ?>
