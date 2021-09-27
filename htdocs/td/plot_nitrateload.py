@@ -82,7 +82,7 @@ def make_plot(form, start_response):
         df = read_sql(
             f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
             "coalesce(plotid, location) as datum, "
-            "sum(nitrate_n_load) as nitrate_n_load "
+            "sum(nitrate_n_load_filled) as nitrate_n_load "
             "from tile_flow_and_n_loads_data WHERE "
             "siteid = %s and date between %s and %s "
             "and nitrate_n_load is not null GROUP by v, datum "
@@ -96,7 +96,7 @@ def make_plot(form, start_response):
 
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
-    title = ("Nitrate Load for Site: %s (%s to %s)") % (
+    title = ("Nitrate Load for %s (%s to %s)") % (
         siteid,
         sts.strftime("%-d %b %Y"),
         ets.strftime("%-d %b %Y"),
