@@ -342,7 +342,7 @@ function build_sites(){
 			<p><b>Institution</b></p>
 		</td>
 		<td>
-			<p><b>One Page Summary</b></p>
+			<p><strong>Summary Document</strong></p>
 		</td>
 		<td nowrap>
 			<p><b>Plot Map</b></p>
@@ -353,6 +353,10 @@ function build_sites(){
     </tr>
     </thead>
 EOM;
+$missing = Array(
+    "IA_Story2", "MO_Knox4", "NC_Washington", "OH_Auglaize1", "OH_Auglaize2",
+    "OH_Crawford", "OH_Defiance1", "OH_Delaware", "OH_Hardin1", "OH_Hardin2",
+    "OH_Henry");
 foreach($headers as $k => $v){
     $s .= "<div style='border-left: 10px {$v['color']} solid; padding-left: 5px;'>";
     $s .= "<h3>{$v['t']}</h3>";
@@ -360,12 +364,19 @@ foreach($headers as $k => $v){
     foreach($groups[$k] as $k2 => $row){
         $purl = "https://drive.google.com/drive/folders/". $row["drive_photos_folder"];
         $murl = "https://drive.google.com/drive/folders/". $row["drive_maps_folder"];
+        $phtml = sprintf(
+            "<a href=\"%s\"><i class=\"fa fa-camera\"></i> Link</a>",
+            $purl,
+        );
+        if (in_array($row["siteid"], $missing)){
+            $phtml = "Not Available";
+        }
         $s .= sprintf("<tr><th>%s</th><td>%s</td><td>%s</td><td>%s</td>".
             "<td></td>".
             "<td><a href=\"%s\"><i class=\"fa fa-map\"></i> Link</a></td>".
-            "<td><a href=\"%s\"><i class=\"fa fa-camera\"></i> Link</a></td></tr>\n",
+            "<td>%s</td></tr>\n",
                 $row['siteid'], $row["lead_pi"], $row["official_farm_name"],
-                $row["pi_institution"], $murl, $purl);
+                $row["pi_institution"], $murl, $phtml);
     }
     $s .= "</table>\n</div>\n";
 }
@@ -1213,7 +1224,7 @@ timeout shown, but an email will still be delivered with the data.</div>
 <img src="/images/tdsites.png" class="img img-responsive" alt="Transforming Drainage Sites">
 </div></div>
 
-<p>View the <a href="https://drive.google.com/drive/folders/123nkLLWggCyXvdU37S9R0W91mDOw-u7Z" target="_blank">Google Map</a> 
+<p>View the <a href="https://www.google.com/maps/d/u/0/edit?mid=1Ubw9c2nAILMhNFclLT0IxNI1yFw&ll=39.86558648764423%2C-90.09503297118817&z=5" target="_blank">Google Map</a>
 which has plots and infrastructure locations identified. Some sites are not
 included in the Google map because of privacy concerns for research
 located on farmer fields.
