@@ -8,7 +8,7 @@ $site = isset($_GET["site"]) ? $_GET["site"]: 'SD_Clay';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
 $by = isset($_GET['by']) ? $_GET['by']: 'daily';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
-$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
+$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '1';
 
 $errmsg = "";
 if (strlen($date) != 10){
@@ -106,16 +106,14 @@ select {
 <p>&nbsp;</p>
 <h3>Nitrate Load Data Plotting/Download</h3>
 
-<p>Nitrate Load data included in this visualization and aggregation tool are associated with the
-USDA-NIFA funded project: 
-"Managing Water for Increased Resiliency of Drained Agricultural Landscapes" (Award No.
-2015-68007-23193).</p>
+<p>Nitrate load data are included for all applicable sites in this
+visualization and aggregation tool. Data are from the USDA-NIFA
+funded project: "Managing Water for Increased Resiliency of Drained
+Agricultural Landscapes" (Award No. 2015-68007-23193).</p>
 
 {$errmsg}
 
 <form method="GET" name="plot1">
-
-<h4>SELECT</h4>
 
 <div class="row">
 <div class="col-md-5">
@@ -137,7 +135,7 @@ USDA-NIFA funded project:
 
 <div class="row">
 <div class="col-md-12">
-<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show plot values, instead of by treatment.
+<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show results based on average treatment response.
 
 <br /><strong>Sum Values:</strong>
 <br />
@@ -153,14 +151,14 @@ USDA-NIFA funded project:
 <input type="submit" value="Run">
 </form>
 
-<p>{$interface}</p>
-
-<p><i>Pro Tip:</i> Click the legend name to de/select data series. 
+<p><strong>Viewing Options:</strong> Click the legend name to de/select data series. 
 To zoom in, click and drag your mouse within the plot frame.</p>
 
 <p><strong>Download Options:</strong> Download the figure by right clicking
 on the symbol in the upper right corner.  Download the corresponding data
 <a href="/td/dl/#tab_data" target="_blank">here</a>.</p>
+
+<p>{$interface}</p>
 
 EOF;
 $t->render('full.phtml');
