@@ -5,7 +5,7 @@ from pyiem.plot.use_agg import plt
 
 COPYWRITE = """credits: {
         position: {align: 'left', x: 15},
-        text: "© Transforming Drainage"
+        text: "© Transforming Drainage | transformingdrainage.org | drainagedata.org"
     },"""
 COLORS = {
     "UD": "#36454F",
