@@ -2,7 +2,9 @@
 require_once "../../include/require_auth.php";
 require_once "../../include/myview.php";
 
-$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local");
+$project = (isset($_REQUEST["td"])) ? "td" : "sustainablecorn";
+
+$pgconn = pg_connect("dbname={$project} host=iemdb-{$project}.local");
 $table = <<<EOF
 <table class="table table-striped table-bordered">
 <thead><tr><th>Email</th><th>Timestamp</th></tr></thead>
@@ -19,15 +21,15 @@ for ($i=0; $row=@pg_fetch_assoc($rs,$i); $i++){
 $table .= "</table>";
 
 $t = new MyView();
-$t->title = "CSCAP Download Users";
+$t->title = "Download Users";
 
 $t->content = <<< EOF
 <ol class="breadcrumb">
  <li><a href="/admin/">Administration</a></li>
- <li class="active">CSCAP Download Users</li>
+ <li class="active">Website Download Users</li>
 </ol>
 
-<h3>Emails and Download Timestamps for CSCAP Download Interface</h3>
+<h3>Emails and Download Timestamps for {$project} Download Interface</h3>
 		
 {$table}
 
