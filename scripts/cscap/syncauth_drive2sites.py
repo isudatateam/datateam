@@ -3,6 +3,8 @@ from gdata import gauth
 import gdata.acl.data
 import gdata.data
 import gdata.sites.data
+import gdata.gauth
+import gdata.sites.client as sclient
 import pyiem.cscap_utils as util
 
 config = util.get_config()
@@ -23,8 +25,25 @@ for item in perms.get("items", []):
     email = item["emailAddress"]
     drive_users.append(email.lower())
 
+
+def get_sites_client(config, site="sustainablecorn"):
+    """Return an authorized sites client"""
+
+    token = gdata.gauth.OAuth2Token(
+        client_id=config["appauth"]["client_id"],
+        client_secret=config["appauth"]["app_secret"],
+        user_agent="daryl.testing",
+        scope=config["googleauth"]["scopes"],
+        refresh_token=config["googleauth"]["refresh_token"],
+    )
+
+    sites_client = sclient.SitesClient(site=site)
+    token.authorize(sites_client)
+    return sites_client
+
+
 # Get Sites Users
-sites_client = util.get_sites_client(config)
+sites_client = get_sites_client(config)
 site_users = []
 for acl in sites_client.get_acl_feed().entry:
     userid = acl.scope.value
