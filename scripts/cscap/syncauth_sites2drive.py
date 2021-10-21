@@ -2,10 +2,29 @@
 Sync authorized users on Google Sites to Google Drive
 """
 import pyiem.cscap_utils as util
+import gdata.gauth
+import gdata.sites.client as sclient
 
 config = util.get_config()
 
-spr_client = util.get_sites_client(config)
+
+def get_sites_client(config, site="sustainablecorn"):
+    """Return an authorized sites client"""
+
+    token = gdata.gauth.OAuth2Token(
+        client_id=config["appauth"]["client_id"],
+        client_secret=config["appauth"]["app_secret"],
+        user_agent="daryl.testing",
+        scope=config["googleauth"]["scopes"],
+        refresh_token=config["googleauth"]["refresh_token"],
+    )
+
+    sites_client = sclient.SitesClient(site=site)
+    token.authorize(sites_client)
+    return sites_client
+
+
+spr_client = get_sites_client(config)
 service = util.get_driveclient(config)
 
 site_users = []

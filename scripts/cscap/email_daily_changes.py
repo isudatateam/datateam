@@ -12,6 +12,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # third party
+import gdata.gauth
+import gdata.sites.client as sclient
 from gdata.client import RequestError
 import pytz
 import pyiem.cscap_utils as util
@@ -55,6 +57,22 @@ CFG = {
 LOCALTZ = pytz.timezone("America/Chicago")
 
 
+def get_sites_client(config, site="sustainablecorn"):
+    """Return an authorized sites client"""
+
+    token = gdata.gauth.OAuth2Token(
+        client_id=config["appauth"]["client_id"],
+        client_secret=config["appauth"]["app_secret"],
+        user_agent="daryl.testing",
+        scope=config["googleauth"]["scopes"],
+        refresh_token=config["googleauth"]["refresh_token"],
+    )
+
+    sites_client = sclient.SitesClient(site=site)
+    token.authorize(sites_client)
+    return sites_client
+
+
 def pprint(mydict):
     """pretty print JSON"""
     return json.dumps(mydict, sort_keys=True, indent=4, separators=(",", ": "))
@@ -76,7 +94,7 @@ def sites_changelog(regime, yesterday, html):
         site = "transformingdrainage"
     else:
         site = "nutrinet"
-    s = util.get_sites_client(CONFIG, site)
+    s = get_sites_client(CONFIG, site)
     # Fetch more results for sites activity feed
     opt = {"max-results": 999}
     try:
