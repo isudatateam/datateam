@@ -391,9 +391,9 @@ def do_work(form):
         pprint("Soil is done")
 
     # Management
-    # Planting
     if "SHM1" in shm or "_ALL" in shm:
-        for mngt in "Planting Tillage Residue Fertilizing Harvesting".split():
+        _titles = "Planting Tillage Residue Fertilizing Harvesting Irrigation"
+        for mngt in _titles.split():
             do_generic(
                 pgconn,
                 writer,
