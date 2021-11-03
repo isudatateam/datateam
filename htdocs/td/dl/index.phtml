@@ -1,5 +1,6 @@
 <?php
 require_once "../../../include/forms.php";
+require_once "../../../include/myview.php";
 
 function build_treatments_ui(){
 	$s = <<<EOF
@@ -593,7 +594,6 @@ EOF;
 	return $s;
 }
 
-require_once "../../../include/myview.php";
 $t = new MyView();
 $t->title = "Transforming Drainage Project Data Download";
 $t->headextra = <<<EOF
@@ -1275,19 +1275,16 @@ University library.</blockquote></p>
 		</div>
     <div role="tabpanel" class="tab-pane" id="wdata">
 
-<p>Reference this map of research sites to identify sites and practices of 
-interest for plotting in the visualization tools below. Not every measurement 
-is available for plotting given site differences.</p>
-
-<div class="row"><div class="col-md-6">
-<p><img src="/images/tdsites.png" class="img img-responsive" alt="Transforming Drainage Sites">
-</div></div>
-
-<br />View the <a href="https://www.google.com/maps/d/u/1/edit?mid=1Ubw9c2nAILMhNFclLT0IxNI1yFw&ll=40.143474335880995%2C-90.09503297118817&z=5" target="_blank">Google Map</a> 
+<p>Select the sites and practices of interest for visualization by reference
+these maps. View the <a href="https://www.google.com/maps/d/u/1/edit?mid=1Ubw9c2nAILMhNFclLT0IxNI1yFw&ll=40.143474335880995%2C-90.09503297118817&z=5" target="_blank">Google Map</a>
 which has plots and infrastructure locations identified. Some sites are not
 included in the Google map because of privacy concerns for research
-located on farmer fields.
-</p>
+located on farmer fields.</p>
+
+<div class="row">
+<div class="col-md-6">
+<p><img src="/images/tdsites.png" class="img img-responsive" alt="Transforming Drainage Sites">
+</div></div>
 
 <p>Measurements include:<br />
 <ul>
