@@ -7,7 +7,7 @@ $site = isset($_GET["site"]) ? $_GET["site"]: 'SD_Clay';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
 $by = isset($_GET['by']) ? $_GET['by']: 'daily';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
-$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '1';
+$ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
 
 $errmsg = "";
 if (strlen($date) != 10){
@@ -134,7 +134,8 @@ Agricultural Landscapes" (Award No. 2015-68007-23193).</p>
 
 <div class="row">
 <div class="col-md-12">
-<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show results based on average treatment response.
+<br /><input type="checkbox" id="ungroup" name="ungroup" value="1"${ungroupselected}>
+<label for="ungroup">Show results by plot identifier instead of treatment.</label>
 
 <br /><strong>Sum Values:</strong>
 <br />
