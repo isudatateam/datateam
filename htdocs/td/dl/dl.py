@@ -397,7 +397,7 @@ def do_work(form):
             do_generic(
                 pgconn,
                 writer,
-                mngt,
+                mngt if mngt != "Irrigation" else "Irrigation Event Based",
                 f"mngt_{mngt.lower()}_data.csv",
                 f"mngt_{mngt.lower()}_data",
                 sites,
@@ -408,9 +408,9 @@ def do_work(form):
         do_generic(
             pgconn,
             writer,
-            "Irrigation 2",
-            f"irrigation_data.csv",
-            f"igrrigation_data",
+            "Irrigation Daily",
+            "irrigation_data.csv",
+            "igrrigation_data",
             sites,
             ["_ALL"],
             missing,
