@@ -404,6 +404,17 @@ def do_work(form):
                 ["_ALL"],
                 missing,
             )
+        # Secondary Irrigation Tab
+        do_generic(
+            pgconn,
+            writer,
+            "Irrigation 2",
+            f"irrigation_data.csv",
+            f"igrrigation_data",
+            sites,
+            ["_ALL"],
+            missing,
+        )
     # DWM
     do_generic(
         pgconn,
