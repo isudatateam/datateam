@@ -410,7 +410,7 @@ def do_work(form):
             writer,
             "Irrigation Daily",
             "irrigation_data.csv",
-            "igrrigation_data",
+            "irrigation_data",
             sites,
             ["_ALL"],
             missing,
