@@ -123,9 +123,7 @@ select {
 <p>Tile flow data are included for all applicable sites in this visualization
 and aggregation tool. Data are from the USDA-NIFA funded project:
 "Managing Water for Increased Resiliency of Drained Agricultural Landscapes"
-(Award No. 2015-68007-23193).  Precipitation data included in this visualization
-is provided by site personnel from on-site weather stations. Only tile flow
-data are currently available for export under "View and Download Options".</p>
+(Award No. 2015-68007-23193).</p>
 
 {$errmsg}
 
@@ -179,68 +177,6 @@ on the symbol in the upper right corner.  Download the corresponding data
 <a href="/td/dl/#tab_data" target="_blank">here</a>.</p>
 
 <p>{$interface}</p>
-
-
-<h3>Frequently Asked Questions</h3>
-
-<ol>
-<li><strong>How are timezones handled?</strong><br />
-The timestamps presented should be valid for the local time zone of the sensor
-and are daylight saving time aware.  The daily aggregates should compute the
-daily summaries in the time zone of the station.
-</li>
-
-<li><strong>How were data collected?</strong><br />
-Variations exist across research sites in methodology and frequency of
-measurements. Generalized site information is provided below in the   
-table. Detailed descriptions are available from the
-<a target="_blank" href="https://sites.google.com/site/transformingdrainage/database/export-sampling-methods">Transforming   
-Drainage internal website.</a></li>
-</ol>
-
-<h3>Observation Site Collection Interval</h3>
-
-<p>This table lists the observation time interval at each site. If
-details are not provided below, the site does not have data entered yet
-or has issues that need to be resolved first relative to quality
-concerns.</p>
-<pre>
-                    TILE FLOW           PRECIPICATION
-ST  SITE         INTERVAL  PERIOD    INTERVAL PERIOD
-[IA] BEAR
-[IA] MAASS
-[IA] SERF_IA      5 MIN    2007-2016
-[IA] STORY        DAILY    2006-2009
-[IN] ACRE
-[IN] DPAC         60 MIN   2011-2015
-[MN] HICKS_B
-[MN] HICKS_S *begins in 2017
-[MN] SWROC *begins in 2017
-[MO] MUDS2        60 MIN   2010-2013
-[MO] MUDS3_NEW
-[MO] MUDS3_OLD    60 MIN   2010-2013     
-[MO] MUDS4        60 MIN   2010-2013
-[NC] BATH_A
-[NC] BATH_R
-[NC] TIDE_OLD
-[ND] CLAY_C       10 MIN   2015
-[ND] CLAY_R       10 MIN   2015
-[ND] FAIRM
-[SD] SERF_SD      60 MIN   2015
-[OH] AUGLA
-[OH] CRAWF
-[OH] DEFI_M
-[OH] DEFI_R
-[OH] FULTON
-[OH] HARDIN
-[OH] HARDIN_NW
-[OH] HENRY
-[OH] STJOHNS      20 MIN   2011-2015
-[OH] UBWC
-[OH] VANWERT
-		
-		
-</pre></p>
 
 EOF;
 $t->render('full.phtml');
