@@ -80,7 +80,7 @@ EOF;
 
 $t = new MyView();
 $t->thispage = "td-tileflow";
-$t->title = "TD Tile Flow Data Plotting/Download";
+$t->title = "TD Tile Flow Data Plotting";
 $t->headextra = <<<EOF
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.css" />
 <link rel="stylesheet" href="/vendor/jquery-ui/1.11.4/jquery-ui.theme.css" />
@@ -107,6 +107,9 @@ $(document).ready(function(){
 });
 </script>
 EOF;
+$dby = ($by == "daily") ? " CHECKED ": "";
+$mby = ($by == "monthly") ? " CHECKED ": "";
+$yby = ($by == "yearly") ? " CHECKED ": "";
 $ungroupselected = ($ungroup == "1") ? " checked=\"checked\"": "";
 $t->content =  <<<EOF
 <style>
@@ -115,41 +118,50 @@ select {
 }
 </style>
 
-<h3>Tile Flow Data Plotting/Download</h3>
+<h3>Tile Flow Data Plotting</h3>
 
-<p>Tile Flow data included in this visualization and aggregation tool are associated with the
-USDA-NIFA funded project: 
-"Managing Water for Increased Resiliency of Drained Agricultural Landscapes" (Award No.
-2015-68007-23193).  Precipitation data included in this visualization is provided by site personnel from on-site weather
-stations. Only tile flow data are currently available for export under "View and Download Options"</p>
+<p>Tile flow data are included for all applicable sites in this visualization
+and aggregation tool. Data are from the USDA-NIFA funded project:
+"Managing Water for Increased Resiliency of Drained Agricultural Landscapes"
+(Award No. 2015-68007-23193).  Precipitation data included in this visualization
+is provided by site personnel from on-site weather stations. Only tile flow
+data are currently available for export under "View and Download Options".</p>
 
 {$errmsg}
 
 <form method="GET" name="plot1">
-<table class="table table-bordered">
-<thead>
-<tr>
-	<th>Select Site:</th><th>Select Start Date</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-{$siteselect}
-<br /><input type="checkbox" name="ungroup" value="1"${ungroupselected}> Show plot values, instead of by treatment.
-</td>
-<td><input type="text" id="datepicker" name="date" value="{$date}" size="11" /></td>
-</tr></tbody></table>
+<div class="row">
+<div class="col-md-5">
+<strong>Site:</strong>
+<br />{$siteselect}
 
-<table class="table table-bordered">
-<thead><tr><th>Number of Days to Plot</th>
-<th>Time-series Aggregation:</th></tr></thead>
-<tbody><tr>
-<td><input type="text" name="days" value="{$days}" size="4" /></td>
-<td>{$byselect}</td>
-</tr></tbody>
-</table>
+</div>
+<div class="col-md-3">
+<strong>Date:</strong>
+<br /><input type="text" id="datepicker" name="date" value="{$date}" size="11">
 
+</div>
+<div class="col-md-4">
+<strong>Days to Plot:</strong>
+<br /><input type="text" name="days" value="{$days}" size="4">
+</div>
+</div><!-- end row -->
+
+<div class="row">
+<div class="col-md-12">
+<br /><input type="checkbox" id="ungroup" name="ungroup" value="1"${ungroupselected}>
+<label for="ungroup">Show results by plot identifier instead of treatment.</label>
+
+<br /><strong>Sum Values:</strong>
+<br />
+<input type="radio" name="by" value="daily"{$dby}> daily &nbsp;
+<input type="radio" name="by" value="monthly"{$mby}> monthly &nbsp;
+<input type="radio" name="by" value="yearly"{$yby}> yearly
+
+</div>
+
+</div>
+<br clear="all" />
 <input type="submit" value="Run">
 </form>
 
@@ -159,14 +171,15 @@ browser and failing to load. Select a shorter time span if you run into
 this problem. Long time periods can be selected without problems if only 
 exporting the data.</p>
 
-<p>{$interface}</p>
-
-<p><i>Pro Tip:</i> Click the legend name to de/select data series. 
+<p><strong>Viewing Options:</strong> Click the legend name to de/select data series. 
 To zoom in, click and drag your mouse within the plot frame.</p>
 
 <p><strong>Download Options:</strong> Download the figure by right clicking
 on the symbol in the upper right corner.  Download the corresponding data
 <a href="/td/dl/#tab_data" target="_blank">here</a>.</p>
+
+<p>{$interface}</p>
+
 
 <h3>Frequently Asked Questions</h3>
 

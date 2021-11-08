@@ -101,16 +101,12 @@ def make_plot(form, start_response):
         df["treatment"] = df.apply(lookup, axis=1)
         del df["datum"]
         df = df.groupby(["treatment", "v"]).mean()
-        df.reset_index(inplace=True)
+        df = df.reset_index()
         linecol = "treatment"
 
     # Begin highcharts output
     start_response("200 OK", [("Content-type", "application/javascript")])
-    title = "Tile Flow for Site: %s (%s to %s)" % (
-        uniqueid,
-        sts.strftime("%-d %b %Y"),
-        ets.strftime("%-d %b %Y"),
-    )
+    title = f"Tile Flow for {uniqueid} ({sts:%-d %b %Y} to {ets:%-d %b %Y})"
     s = []
     plot_ids = df[linecol].unique()
     plot_ids.sort()
