@@ -342,9 +342,6 @@ function build_sites(){
 		<td>
 			<p><b>Institution</b></p>
 		</td>
-		<td>
-			<p><strong>Summary Document</strong></p>
-		</td>
 		<td nowrap>
 			<p><b>Plot Map</b></p>
 		</td>
@@ -373,7 +370,6 @@ foreach($headers as $k => $v){
             $phtml = "Not Available";
         }
         $s .= sprintf("<tr><th>%s</th><td>%s</td><td>%s</td><td>%s</td>".
-            "<td></td>".
             "<td><a href=\"%s\"><i class=\"fa fa-map\"></i> Link</a></td>".
             "<td>%s</td></tr>\n",
                 $row['siteid'], $row["lead_pi"], $row["official_farm_name"],
