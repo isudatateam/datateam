@@ -1,3 +1,5 @@
 numpy
 # Ensure a bit of discipline
 pyiem
+# for pandas
+sqlalchemy

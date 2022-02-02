@@ -5,7 +5,6 @@ select string_agg(column_name, ', ') from
     (select column_name, ordinal_position from information_schema.columns where
     table_name='management' ORDER by ordinal_position) as foo;
 """
-from __future__ import print_function
 import sys
 import os
 import re
@@ -18,9 +17,9 @@ from email.mime.multipart import MIMEMultipart
 
 
 import pandas as pd
-from pandas.io.sql import read_sql
 import numpy as np
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconnstr, get_dbconn, ssw
+from sqlalchemy import text
 
 VARNAME_RE = re.compile(r"^[A-Z]+[0-9]$")
 EMAILTEXT = """
@@ -63,7 +62,7 @@ regarding usage and application of the data available at this site.
 
 """
 
-PGCONN = get_dbconn("sustainablecorn")
+PGCONN = get_dbconnstr("sustainablecorn")
 FERTELEM = [
     "nitrogen",
     "phosphorus",
@@ -137,7 +136,7 @@ TIL_CODES = {
 
 def get_vardf(tabname):
     """Get a dataframe of descriptors for this tabname"""
-    return read_sql(
+    return pd.read_sql(
         """
         select element_or_value_display_name as varname,
         number_of_decimal_places_to_round_up::numeric::int as round,
@@ -195,18 +194,18 @@ def conv(value, detectlimit):
         if detectlimit == "2":
             return floatval / 2.0
         if detectlimit == "3":
-            return floatval / 2 ** 0.5
+            return floatval / 2**0.5
         if detectlimit == "4":
             return "M"
     try:
         return float(value)
-    except Exception as _:
+    except Exception:
         return value
 
 
 def do_dictionary(writer):
     """Add Data Dictionary to the spreadsheet"""
-    df = read_sql(
+    df = pd.read_sql(
         """
         SELECT * from data_dictionary_export
         ORDER by ss_order ASC
@@ -228,8 +227,9 @@ def do_dictionary(writer):
 
 def do_metadata_master(writer, sites, missing):
     """get Metadata master data"""
-    df = read_sql(
-        """
+    df = pd.read_sql(
+        text(
+            """
     SELECT uniqueid,
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
     selon as "SE Lon", selat as "SE Lat", nelon as "NE Lon", nelat as "NE Lat",
@@ -240,11 +240,12 @@ def do_metadata_master(writer, sites, missing):
     sitearea as "site area",
     numberofplots as "number of plots"
     from metadata_master
-    WHERE uniqueid in %s
+    WHERE uniqueid in :sites
     ORDER by uniqueid
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     df.replace(["None", None, ""], np.nan, inplace=True)
@@ -258,20 +259,20 @@ def do_metadata_master(writer, sites, missing):
 def do_ghg(writer, sites, ghg, years, missing):
     """get GHG data"""
     cols = ", ".join(['%s as "%s"' % (s, s) for s in ghg])
-    df = read_sql(
-        """
+    df = pd.read_sql(
+        text(
+            f"""
     SELECT d.uniqueid, d.plotid, d.date, d.year, d.method, d.subsample,
-    d.position, """
-        + cols
-        + """
+    d.position, {cols}
     from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
-    and d.uniqueid in %s and d.year in %s
+    and d.uniqueid in :sites and d.year in :years
     ORDER by d.uniqueid, year, date, plotid
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites), tuple(years)),
+        params={"sites": tuple(sites), "years": tuple(years)},
         index_col=None,
     )
     df.fillna(missing, inplace=True)
@@ -282,19 +283,19 @@ def do_ghg(writer, sites, ghg, years, missing):
 def do_ipm(writer, sites, ipm, years, missing):
     """get IPM data"""
     cols = ", ".join(ipm)
-    df = read_sql(
-        """
-    SELECT d.uniqueid, d.plotid, d.date, d.year, """
-        + cols
-        + """
+    df = pd.read_sql(
+        text(
+            f"""
+    SELECT d.uniqueid, d.plotid, d.date, d.year, {cols}
     from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and d.year in %s
+    d.uniqueid in :sites and d.year in :years
     ORDER by d.uniqueid, year, date, plotid
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites), tuple(years)),
+        params={"sites": tuple(sites), "years": tuple(years)},
         index_col=None,
     )
     df.fillna(missing, inplace=True)
@@ -305,17 +306,23 @@ def do_ipm(writer, sites, ipm, years, missing):
 
 def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     """get agronomic data"""
-    df = read_sql(
-        """
+    df = pd.read_sql(
+        text(
+            """
     SELECT d.uniqueid, d.plotid, d.varname, d.year, d.value
     from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and year in %s and varname in %s
+    d.uniqueid in :sites and year in :years and varname in :vars
     ORDER by uniqueid, year, plotid
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites), tuple(years), tuple(agronomic)),
+        params={
+            "sites": tuple(sites),
+            "years": tuple(years),
+            "vars": tuple(agronomic),
+        },
         index_col=None,
     )
     df["value"] = df["value"].apply(lambda x: conv(x, detectlimit))
@@ -382,19 +389,25 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     # pprint("do_soil: " + str(soil))
     # pprint("do_soil: " + str(sites))
     # pprint("do_soil: " + str(years))
-    df = read_sql(
-        """
+    df = pd.read_sql(
+        text(
+            """
     SELECT d.uniqueid, d.plotid, d.depth,
     coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value,
     coalesce(d.sampledate::text, '') as sampledate
     from soil_data d JOIN plotids p ON (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in %s and year in %s and varname in %s
+    d.uniqueid in :sites and year in :years and varname in :vars
     ORDER by uniqueid, year, plotid, subsample
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites), tuple(years), tuple(soil)),
+        params={
+            "sites": tuple(sites),
+            "years": tuple(years),
+            "vars": tuple(soil),
+        },
         index_col=None,
     )
     pprint("do_soil() query done")
@@ -469,8 +482,9 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
 
 def do_operations(writer, sites, years, missing):
     """Return a DataFrame for the operations"""
-    opdf = read_sql(
-        """
+    opdf = pd.read_sql(
+        text(
+            """
     SELECT uniqueid, cropyear, operation, valid, cashcrop, croprot,
     plantryemethod, planthybrid, plantmaturity, plantrate, plantrateunits,
     terminatemethod, biomassdate1, biomassdate2, depth, limerate,
@@ -482,17 +496,18 @@ def do_operations(writer, sites, years, missing):
     -- These are deleted below
     nitrogen, phosphorus, phosphate, potassium,
     potash, sulfur, calcium, magnesium, zinc, iron
-    from operations where uniqueid in %s and cropyear in %s
+    from operations where uniqueid in :sites and cropyear in :years
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites), tuple(years)),
+        params={"sites": tuple(sites), "years": tuple(years)},
     )
     opdf["productrate"] = pd.to_numeric(opdf["productrate"], errors="coerce")
     for fert in FERTELEM:
         opdf[fert] = pd.to_numeric(opdf[fert], errors="coerce")
     for col in ["biomassdate1", "biomassdate2", "valid"]:
-        opdf.at[opdf[col].isnull(), col] = missing
+        opdf.loc[opdf[col].isnull(), col] = missing
 
     # __________________________________________________________
     # case 1, values are > 0, so columns are in %
@@ -522,25 +537,28 @@ def do_operations(writer, sites, years, missing):
 
 def do_management(writer, sites, years):
     """Return a DataFrame for the management"""
-    opdf = read_sql(
-        """
+    opdf = pd.read_sql(
+        text(
+            """
     SELECT uniqueid, cropyear, notill, irrigation, irrigationamount,
     irrigationmethod, residueremoval, residuehow, residuebiomassweight,
     residuebiomassmoisture, residueplantingpercentage, residuetype,
     limeyear, comments
-    from management where uniqueid in %s and cropyear in %s
+    from management where uniqueid in :sites and cropyear in :years
     ORDER by cropyear ASC
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites), tuple(years)),
+        params={"sites": tuple(sites), "years": tuple(years)},
     )
     opdf.to_excel(writer, "Residue, Irrigation", index=False)
 
 
 def do_pesticides(writer, sites, years):
     """Return a DataFrame for the pesticides"""
-    opdf = read_sql(
-        """
+    opdf = pd.read_sql(
+        text(
+            """
     SELECT uniqueid, cropyear, operation, valid, timing, method,
     cropapplied,
     cashcrop, totalrate, pressure,
@@ -549,12 +567,13 @@ def do_pesticides(writer, sites, years):
     product3, rate3, rateunit3,
     product4, rate4, rateunit4,
     adjuvant1, adjuvant2, comments
-    from pesticides where uniqueid in %s and cropyear in %s and
+    from pesticides where uniqueid in :sites and cropyear in :years and
     operation != 'seed'
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites), tuple(years)),
+        params={"sites": tuple(sites), "years": tuple(years)},
     )
     valid2date(opdf)
     opdf, worksheet = add_bling(writer, opdf, "Pesticides", "Pesticides")
@@ -563,8 +582,9 @@ def do_pesticides(writer, sites, years):
 
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
-    opdf = read_sql(
-        """
+    opdf = pd.read_sql(
+        text(
+            """
         SELECT uniqueid, rep, plotid, tillage, rotation,
         drainage, nitrogen, landscape,
         y2011 as "2011crop", y2012 as "2012crop", y2013 as "2013crop",
@@ -589,12 +609,13 @@ def do_plotids(writer, sites):
         soilseriesdescription4,
         soiltaxonomicclass4
         from plotids p LEFT JOIN xref_rotation x on (p.rotation = x.code)
-        where uniqueid in %s and
+        where uniqueid in :sites and
         (herbicide != 'HERB2' or herbicide is null)
         ORDER by uniqueid, plotid ASC
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
     )
     # Fake rotation codes
     opdf.replace({"rotation": ROT_CODES}, inplace=True)
@@ -611,17 +632,19 @@ def do_plotids(writer, sites):
 
 def do_notes(writer, sites, missing):
     """Write notes to the spreadsheet"""
-    opdf = read_sql(
-        """
+    opdf = pd.read_sql(
+        text(
+            """
         SELECT "primary" as uniqueid, overarching_data_category, data_type,
         replace(growing_season, '.0', '') as growing_season,
         comments
-        from highvalue_notes where "primary" in %s
+        from highvalue_notes where "primary" in :sites
         ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC,
         growing_season ASC
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
     )
     opdf.replace(["None", None, ""], np.nan, inplace=True)
     opdf.dropna(how="all", inplace=True)
@@ -636,15 +659,17 @@ def do_notes(writer, sites, missing):
 
 def do_dwm(writer, sites, missing):
     """Write dwm to the spreadsheet"""
-    opdf = read_sql(
-        """
+    opdf = pd.read_sql(
+        text(
+            """
         SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
         outletdepth, outletdate, comments
-        from dwm where uniqueid in %s
+        from dwm where uniqueid in :sites
         ORDER by uniqueid ASC, cropyear ASC
-    """,
+    """
+        ),
         PGCONN,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
     )
     opdf.replace(["None", None, ""], np.nan, inplace=True)
     opdf.dropna(how="all", inplace=True)
@@ -754,12 +779,12 @@ def do_work(form):
     )
     shutil.copyfile("/tmp/cscap.xlsx", "/var/webtmp/%s" % (tmpfn,))
     uri = "https://datateam.agron.iastate.edu/tmp/%s" % (tmpfn,)
-    text = EMAILTEXT % (
+    etext = EMAILTEXT % (
         datetime.datetime.utcnow().strftime("%d %B %Y %H:%M:%S"),
         uri,
     )
 
-    msg.attach(MIMEText(text))
+    msg.attach(MIMEText(etext))
     # else:
     #    msg.attach(MIMEText(EMAILTEXT))
     #    part = MIMEBase('application', "octet-stream")
@@ -774,14 +799,14 @@ def do_work(form):
     os.unlink("/tmp/cscap.xlsx")
     ssw("Content-type: text/plain\n\n")
     ssw("Email Delivered!")
-    cursor = PGCONN.cursor()
+    pgconn = get_dbconn("sustainablecorn")
+    cursor = pgconn.cursor()
     cursor.execute(
-        """INSERT into website_downloads(email) values (%s)
-    """,
+        "INSERT into website_downloads(email) values (%s)",
         (email,),
     )
     cursor.close()
-    PGCONN.commit()
+    pgconn.commit()
     pprint("is done!!!")
 
 
