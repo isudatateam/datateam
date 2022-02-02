@@ -5,9 +5,9 @@ import cgi
 import datetime
 
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconnstr, ssw
 from pyiem.datatypes import distance, temperature
+from sqlalchemy import text
 
 VARDF = {
     "uniqueid": "",
@@ -68,21 +68,23 @@ def get_cgi_dates(form):
 
 def do_work(form):
     """do great things"""
-    pgconn = get_dbconn("sustainablecorn")
+    pgconn = get_dbconnstr("sustainablecorn")
     stations = form.getlist("stations")
     if not stations:
         stations.append("XXX")
     sts, ets = get_cgi_dates(form)
-    df = read_sql(
-        """
+    df = pd.read_sql(
+        text(
+            """
     SELECT station as uniqueid, valid as day, extract(doy from valid) as doy,
     high, low, precip, sknt,
-    srad_mj, drct from weather_data_daily WHERE station in %s
-    and valid >= %s and valid <= %s
+    srad_mj, drct from weather_data_daily WHERE station in :sites
+    and valid >= :sts and valid <= :ets
     ORDER by station ASC, valid ASC
-    """,
+    """
+        ),
         pgconn,
-        params=(tuple(stations), sts, ets),
+        params={"sites": tuple(stations), "sts": sts, "ets": ets},
         index_col=None,
     )
     df["highc"] = temperature(df["high"].values, "F").value("C")

@@ -11,9 +11,9 @@ import json
 import sys
 
 from paste.request import parse_formvars
-from pandas.io.sql import read_sql
 import pandas as pd
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconnstr
+from sqlalchemy import text
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
 AGG = {
@@ -80,7 +80,7 @@ def agg(arr):
 
 def do_filter(form):
     """Do the filtering fun."""
-    pgconn = get_dbconn("td")
+    pgconn = get_dbconnstr("td")
     res = {"treatments": [], "agronomic": [], "soil": [], "water": []}
     sites = agg(form.getall("sites[]"))
     # treatments = agg(form.getall("treatments[]"))
@@ -92,22 +92,24 @@ def do_filter(form):
     # year = agg(form.get("year[]"))
 
     # build a list of treatments based on the sites selected
-    df = read_sql(
-        "select distinct drainage_water_management, irrigation "
-        "from meta_treatment_identifier where "
-        "siteid in %s",
+    df = pd.read_sql(
+        text(
+            "select distinct drainage_water_management, irrigation "
+            "from meta_treatment_identifier where "
+            "siteid in :sites"
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     res["treatments"] = df["drainage_water_management"].unique().tolist()
     res["treatments"].extend(df["irrigation"].unique().tolist())
 
     # Agronomic Filtering
-    df = read_sql(
-        "select * from agronomic_data where siteid in %s",
+    df = pd.read_sql(
+        text("select * from agronomic_data where siteid in :sites"),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     for col, val in df.max().iteritems():
@@ -115,10 +117,10 @@ def do_filter(form):
             res["agronomic"].append(col)
 
     # Soil Filtering
-    df = read_sql(
-        "select * from soil_properties_data where siteid in %s",
+    df = pd.read_sql(
+        text("select * from soil_properties_data where siteid in :sites"),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     for col in df.columns:
@@ -127,12 +129,14 @@ def do_filter(form):
         res["soil"].append(col)
 
     # Water Table Filtering
-    df = read_sql(
-        "select max(water_table_depth) as water_table_depth "
-        "from water_table_data where siteid in %s "
-        "GROUP by siteid",
+    df = pd.read_sql(
+        text(
+            "select max(water_table_depth) as water_table_depth "
+            "from water_table_data where siteid in :sites "
+            "GROUP by siteid"
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     for col, val in df.max().iteritems():
@@ -140,12 +144,14 @@ def do_filter(form):
             res["water"].append(col)
 
     # Water Stage Filtering
-    df = read_sql(
-        "select max(stage) as water_stage "
-        "from water_stage_data where siteid in %s "
-        "GROUP by siteid",
+    df = pd.read_sql(
+        text(
+            "select max(stage) as water_stage "
+            "from water_stage_data where siteid in :sites "
+            "GROUP by siteid"
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     for col, val in df.max().iteritems():
@@ -153,38 +159,42 @@ def do_filter(form):
             res["water"].append(col)
 
     # Water Filtering
-    df = read_sql(
-        "select max(soil_moisture) as soil_moisture, "
-        "max(soil_temperature) as soil_temperature, "
-        "max(soil_ec) as soil_ec from soil_moisture_data where siteid in %s "
-        "GROUP by siteid",
+    df = pd.read_sql(
+        text(
+            "select max(soil_moisture) as soil_moisture, "
+            "max(soil_temperature) as soil_temperature, "
+            "max(soil_ec) as soil_ec from soil_moisture_data where "
+            "siteid in :sites GROUP by siteid"
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     for col, val in df.max().iteritems():
         if not pd.isnull(val):
             res["water"].append(col)
-    df = read_sql(
-        "select max(tile_flow) as tile_flow, "
-        "max(discharge) as discharge, "
-        "max(nitrate_n_load) as nitrate_n_load, "
-        "max(nitrate_n_removed) as nitrate_n_removed, "
-        "max(tile_flow_filled) as tile_flow_filled, "
-        "max(nitrate_n_load_filled) as nitrate_n_load_filled "
-        "from tile_flow_and_N_loads_data where siteid in %s "
-        "GROUP by siteid",
+    df = pd.read_sql(
+        text(
+            "select max(tile_flow) as tile_flow, "
+            "max(discharge) as discharge, "
+            "max(nitrate_n_load) as nitrate_n_load, "
+            "max(nitrate_n_removed) as nitrate_n_removed, "
+            "max(tile_flow_filled) as tile_flow_filled, "
+            "max(nitrate_n_load_filled) as nitrate_n_load_filled "
+            "from tile_flow_and_N_loads_data where siteid in :sites "
+            "GROUP by siteid"
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     for col, val in df.max().iteritems():
         if not pd.isnull(val):
             res["water"].append(col)
-    df = read_sql(
-        "select * from water_quality_data where siteid in %s",
+    df = pd.read_sql(
+        text("select * from water_quality_data where siteid in :sites"),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     # tricky non-numeric stuff here, sigh

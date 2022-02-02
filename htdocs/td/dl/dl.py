@@ -15,9 +15,9 @@ from email.mime.multipart import MIMEMultipart
 # Third Party
 from paste.request import parse_formvars, MultiDict
 import pandas as pd
-from pandas.io.sql import read_sql
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconnstr, get_dbconn
+from sqlalchemy import text
 
 EMAILTEXT = """
 Transforming Drainage Research Data
@@ -103,7 +103,7 @@ def conv(value, detectlimit):
         if detectlimit == "2":
             return floatval / 2.0
         if detectlimit == "3":
-            return floatval / 2 ** 0.5
+            return floatval / 2**0.5
         if detectlimit == "4":
             return "M"
     try:
@@ -114,7 +114,7 @@ def conv(value, detectlimit):
 
 def do_dictionary(pgconn, writer):
     """Add Data Dictionary to the spreadsheet"""
-    df = read_sql(
+    df = pd.read_sql(
         "SELECT * from data_dictionary ORDER by file_name ASC",
         pgconn,
         index_col=None,
@@ -128,8 +128,9 @@ def do_dictionary(pgconn, writer):
 
 def do_metadata_master(pgconn, writer, sites, missing):
     """get Metadata master data"""
-    df = read_sql(
-        """
+    df = pd.read_sql(
+        text(
+            """
     SELECT uniqueid,
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
     selon as "SE Lon", selat as "SE Lat", nelon as "NE Lon", nelat as "NE Lat",
@@ -140,11 +141,12 @@ def do_metadata_master(pgconn, writer, sites, missing):
     sitearea as "site area",
     numberofplots as "number of plots"
     from metadata_master
-    WHERE uniqueid in %s
+    WHERE uniqueid in :sites
     ORDER by uniqueid
-    """,
+    """
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     df.replace(["None", None, ""], np.nan, inplace=True)
@@ -158,10 +160,13 @@ def do_metadata_master(pgconn, writer, sites, missing):
 
 def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
     """generalized datatable dumper."""
-    df = read_sql(
-        f"SELECT * from {tablename} WHERE siteid in %s " "ORDER by siteid",
+    df = pd.read_sql(
+        text(
+            f"SELECT * from {tablename} WHERE siteid in :sites "
+            "ORDER by siteid"
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
         index_col=None,
     )
     standard = ["siteid", "plotid", "location", "date", "comments", "year"]
@@ -204,11 +209,13 @@ def add_bling(pgconn, writer, df, sheetname, filename):
 
 def do_plotids(pgconn, writer, sites):
     """Write plotids to the spreadsheet"""
-    opdf = read_sql(
-        "SELECT * from meta_plot_identifier where siteid in %s "
-        "ORDER by siteid, plotid ASC",
+    opdf = pd.read_sql(
+        text(
+            "SELECT * from meta_plot_identifier where siteid in :sites "
+            "ORDER by siteid, plotid ASC"
+        ),
         pgconn,
-        params=(tuple(sites),),
+        params={"sites": tuple(sites)},
     )
     opdf, worksheet = add_bling(
         pgconn,
@@ -226,7 +233,7 @@ def do_plotids(pgconn, writer, sites):
 
 def get_vardf(pgconn, filename):
     """Get a dataframe of descriptors for this tabname"""
-    return read_sql(
+    return pd.read_sql(
         "select element_or_value_display_name as varname, brief_description, "
         "units from data_dictionary WHERE file_name = %s",
         pgconn,
@@ -237,12 +244,12 @@ def get_vardf(pgconn, filename):
 
 def compare(hascols, wanted):
     """Does any of the following apply."""
-    return any([x in hascols for x in wanted])
+    return any(x in hascols for x in wanted)
 
 
 def do_work(form):
     """do great things"""
-    pgconn = get_dbconn("td")
+    pgconn = get_dbconnstr("td")
     email = form.get("email")
     sites = form.getall("sites[]")
     if not sites:
@@ -489,16 +496,17 @@ def do_work(form):
     except PermissionError:
         pass
     uri = f"https://datateam.agron.iastate.edu/tmp/{tmpfn}"
-    text = EMAILTEXT % (
+    etext = EMAILTEXT % (
         datetime.datetime.utcnow().strftime("%d %B %Y %H:%M:%S"),
         uri,
     )
 
-    msg.attach(MIMEText(text))
+    msg.attach(MIMEText(etext))
 
     if email is not None:
         with smtplib.SMTP("localhost") as s:
             s.sendmail(msg["From"], msg["To"], msg.as_string())
+    pgconn = get_dbconn("td")
     cursor = pgconn.cursor()
     cursor.execute(
         "INSERT into website_downloads(email) values (%s)", (email,)

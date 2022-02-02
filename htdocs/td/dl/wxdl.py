@@ -5,8 +5,8 @@ import datetime
 
 import pandas as pd
 from paste.request import parse_formvars
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconnstr
+from sqlalchemy import text
 
 VARDF = {
     "siteid": "",
@@ -69,17 +69,19 @@ def get_cgi_dates(form):
 
 def do_work(form):
     """do great things"""
-    pgconn = get_dbconn("td")
+    pgconn = get_dbconnstr("td")
     stations = form.getall("stations")
     if not stations:
         stations.append("XXX")
     sts, ets = get_cgi_dates(form)
-    df = read_sql(
-        "SELECT *, extract(doy from date) as doy from weather_data "
-        "WHERE siteid in %s and date >= %s and date <= %s "
-        "ORDER by siteid ASC, date ASC",
+    df = pd.read_sql(
+        text(
+            "SELECT *, extract(doy from date) as doy from weather_data "
+            "WHERE siteid in :sites and date >= :sts and date <= :ets "
+            "ORDER by siteid ASC, date ASC"
+        ),
         pgconn,
-        params=(tuple(stations), sts, ets),
+        params={"sites": tuple(stations), "sts": sts, "ets": ets},
         index_col=None,
     )
 
