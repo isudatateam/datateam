@@ -517,8 +517,29 @@ def do_work(form):
     return b"Email Delivered!"
 
 
+def preventive_log(pgconn, environ):
+    """Mostly prevent scripting."""
+    cursor = pgconn.cursor()
+    for _ in range(4):
+        cursor.execute(
+            "INSERT into weblog(client_addr, uri, referer, http_status) "
+            "VALUES (%s, %s, %s, %s)",
+            (
+                environ.get("REMOTE_ADDR"),
+                environ.get("REQUEST_URI", ""),
+                environ.get("HTTP_REFERER"),
+                404,
+            ),
+        )
+
+    cursor.close()
+
+
 def application(environ, start_response):
     """Do Stuff"""
+    with get_dbconn("mesosite") as pgconn:
+        preventive_log(pgconn, environ)
+        pgconn.commit()
     form = parse_formvars(environ)
     agree = form.get("agree")
     start_response("200 OK", [("Content-type", "text/plain")])

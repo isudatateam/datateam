@@ -810,8 +810,29 @@ def do_work(form):
     pprint("is done!!!")
 
 
+def preventive_log(pgconn):
+    """Mostly prevent scripting."""
+    cursor = pgconn.cursor()
+    for _ in range(4):
+        cursor.execute(
+            "INSERT into weblog(client_addr, uri, referer, http_status) "
+            "VALUES (%s, %s, %s, %s)",
+            (
+                os.environ.get("REMOTE_ADDR"),
+                os.environ.get("REQUEST_URI", ""),
+                os.environ.get("HTTP_REFERER"),
+                404,
+            ),
+        )
+
+    cursor.close()
+
+
 def main():
     """Do Stuff"""
+    with get_dbconn("mesosite") as pgconn:
+        preventive_log(pgconn)
+        pgconn.commit()
     form = cgi.FieldStorage()
     do_work(form)
 

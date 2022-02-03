@@ -19,6 +19,7 @@ jobs:
         git clone --depth 1 https://github.com/akrherz/iem-database.git database
         git clone --depth 1 https://github.com/akrherz/ci_tooling.git .ci_tooling
         . .ci_tooling/postgres.sh
+        . .ci_tooling/iemwebfarm.sh
         sudo mkdir -p /mesonet/www/logs
         sudo ln -s `pwd` /opt/datateam
         sudo ln -s $HOME/miniconda /opt/miniconda3
