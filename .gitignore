@@ -8,3 +8,4 @@
 /.vscode
 .Rproj.user
 datateam.Rproj
+config/datateam_secrets.inc
