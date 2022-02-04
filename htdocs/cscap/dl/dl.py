@@ -16,11 +16,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
+from pymemcache import Client
 import pandas as pd
 import numpy as np
-from pyiem.util import get_dbconnstr, get_dbconn, ssw
+from pyiem.util import get_dbconnstr, get_dbconn, ssw, logger
 from sqlalchemy import text
 
+LOG = logger()
 VARNAME_RE = re.compile(r"^[A-Z]+[0-9]$")
 EMAILTEXT = """
 Sustainable Corn CAP - Research and Management Data
@@ -828,11 +830,29 @@ def preventive_log(pgconn):
     cursor.close()
 
 
+def throttle():
+    """Prevent the script kiddies."""
+    addr = os.environ.get("REMOTE_ADDR")
+    key = (f"{addr}_datateam_dl").encode("utf-8")
+    mc = Client("iem-memcached")
+    if mc.get(key):
+        mc.close()
+        LOG.warning("throttle: %s", addr)
+        return True
+    mc.set(key, 1, 10)
+    mc.close()
+    return False
+
+
 def main():
     """Do Stuff"""
     with get_dbconn("mesosite") as pgconn:
         preventive_log(pgconn)
         pgconn.commit()
+    if throttle():
+        ssw("Content-type: text/plain\n\n")
+        ssw("You did not agree to download terms.")
+        return
     form = cgi.FieldStorage()
     do_work(form)
 
