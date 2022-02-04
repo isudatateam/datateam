@@ -13,12 +13,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Third Party
+from pymemcache import Client
 from paste.request import parse_formvars, MultiDict
 import pandas as pd
 import numpy as np
-from pyiem.util import get_dbconnstr, get_dbconn
+from pyiem.util import get_dbconnstr, get_dbconn, logger
 from sqlalchemy import text
 
+LOG = logger()
 EMAILTEXT = """
 Transforming Drainage Research Data
 Requested: %s UTC
@@ -535,11 +537,28 @@ def preventive_log(pgconn, environ):
     cursor.close()
 
 
+def throttle(environ):
+    """Slow down the script kiddies."""
+    addr = environ.get("REMOTE_ADDR")
+    key = (f"{addr}_datateam_dl").encode("utf-8")
+    mc = Client("iem-memcached")
+    if mc.get(key):
+        mc.close()
+        LOG.warning("throttle: %s", addr)
+        return True
+    mc.set(key, 1, 10)
+    mc.close()
+    return False
+
+
 def application(environ, start_response):
     """Do Stuff"""
     with get_dbconn("mesosite") as pgconn:
         preventive_log(pgconn, environ)
         pgconn.commit()
+    start_response("200 OK", [("Content-type", "text/plain")])
+    if throttle(environ):
+        return [b"You did not agree to download terms."]
     form = parse_formvars(environ)
     agree = form.get("agree")
     start_response("200 OK", [("Content-type", "text/plain")])
