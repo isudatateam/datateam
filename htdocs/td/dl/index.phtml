@@ -348,6 +348,9 @@ function build_sites(){
 		<td>
 			<p><b>Photographs</b></p>
 		</td>
+		<td nowrap>
+			<p><strong>Site Summary</strong></p>
+		</td>
     </tr>
     </thead>
 EOM;
@@ -369,11 +372,19 @@ foreach($headers as $k => $v){
         if (in_array($row["siteid"], $missing)){
             $phtml = "Not Available";
         }
+        $surl = "https://drive.google.com/file/d/". $row["drive_summaries_folder"] ."/view";
+        $shtml = sprintf(
+            "<a href=\"%s\"><i class=\"fa fa-file\"></i> PDF</a>",
+            $surl,
+        );
+        if (is_null($row["drive_summaries_folder"])){
+            $shtml = "Not Available";
+        }
         $s .= sprintf("<tr><th>%s</th><td>%s</td><td>%s</td><td>%s</td>".
             "<td><a href=\"%s\"><i class=\"fa fa-map\"></i> Link</a></td>".
-            "<td>%s</td></tr>\n",
+            "<td>%s</td><td>%s</td></tr>\n",
                 $row['siteid'], $row["lead_pi"], $row["official_farm_name"],
-                $row["pi_institution"], $murl, $phtml);
+                $row["pi_institution"], $murl, $phtml, $shtml);
     }
     $s .= "</table>\n</div>\n";
 }
