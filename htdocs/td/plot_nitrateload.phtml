@@ -139,10 +139,14 @@ Agricultural Landscapes" (Award No. 2015-68007-23193).</p>
 
 <br /><strong>Sum Values:</strong>
 <br />
-<input type="radio" name="by" value="daily"{$dby}> daily &nbsp;
-<input type="radio" name="by" value="weekly"{$wby}> weekly (Mon-Sun)&nbsp;
-<input type="radio" name="by" value="monthly"{$mby}> monthly &nbsp;
-<input type="radio" name="by" value="yearly"{$yby}> yearly
+<input type="radio" name="by" value="daily"{$dby} id="daily">
+ <label for="daily">daily</label> &nbsp;
+<input type="radio" name="by" value="weekly"{$wby} id="weekly">
+ <label for="weekly">weekly (Mon-Sun)</label>&nbsp;
+<input type="radio" name="by" value="monthly"{$mby} id="monthly">
+ <label for="monthly">monthly</label> &nbsp;
+<input type="radio" name="by" value="yearly"{$yby} id="yearly">
+ <label for="yearly">yearly</label>
 
 </div>
 
@@ -154,12 +158,12 @@ Agricultural Landscapes" (Award No. 2015-68007-23193).</p>
 <p><strong>Viewing Options:</strong> Click the legend name to de/select data series. 
 To zoom in, click and drag your mouse within the plot frame.</p>
 
-<p><strong>Download Options:</strong> Download the figure by right clicking
-on the symbol in the upper right corner.  Download the corresponding data
+<p><strong>Download Options:</strong> Download the figure by clicking
+on the three-bar menu symbol in the upper right corner of the plot.
+Download the corresponding data
 <a href="/td/dl/#tab_data" target="_blank">here</a>.</p>
 
 <p>{$interface}</p>
 
 EOF;
 $t->render('full.phtml');
-?>
