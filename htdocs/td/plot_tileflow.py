@@ -4,10 +4,9 @@ import sys
 import datetime
 
 import pandas as pd
-from pandas.io.sql import read_sql
 import numpy as np
 from paste.request import parse_formvars
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 
 sys.path.append("/opt/datateam/htdocs/td")
 from common import CODES, getColor, send_error, COPYWRITE
@@ -38,29 +37,35 @@ LINESTYLE = [
     "-.",
     "-.",
 ]
-BYCOL = {"daily": "day", "monthly": "month", "yearly": "year"}
+BYCOL = {
+    "daily": "day",
+    "weekly": "week",
+    "monthly": "month",
+    "yearly": "year",
+}
 
 
-def get_weather(pgconn, uniqueid, sts, ets):
+def get_weather(uniqueid, sts, ets):
     """Retreive the daily precipitation"""
     # Convert ids
-    df = read_sql(
-        "SELECT date, precipitation from weather_data "
-        "WHERE siteid = %s and date >= %s and date <= %s ORDER by date ASC",
-        pgconn,
-        index_col="date",
-        params=(uniqueid, sts.date(), ets.date()),
-    )
+    with get_sqlalchemy_conn("td") as conn:
+        df = pd.read_sql(
+            "SELECT date, precipitation from weather_data "
+            "WHERE siteid = %s and date >= %s and date <= %s "
+            "ORDER by date ASC",
+            conn,
+            index_col="date",
+            params=(uniqueid, sts.date(), ets.date()),
+        )
     df.index = pd.DatetimeIndex(df.index.values)
     df["ticks"] = (
-        df.index.values.astype("datetime64[ns]").astype(np.int64) // 10 ** 6
+        df.index.values.astype("datetime64[ns]").astype(np.int64) // 10**6
     )
     return df
 
 
 def make_plot(form, start_response):
     """Make the plot"""
-    pgconn = get_dbconn("td")
     uniqueid = form.get("site", "ISUAG")
 
     sts = datetime.datetime.strptime(
@@ -69,27 +74,30 @@ def make_plot(form, start_response):
     days = int(form.get("days", 1))
     ungroup = int(form.get("ungroup", 0))
     ets = sts + datetime.timedelta(days=days)
-    wxdf = get_weather(pgconn, uniqueid, sts, ets)
+    wxdf = get_weather(uniqueid, sts, ets)
     by = form.get("by", "daily")
-    df = read_sql(
-        f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
-        "coalesce(plotid, location) as datum, sum(discharge) as discharge "
-        "from tile_flow_and_n_loads_data WHERE siteid = %s "
-        "and date between %s and %s GROUP by v, datum ORDER by v ASC",
-        pgconn,
-        params=(uniqueid, sts.date(), ets.date()),
-    )
+    print(by)
+    with get_sqlalchemy_conn("td") as conn:
+        df = pd.read_sql(
+            f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
+            "coalesce(plotid, location) as datum, sum(discharge) as discharge "
+            "from tile_flow_and_n_loads_data WHERE siteid = %s "
+            "and date between %s and %s GROUP by v, datum ORDER by v ASC",
+            conn,
+            params=(uniqueid, sts.date(), ets.date()),
+        )
     if len(df.index) < 3:
         send_error(start_response, "js", "No / Not Enough Data Found, sorry!")
     linecol = "datum"
     if ungroup == 0:
         # Generate the plotid lookup table
-        plotdf = read_sql(
-            "SELECT * from meta_plot_identifier where siteid = %s",
-            pgconn,
-            params=(uniqueid,),
-            index_col="plotid",
-        )
+        with get_sqlalchemy_conn("td") as conn:
+            plotdf = pd.read_sql(
+                "SELECT * from meta_plot_identifier where siteid = %s",
+                conn,
+                params=(uniqueid,),
+                index_col="plotid",
+            )
 
         def lookup(row):
             """Lookup value."""
@@ -112,7 +120,7 @@ def make_plot(form, start_response):
     plot_ids.sort()
     if ungroup == "0":
         plot_ids = plot_ids[::-1]
-    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
+    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6
     seriestype = "line" if by in ["daily"] else "column"
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
