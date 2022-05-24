@@ -1,7 +1,7 @@
 <?php
 require_once "../../include/forms.php";
 require_once "../../include/myview.php";
-$HIGHCHARTS = "8.2.2";
+$HIGHCHARTS = "9.3.1";
 
 $site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Boone';
 $date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
@@ -63,13 +63,6 @@ $ar = Array(
 		);
 $siteselect = td_site_select("site", $site, $ar);
 
-$ar = Array(
-		'daily' => 'Daily (no aggregation)',
-		'monthly' => 'Monthly Totals',
-		'yearly' => 'Yearly Totals',
-		);
-$byselect = make_select("by", $by, $ar);
-
 $jsurl = sprintf("tileflow__%s__%s__%s__%s__%s.js", 
 		$site, $date, $days, $by, $ungroup);
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
@@ -108,6 +101,7 @@ $(document).ready(function(){
 </script>
 EOF;
 $dby = ($by == "daily") ? " CHECKED ": "";
+$wby = ($by == "weekly") ? " CHECKED ": "";
 $mby = ($by == "monthly") ? " CHECKED ": "";
 $yby = ($by == "yearly") ? " CHECKED ": "";
 $ungroupselected = ($ungroup == "1") ? " checked=\"checked\"": "";
@@ -152,9 +146,11 @@ and aggregation tool. Data are from the USDA-NIFA funded project:
 
 <br /><strong>Sum Values:</strong>
 <br />
-<input type="radio" name="by" value="daily"{$dby}> daily &nbsp;
-<input type="radio" name="by" value="monthly"{$mby}> monthly &nbsp;
-<input type="radio" name="by" value="yearly"{$yby}> yearly
+<input type="radio" name="by" value="daily"{$dby} id="daily"> <label for="daily">daily</label> &nbsp;
+<input type="radio" name="by" value="weekly"{$wby} id="weekly">
+ <label for="weekly">weekly (Mon-Sun)</label>&nbsp;
+<input type="radio" name="by" value="monthly"{$mby} id="monthly"> <label for="monthy">monthly</label> &nbsp;
+<input type="radio" name="by" value="yearly"{$yby} id="yearly"> <label for="yearly">yearly</label>
 
 </div>
 
@@ -164,7 +160,7 @@ and aggregation tool. Data are from the USDA-NIFA funded project:
 </form>
 
 <p>Plotting of data may not occur if the time period selected is more than 
-~700 days. This is due to the amount of data overwhelming the user’s web 
+~700 days. This is due to the amount of data overwhelming the user's web 
 browser and failing to load. Select a shorter time span if you run into 
 this problem. Long time periods can be selected without problems if only 
 exporting the data.</p>
@@ -172,12 +168,12 @@ exporting the data.</p>
 <p><strong>Viewing Options:</strong> Click the legend name to de/select data series. 
 To zoom in, click and drag your mouse within the plot frame.</p>
 
-<p><strong>Download Options:</strong> Download the figure by right clicking
-on the symbol in the upper right corner.  Download the corresponding data
+<p><strong>Download Options:</strong> Download the figure by clicking on the
+three-bar menu symbol in the upper right corner of the plot.
+Download the corresponding data
 <a href="/td/dl/#tab_data" target="_blank">here</a>.</p>
 
 <p>{$interface}</p>
 
 EOF;
 $t->render('full.phtml');
-?>
