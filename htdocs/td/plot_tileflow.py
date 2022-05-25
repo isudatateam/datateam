@@ -76,7 +76,6 @@ def make_plot(form, start_response):
     ets = sts + datetime.timedelta(days=days)
     wxdf = get_weather(uniqueid, sts, ets)
     by = form.get("by", "daily")
-    print(by)
     with get_sqlalchemy_conn("td") as conn:
         df = pd.read_sql(
             f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
