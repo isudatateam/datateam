@@ -19,24 +19,29 @@ $by = isset($_GET['by']) ? $_GET['by']: 'daily';
 /* 
  with data as (select siteid, min(date),
  max(date) from tile_flow_and_n_loads_data
- WHERE discharge is not null GROUP by siteid)
+ WHERE tile_flow_filled is not null GROUP by siteid)
  
  SELECT '"'||siteid ||  '"=>"' || siteid || ' '||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
 $ar = Array(
-    "IA_Boone"=>"IA_Boone  (2016-06-09 to 2018-12-31) [935 days]",
-    "IA_Grundy"=>"IA_Grundy  (2016-09-02 to 2018-12-31) [850 days]",
-    "IA_Hamilton1"=>"IA_Hamilton1  (2011-01-01 to 2018-12-31) [2921 days]",
-    "IA_Hamilton2"=>"IA_Hamilton2  (2016-01-01 to 2018-12-31) [1095 days]",
-    "IA_Hamilton3"=>"IA_Hamilton3  (2013-06-06 to 2018-12-31) [2034 days]",
-    "IA_Story1"=>"IA_Story1  (2016-06-14 to 2018-12-31) [930 days]",
-    "IA_Tama"=>"IA_Tama  (2016-01-01 to 2018-12-31) [1095 days]",
-    "IN_Tippecanoe"=>"IN_Tippecanoe  (2007-11-04 to 2018-12-31) [4075 days]",
-    "MN_Wilkin3"=>"MN_Wilkin3  (2018-01-01 to 2018-12-31) [364 days]",
-    "OH_Defiance2"=>"OH_Defiance2  (1999-05-21 to 2008-11-19) [3470 days]",
-    "OH_Fulton"=>"OH_Fulton  (2000-12-07 to 2010-12-20) [3665 days]",
-    "OH_VanWert"=>"OH_VanWert  (2001-03-12 to 2009-11-10) [3165 days]",
+    "IA_Story2"=>"IA_Story2  (2006-01-01 to 2009-12-31) [1460 days]",
+    "IA_Washington"=>"IA_Washington  (2007-01-01 to 2017-12-31) [4017 days]",
+    "IN_Randolph"=>"IN_Randolph  (2006-06-16 to 2017-12-31) [4216 days]",
+    "MN_Redwood1"=>"MN_Redwood1  (2006-01-01 to 2017-12-31) [4382 days]",
+    "MN_Wilken1"=>"MN_Wilken1 (TBD)",
+    "MN_Wilken2"=>"MN_Wilken2 (TBD)",
+    "MO_Knox1"=>"MO_Knox1  (2010-07-04 to 2013-12-31) [1276 days]",
+    "NC_Washington"=>"NC_Washington  (2007-01-01 to 2011-12-31) [1825 days]",
+    "OH_Auglaize1"=>"OH_Auglaize1  (2008-01-18 to 2014-12-29) [2537 days]",
+    "OH_Auglaize2"=>"OH_Auglaize2  (2009-03-25 to 2015-11-20) [2431 days]",
+    "OH_Crawford"=>"OH_Crawford  (2008-10-08 to 2014-12-29) [2273 days]",
+    "OH_Defiance1"=>"OH_Defiance1  (2008-01-03 to 2014-12-30) [2553 days]",
+    "OH_Delaware"=>"OH_Delaware  (2005-01-01 to 2012-12-31) [2921 days]",
+    "OH_Hardin1"=>"OH_Hardin1  (2008-10-02 to 2014-12-29) [2279 days]",
+    "OH_Hardin2"=>"OH_Hardin2  (2008-01-01 to 2014-12-29) [2554 days]",
+    "OH_Henry"=>"OH_Henry  (2008-01-01 to 2014-12-30) [2555 days]",
+    "SD_Clay"=>"SD_Clay  (2015-01-01 to 2017-12-31) [1095 days]",
 		);
 $siteselect = td_site_select("site", $site, $ar);
 
