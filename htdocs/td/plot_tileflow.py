@@ -79,7 +79,8 @@ def make_plot(form, start_response):
     with get_sqlalchemy_conn("td") as conn:
         df = pd.read_sql(
             f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
-            "coalesce(plotid, location) as datum, sum(discharge) as discharge "
+            "coalesce(plotid, location) as datum, "
+            "sum(tile_flow_filled) as tile_flow_filled "
             "from tile_flow_and_n_loads_data WHERE siteid = %s "
             "and date between %s and %s GROUP by v, datum ORDER by v ASC",
             conn,
@@ -141,7 +142,7 @@ def make_plot(form, start_response):
                     [
                         [a, b]
                         for a, b in zip(
-                            df2["ticks"].values, df2["discharge"].values
+                            df2["ticks"].values, df2["tile_flow_filled"].values
                         )
                     ]
                 )
@@ -185,7 +186,7 @@ $("#hc").highcharts({
         + """'},
     chart: {zoomType: 'x'},
     yAxis: [
-        {title: {text: 'Discharge (mm)'}},
+        {title: {text: 'Tile Flow (mm)'}},
         {title: {text: 'Daily Precipitation (mm)'},
          reversed: true,
          maxPadding: 1,
