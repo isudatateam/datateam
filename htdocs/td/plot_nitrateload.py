@@ -90,7 +90,9 @@ def make_plot(form, start_response):
                 params=(BYCOL[by], siteid, sts.date(), ets.date()),
             )
     if len(df.index) < 3:
-        send_error(start_response, 1, "No / Not Enough Data Found, sorry!")
+        return send_error(
+            start_response, 1, "No / Not Enough Data Found, sorry!"
+        )
     linecol = "datum"
 
     # Begin highcharts output

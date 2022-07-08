@@ -1,5 +1,5 @@
 """Plot!"""
-# pylint: disable=abstract-class-instantiated
+# pylint: disable=abstract-class-instantiated,wrong-import-position
 import sys
 import datetime
 
@@ -9,7 +9,7 @@ from paste.request import parse_formvars
 from pyiem.util import get_sqlalchemy_conn
 
 sys.path.append("/opt/datateam/htdocs/td")
-from common import CODES, getColor, send_error, COPYWRITE
+from common import CODES, getColor, send_error, COPYWRITE  # noqa
 
 LINESTYLE = [
     "-",
@@ -45,17 +45,18 @@ BYCOL = {
 }
 
 
-def get_weather(uniqueid, sts, ets):
+def get_weather(uniqueid, sts, ets, by):
     """Retreive the daily precipitation"""
     # Convert ids
     with get_sqlalchemy_conn("td") as conn:
         df = pd.read_sql(
-            "SELECT date, precipitation from weather_data "
-            "WHERE siteid = %s and date >= %s and date <= %s "
-            "ORDER by date ASC",
+            "SELECT date_trunc(%s, date)::date as v, "
+            "sum(precipitation) as precip "
+            "from weather_data WHERE siteid = %s and "
+            "date >= %s and date <= %s GROUP by v ORDER by v ASC",
             conn,
-            index_col="date",
-            params=(uniqueid, sts.date(), ets.date()),
+            index_col="v",
+            params=(by, uniqueid, sts.date(), ets.date()),
         )
     df.index = pd.DatetimeIndex(df.index.values)
     df["ticks"] = (
@@ -74,8 +75,8 @@ def make_plot(form, start_response):
     days = int(form.get("days", 1))
     ungroup = int(form.get("ungroup", 0))
     ets = sts + datetime.timedelta(days=days)
-    wxdf = get_weather(uniqueid, sts, ets)
     by = form.get("by", "daily")
+    wxdf = get_weather(uniqueid, sts, ets, BYCOL[by])
     with get_sqlalchemy_conn("td") as conn:
         df = pd.read_sql(
             f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, "
@@ -87,7 +88,11 @@ def make_plot(form, start_response):
             params=(uniqueid, sts.date(), ets.date()),
         )
     if len(df.index) < 3:
-        send_error(start_response, "js", "No / Not Enough Data Found, sorry!")
+        return send_error(
+            start_response,
+            "js",
+            "No / Not Enough Data Found, sorry!",
+        )
     linecol = "datum"
     if ungroup == 0:
         # Generate the plotid lookup table
@@ -116,6 +121,28 @@ def make_plot(form, start_response):
     start_response("200 OK", [("Content-type", "application/javascript")])
     title = f"Tile Flow for {uniqueid} ({sts:%-d %b %Y} to {ets:%-d %b %Y})"
     s = []
+    if not wxdf.empty:
+        s.append(
+            (
+                """{type: 'column',
+            name: 'Precip',
+            color: '#0000ff',
+            yAxis: 1,
+            data: """
+                + str(
+                    [
+                        [a, b]
+                        for a, b in zip(
+                            wxdf["ticks"].values, wxdf["precip"].values
+                        )
+                    ]
+                )
+                + """
+        }"""
+            )
+            .replace("None", "null")
+            .replace("nan", "null")
+        )
     plot_ids = df[linecol].unique()
     plot_ids.sort()
     if ungroup == "0":
@@ -152,32 +179,10 @@ def make_plot(form, start_response):
             .replace("None", "null")
             .replace("nan", "null")
         )
-    if not wxdf.empty:
-        s.append(
-            (
-                """{type: 'column',
-            name: 'Precip',
-            color: '#0000ff',
-            yAxis: 1,
-            data: """
-                + str(
-                    [
-                        [a, b]
-                        for a, b in zip(
-                            wxdf["ticks"].values, wxdf["precipitation"].values
-                        )
-                    ]
-                )
-                + """
-        }"""
-            )
-            .replace("None", "null")
-            .replace("nan", "null")
-        )
     series = ",".join(s)
     res = (
         """
-$("#hc").highcharts({
+Highcharts.chart('hc', {
     """
         + COPYWRITE
         + """
@@ -187,10 +192,12 @@ $("#hc").highcharts({
     chart: {zoomType: 'x'},
     yAxis: [
         {title: {text: 'Tile Flow (mm)'}},
-        {title: {text: 'Daily Precipitation (mm)'},
-         reversed: true,
-         maxPadding: 1,
-         opposite: true},
+        {
+            title: {text: 'Daily Precipitation (mm)'},
+            reversed: true,
+            maxPadding: 1,
+            opposite: true
+        }
     ],
     plotOptions: {
         line: {turboThreshold: 0},
