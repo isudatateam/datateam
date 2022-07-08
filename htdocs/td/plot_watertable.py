@@ -63,7 +63,9 @@ def make_plot(form, start_response):
         params=(uniqueid, sts.date(), ets.date()),
     )
     if len(df.index) < 3:
-        send_error(start_response, "by", "No / Not Enough Data Found, sorry!")
+        return send_error(
+            start_response, "by", "No / Not Enough Data Found, sorry!"
+        )
     linecol = "datum"
     if ungroup == 0:
         # Generate the plotid lookup table
@@ -99,7 +101,7 @@ def make_plot(form, start_response):
     plot_ids.sort()
     if ungroup == 0:
         plot_ids = plot_ids[::-1]
-    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
+    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
         v = df2[["ticks", "depth"]].to_json(orient="values")

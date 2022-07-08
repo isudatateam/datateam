@@ -1,10 +1,10 @@
 <?php
 require_once "../../include/forms.php";
 require_once "../../include/myview.php";
-$HIGHCHARTS = "9.3.1";
+$HIGHCHARTS = "10.1.0";
 
-$site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Boone';
-$date = isset($_GET["date"]) ? $_GET["date"]: '2016-06-09';
+$site = isset($_GET["site"]) ? $_GET["site"]: 'IA_Story2';
+$date = isset($_GET["date"]) ? $_GET["date"]: '2006-06-09';
 $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
@@ -42,7 +42,7 @@ $ar = Array(
     "OH_Hardin2"=>"OH_Hardin2  (2008-01-01 to 2014-12-29) [2554 days]",
     "OH_Henry"=>"OH_Henry  (2008-01-01 to 2014-12-30) [2555 days]",
     "SD_Clay"=>"SD_Clay  (2015-01-01 to 2017-12-31) [1095 days]",
-		);
+);
 $siteselect = td_site_select("site", $site, $ar);
 
 $jsurl = sprintf("tileflow__%s__%s__%s__%s__%s.js", 
@@ -64,6 +64,7 @@ $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
 <script src="/vendor/highcharts/${HIGHCHARTS}/highcharts.js"></script>
 <script src="/vendor/highcharts/${HIGHCHARTS}/highcharts-more.js"></script>
+<script src="/vendor/highcharts/${HIGHCHARTS}/modules/accessibility.js"></script>
 <script src="/vendor/highcharts/${HIGHCHARTS}/modules/exporting.js"></script>
 {$jsextra}
 <script>
