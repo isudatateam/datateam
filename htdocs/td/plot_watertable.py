@@ -133,18 +133,7 @@ $("#hc").highcharts({
         reversed: true
     },
     plotOptions: {
-        line: {turboThreshold: 0},
-        series: {
-            cursor: 'pointer',
-            allowPointSelect: true,
-            point: {
-                events: {
-                    click: function() {
-                        editPoint(this);
-                    }
-                }
-            }
-        }
+        line: {turboThreshold: 0}
     },
     xAxis: {
         type: 'datetime'

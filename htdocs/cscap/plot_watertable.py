@@ -206,7 +206,7 @@ def make_plot(form):
     s = []
     plot_ids = df["plotid"].unique()
     plot_ids.sort()
-    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
+    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6
     for plotid in plot_ids:
         df2 = df[df["plotid"] == plotid]
         v = df2[["ticks", "depth"]].to_json(orient="values")
@@ -231,18 +231,8 @@ $("#hc").highcharts({
     yAxis: {title: {text: 'Depth below ground (mm)'},
         reversed: true
     },
-    plotOptions: {line: {turboThreshold: 0},
-        series: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            point: {
-                events: {
-                    click: function () {
-                        editPoint(this);
-                    }
-                }
-            }
-        }
+    plotOptions: {
+        line: {turboThreshold: 0}
     },
     xAxis: {
         type: 'datetime'
