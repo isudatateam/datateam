@@ -269,9 +269,6 @@ options = {
             allowPointSelect: true,
             point: {
                 events: {
-                    click: function() {
-                        editPoint(this);
-                    },
                     mouseOver: function () {
                         // Note, I converted this.x to this.index
                         syncTooltip(this.series.chart.container, this.index);
@@ -296,7 +293,7 @@ options = {
 """
     )
     # to_json can't handle serialization of dt
-    df["ticks"] = df["v"].astype(np.int64) // 10 ** 6
+    df["ticks"] = df["v"].astype(np.int64) // 10**6
     lines = []
     lines2 = []
     if depth == "all":

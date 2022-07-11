@@ -67,7 +67,7 @@ def make_plot(form, start_response):
 
     if len(df.index) < 3:
         return send_error(start_response, "js")
-    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10 ** 6
+    df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6
     smdf = df[["ticks", "depth", "soil_moisture"]].pivot(
         "ticks", "depth", "soil_moisture"
     )
@@ -131,9 +131,6 @@ options = {
             allowPointSelect: true,
             point: {
                 events: {
-                    click: function() {
-                        editPoint(this);
-                    },
                     mouseOver: function () {
                         // Note, I converted this.x to this.index
                         syncTooltip(this.series.chart.container, this.index);

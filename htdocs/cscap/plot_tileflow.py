@@ -197,7 +197,7 @@ def make_plot(form):
     s = []
     plot_ids = df["plotid"].unique()
     plot_ids.sort()
-    df["ticks"] = df["v"].astype(np.int64) // 10 ** 6
+    df["ticks"] = df["v"].astype(np.int64) // 10**6
     seriestype = "line" if ptype == "1" else "column"
     for plotid in plot_ids:
         df2 = df[df["plotid"] == plotid]
@@ -234,18 +234,8 @@ $("#hc").highcharts({
     chart: {zoomType: 'x'},
     yAxis: {title: {text: 'Tile Flow (mm)'}
     },
-    plotOptions: {line: {turboThreshold: 0},
-        series: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            point: {
-                events: {
-                    click: function () {
-                        editPoint(this);
-                    }
-                }
-            }
-        }
+    plotOptions: {
+        line: {turboThreshold: 0}
     },
     xAxis: {
         type: 'datetime'

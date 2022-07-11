@@ -149,6 +149,8 @@ def make_plot(form, start_response):
         plot_ids = plot_ids[::-1]
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6
     seriestype = "line" if by in ["daily"] else "column"
+    if len(wxdf.index) >= 100:
+        seriestype = "line"
     for i, plotid in enumerate(plot_ids):
         df2 = df[df[linecol] == plotid]
         if df2.empty:
@@ -193,25 +195,16 @@ Highcharts.chart('hc', {
     yAxis: [
         {title: {text: 'Tile Flow (mm)'}},
         {
-            title: {text: 'Daily Precipitation (mm)'},
+            title: {text: '"""
+        + by.capitalize()
+        + """ Precipitation (mm)'},
             reversed: true,
             maxPadding: 1,
             opposite: true
         }
     ],
     plotOptions: {
-        line: {turboThreshold: 0},
-        series: {
-            cursor: 'pointer',
-            allowPointSelect: true,
-            point: {
-                events: {
-                    click: function() {
-                        editPoint(this);
-                    }
-                }
-            }
-        }
+        line: {turboThreshold: 0}
     },
     xAxis: {
         type: 'datetime'
