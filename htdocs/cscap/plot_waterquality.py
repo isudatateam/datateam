@@ -133,7 +133,7 @@ def make_plot(form):
     splots = []
     plot_ids = df["plotid"].unique()
     plot_ids.sort()
-    df["ticks"] = df["v"].astype(np.int64) // 10 ** 6
+    df["ticks"] = df["v"].astype(np.int64) // 10**6
     for plotid in plot_ids:
         df2 = df[df["plotid"] == plotid]
         splots.append(
