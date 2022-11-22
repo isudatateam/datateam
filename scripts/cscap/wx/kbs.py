@@ -34,15 +34,17 @@ for year in range(1988, 2015):
         if d.year == year:
             total_kbs += kbs[d]
 
-    print "%s %6.1f %6.1f %6.1f (%.1f%%)" % (
-        year,
-        total_iem,
-        total_kbs,
-        total_iem - total_kbs,
-        (total_iem - total_kbs) / total_kbs * 100.0,
+    print(
+        "%s %6.1f %6.1f %6.1f (%.1f%%)"
+        % (
+            year,
+            total_iem,
+            total_kbs,
+            total_iem - total_kbs,
+            (total_iem - total_kbs) / total_kbs * 100.0,
+        )
     )
 
-print
 
 sts = datetime.date(1999, 1, 1)
 ets = datetime.date(2000, 1, 1)
@@ -50,14 +52,17 @@ interval = datetime.timedelta(days=1)
 now = sts
 while now < ets:
     if abs(iem[now] - kbs[now]) > 0:
-        print "%s %6.1f %6.1f %6.1f (%.1f%%)" % (
-            now,
-            iem[now],
-            kbs[now],
-            iem[now] - kbs[now],
-            (iem[now] - kbs[now])
-            / (0.01 if kbs[now] == 0 else kbs[now])
-            * 100.0,
+        print(
+            "%s %6.1f %6.1f %6.1f (%.1f%%)"
+            % (
+                now,
+                iem[now],
+                kbs[now],
+                iem[now] - kbs[now],
+                (iem[now] - kbs[now])
+                / (0.01 if kbs[now] == 0 else kbs[now])
+                * 100.0,
+            )
         )
 
     now += interval

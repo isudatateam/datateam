@@ -31,7 +31,7 @@ for mdl in [
     """
     cursor.execute(sql, (mdl,))
     row = cursor.fetchone()
-    print "%10s %s %s %s %s" % (mdl, row[0], row[1], row[2], row[3])
+    print("%10s %s %s %s %s" % (mdl, row[0], row[1], row[2], row[3]))
 
 """
    WITH periods as (

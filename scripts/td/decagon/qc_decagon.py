@@ -47,7 +47,7 @@ def fill_missing_timestamps():
                 plotid,
             ),
         )
-        print (
+        print(
             "Added %s null rows for %s[%s]"
             % (cursor.rowcount, uniqueid, plotid)
         )
@@ -86,7 +86,7 @@ def bounds_check():
                     (uniqueid, plotid, lbound, ubound),
                 )
                 if cursor.rowcount > 0:
-                    print (
+                    print(
                         (
                             "Site: %s Plotid: %s Var: %-13s "
                             " bounds_check hits: %s"
@@ -133,12 +133,12 @@ def ticker_temp():
             """,
                 (uniqueid, plotid, threshold),
             )
-            print (
+            print(
                 ("Site: %s Plotid: %s Var: %-11s Hits: %s")
                 % (uniqueid, plotid, vname, cursor.rowcount)
             )
             for row in cursor:
-                print (
+                print(
                     ("valid: %s %s went from %s to %s at %s")
                     % (
                         row[0].strftime("%Y%m%d %H%M"),
@@ -177,10 +177,13 @@ def replace999():
             """
                 % (v, n, v, n, v, n, v, n)
             )
-            print "%s rows with -999 set to null for d%s%s" % (
-                cursor.rowcount,
-                v,
-                n,
+            print(
+                "%s rows with -999 set to null for d%s%s"
+                % (
+                    cursor.rowcount,
+                    v,
+                    n,
+                )
             )
             cursor.close()
             pgconn.commit()

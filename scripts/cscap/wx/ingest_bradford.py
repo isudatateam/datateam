@@ -6,4 +6,4 @@ import pandas as pd
 df = pd.read_table(
     "/tmp/boone_daily.html", sep="\t", header=[0, 1, 2, 3, 4, 5]
 )
-print df.columns
+print(df.columns)

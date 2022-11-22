@@ -13,7 +13,7 @@ for sid in nt.sts.keys():
     if clid in done:
         continue
     done.append(clid)
-    print ("------------------------- %s %s" % (sid, clid))
+    print("------------------------- %s %s" % (sid, clid))
     df = read_sql(
         """
     SELECT year, sum(precip) from alldata_"""
@@ -26,4 +26,4 @@ for sid in nt.sts.keys():
         index_col=None,
     )
     for i, row in df[df["sum"] < 10].iterrows():
-        print sid, clid, row["year"], row["sum"]
+        print(sid, clid, row["year"], row["sum"])

@@ -12,7 +12,7 @@ station = "SEPAC"
 fn = "sepac.xlsx"
 
 df = pd.read_excel(fn)
-print df.columns
+print(df.columns)
 df["sknt"] = speed(
     pd.to_numeric(df["Wind Speed(mph)"], errors="coerce"), "MPH"
 ).value("KT")
@@ -23,7 +23,7 @@ df["low"] = pd.to_numeric(df["Minimum Air Temperature(degF)"], errors="coerce")
 df["pday"] = df["Precipitation(inch)"]
 df["srad"] = df["Solar Radiation(MJsqm)"]
 
-print ("fn: %s valid: %s - %s" % (fn, df["date"].min(), df["date"].max()))
+print("fn: %s valid: %s - %s" % (fn, df["date"].min(), df["date"].max()))
 cursor = pgconn.cursor()
 cursor.execute(
     """DELETE from weather_data_daily where station = %s
@@ -32,7 +32,7 @@ cursor.execute(
     (station, df["date"].min(), df["date"].max()),
 )
 if cursor.rowcount > 0:
-    print ("Deleted %s rows" % (cursor.rowcount,))
+    print("Deleted %s rows" % (cursor.rowcount,))
 
 for i, row in df.iterrows():
     cursor.execute(
