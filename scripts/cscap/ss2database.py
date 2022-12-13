@@ -43,13 +43,7 @@ def workflow(sheetid, tablename):
         )
         % (",".join([' "%s" varchar' % (s,) for s in cols]),)
     )
-    cursor.execute(
-        """
-        GRANT SELECT on """
-        + tablename
-        + """ to nobody,apache
-    """
-    )
+    cursor.execute(f"GRANT SELECT on {tablename} to nobody")
     for i, row in enumerate(sheet.rows):
         vals = []
         for cell in row.cells:

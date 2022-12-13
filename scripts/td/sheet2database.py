@@ -97,12 +97,7 @@ def do(spreadkey, sheetlabel, tablename, cols):
                 sql += "%s varchar," % (cleankey(key),)
             sql = sql[:-1] + ")"
             cursor.execute(sql)
-            cursor.execute(
-                """
-            GRANT SELECT on %s to nobody,apache
-            """
-                % (tablename,)
-            )
+            cursor.execute(f"GRANT SELECT on {tablename} to nobody")
         values = []
         for key in cols:
             val = row[cleankey(key)]
