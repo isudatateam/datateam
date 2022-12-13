@@ -27,4 +27,3 @@ class MyView {
         return $this->vars[$name];
     }
 }
-?>

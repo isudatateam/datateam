@@ -2,7 +2,7 @@
 // require_once "../../../include/require_auth.php";
 
 function build_treatments_ui(){
-	$s = <<<EOF
+    $s = <<<EOF
 <p>For sites you’ve selected, available treatments will be identified by black text; unavailable in grey.</p>
 <div class="clearfix"></div>
 
@@ -128,42 +128,42 @@ function build_treatments_ui(){
 
 </div></div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_agronomic_ui(){
-	$s = <<<EOF
+    $s = <<<EOF
 <div class="row"><div class="col-md-4">
 
 <div class="panel panel-default">
   <div class="panel-heading">Corn</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR32" data-agronomic="AGR32" name="agronomic[]" id="AGR32">
+    <input type="checkbox" value="AGR32" data-agronomic="AGR32" name="agronomic[]" id="AGR32">
 <label for="AGR32" class="control-label">Corn cob biomass at R6</label>
-	<input type="checkbox" value="AGR24" data-agronomic="AGR24" name="agronomic[]" id="AGR24">
+    <input type="checkbox" value="AGR24" data-agronomic="AGR24" name="agronomic[]" id="AGR24">
 <label for="AGR24" class="control-label">Corn cob total C at R6</label>
-	<input type="checkbox" value="AGR26" data-agronomic="AGR26" name="agronomic[]" id="AGR26">
+    <input type="checkbox" value="AGR26" data-agronomic="AGR26" name="agronomic[]" id="AGR26">
 <label for="AGR26" class="control-label">Corn cob total N at R6</label>
-	<input type="checkbox" value="AGR1" data-agronomic="AGR1" name="agronomic[]" id="AGR1">
+    <input type="checkbox" value="AGR1" data-agronomic="AGR1" name="agronomic[]" id="AGR1">
 <label for="AGR1" class="control-label">Corn final plant population</label>
-	<input type="checkbox" value="AGR33" data-agronomic="AGR33" name="agronomic[]" id="AGR33">
+    <input type="checkbox" value="AGR33" data-agronomic="AGR33" name="agronomic[]" id="AGR33">
 <label for="AGR33" class="control-label">Corn grain biomass at R6</label>
-	<input type="checkbox" value="AGR18" data-agronomic="AGR18" name="agronomic[]" id="AGR18">
+    <input type="checkbox" value="AGR18" data-agronomic="AGR18" name="agronomic[]" id="AGR18">
 <label for="AGR18" class="control-label">Corn grain moisture</label>
-	<input type="checkbox" value="AGR23" data-agronomic="AGR23" name="agronomic[]" id="AGR23">
+    <input type="checkbox" value="AGR23" data-agronomic="AGR23" name="agronomic[]" id="AGR23">
 <label for="AGR23" class="control-label">Corn grain total C at R6</label>
-	<input type="checkbox" value="AGR25" data-agronomic="AGR25" name="agronomic[]" id="AGR25">
+    <input type="checkbox" value="AGR25" data-agronomic="AGR25" name="agronomic[]" id="AGR25">
 <label for="AGR25" class="control-label">Corn grain total N at R6</label>
-	<input type="checkbox" value="AGR17" data-agronomic="AGR17" name="agronomic[]" id="AGR17">
+    <input type="checkbox" value="AGR17" data-agronomic="AGR17" name="agronomic[]" id="AGR17">
 <label for="AGR17" class="control-label">Corn grain yield at 15.5% MB</label>
-	<input type="checkbox" value="AGR4" data-agronomic="AGR4" name="agronomic[]" id="AGR4">
+    <input type="checkbox" value="AGR4" data-agronomic="AGR4" name="agronomic[]" id="AGR4">
 <label for="AGR4" class="control-label">Corn vegetative biomass at R6</label>
-	<input type="checkbox" value="AGR9" data-agronomic="AGR9" name="agronomic[]" id="AGR9">
+    <input type="checkbox" value="AGR9" data-agronomic="AGR9" name="agronomic[]" id="AGR9">
 <label for="AGR9" class="control-label">Corn vegetative biomass total C at R6</label>
-	<input type="checkbox" value="AGR10" data-agronomic="AGR10" name="agronomic[]" id="AGR10">
+    <input type="checkbox" value="AGR10" data-agronomic="AGR10" name="agronomic[]" id="AGR10">
 <label for="AGR10" class="control-label">Corn vegetative biomass total N at R6</label>
-	<input type="checkbox" value="AGR3" data-agronomic="AGR3" name="agronomic[]" id="AGR3">
+    <input type="checkbox" value="AGR3" data-agronomic="AGR3" name="agronomic[]" id="AGR3">
 <label for="AGR3" class="control-label">Mid-season canopy N sensing</label>
 
   </div>
@@ -175,29 +175,29 @@ function build_agronomic_ui(){
   <div class="panel-heading">Cover Crop</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR39" data-agronomic="AGR39" name="agronomic[]" id="AGR39">
+    <input type="checkbox" value="AGR39" data-agronomic="AGR39" name="agronomic[]" id="AGR39">
 <label for="AGR39" class="control-label">Cover crop (rye) and weedy biomass at termination (spring)</label>
-	<input type="checkbox" value="AGR7" data-agronomic="AGR7" name="agronomic[]" id="AGR7">
+    <input type="checkbox" value="AGR7" data-agronomic="AGR7" name="agronomic[]" id="AGR7">
 <label for="AGR7" class="control-label">Cover crop (rye) biomass at termination (spring) (no significant weeds)</label>
-	<input type="checkbox" value="AGR6" data-agronomic="AGR6" name="agronomic[]" id="AGR6">
+    <input type="checkbox" value="AGR6" data-agronomic="AGR6" name="agronomic[]" id="AGR6">
 <label for="AGR6" class="control-label">Cover crop (rye) biomass in late fall (no significant weeds)</label>
-	<input type="checkbox" value="AGR41" data-agronomic="AGR41" name="agronomic[]" id="AGR41">
+    <input type="checkbox" value="AGR41" data-agronomic="AGR41" name="agronomic[]" id="AGR41">
 <label for="AGR41" class="control-label">Red clover or mixed cover crop biomass in late fall of previous year</label>
-	<input type="checkbox" value="AGR43" data-agronomic="AGR43" name="agronomic[]" id="AGR43">
+    <input type="checkbox" value="AGR43" data-agronomic="AGR43" name="agronomic[]" id="AGR43">
 <label for="AGR43" class="control-label">Red clover or mixed cover crop total C in late fall of previous year</label>
-	<input type="checkbox" value="AGR46" data-agronomic="AGR46" name="agronomic[]" id="AGR46">
+    <input type="checkbox" value="AGR46" data-agronomic="AGR46" name="agronomic[]" id="AGR46">
 <label for="AGR46" class="control-label">Red clover or mixed cover crop total C in spring of spreadsheet year</label>
-	<input type="checkbox" value="AGR42" data-agronomic="AGR42" name="agronomic[]" id="AGR42">
+    <input type="checkbox" value="AGR42" data-agronomic="AGR42" name="agronomic[]" id="AGR42">
 <label for="AGR42" class="control-label">Red clover or mixed cover crop total N in late fall of previous year</label>
-	<input type="checkbox" value="AGR13" data-agronomic="AGR13" name="agronomic[]" id="AGR13">
+    <input type="checkbox" value="AGR13" data-agronomic="AGR13" name="agronomic[]" id="AGR13">
 <label for="AGR13" class="control-label">Rye biomass total C at fall</label>
-	<input type="checkbox" value="AGR15" data-agronomic="AGR15" name="agronomic[]" id="AGR15">
+    <input type="checkbox" value="AGR15" data-agronomic="AGR15" name="agronomic[]" id="AGR15">
 <label for="AGR15" class="control-label">Rye biomass total C at spring</label>
-	<input type="checkbox" value="AGR14" data-agronomic="AGR14" name="agronomic[]" id="AGR14">
+    <input type="checkbox" value="AGR14" data-agronomic="AGR14" name="agronomic[]" id="AGR14">
 <label for="AGR14" class="control-label">Rye biomass total N at fall</label>
-	<input type="checkbox" value="AGR16" data-agronomic="AGR16" name="agronomic[]" id="AGR16">
+    <input type="checkbox" value="AGR16" data-agronomic="AGR16" name="agronomic[]" id="AGR16">
 <label for="AGR6" class="control-label">Rye biomass total N at spring</label>
-	<input type="checkbox" value="AGR40" data-agronomic="AGR40" name="agronomic[]" id="AGR40">
+    <input type="checkbox" value="AGR40" data-agronomic="AGR40" name="agronomic[]" id="AGR40">
 <label for="AGR40" class="control-label">Weedy biomass (only) at termination (spring)</label>
 
 
@@ -211,23 +211,23 @@ function build_agronomic_ui(){
   <div class="panel-heading">Soybean</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR2" data-agronomic="AGR2" name="agronomic[]" id="AGR2">
+    <input type="checkbox" value="AGR2" data-agronomic="AGR2" name="agronomic[]" id="AGR2">
 <label for="AGR2" class="control-label">Soybean final plant population</label>
-	<input type="checkbox" value="AGR34" data-agronomic="AGR34" name="agronomic[]" id="AGR34">
+    <input type="checkbox" value="AGR34" data-agronomic="AGR34" name="agronomic[]" id="AGR34">
 <label for="AGR34" class="control-label">Soybean grain biomass at R8</label>
-	<input type="checkbox" value="AGR20" data-agronomic="AGR20" name="agronomic[]" id="AGR20">
+    <input type="checkbox" value="AGR20" data-agronomic="AGR20" name="agronomic[]" id="AGR20">
 <label for="AGR20" class="control-label">Soybean grain moisture</label>
-	<input type="checkbox" value="AGR27" data-agronomic="AGR27" name="agronomic[]" id="AGR27">
+    <input type="checkbox" value="AGR27" data-agronomic="AGR27" name="agronomic[]" id="AGR27">
 <label for="AGR27" class="control-label">Soybean grain total C at R8</label>
-	<input type="checkbox" value="AGR28" data-agronomic="AGR28" name="agronomic[]" id="AGR28">
+    <input type="checkbox" value="AGR28" data-agronomic="AGR28" name="agronomic[]" id="AGR28">
 <label for="AGR28" class="control-label">Soybean grain total N at R8</label>
-	<input type="checkbox" value="AGR19" data-agronomic="AGR19" name="agronomic[]" id="AGR19">
+    <input type="checkbox" value="AGR19" data-agronomic="AGR19" name="agronomic[]" id="AGR19">
 <label for="AGR19" class="control-label">Soybean grain yield at 13.0% MB</label>
-	<input type="checkbox" value="AGR5" data-agronomic="AGR5" name="agronomic[]" id="AGR5">
+    <input type="checkbox" value="AGR5" data-agronomic="AGR5" name="agronomic[]" id="AGR5">
 <label for="AGR5" class="control-label">Soybean vegetative biomass at R8</label>
-	<input type="checkbox" value="AGR11" data-agronomic="AGR11" name="agronomic[]" id="AGR11">
+    <input type="checkbox" value="AGR11" data-agronomic="AGR11" name="agronomic[]" id="AGR11">
 <label for="AGR11" class="control-label">Soybean vegetative biomass total C at R8</label>
-	<input type="checkbox" value="AGR12" data-agronomic="AGR12" name="agronomic[]" id="AGR12">
+    <input type="checkbox" value="AGR12" data-agronomic="AGR12" name="agronomic[]" id="AGR12">
 <label for="AGR12" class="control-label">Soybean vegetative biomass total N at R8</label>
 
 
@@ -238,9 +238,9 @@ function build_agronomic_ui(){
   <div class="panel-heading">Wheat</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="AGR22" data-agronomic="AGR22" name="agronomic[]" id="AGR22">
+    <input type="checkbox" value="AGR22" data-agronomic="AGR22" name="agronomic[]" id="AGR22">
 <label for="AGR22" class="control-label">Wheat grain moisture</label>
-	<input type="checkbox" value="AGR21" data-agronomic="AGR21" name="agronomic[]" id="AGR21">
+    <input type="checkbox" value="AGR21" data-agronomic="AGR21" name="agronomic[]" id="AGR21">
 <label for="AGR21" class="control-label">Wheat grain yield at 13.5% MB</label>
 
   </div>
@@ -250,18 +250,18 @@ function build_agronomic_ui(){
 
 </div></div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_soil_ui(){
-	$s = <<<EOF
+    $s = <<<EOF
 <div class="row"><div class="col-md-4">
 
 <div class="panel panel-default">
   <div class="panel-heading">Water Retention</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="_S1" data-soil="_S1" name="soil[]" id="_S1">
+    <input type="checkbox" value="_S1" data-soil="_S1" name="soil[]" id="_S1">
 <label for="_S1" class="control-label">Water retention</label>
 
   </div>
@@ -271,11 +271,11 @@ function build_soil_ui(){
   <div class="panel-heading">Soil Nitrogen</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="SOIL22" data-soil="SOIL22" name="soil[]" id="SOIL22">
+    <input type="checkbox" value="SOIL22" data-soil="SOIL22" name="soil[]" id="SOIL22">
 <label for="SOIL22" class="control-label">Soil Ammonium</label>
-	<input type="checkbox" value="SOIL15" data-soil="SOIL15" name="soil[]" id="SOIL15">
+    <input type="checkbox" value="SOIL15" data-soil="SOIL15" name="soil[]" id="SOIL15">
 <label for="SOIL15" class="control-label">Soil Nitrate</label>
-	<input type="checkbox" value="SOIL14" data-soil="SOIL14" name="soil[]" id="SOIL14">
+    <input type="checkbox" value="SOIL14" data-soil="SOIL14" name="soil[]" id="SOIL14">
 <label for="SOIL14" class="control-label">Total N</label>
 
   </div>
@@ -287,19 +287,19 @@ function build_soil_ui(){
   <div class="panel-heading">Soil Properties</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="SOIL7" data-soil="SOIL7" name="soil[]" id="SOIL7">
+    <input type="checkbox" value="SOIL7" data-soil="SOIL7" name="soil[]" id="SOIL7">
 <label for="SOIL7" class="control-label">Aggregate stability</label>
-	<input type="checkbox" value="SOIL12" data-soil="SOIL12" name="soil[]" id="SOIL12">
+    <input type="checkbox" value="SOIL12" data-soil="SOIL12" name="soil[]" id="SOIL12">
 <label for="SOIL12" class="control-label">Cation Exchange Capacity (CEC)</label>
-	<input type="checkbox" value="SOIL1" data-soil="SOIL1" name="soil[]" id="SOIL1">
+    <input type="checkbox" value="SOIL1" data-soil="SOIL1" name="soil[]" id="SOIL1">
 <label for="SOIL1" class="control-label">Dry bulk density (BD)</label>
-	<input type="checkbox" value="SOIL3" data-soil="SOIL3" name="soil[]" id="SOIL3">
+    <input type="checkbox" value="SOIL3" data-soil="SOIL3" name="soil[]" id="SOIL3">
 <label for="SOIL3" class="control-label">Infiltration rate</label>
-	<input type="checkbox" value="SOIL11" data-soil="SOIL11" name="soil[]" id="SOIL11">
+    <input type="checkbox" value="SOIL11" data-soil="SOIL11" name="soil[]" id="SOIL11">
 <label for="SOIL11" class="control-label">Soil pH</label>
-	<input type="checkbox" value="_S19" data-soil="_S19" name="soil[]" id="_S19">
+    <input type="checkbox" value="_S19" data-soil="_S19" name="soil[]" id="_S19">
 <label for="_S19" class="control-label">Soil Fertility Routine Analysis</label>
-	<input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
+    <input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
 <label for="SOIL6" class="control-label">Soil texture</label>
 
   </div>
@@ -312,13 +312,13 @@ function build_soil_ui(){
   <div class="panel-heading">Soil Texture</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
+    <input type="checkbox" value="SOIL6" data-soil="SOIL6" name="soil[]" id="SOIL6">
 <label for="SOIL6" class="control-label">Soil Texture Name</label>
-	<input type="checkbox" value="SOIL28" data-soil="SOIL28" name="soil[]" id="SOIL28">
+    <input type="checkbox" value="SOIL28" data-soil="SOIL28" name="soil[]" id="SOIL28">
 <label for="SOIL28" class="control-label">Percent Clay</label>
-	<input type="checkbox" value="SOIL26" data-soil="SOIL26" name="soil[]" id="SOIL26">
+    <input type="checkbox" value="SOIL26" data-soil="SOIL26" name="soil[]" id="SOIL26">
 <label for="SOIL26" class="control-label">Percent Sand</label>
-	<input type="checkbox" value="SOIL27" data-soil="SOIL27" name="soil[]" id="SOIL27">
+    <input type="checkbox" value="SOIL27" data-soil="SOIL27" name="soil[]" id="SOIL27">
 <label for="SOIL27" class="control-label">Percent Silt</label>
 
 
@@ -329,7 +329,7 @@ function build_soil_ui(){
   <div class="panel-heading">Soil Carbon</div>
   <div class="panel-body">
 
-	<input type="checkbox" value="SOIL13" data-soil="SOIL13" name="soil[]" id="SOIL13">
+    <input type="checkbox" value="SOIL13" data-soil="SOIL13" name="soil[]" id="SOIL13">
 <label for="SOIL13" class="control-label">Soil Organic Carbon (SOC)</label>
 
   </div>
@@ -339,28 +339,28 @@ function build_soil_ui(){
 
 </div></div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_theses(){
-	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
-	$rs = pg_query(
+    $pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
+    $rs = pg_query(
         $pgconn,
         "select *, (string_to_array(authors, ' '))[1] as sauthor from theses ".
         "ORDER by sauthor ASC, year ASC");
-	$s = "\n";
-	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-	    $srs = "";
-	    if ($row["online_source"] != "N/A"){
-    	    $srs = sprintf("<a href=\"%s\" target=\"_blank\">%s</a>",
-    	       $row["online_source"], $row["online_source"]);
-	    }
-	    $s .= sprintf("<p>%s %s %s %s %s</p>\n",
-				$row['authors'], $row["year"], $row['title'],
-				$row["journal_or_source"], $srs);
-	}
-	$s .= "\n";
-	return $s;
+    $s = "\n";
+    for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+        $srs = "";
+        if ($row["online_source"] != "N/A"){
+            $srs = sprintf("<a href=\"%s\" target=\"_blank\">%s</a>",
+               $row["online_source"], $row["online_source"]);
+        }
+        $s .= sprintf("<p>%s %s %s %s %s</p>\n",
+                $row['authors'], $row["year"], $row['title'],
+                $row["journal_or_source"], $srs);
+    }
+    $s .= "\n";
+    return $s;
 }
 
 function cullna($val){
@@ -370,206 +370,206 @@ function cullna($val){
     return $val;
 }
 function build_publications(){
-	$pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
-	$rs = pg_query(
+    $pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
+    $rs = pg_query(
         $pgconn,
         "select *, (string_to_array(authors, ' '))[1] as sauthor from ".
         "refereed_journals ORDER by sauthor ASC, year ASC"
     );
-	$s = "\n";
-	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
-		$endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
-		$s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a>%s</p>\n",
-				$strong,
-				$row['authors'], $row["year"], $row['title'],
-				$row["journal_or_source"], cullna($row["vol"]),
-		      cullna($row["pg_no."]),
-				$row["online_source"], $row["online_source"], $endstrong);
-	}
-	$s .= "\n";
-	return $s;
+    $s = "\n";
+    for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+        $strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
+        $endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
+        $s .= sprintf("<p>%s%s %s %s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a>%s</p>\n",
+                $strong,
+                $row['authors'], $row["year"], $row['title'],
+                $row["journal_or_source"], cullna($row["vol"]),
+              cullna($row["pg_no."]),
+                $row["online_source"], $row["online_source"], $endstrong);
+    }
+    $s .= "\n";
+    return $s;
 }
 
 function build_sites_ui(){
-	$states = Array("IA" => "Iowa",
-		"MN" => "Minnesota",
-		"WI" => "Wisconsin",
-		"IL" => "Illinois",
-		"MO" => "Missouri",
-		"IN" => "Indiana",
-		"MI" => "Michigan",
-		"OH" => "Ohio");
-	$pgconn = pg_connect("dbname=mesosite host=iemdb-sustainablecorn.local user=nobody");
-	$rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
-			" and id !~* 'ONFARM' and ".
-			"id not in ('VICMS', 'NAEW.Y102', 'NAEW.Y103', 'NAEW.WS115', ".
-			" 'NAEW.WS123', 'NAEW.WS127') ORDER by name ASC");
-	$data = Array();
-	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$data[$row["state"]][$row["id"]] = $row["name"];
-	}
-	$keys = array_keys($data);
-	asort($keys);
-	$s = '';
-	$q = -1;	
-	foreach($keys as $v => $k){
-		$q += 1;
-		if ($q % 3 == 0){
-			$s .= "<div class=\"col-md-4\">\n";
-		}
-		$s .= sprintf("<div class=\"panel panel-default\">".
+    $states = Array("IA" => "Iowa",
+        "MN" => "Minnesota",
+        "WI" => "Wisconsin",
+        "IL" => "Illinois",
+        "MO" => "Missouri",
+        "IN" => "Indiana",
+        "MI" => "Michigan",
+        "OH" => "Ohio");
+    $pgconn = pg_connect("dbname=mesosite host=iemdb-sustainablecorn.local user=nobody");
+    $rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
+            " and id !~* 'ONFARM' and ".
+            "id not in ('VICMS', 'NAEW.Y102', 'NAEW.Y103', 'NAEW.WS115', ".
+            " 'NAEW.WS123', 'NAEW.WS127') ORDER by name ASC");
+    $data = Array();
+    for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+        $data[$row["state"]][$row["id"]] = $row["name"];
+    }
+    $keys = array_keys($data);
+    asort($keys);
+    $s = '';
+    $q = -1;	
+    foreach($keys as $v => $k){
+        $q += 1;
+        if ($q % 3 == 0){
+            $s .= "<div class=\"col-md-4\">\n";
+        }
+        $s .= sprintf("<div class=\"panel panel-default\">".
   "<div class=\"panel-heading\">".
   "<input type=\"checkbox\" class=\"state-check\" value=\"%s\">%s</div>".
   "<div class=\"panel-body\">\n", $k, $states[$k]);
-		foreach($data[$k] as $v2 => $k2){
-			$s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
-			    "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
+        foreach($data[$k] as $v2 => $k2){
+            $s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
+                "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
                 "<label for=\"ST%s\" class=\"control-label\">%s</label>",
-				$v2, $v2, $k, $v2, $v2);
-		}
-		$s .= "</div></div>\n";
-		if ($q % 3 == 2){
-			$s .= "</div>\n";
-		}
-	}
-	if ($q % 3 != 2){
-		$s .= "</div>\n";
-	}
-	return $s;
+                $v2, $v2, $k, $v2, $v2);
+        }
+        $s .= "</div></div>\n";
+        if ($q % 3 == 2){
+            $s .= "</div>\n";
+        }
+    }
+    if ($q % 3 != 2){
+        $s .= "</div>\n";
+    }
+    return $s;
 }
 
 function build_year_ui(){
-	$s = <<<EOF
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Years</div>
-	<div class="panel-body">
-	
-	<input type="checkbox" value="2011" data-year="2011" name="year[]" id="Y2011">
-	<label for="Y2011" class="control-label">2011</label>
-	<input type="checkbox" value="2012" data-year="2012" name="year[]" id="Y2012">
-	<label for="Y2012" class="control-label">2012</label>
-	<input type="checkbox" value="2013" data-year="2013" name="year[]" id="Y2013">
-	<label for="Y2013" class="control-label">2013</label>
-	<input type="checkbox" value="2014" data-year="2014" name="year[]" id="Y2014">
-	<label for="Y2014" class="control-label">2014</label>
-	<input type="checkbox" value="2015" data-year="2015" name="year[]" id="Y2015">
-	<label for="Y2015" class="control-label">2015</label>
-	
-	</div>
-	</div>
+    $s = <<<EOF
+    <div class="panel panel-default">
+    <div class="panel-heading">Available Years</div>
+    <div class="panel-body">
+    
+    <input type="checkbox" value="2011" data-year="2011" name="year[]" id="Y2011">
+    <label for="Y2011" class="control-label">2011</label>
+    <input type="checkbox" value="2012" data-year="2012" name="year[]" id="Y2012">
+    <label for="Y2012" class="control-label">2012</label>
+    <input type="checkbox" value="2013" data-year="2013" name="year[]" id="Y2013">
+    <label for="Y2013" class="control-label">2013</label>
+    <input type="checkbox" value="2014" data-year="2014" name="year[]" id="Y2014">
+    <label for="Y2014" class="control-label">2014</label>
+    <input type="checkbox" value="2015" data-year="2015" name="year[]" id="Y2015">
+    <label for="Y2015" class="control-label">2015</label>
+    
+    </div>
+    </div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_ghg_ui(){
-	$s = <<<EOF
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Variables</div>
-	<div class="panel-body">
-	
-	<input type="checkbox" value="GHG01" data-ghg="GHG01" name="ghg[]" id="GHG01">
-	<label for="GHG01" class="control-label">Carbon Dioxide (CO<sub>2</sub>-C) flux</label>
-	<input type="checkbox" value="GHG02" data-ghg="GHG02" name="ghg[]" id="GHG02">
-	<label for="GHG02" class="control-label">Carbon Dioxide (CO<sub>2</sub>) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG03" data-ghg="GHG03" name="ghg[]" id="GHG03">
-	<label for="GHG03" class="control-label">Nitrous Oxide (N<sub>2</sub>O-N) flux</label>
-	<input type="checkbox" value="GHG04" data-ghg="GHG04" name="ghg[]" id="GHG04">
-	<label for="GHG04" class="control-label">Nitrous Oxide (N<sub>2</sub>O) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG05" data-ghg="GHG05" name="ghg[]" id="GHG05">
-	<label for="GHG05" class="control-label">Ammonia (NH<sub>3</sub>-N) flux</label>
-	<input type="checkbox" value="GHG06" data-ghg="GHG06" name="ghg[]" id="GHG06">
-	<label for="GHG06" class="control-label">Ammonia (NH<sub>3</sub>) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG07" data-ghg="GHG07" name="ghg[]" id="GHG07">
-	<label for="GHG07" class="control-label">Methane (CH<sub>4</sub>-C) flux</label>
-	<input type="checkbox" value="GHG08" data-ghg="GHG08" name="ghg[]" id="GHG08">
-	<label for="GHG08" class="control-label">Methane (CH<sub>4</sub>) correlation coefficient (R<sup>2</sup>)</label>
-	<input type="checkbox" value="GHG11" data-ghg="GHG11" name="ghg[]" id="GHG11">
-	<label for="GHG11" class="control-label">Volumetric soil moisture at 5 cm</label>
-	<input type="checkbox" value="GHG12" data-ghg="GHG12" name="ghg[]" id="GHG12">
-	<label for="GHG12" class="control-label">Soil Temperature at 5 cm</label>
-	<input type="checkbox" value="GHG13" data-ghg="GHG13" name="ghg[]" id="GHG13">
-	<label for="GHG13" class="control-label">Soil Nitrate (NO<sub>3</sub>-N) at 0-10 cm</label>
-	<input type="checkbox" value="GHG14" data-ghg="GHG14" name="ghg[]" id="GHG14">
-	<label for="GHG14" class="control-label">Soil Ammonium (NH<sub>4</sub>-N) at 0-10 cm</label>
-	
-	</div>
-	</div>
+    $s = <<<EOF
+    <div class="panel panel-default">
+    <div class="panel-heading">Available Variables</div>
+    <div class="panel-body">
+    
+    <input type="checkbox" value="GHG01" data-ghg="GHG01" name="ghg[]" id="GHG01">
+    <label for="GHG01" class="control-label">Carbon Dioxide (CO<sub>2</sub>-C) flux</label>
+    <input type="checkbox" value="GHG02" data-ghg="GHG02" name="ghg[]" id="GHG02">
+    <label for="GHG02" class="control-label">Carbon Dioxide (CO<sub>2</sub>) correlation coefficient (R<sup>2</sup>)</label>
+    <input type="checkbox" value="GHG03" data-ghg="GHG03" name="ghg[]" id="GHG03">
+    <label for="GHG03" class="control-label">Nitrous Oxide (N<sub>2</sub>O-N) flux</label>
+    <input type="checkbox" value="GHG04" data-ghg="GHG04" name="ghg[]" id="GHG04">
+    <label for="GHG04" class="control-label">Nitrous Oxide (N<sub>2</sub>O) correlation coefficient (R<sup>2</sup>)</label>
+    <input type="checkbox" value="GHG05" data-ghg="GHG05" name="ghg[]" id="GHG05">
+    <label for="GHG05" class="control-label">Ammonia (NH<sub>3</sub>-N) flux</label>
+    <input type="checkbox" value="GHG06" data-ghg="GHG06" name="ghg[]" id="GHG06">
+    <label for="GHG06" class="control-label">Ammonia (NH<sub>3</sub>) correlation coefficient (R<sup>2</sup>)</label>
+    <input type="checkbox" value="GHG07" data-ghg="GHG07" name="ghg[]" id="GHG07">
+    <label for="GHG07" class="control-label">Methane (CH<sub>4</sub>-C) flux</label>
+    <input type="checkbox" value="GHG08" data-ghg="GHG08" name="ghg[]" id="GHG08">
+    <label for="GHG08" class="control-label">Methane (CH<sub>4</sub>) correlation coefficient (R<sup>2</sup>)</label>
+    <input type="checkbox" value="GHG11" data-ghg="GHG11" name="ghg[]" id="GHG11">
+    <label for="GHG11" class="control-label">Volumetric soil moisture at 5 cm</label>
+    <input type="checkbox" value="GHG12" data-ghg="GHG12" name="ghg[]" id="GHG12">
+    <label for="GHG12" class="control-label">Soil Temperature at 5 cm</label>
+    <input type="checkbox" value="GHG13" data-ghg="GHG13" name="ghg[]" id="GHG13">
+    <label for="GHG13" class="control-label">Soil Nitrate (NO<sub>3</sub>-N) at 0-10 cm</label>
+    <input type="checkbox" value="GHG14" data-ghg="GHG14" name="ghg[]" id="GHG14">
+    <label for="GHG14" class="control-label">Soil Ammonium (NH<sub>4</sub>-N) at 0-10 cm</label>
+    
+    </div>
+    </div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_ipm_ui(){
-	$s = <<<EOF
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Variables</div>
-	<div class="panel-body">
+    $s = <<<EOF
+    <div class="panel panel-default">
+    <div class="panel-heading">Available Variables</div>
+    <div class="panel-body">
 
-	<input type="checkbox" value="IPM01" data-ipm="IPM01" name="ipm[]" id="IPM01">
-	<label for="IPM01" class="control-label">Insect Sampling Methods</label>
-	<input type="checkbox" value="IPM02" data-ipm="IPM02" name="ipm[]" id="IPM02">
-	<label for="IPM02" class="control-label">Insect Common Name</label>
-	<input type="checkbox" value="IPM03" data-ipm="IPM03" name="ipm[]" id="IPM03">
-	<label for="IPM03" class="control-label">Insect Class</label>
-	<input type="checkbox" value="IPM04" data-ipm="IPM04" name="ipm[]" id="IPM04">
-	<label for="IPM04" class="control-label">Insect Order</label>
-	<input type="checkbox" value="IPM05" data-ipm="IPM05" name="ipm[]" id="IPM05">
-	<label for="IPM05" class="control-label">Insect Family</label>
-	<input type="checkbox" value="IPM06" data-ipm="IPM06" name="ipm[]" id="IPM06">
-	<label for="IPM06" class="control-label">Insect Species</label>
-	<input type="checkbox" value="IPM07" data-ipm="IPM07" name="ipm[]" id="IPM07">
-	<label for="IPM07" class="control-label">Insect Population</label>
-	<input type="checkbox" value="IPM08" data-ipm="IPM08" name="ipm[]" id="IPM08">
-	<label for="IPM08" class="control-label">Insect population measurement unit</label>
-	<input type="checkbox" value="IPM09" data-ipm="IPM09" name="ipm[]" id="IPM09">
-	<label for="IPM09" class="control-label">Plant Sample Number</label>
-	<input type="checkbox" value="IPM10" data-ipm="IPM10" name="ipm[]" id="IPM10">
-	<label for="IPM10" class="control-label">Plant sampled</label>
-	<input type="checkbox" value="IPM11" data-ipm="IPM11" name="ipm[]" id="IPM11">
-	<label for="IPM11" class="control-label">Plant component assessed for damage</label>
-	<input type="checkbox" value="IPM12" data-ipm="IPM12" name="ipm[]" id="IPM12">
-	<label for="IPM12" class="control-label">Disease/Damage type</label>
-	<input type="checkbox" value="IPM13" data-ipm="IPM13" name="ipm[]" id="IPM13">
-	<label for="IPM13" class="control-label">Position assessed</label>
-	<input type="checkbox" value="IPM14" data-ipm="IPM14" name="ipm[]" id="IPM14">
-	<label for="IPM14" class="control-label">Visual rating of damage due to disease or insect</label>
-			
-	</div>
-	</div>
+    <input type="checkbox" value="IPM01" data-ipm="IPM01" name="ipm[]" id="IPM01">
+    <label for="IPM01" class="control-label">Insect Sampling Methods</label>
+    <input type="checkbox" value="IPM02" data-ipm="IPM02" name="ipm[]" id="IPM02">
+    <label for="IPM02" class="control-label">Insect Common Name</label>
+    <input type="checkbox" value="IPM03" data-ipm="IPM03" name="ipm[]" id="IPM03">
+    <label for="IPM03" class="control-label">Insect Class</label>
+    <input type="checkbox" value="IPM04" data-ipm="IPM04" name="ipm[]" id="IPM04">
+    <label for="IPM04" class="control-label">Insect Order</label>
+    <input type="checkbox" value="IPM05" data-ipm="IPM05" name="ipm[]" id="IPM05">
+    <label for="IPM05" class="control-label">Insect Family</label>
+    <input type="checkbox" value="IPM06" data-ipm="IPM06" name="ipm[]" id="IPM06">
+    <label for="IPM06" class="control-label">Insect Species</label>
+    <input type="checkbox" value="IPM07" data-ipm="IPM07" name="ipm[]" id="IPM07">
+    <label for="IPM07" class="control-label">Insect Population</label>
+    <input type="checkbox" value="IPM08" data-ipm="IPM08" name="ipm[]" id="IPM08">
+    <label for="IPM08" class="control-label">Insect population measurement unit</label>
+    <input type="checkbox" value="IPM09" data-ipm="IPM09" name="ipm[]" id="IPM09">
+    <label for="IPM09" class="control-label">Plant Sample Number</label>
+    <input type="checkbox" value="IPM10" data-ipm="IPM10" name="ipm[]" id="IPM10">
+    <label for="IPM10" class="control-label">Plant sampled</label>
+    <input type="checkbox" value="IPM11" data-ipm="IPM11" name="ipm[]" id="IPM11">
+    <label for="IPM11" class="control-label">Plant component assessed for damage</label>
+    <input type="checkbox" value="IPM12" data-ipm="IPM12" name="ipm[]" id="IPM12">
+    <label for="IPM12" class="control-label">Disease/Damage type</label>
+    <input type="checkbox" value="IPM13" data-ipm="IPM13" name="ipm[]" id="IPM13">
+    <label for="IPM13" class="control-label">Position assessed</label>
+    <input type="checkbox" value="IPM14" data-ipm="IPM14" name="ipm[]" id="IPM14">
+    <label for="IPM14" class="control-label">Visual rating of damage due to disease or insect</label>
+            
+    </div>
+    </div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_shm_ui(){
-	$s = <<<EOF
+    $s = <<<EOF
 
 <p>It is recommended to export all of the data here because they are supplemental
 metadata that provide context to the experimental data and helps with
 interpretation. For this reason, all variables are selected by default.</p>
 
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Variables</div>
-	<div class="panel-body">
-			
-	<input type="checkbox" value="SHM5" data-ipm="SHM5" name="shm[]" id="SHM5" checked="checked">
-	<label for="SHM5" class="control-label">Data Dictionary</label>
-	<input type="checkbox" value="SHM7" data-ipm="SHM7" name="shm[]" id="SHM7" checked="checked">
-	<label for="SHM7" class="control-label">Drainage Control Structure Management</label>
-	<input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
-	<label for="SHM1" class="control-label">Field Operations</label>
-	<input type="checkbox" value="SHM6" data-ipm="SHM6" name="shm[]" id="SHM6" checked="checked">
-	<label for="SHM6" class="control-label">Notes</label>
-	<input type="checkbox" value="SHM2" data-ipm="SHM2" name="shm[]" id="SHM2" checked="checked">
-	<label for="SHM2" class="control-label">Pesticides</label>
-	<input type="checkbox" value="SHM4" data-ipm="SHM4" name="shm[]" id="SHM4" checked="checked">
-	<label for="SHM4" class="control-label">Plot Identifiers</label>
-	<input type="checkbox" value="SHM8" data-ipm="SHM8" name="shm[]" id="SHM8" checked="checked">
-	<label for="SHM8" class="control-label">Site Metadata and History</label>
-			
-	</div>
-	</div>
+    <div class="panel panel-default">
+    <div class="panel-heading">Available Variables</div>
+    <div class="panel-body">
+            
+    <input type="checkbox" value="SHM5" data-ipm="SHM5" name="shm[]" id="SHM5" checked="checked">
+    <label for="SHM5" class="control-label">Data Dictionary</label>
+    <input type="checkbox" value="SHM7" data-ipm="SHM7" name="shm[]" id="SHM7" checked="checked">
+    <label for="SHM7" class="control-label">Drainage Control Structure Management</label>
+    <input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
+    <label for="SHM1" class="control-label">Field Operations</label>
+    <input type="checkbox" value="SHM6" data-ipm="SHM6" name="shm[]" id="SHM6" checked="checked">
+    <label for="SHM6" class="control-label">Notes</label>
+    <input type="checkbox" value="SHM2" data-ipm="SHM2" name="shm[]" id="SHM2" checked="checked">
+    <label for="SHM2" class="control-label">Pesticides</label>
+    <input type="checkbox" value="SHM4" data-ipm="SHM4" name="shm[]" id="SHM4" checked="checked">
+    <label for="SHM4" class="control-label">Plot Identifiers</label>
+    <input type="checkbox" value="SHM8" data-ipm="SHM8" name="shm[]" id="SHM8" checked="checked">
+    <label for="SHM8" class="control-label">Site Metadata and History</label>
+            
+    </div>
+    </div>
 EOF;
-	return $s;
+    return $s;
 }
 
 require_once "../../../include/myview.php";
@@ -1093,23 +1093,23 @@ will be identified by black text; unavailable in grey.</p>
 <div class="form-group">
     <label for="dlimit">How to handle values below detection limit:</label>
 <select name="detectlimit" class="form-control" id="dlimit">
-	<option value="1">Keep them as is, presented as "&lt; LOD"</option>
-	<option value="2">Divide the LOD value by two</option>
-	<option value="3">Divide the LOD value by square root of two</option>
-	<option value="4">Omit all occurrences and replace as missing</option>
+    <option value="1">Keep them as is, presented as "&lt; LOD"</option>
+    <option value="2">Divide the LOD value by two</option>
+    <option value="3">Divide the LOD value by square root of two</option>
+    <option value="4">Omit all occurrences and replace as missing</option>
 </select>
 </div>
 
 <div class="form-group">
     <label for="missingvalue">How to represent missing values:</label>
 <select name="missing" class="form-control" id="missingvalue">
-	<option value="M">M</option>
-	<option value="N/A">N/A</option>
-	<option value="NaN">NaN</option>
-	<option value="NULL">NULL</option>
-	<option value=" ">((blank space))</option>
-	<option value=".">.</option>
-	<option value="-999">-999</option>
+    <option value="M">M</option>
+    <option value="N/A">N/A</option>
+    <option value="NaN">NaN</option>
+    <option value="NULL">NULL</option>
+    <option value=" ">((blank space))</option>
+    <option value=".">.</option>
+    <option value="-999">-999</option>
     <option value="__custom__">Custom Value</option>
 </select>
 </div>
@@ -1174,7 +1174,7 @@ timeout shown, but an email will still be delivered with the data.</div>
 <div id="proceed" style="display: none;">
   <p><input type="submit" value="Proceed with Download"></p>
 </div>
-	
+    
 </div>
 <br clear="both" />
 <div class="pull-right">
@@ -1182,16 +1182,16 @@ timeout shown, but an email will still be delivered with the data.</div>
 <button id="next-btn" type="button" class="btn btn-default">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
 </div>
 </form>
-		</div>
-		<div role="tabpanel" class="tab-pane active" id="sites">
+        </div>
+        <div role="tabpanel" class="tab-pane active" id="sites">
 
 <iframe src="https://www.google.com/maps/d/embed?mid=1VQuDqTRkO5RPvIgWMODYvBLWU1A&amp;z=5&amp;ll=42.62%2C-90.72" width="640" height="480"></iframe>
 
     {$sitestable}
 
 
-		</div>
-		<div role="tabpanel" class="tab-pane" id="pubs">
+        </div>
+        <div role="tabpanel" class="tab-pane" id="pubs">
 
 <br />
 
@@ -1229,30 +1229,30 @@ for a PDF copy.</blockquote></p>
 the team’s research, extension, education, and management findings. These are available 
 in electronic and print format:</blockquote></p>
     <ul>
-	<li><a href="https://store.extension.iastate.edu/product/14878" target="_blank">Climate and Managing Corn-Soybean 
-	Agroecosystems 1: Findings, Implications and Recommendations</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/15130" target="_blank">Climate and Managing Corn-Soybean 
-	Agroecosystems 2: Findings, Implications and Recommendations</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/14504" target="_blank">Climate Change and Agricultural Extension; 
-	Building Capacity for Land Grant Extension Services to Address the Agricultural Impacts of Climate Change 
-	and the Adaptive Management Needs of Agricultural Stakeholders (vol. 3)</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/14913" target="_blank">Agri-Climate Education; Preparing 
-	the Next Generation (vol. 4)</a></li>
-	<li><a href="https://store.extension.iastate.edu/product/15140" target="_blank">Project and Research Management: 
-	Integrating Systems, Data, and People in Multidisciplinary Work (vol. 5)</a></li>
+    <li><a href="https://store.extension.iastate.edu/product/14878" target="_blank">Climate and Managing Corn-Soybean 
+    Agroecosystems 1: Findings, Implications and Recommendations</a></li>
+    <li><a href="https://store.extension.iastate.edu/product/15130" target="_blank">Climate and Managing Corn-Soybean 
+    Agroecosystems 2: Findings, Implications and Recommendations</a></li>
+    <li><a href="https://store.extension.iastate.edu/product/14504" target="_blank">Climate Change and Agricultural Extension; 
+    Building Capacity for Land Grant Extension Services to Address the Agricultural Impacts of Climate Change 
+    and the Adaptive Management Needs of Agricultural Stakeholders (vol. 3)</a></li>
+    <li><a href="https://store.extension.iastate.edu/product/14913" target="_blank">Agri-Climate Education; Preparing 
+    the Next Generation (vol. 4)</a></li>
+    <li><a href="https://store.extension.iastate.edu/product/15140" target="_blank">Project and Research Management: 
+    Integrating Systems, Data, and People in Multidisciplinary Work (vol. 5)</a></li>
     </ul>
 
 <p>Project Director, Lois Wright Morton, co-published a primer for project directors of large teams. 
 This publication is hosted on the USDA NIFA website:</p>
     <ul>
-	<li><a href="https://nifa.usda.gov/leading-transdisciplinary-projects" target="_blank">Leading Large Transdisciplinary 
-	Projects Addressing Social-Ecological Systems: A Primer for Project Directors</a></li>
+    <li><a href="https://nifa.usda.gov/leading-transdisciplinary-projects" target="_blank">Leading Large Transdisciplinary 
+    Projects Addressing Social-Ecological Systems: A Primer for Project Directors</a></li>
     </ul>
 
     </div>
 </div>
 
-		</div>
+        </div>
     <div role="tabpanel" class="tab-pane" id="wdata">
 
 <p>Data originating from research sites that have subsurface tile drainage installed are included here. 
@@ -1322,8 +1322,6 @@ adapt to and manage for weather and climate variability and risk.</p>
 <div class="clearfix"></div>
 <p>&nbsp;</p>
 <img src="/images/logos/web_logos.png" class="img img-responsive">
-		
+        
 EOF;
 $t->render('single.phtml');
-
-?>
