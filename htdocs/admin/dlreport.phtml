@@ -4,7 +4,7 @@ require_once "../../include/myview.php";
 
 $project = (isset($_REQUEST["td"])) ? "td" : "sustainablecorn";
 
-$pgconn = pg_connect("dbname={$project} host=iemdb-{$project}.local");
+$pgconn = pg_connect("dbname={$project} host=iemdb-{$project}.local user=nobody");
 $table = <<<EOF
 <table class="table table-striped table-bordered">
 <thead><tr><th>Email</th><th>Timestamp</th></tr></thead>
