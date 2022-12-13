@@ -16,7 +16,7 @@ function authorize()
         $pgconn,
         "authorize",
         "SELECT email from website_users u JOIN website_access_levels l "
-            . "on (u.access_level = l.access_level) where email = $1"
+            . "on (u.access_level = l.access_level) where email = $1 "
             . "and l.appid = $2"
     );
     $rs = pg_execute($pgconn, "authorize", array($email, $app));
