@@ -10,8 +10,8 @@ EOF;
 $rs = pg_query($pgconn, "SELECT * from website_users ".
     "WHERE access_level != 1 ORDER by email ASC");
 for ($i=0; $row=@pg_fetch_assoc($rs,$i); $i++){
-	$table .= sprintf("<tr><td>%s</td><td>%s</td><td>%s</td></tr>\n",
-			$row["email"], $row["last_usage"], $row["access_level"]);
+    $table .= sprintf("<tr><td>%s</td><td>%s</td><td>%s</td></tr>\n",
+            $row["email"], $row["last_usage"], $row["access_level"]);
 }
 $table .= "</table>";
 
@@ -26,9 +26,8 @@ $t->content = <<< EOF
 </ul>
 
 <h3>Authorized Users and Last Access</h3>
-		
+
 {$table}
 
 EOF;
 $t->render('single.phtml');
-?>

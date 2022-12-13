@@ -1,5 +1,5 @@
 <?php 
-include_once "../../include/myview.php";
+require_once "../../include/myview.php";
 $t = new MyView();
 $t->title = "Login Status";
 
@@ -14,4 +14,3 @@ see more options available for your usage from the website menus above.</p>
 
 EOF;
 $t->render('single.phtml');
-?>

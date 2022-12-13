@@ -15,8 +15,8 @@ $rs = pg_query($pgconn, "SELECT email, ".
     "'labend@iastate.edu') ".
     "ORDER by valid DESC");
 for ($i=0; $row=@pg_fetch_assoc($rs,$i); $i++){
-	$table .= sprintf("<tr><td>%s</td><td>%s</td></tr>\n",
-			$row["email"], $row["v"]);
+    $table .= sprintf("<tr><td>%s</td><td>%s</td></tr>\n",
+            $row["email"], $row["v"]);
 }
 $table .= "</table>";
 
@@ -30,9 +30,8 @@ $t->content = <<< EOF
 </ol>
 
 <h3>Emails and Download Timestamps for {$project} Download Interface</h3>
-		
+        
 {$table}
 
 EOF;
 $t->render('single.phtml');
-?>

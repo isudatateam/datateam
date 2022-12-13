@@ -8,4 +8,3 @@ Header("Location: /cscap/");
 //<img src="images/dt-160307.jpg" class="img img-responsive">
 //EOF;
 //$t->render('single.phtml');
-?>
