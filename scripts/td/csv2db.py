@@ -30,7 +30,7 @@ def create_table(cursor, table_name, df):
     sio.write(", ".join(tokens))
     sio.write(")")
     cursor.execute(sio.getvalue())
-    cursor.execute(f"GRANT SELECT on {table_name} to nobody,apache")
+    cursor.execute(f"GRANT SELECT on {table_name} to nobody")
 
 
 def copy_rows(cursor, table_name, df):

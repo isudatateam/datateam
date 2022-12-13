@@ -31,7 +31,7 @@ def workflow(sheetid, tablename):
         f"CREATE TABLE {tablename} (ss_order int, %s)"
         % (",".join([' "%s" varchar' % (s,) for s in cols]),)
     )
-    cursor.execute(f"GRANT SELECT on {tablename} to nobody,apache")
+    cursor.execute(f"GRANT SELECT on {tablename} to nobody")
     for i, row in enumerate(df.itertuples()):
         vals = []
         for col in row[1:]:

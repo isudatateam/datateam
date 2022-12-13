@@ -11,7 +11,7 @@ function authorize()
     }
     // This is set via local .htaccess files, hacky
     $app = $_SERVER["DATATEAM_APP"];
-    $pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local");
+    $pgconn = pg_connect("dbname=sustainablecorn host=iemdb-sustainablecorn.local user=nobody");
     $rs = pg_prepare(
         $pgconn,
         "authorize",

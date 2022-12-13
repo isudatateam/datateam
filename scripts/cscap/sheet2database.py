@@ -28,7 +28,7 @@ def do(spreadkey, tablename):
         sql += "%s varchar," % (cleankey(col),)
     sql = sql[:-1] + ")"
     cursor.execute(sql)
-    cursor.execute(f"GRANT SELECT on {tablename} to nobody,apache")
+    cursor.execute(f"GRANT SELECT on {tablename} to nobody")
     for _, row in df.iterrows():
         cols = []
         values = []
