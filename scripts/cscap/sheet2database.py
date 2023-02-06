@@ -47,7 +47,7 @@ def do(spreadkey, tablename):
 
 def main():
     """Do Something"""
-    for (spreadkey, tablename) in JOB_LISTING:
+    for spreadkey, tablename in JOB_LISTING:
         do(spreadkey, tablename)
 
 

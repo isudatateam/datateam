@@ -11,7 +11,6 @@ pgconn = psycopg2.connect(database="sustainablecorn")
 
 
 def process(sheets):
-
     resdf = pd.DataFrame(
         {
             "precip": sheets["RainOut"]["Rain_mm_Tot"],

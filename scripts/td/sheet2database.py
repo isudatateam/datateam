@@ -116,7 +116,7 @@ def do(spreadkey, sheetlabel, tablename, cols):
 
 def main():
     """Do Something"""
-    for (spreadkey, sheetlabel, tablename, cols) in JOB_LISTING:
+    for spreadkey, sheetlabel, tablename, cols in JOB_LISTING:
         do(spreadkey, sheetlabel, tablename, cols)
 
 
