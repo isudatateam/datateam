@@ -56,7 +56,7 @@ for site in plantdates.keys():
     table = "alldata_%s" % (climate_site[:2],)
     for yr in range(2011, 2014):
         for plantdate in plantdates[site][yr]:
-            for (termdate, bm1, bm2) in termdates[site][yr]:
+            for termdate, bm1, bm2 in termdates[site][yr]:
                 ccursor.execute(
                     """
     SELECT sum(precip), sum(gddxx(0,100,f2c(low)::real,f2c(high)::real)),

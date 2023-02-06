@@ -51,7 +51,7 @@ def workflow(sheetid, tablename):
 
 def main():
     """Do Something"""
-    for (sheetid, tablename) in JOB_LISTING:
+    for sheetid, tablename in JOB_LISTING:
         workflow(sheetid, tablename)
 
 

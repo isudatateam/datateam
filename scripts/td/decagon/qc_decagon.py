@@ -23,7 +23,7 @@ def fill_missing_timestamps():
     """Fill in any missing timestamps"""
     cursor = pgconn.cursor()
     entries = get_entries()
-    for (uniqueid, plotid) in entries:
+    for uniqueid, plotid in entries:
         cursor.execute(
             """
         with period as (
@@ -59,7 +59,7 @@ def bounds_check():
     """Values need to be physical!"""
     cursor = pgconn.cursor()
     entries = get_entries()
-    for (uniqueid, plotid) in entries:
+    for uniqueid, plotid in entries:
         for v in range(1, 6):
             for n, lbound, ubound in zip(
                 ["moisture", "temp", "ec"], [0, -50, -0.01], [1, 50, 28]
@@ -105,7 +105,7 @@ def ticker_temp():
     entries = get_entries()
     n = "temp"
     threshold = 10
-    for (uniqueid, plotid) in entries:
+    for uniqueid, plotid in entries:
         cursor2 = pgconn.cursor()
         for v in range(1, 6):
             vname = "d%s%s_qc" % (v, n)

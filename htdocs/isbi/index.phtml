@@ -1,0 +1,52 @@
+<?php 
+require_once "../../include/myview.php";
+$t = new MyView();
+$t->title = "Nutrient Reduction Progress";
+$t->content = <<<EOF
+<p>&nbsp;</p>
+
+<h2>Integrating Social and Biophysical Indicators of Nutrient Reduction Progress</h2>
+
+<p>Funded by the Iowa Nutrient Research Center (Grant #2019-14) for 2019-2021.
+<br /><strong>Website:</strong> <a href="https://www.cals.iastate.edu/inrc/projects/2019/integrating-social-and-biophysical-indicators-nutrient-reduction-progress-iowa">Link</a>
+<br /><strong>Project Director:</strong> Laurie Nowatzke
+<br /><strong>Principal Investigators:</strong> Lori Abendroth, J. Arbuckle, Jamie Benning, Zhengyuan Zhu
+Team Members: Stephanie Bowden, Giorgi Chighladze, Suraj Upadhaya, Jiaming Qiu.</p>
+
+<img src="images/isbi_map.png" class="img img-responsive">
+
+<h3>Issue</h3>
+
+<p>This project sought to identify the primary indicators for predicting nutrient
+reduction effectiveness at a watershed scale. Indicators which were examined ranged
+from a variety of operational categories, participation by diverse stakeholder groups,
+extent of outreach work among farmers and the wider community, and the extent of
+conservation practices in use. This research examined a subset of key watershed
+projects funded through the Iowa Water Quality Initiative, known as the WQI.</p>
+
+<h3>Objective</h3>
+
+<p>This study harmonized data across hydrologic unit code-12 (HUC12) watersheds. We accomplished the following:
+
+<ul>
+<li>Inventoried and compiled publicly available data sources measuring watershed project efforts and outcomes,</li>
+<li>Inventoried and compiled relevant social (e.g. survey research) and biophysical (e.g. land use) data,</li>
+<li>Made datasets available for analysis and external partners, and</li>
+<li>Assessed relationships between the identified indicators and modeled nutrient reduction progress on a watershed project scale.</li>
+</ul>
+</p>
+
+<h3>Access Data</h3>
+
+<p>Data are published at the Iowa State University Data Repository: LINK TBD</p>
+
+<h3>Publications</h3>
+
+<p><strong>Website:</strong> <a href="https://www.cals.iastate.edu/inrc/projects/2019/integrating-social-and-biophysical-indicators-nutrient-reduction-progress-iowa">Link</a>
+<br /><strong>Refereed Journals:</strong> Will be posted when published
+</p>
+
+<p>Contact Laurie Nowatzke with questions: <a href="https://www.climatehubs.usda.gov/hubs/midwest/people/laurie-nowatzke">USDA Midwest Climate Hub</a>.</p>
+
+EOF;
+$t->render('single.phtml');

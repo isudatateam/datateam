@@ -1,213 +1,224 @@
-<?php 
-if (isset($this)){
-	$THISPAGE = array_key_exists('thispage', $this->vars)? $this->thispage : 'xxx-xxx';
-} else{
-	$THISPAGE = isset($THISPAGE) ? $THISPAGE: 'xxx-xxx';
+<?php
+if (isset($this)) {
+    $THISPAGE = array_key_exists('thispage', $this->vars) ? $this->thispage : 'xxx-xxx';
+} else {
+    $THISPAGE = isset($THISPAGE) ? $THISPAGE : 'xxx-xxx';
 }
-$_pages = Array(
-    "cscap" => Array(
+$_pages = array(
+    "cscap" => array(
         "title" => "Sustainable Corn",
-        "subs" => Array(
-            "base" => Array("title" => "Homepage", "url" => "/cscap/"),
-            "data" => Array("title" => "Research Data", "url" => "/cscap/dl/"),
-            "usage" => Array("title" => "Data Usage Agreement", "url" => "/cscap/usage.phtml"),
+        "subs" => array(
+            "base" => array("title" => "Homepage", "url" => "/cscap/"),
+            "data" => array("title" => "Research Data", "url" => "/cscap/dl/"),
+            "usage" => array("title" => "Data Usage Agreement", "url" => "/cscap/usage.phtml"),
             //"tileflow" => Array("title" => "Tile Flow Data Plotting", "url" => "/cscap/plot_tileflow.phtml"),
             //"watertable" => Array("title" => "Water Table Depth Data Plotting", "url" => "/cscap/plot_watertable.phtml"),
             //"waterquality" => Array("title" => "Water Quality Data Plotting", "url" => "/cscap/plot_waterquality.phtml"),
             //"decagon" => Array("title" => "Decagon Data Plotting", "url" => "/cscap/plot_decagon.phtml"),
-            ),
         ),
-    "td" => Array(
+    ),
+    "td" => array(
         "title" => "Transforming Drainage",
-        "subs" => Array(
-            "base" => Array("title" => "Homepage", "url" => "/td/"),
-            "data" => Array("title" => "Research Data", "url" => "/td/dl/#tab_sites"),
+        "subs" => array(
+            "base" => array("title" => "Homepage", "url" => "/td/"),
+            "data" => array("title" => "Research Data", "url" => "/td/dl/#tab_sites"),
             //"agronomic" => Array("title" => "Agronomic Data Plotting", "url" => "/td/plot_agronomic.phtml", "auth" => TRUE),
             //"nitrateload" => Array("title" => "Nitrate Load Data Plotting", "url" => "/td/plot_nitrateload.phtml", "auth" => TRUE),
             //"soilmoisture" => Array("title" => "Soil Moisture Data Plotting", "url" => "/td/plot_decagon.phtml", "auth" => TRUE),
             //"tileflow" => Array("title" => "Tile Flow Data Plotting", "url" => "/td/plot_tileflow.phtml", "auth" => TRUE),
             //"watertable" => Array("title" => "Water Table Depth Data Plotting", "url" => "/td/plot_watertable.phtml", "auth" => TRUE),
-            "visual" => Array("title" => "Visualization Tools", "url" => "/td/dl/#tab_wdata"),
-            "usage" => Array("title" => "Data Usage Agreement", "url" => "/td/usage.phtml"),
-            ),
+            "visual" => array("title" => "Visualization Tools", "url" => "/td/dl/#tab_wdata"),
+            "usage" => array("title" => "Data Usage Agreement", "url" => "/td/usage.phtml"),
         ),
-    "admin" => Array(
+    ),
+    "isbi" => array(
+        "title" => "Nutrient Reduction Progress",
+        "subs" => array(
+            "base" => array("title" => "Homepage", "url" => "/isbi/"),
+        ),
+    ),
+    "admin" => array(
         "auth" => TRUE,
         "title" => "Administration",
-        "subs" => Array(
-            "base" => Array("title" => "Mainpage", "url" => "/admin/", "auth" => TRUE),
-            ),
+        "subs" => array(
+            "base" => array("title" => "Mainpage", "url" => "/admin/", "auth" => TRUE),
         ),
-    );
+    ),
+);
 $userinfo = "<li><a href=\"/auth/\"><i class=\"fa fa-sign-in\"></i> Login</a></li>";
-if (isset($_SERVER["REMOTE_USER"])){
+if (isset($_SERVER["REMOTE_USER"])) {
     $userinfo = sprintf("<li><a href=\"#\">%s</a></li>", $_SERVER["REMOTE_USER"]);
 };
 ?>
 <header>
-<nav class="navbar-iastate">
-	<div class="container">
-		<!-- navbar-iastate-left -->
-		<ul class="nav navbar-nav navbar-iastate-left">
-			<li><a href='https://www.iastate.edu'>iastate.edu</a></li>
-			<li class="dropdown dropdown-hover isu-index">
-				<a href="https://www.iastate.edu/index/A" class="dropdown-toggle" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Index</a>
-				<ul class="dropdown-menu isu-index-alpha">
-					<li><a href="https://www.iastate.edu/index/A/">A</a></li>
-					<li><a href="https://www.iastate.edu/index/B/">B</a></li>
-					<li><a href="https://www.iastate.edu/index/C/">C</a></li>
-					<li><a href="https://www.iastate.edu/index/D/">D</a></li>
-					<li><a href="https://www.iastate.edu/index/E/">E</a></li>
-					<li><a href="https://www.iastate.edu/index/F/">F</a></li>
-					<li><a href="https://www.iastate.edu/index/G/">G</a></li>
-					<li><a href="https://www.iastate.edu/index/H/">H</a></li>
-					<li><a href="https://www.iastate.edu/index/I/">I</a></li>
-					<li><a href="https://www.iastate.edu/index/J/">J</a></li>
-					<li><a href="https://www.iastate.edu/index/K/">K</a></li>
-					<li><a href="https://www.iastate.edu/index/L/">L</a></li>
-					<li><a href="https://www.iastate.edu/index/M/">M</a></li>
-					<li><a href="https://www.iastate.edu/index/N/">N</a></li>
-					<li><a href="https://www.iastate.edu/index/O/">O</a></li>
-					<li><a href="https://www.iastate.edu/index/P/">P</a></li>
-					<li><a href="https://www.iastate.edu/index/Q/">Q</a></li>
-					<li><a href="https://www.iastate.edu/index/R/">R</a></li>
-					<li><a href="https://www.iastate.edu/index/S/">S</a></li>
-					<li><a href="https://www.iastate.edu/index/T/">T</a></li>
-					<li><a href="https://www.iastate.edu/index/U/">U</a></li>
-					<li><a href="https://www.iastate.edu/index/V/">V</a></li>
-					<li><a href="https://www.iastate.edu/index/W/">W</a></li>
-					<li><a href="https://www.iastate.edu/index/X/">X</a></li>
-					<li><a href="https://www.iastate.edu/index/Y/">Y</a></li>
-					<li><a href="https://www.iastate.edu/index/Z/">Z</a></li>
-				</ul>
-			</li>
-		</ul>
-		<!-- /navbar-iastate-left -->
+    <nav class="navbar-iastate">
+        <div class="container">
+            <!-- navbar-iastate-left -->
+            <ul class="nav navbar-nav navbar-iastate-left">
+                <li><a href='https://www.iastate.edu'>iastate.edu</a></li>
+                <li class="dropdown dropdown-hover isu-index">
+                    <a href="https://www.iastate.edu/index/A" class="dropdown-toggle" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Index</a>
+                    <ul class="dropdown-menu isu-index-alpha">
+                        <li><a href="https://www.iastate.edu/index/A/">A</a></li>
+                        <li><a href="https://www.iastate.edu/index/B/">B</a></li>
+                        <li><a href="https://www.iastate.edu/index/C/">C</a></li>
+                        <li><a href="https://www.iastate.edu/index/D/">D</a></li>
+                        <li><a href="https://www.iastate.edu/index/E/">E</a></li>
+                        <li><a href="https://www.iastate.edu/index/F/">F</a></li>
+                        <li><a href="https://www.iastate.edu/index/G/">G</a></li>
+                        <li><a href="https://www.iastate.edu/index/H/">H</a></li>
+                        <li><a href="https://www.iastate.edu/index/I/">I</a></li>
+                        <li><a href="https://www.iastate.edu/index/J/">J</a></li>
+                        <li><a href="https://www.iastate.edu/index/K/">K</a></li>
+                        <li><a href="https://www.iastate.edu/index/L/">L</a></li>
+                        <li><a href="https://www.iastate.edu/index/M/">M</a></li>
+                        <li><a href="https://www.iastate.edu/index/N/">N</a></li>
+                        <li><a href="https://www.iastate.edu/index/O/">O</a></li>
+                        <li><a href="https://www.iastate.edu/index/P/">P</a></li>
+                        <li><a href="https://www.iastate.edu/index/Q/">Q</a></li>
+                        <li><a href="https://www.iastate.edu/index/R/">R</a></li>
+                        <li><a href="https://www.iastate.edu/index/S/">S</a></li>
+                        <li><a href="https://www.iastate.edu/index/T/">T</a></li>
+                        <li><a href="https://www.iastate.edu/index/U/">U</a></li>
+                        <li><a href="https://www.iastate.edu/index/V/">V</a></li>
+                        <li><a href="https://www.iastate.edu/index/W/">W</a></li>
+                        <li><a href="https://www.iastate.edu/index/X/">X</a></li>
+                        <li><a href="https://www.iastate.edu/index/Y/">Y</a></li>
+                        <li><a href="https://www.iastate.edu/index/Z/">Z</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- /navbar-iastate-left -->
 
-		<!-- navbar-iastate-right -->
-		<ul class="nav navbar-nav navbar-right navbar-iastate-right">
-			<li><a href="https://info.iastate.edu/">Directory</a></li>
-			<li><a href="https://www.fpm.iastate.edu/maps/">Maps</a></li>
-			<li><a href="https://web.iastate.edu/safety/">Safety</a></li>
-			<li class="dropdown dropdown-hover">
-				<a href="//web.iastate.edu/signons/" class="dropdown-toggle" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Sign Ons</a>
-				<ul class="dropdown-menu">
-					<li><a href="https://accessplus.iastate.edu/">AccessPlus</a></li>
-					<li><a href="https://bb.its.iastate.edu/">Blackboard</a></li>
-					<li><a href="https://iastate.box.com/">CyBox</a></li>
-					<li><a href="https://cymail.iastate.edu/">CyMail</a></li>
-					<li><a href="https://outlook.iastate.edu/">Outlook</a></li>
-					<li><a href="https://web.iastate.edu/signons/">More Sign Ons...</a></li>
-				</ul>
-			</li>
-		</ul>
-		<!-- /navbar-iastate-right -->
+            <!-- navbar-iastate-right -->
+            <ul class="nav navbar-nav navbar-right navbar-iastate-right">
+                <li><a href="https://info.iastate.edu/">Directory</a></li>
+                <li><a href="https://www.fpm.iastate.edu/maps/">Maps</a></li>
+                <li><a href="https://web.iastate.edu/safety/">Safety</a></li>
+                <li class="dropdown dropdown-hover">
+                    <a href="//web.iastate.edu/signons/" class="dropdown-toggle" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Sign Ons</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="https://accessplus.iastate.edu/">AccessPlus</a></li>
+                        <li><a href="https://bb.its.iastate.edu/">Blackboard</a></li>
+                        <li><a href="https://iastate.box.com/">CyBox</a></li>
+                        <li><a href="https://cymail.iastate.edu/">CyMail</a></li>
+                        <li><a href="https://outlook.iastate.edu/">Outlook</a></li>
+                        <li><a href="https://web.iastate.edu/signons/">More Sign Ons...</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- /navbar-iastate-right -->
 
-	</div>
-</nav>
-<!-- /navbar-iastate -->
+        </div>
+    </nav>
+    <!-- /navbar-iastate -->
 
-<nav class="navbar-site">
-	<div class="container">
+    <nav class="navbar-site">
+        <div class="container">
 
-		<div class="navbar-site-wordmark">
-			<a href="/" title="Home" class="wordmark-unit">
-				<span class="wordmark-isu">Iowa State University</span>
-				<span class="wordmark-unit-title">ISU Data Team</span>
-			</a>
-		</div>
- 
-		<div class="navbar-header visible-xs visible-sm">
-			<button id="navbar-menu-button" type="button" class="navbar-toggle navbar-toggle-left collapsed" data-toggle="collapse" data-target="#navbar-menu-collapse, #navbar-site-links-collapse" aria-expanded="false">
-				<span class="navbar-toggle-icon menu-icon">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</span>
-				<span class="navbar-toggle-label">
-					Menu <span class="sr-only">Toggle</span>
-				</span>
-			</button>
-			<button id="navbar-search-button" type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-site-search-collapse" aria-expanded="false">
-				<span class="navbar-toggle-icon search-icon"></span>
-				<span class="navbar-toggle-label">
-					Search <span class="sr-only">Toggle</span>
-				</span>
-			</button>
-		</div>
+            <div class="navbar-site-wordmark">
+                <a href="/" title="Home" class="wordmark-unit">
+                    <span class="wordmark-isu">Iowa State University</span>
+                    <span class="wordmark-unit-title">ISU Data Team</span>
+                </a>
+            </div>
 
-		<div class="navbar-site-info collapse navbar-collapse" id="navbar-site-search-collapse">
-			<form action="https://www.google.com/search" class="navbar-site-search" method="GET" role="search">
-				<label for="search-input" class="sr-only">Search</label>
-				<input value="mesonet.agron.iastate.edu" name="sitesearch" type="hidden" />
-				<input name="q" id="search-input" aria-label="Text input for search" title="Search" placeholder="Search" tabindex="0" type="text" class="form-control">
-				<input class="hidden" title="Submit" type="submit" value="Search">
-				<span class="search-icon"></span>
-			</form>
-		</div>
+            <div class="navbar-header visible-xs visible-sm">
+                <button id="navbar-menu-button" type="button" class="navbar-toggle navbar-toggle-left collapsed" data-toggle="collapse" data-target="#navbar-menu-collapse, #navbar-site-links-collapse" aria-expanded="false">
+                    <span class="navbar-toggle-icon menu-icon">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </span>
+                    <span class="navbar-toggle-label">
+                        Menu <span class="sr-only">Toggle</span>
+                    </span>
+                </button>
+                <button id="navbar-search-button" type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-site-search-collapse" aria-expanded="false">
+                    <span class="navbar-toggle-icon search-icon"></span>
+                    <span class="navbar-toggle-label">
+                        Search <span class="sr-only">Toggle</span>
+                    </span>
+                </button>
+            </div>
 
-		<div class="navbar-site-info collapse navbar-collapse navbar-caps" id="navbar-site-links-collapse">
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="/contacts.php">contact us</a></li>
-				<?php echo $userinfo; ?>
-			</ul>
-		</div>
+            <div class="navbar-site-info collapse navbar-collapse" id="navbar-site-search-collapse">
+                <form action="https://www.google.com/search" class="navbar-site-search" method="GET" role="search">
+                    <label for="search-input" class="sr-only">Search</label>
+                    <input value="mesonet.agron.iastate.edu" name="sitesearch" type="hidden" />
+                    <input name="q" id="search-input" aria-label="Text input for search" title="Search" placeholder="Search" tabindex="0" type="text" class="form-control">
+                    <input class="hidden" title="Submit" type="submit" value="Search">
+                    <span class="search-icon"></span>
+                </form>
+            </div>
 
-	</div>
-</nav>
+            <div class="navbar-site-info collapse navbar-collapse navbar-caps" id="navbar-site-links-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/contacts.php">contact us</a></li>
+                    <?php echo $userinfo; ?>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
 </header>
 
 <div class="container">
-<div class="navbar navbar-default">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+    <div class="navbar navbar-default">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-        </button>
-	</div>
-    <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-        
-<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" 
-	href="#"> <span class="fa fa-home"></span> </a>
-	<ul class="dropdown-menu">
-		<li><a href="https://mesonet.agron.iastate.edu">Iowa Environmental Mesonet</a></li>
-		<li><a href="https://dailyerosion.org">Daily Erosion Project</a></li>
-		<li><a href="https://datateam.agron.iastate.edu/cscap/">Sustainable Corn</a></li>
-	</ul></li>
-        
-<?php 
-$ar = preg_split('/-/', $THISPAGE);
-function get_title($page){
-	/*if (array_key_exists("icon", $page)){
-		return sprintf("<span class=\"fa fa-%s visible-sm\"></span>"
-				."<div class=\"hidden-sm\">%s</div>",
-				$page["icon"], $page["title"]);
-	}*/
-	return sprintf("%s", $page["title"]);
-}
-
-foreach($_pages as $idx => $page)
-{
-    if (! isset($_SERVER["REMOTE_USER"]) && isset($page["auth"])) continue;
-    echo sprintf("<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\" 
-		data-toggle=\"dropdown\" href=\"#\">%s</a>\n", 
-      ($ar[0] == $idx) ? " active" : "", get_title($page));
-
-    echo "<ul class=\"dropdown-menu\">\n";
-    foreach($page["subs"] as $idx2 => $page2)
-    {
-        if (! isset($_SERVER["REMOTE_USER"]) && isset($page2["auth"])) continue;
-       echo sprintf("<li><a%s href=\"%s\">%s</a></li>\n", 
-         ($ar[1] == $idx2 && $ar[0] == $idx) ? " class=\"active\"" : "",
-           $page2["url"],  $page2["title"] );
-    }
-    echo "</ul>\n</li>\n";
-}
-  ?>
-</ul>
+            </button>
         </div>
-      </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"> <span class="fa fa-home"></span> </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="https://mesonet.agron.iastate.edu">Iowa Environmental Mesonet</a></li>
+                        <li><a href="https://dailyerosion.org">Daily Erosion Project</a></li>
+                        <li><a href="https://datateam.agron.iastate.edu/cscap/">Sustainable Corn</a></li>
+                    </ul>
+                </li>
+
+                <?php
+                $ar = preg_split('/-/', $THISPAGE);
+                function get_title($page)
+                {
+                    /*if (array_key_exists("icon", $page)){
+        return sprintf("<span class=\"fa fa-%s visible-sm\"></span>"
+                ."<div class=\"hidden-sm\">%s</div>",
+                $page["icon"], $page["title"]);
+    }*/
+                    return sprintf("%s", $page["title"]);
+                }
+
+                foreach ($_pages as $idx => $page) {
+                    if (!isset($_SERVER["REMOTE_USER"]) && isset($page["auth"])) continue;
+                    echo sprintf(
+                        "<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\" 
+        data-toggle=\"dropdown\" href=\"#\">%s</a>\n",
+                        ($ar[0] == $idx) ? " active" : "",
+                        get_title($page)
+                    );
+
+                    echo "<ul class=\"dropdown-menu\">\n";
+                    foreach ($page["subs"] as $idx2 => $page2) {
+                        if (!isset($_SERVER["REMOTE_USER"]) && isset($page2["auth"])) continue;
+                        echo sprintf(
+                            "<li><a%s href=\"%s\">%s</a></li>\n",
+                            ($ar[1] == $idx2 && $ar[0] == $idx) ? " class=\"active\"" : "",
+                            $page2["url"],
+                            $page2["title"]
+                        );
+                    }
+                    echo "</ul>\n</li>\n";
+                }
+                ?>
+            </ul>
+        </div>
     </div>
+</div>
 </div>
