@@ -1,4 +1,4 @@
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 import sys
 
 config = util.get_config()

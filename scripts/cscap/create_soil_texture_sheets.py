@@ -2,7 +2,7 @@
  Something that will create soil texture sheets
 """
 import gdata.spreadsheets.data
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 spr_client = util.get_spreadsheet_client(config)

@@ -1,5 +1,5 @@
 """Copy management entries from CSCAP to TD"""
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 import gdata.spreadsheets.data
 
 CSCAP_ID = "1CdPi6IEnO3T35t-OFQajKYzFLpu7hwOaWdL2FG1_kVA"

@@ -1,6 +1,6 @@
 """Go through our data sheets and cleanup entries that don't exactly match
 things that we would like to see"""
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 from pyiem.util import get_dbconn
 from pandas.io.sql import read_sql
 

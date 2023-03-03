@@ -1,5 +1,5 @@
 """Change % moisture values into g kg-1"""
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 import re
 
 NUM = re.compile("\d+\.?\d*")

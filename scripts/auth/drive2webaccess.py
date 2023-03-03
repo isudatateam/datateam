@@ -1,7 +1,7 @@
 """
 Synchronize the ACL on the Google Drive to the local DB
 """
-import pyiem.cscap_utils as utils
+import isudatateam.cscap_utils as utils
 from pyiem.util import get_dbconn
 
 

@@ -3,10 +3,7 @@ import sys
 import datetime
 
 import pytz
-import pandas as pd
 import psycopg2
-import numpy as np
-from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
 
 CENTRAL_TIME = [
     "ISUAG",
@@ -33,21 +30,22 @@ def gio_process(filename):
         INSERT into tileflow_data(uniqueid, plotid, valid,
         discharge_mm, discharge_mm_qc) VALUES (%s, %s, %s, %s, %s)
         """
-    for i, line in enumerate(open(filename)):
-        if i == 0:
-            continue
-        (uniqueid, plotid, date, localtime, flow) = line.strip().split(",")
-        if localtime == "":
-            localtime = "00:00"
-        if flow == "":
-            flow = None
-        ts = datetime.datetime.strptime(
-            "%s %s" % (date, localtime), "%Y-%m-%d %H:%M"
-        )
-        offset = 6 if uniqueid in CENTRAL_TIME else 5
-        ts = ts + datetime.timedelta(hours=offset)
-        ts = ts.replace(tzinfo=pytz.utc)
-        cursor.execute(sql, (uniqueid, plotid, ts, flow, flow))
+    with open(filename, encoding="utf-8") as fh:
+        for i, line in enumerate(fh):
+            if i == 0:
+                continue
+            (uniqueid, plotid, date, localtime, flow) = line.strip().split(",")
+            if localtime == "":
+                localtime = "00:00"
+            if flow == "":
+                flow = None
+            ts = datetime.datetime.strptime(
+                f"{date} {localtime}", "%Y-%m-%d %H:%M"
+            )
+            offset = 6 if uniqueid in CENTRAL_TIME else 5
+            ts = ts + datetime.timedelta(hours=offset)
+            ts = ts.replace(tzinfo=pytz.utc)
+            cursor.execute(sql, (uniqueid, plotid, ts, flow, flow))
     cursor.close()
     pgconn.commit()
     pgconn.close()

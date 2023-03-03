@@ -2,7 +2,7 @@
  Go into the various sheets and replace the rotation text with something
  explicit for the year
 """
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 

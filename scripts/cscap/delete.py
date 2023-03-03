@@ -1,7 +1,7 @@
 """Delete a Google Drive File."""
 import sys
 
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 
 def main():

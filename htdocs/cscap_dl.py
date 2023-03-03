@@ -9,7 +9,7 @@ import datetime
 from psycopg2.extras import RealDictCursor
 import pandas as pd
 import pandas.io.sql as pdsql
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 from pyiem.util import get_dbconn, ssw
 
 

@@ -2,7 +2,7 @@
 """ Print out a big thing of progress bars, gasp """
 import cgi
 
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 from pyiem.util import get_dbconn, ssw
 
 DBCONN = get_dbconn("sustainablecorn")

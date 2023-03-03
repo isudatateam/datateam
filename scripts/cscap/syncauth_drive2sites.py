@@ -5,7 +5,7 @@ import gdata.data
 import gdata.sites.data
 import gdata.gauth
 import gdata.sites.client as sclient
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 

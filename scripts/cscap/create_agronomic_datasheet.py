@@ -3,7 +3,7 @@
 """
 import gdata.spreadsheets.data
 import copy
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 

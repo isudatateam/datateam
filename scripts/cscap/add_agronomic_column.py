@@ -1,5 +1,5 @@
 import gdata.docs.client
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 # Get me a client, stat
