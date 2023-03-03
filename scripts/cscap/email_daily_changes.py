@@ -128,10 +128,34 @@ def sites_changelog(regime, yesterday, html):
     return html
 
 
+def get_folders(drive, drive_id):
+    """Magic."""
+    if drive_id is None:
+        return util.get_folders(drive)
+    params = {
+        "corpora": "drive",
+        "driveId": drive_id,
+        "supportsAllDrives": True,
+        "includeItemsFromAllDrives": True,
+        "maxResults": 1000,
+        "q": "mimeType = 'application/vnd.google-apps.folder'",
+    }
+    folders = {}
+    while True:
+        LOG.info("Requesting for pageToken: %s", params.get("pageToken"))
+        response = drive.files().list(**params).execute()
+        params["pageToken"] = response.get("nextPageToken")
+        for item in response["items"]:
+            folders[item["id"]] = {"title": item["title"]}
+        if params["pageToken"] is None:
+            break
+    return folders
+
+
 def drive_changelog(regime, yesterday, html):
     """Do something"""
     drive = util.get_driveclient(CONFIG, regime)
-    folders = util.get_folders(drive)
+    folders = get_folders(drive, CONFIG[regime].get("driveId"))
     start_change_id = CONFIG[regime]["changestamp"]
 
     html += """<p><table border="1" cellpadding="3" cellspacing="0">
@@ -144,7 +168,13 @@ def drive_changelog(regime, yesterday, html):
     hits = 0
     page_token = None
     changestamp = None
-    param = {"includeDeleted": False, "maxResults": 1000}
+    param = {
+        "includeDeleted": False,
+        "maxResults": 1000,
+        "includeItemsFromAllDrives": True,
+        "supportsAllDrives": True,
+        "driveId": CONFIG[regime].get("driveId"),
+    }
     while True:
         if start_change_id:
             param["startChangeId"] = start_change_id
@@ -161,10 +191,16 @@ def drive_changelog(regime, yesterday, html):
         largestChangeId = response["largestChangeId"]
         page_token = response.get("nextPageToken")
         for item in response["items"]:
+            if item["changeType"] != "file":
+                continue
             if item["file"]["mimeType"] in [FMIME, FORM_MTYPE, SITES_MYTPE]:
+                LOG.info(
+                    "Skipped due to mimeType: %s", item["file"]["mimeType"]
+                )
                 continue
             changestamp = item["id"]
             if item["deleted"]:
+                LOG.info("Skipped due to deleted: %s", item["deleted"])
                 continue
             # Files copied in could have a createdDate of interest, but old
             # modification date
@@ -189,7 +225,10 @@ def drive_changelog(regime, yesterday, html):
                     )
                     continue
                 isproject = True
-            if not isproject:
+            if (
+                not isproject
+                and item["file"]["driveId"] != CONFIG[regime]["driveId"]
+            ):
                 LOG.info(
                     "[%s] %s (%s) skipped as basefolders are: %s",
                     regime,
