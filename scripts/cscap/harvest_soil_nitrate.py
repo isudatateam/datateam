@@ -3,7 +3,7 @@ from __future__ import print_function
 import datetime
 import sys
 
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 import psycopg2
 
 YEAR = sys.argv[1]

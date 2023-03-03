@@ -1,7 +1,7 @@
 """
 Sync authorized users on Google Sites to Google Drive
 """
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 import gdata.gauth
 import gdata.sites.client as sclient
 

@@ -1,7 +1,7 @@
 """
 Harvest the Agronomic Data into the ISU Database
 """
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 import sys
 import psycopg2
 

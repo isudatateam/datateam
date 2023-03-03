@@ -16,7 +16,7 @@ import gdata.gauth
 import gdata.sites.client as sclient
 from gdata.client import RequestError
 import pytz
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 from pyiem.util import logger
 
 LOG = logger()

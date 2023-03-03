@@ -1,5 +1,5 @@
 """Set our Google Drive folder to readonly."""
-import pyiem.cscap_utils as utils
+import isudatateam.cscap_utils as utils
 
 
 def main():

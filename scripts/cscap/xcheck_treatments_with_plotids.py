@@ -1,5 +1,5 @@
 """Fill in missing entries in the plotid sheets"""
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 TRTKEY = "DWM"
 COLKEY = "drainage"

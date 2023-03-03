@@ -1,7 +1,7 @@
 """Verify that the Plot IDs are OK."""
 from pandas.io.sql import read_sql
 import psycopg2
-import pyiem.cscap_utils as utils
+import isudatateam.cscap_utils as utils
 import pandas as pd
 
 

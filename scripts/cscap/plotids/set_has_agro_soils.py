@@ -1,6 +1,6 @@
 """set some metadata"""
 
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 from pyiem.util import get_dbconn
 
 

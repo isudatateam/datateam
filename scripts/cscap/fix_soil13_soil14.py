@@ -1,6 +1,6 @@
 """Multiply SOIL13 and SOIL14 by 10 to change units from % to g/kg"""
 
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 
 def main():

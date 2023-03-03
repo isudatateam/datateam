@@ -5,7 +5,7 @@ import sys
 import gdata.spreadsheets.data
 import gdata.docs.data
 import gdata.docs.client
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 print("This is non-func, but worth while to keep around")
 sys.exit()

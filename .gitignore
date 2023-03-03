@@ -9,3 +9,5 @@
 .Rproj.user
 datateam.Rproj
 config/datateam_secrets.inc
+/build
+**/isudatateam.egg-info/

@@ -6,7 +6,7 @@ import datetime
 import pandas as pd
 import psycopg2
 import numpy as np
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 CENTRAL_TIME = ["ISUAG", "GILMORE", "SERF"]
 

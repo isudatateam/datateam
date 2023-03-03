@@ -1,6 +1,6 @@
 """A direct copy of a Google Sheet to a postgresql database"""
 import psycopg2
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 from gspread_pandas import Spread
 
 config = util.get_config()

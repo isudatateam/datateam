@@ -5,7 +5,7 @@ from __future__ import print_function
 import sys
 
 import psycopg2
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 YEAR = sys.argv[1]
 

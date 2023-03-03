@@ -1,6 +1,6 @@
 """A direct copy of a Google Spreadsheet to a postgresql database"""
 import psycopg2
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 from unidecode import unidecode
 from six import string_types
 

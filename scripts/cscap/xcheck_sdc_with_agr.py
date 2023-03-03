@@ -5,7 +5,7 @@
 import sys
 import copy
 
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 YEAR = sys.argv[1]
 

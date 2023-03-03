@@ -1,4 +1,4 @@
-import pyiem.cscap_utils as util
+import isudatateam.cscap_utils as util
 
 drive = util.get_driveclient(util.get_config(), "cscap")
 spr_client = util.get_spreadsheet_client(util.get_config())

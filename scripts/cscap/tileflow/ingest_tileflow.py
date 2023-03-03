@@ -6,7 +6,11 @@ import pytz
 import pandas as pd
 import psycopg2
 import numpy as np
-from pyiem.cscap_utils import get_config, get_spreadsheet_client, Spreadsheet
+from isudatateam.cscap_utils import (
+    get_config,
+    get_spreadsheet_client,
+    Spreadsheet,
+)
 
 CENTRAL_TIME = [
     "ISUAG",
