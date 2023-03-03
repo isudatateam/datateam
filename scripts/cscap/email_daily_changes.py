@@ -80,13 +80,11 @@ def pprint(mydict):
 
 def sites_changelog(regime, yesterday, html):
     """Do Sites Changelog"""
-    html += """
-    <h4>%s Internal Website Changes</h4>
+    html += f"""
+    <h4>{CFG[regime]['title']} Internal Website Changes</h4>
     <table border="1" cellpadding="3" cellspacing="0">
     <thead><tr><th>Time</th><th>Activity</th></tr></thead>
-    <tbody>""" % (
-        CFG[regime]["title"],
-    )
+    <tbody>"""
 
     if regime == "cscap":
         site = "sustainablecorn"
@@ -118,12 +116,8 @@ def sites_changelog(regime, yesterday, html):
         elem.namespace = ""
         elem.children[0].namespace = ""
         tablerows.append(
-            ("<tr><td>%s</td><td>%s %s</td></tr>\n")
-            % (
-                updated.strftime("%-d %b %-I:%M %P"),
-                elem.text,
-                str(elem.children[0]),
-            )
+            f"<tr><td>{updated:%-d %b %-I:%M %P}</td><td>{elem.text} "
+            f"{str(elem.children[0])}</td></tr>\n"
         )
 
     if tablerows:
@@ -156,7 +150,7 @@ def drive_changelog(regime, yesterday, html):
             param["startChangeId"] = start_change_id
         if page_token:
             param["pageToken"] = page_token
-        LOG.debug(
+        LOG.info(
             "[%s] start_change_id: %s largestChangeId: %s page_token: %s",
             regime,
             start_change_id,
@@ -211,16 +205,14 @@ def drive_changelog(regime, yesterday, html):
             localts = modifiedDate.astimezone(LOCALTZ)
             hits += 1
             pfolder = item["file"]["parents"][0]["id"]
-            html += """
-<tr>
-<td><a href="https://docs.google.com/folderview?id=%s&usp=drivesdk">%s</a></td>
-<td><a href="%s">%s</a></td></tr>
-            """ % (
-                pfolder,
-                folders[pfolder]["title"],
-                uri,
-                title,
+            uu = (
+                f"https://docs.google.com/folderview?id={pfolder}&usp=drivesdk"
             )
+            html += f"""
+<tr>
+<td><a href="{uu}">{folders[pfolder]['title']}</a></td>
+<td><a href="{uri}">{title}</a></td></tr>
+            """
             hit = False
             if "version" in item["file"]:
                 lastmsg = ""
@@ -231,7 +223,7 @@ def drive_changelog(regime, yesterday, html):
                         .execute()
                     )
                 except Exception:
-                    LOG.info(
+                    LOG.warning(
                         "[%s] file %s (%s) failed revisions",
                         regime,
                         title,
@@ -258,34 +250,25 @@ def drive_changelog(regime, yesterday, html):
                     if display_name == CONFIG["service_account"]:
                         display_name = "daryl's magic"
                         email_address = "akrherz@iastate.edu"
-                    thismsg = """
-    <tr><td colspan="2"><img src="%s" style="height:25px;"/> %s by
-     %s (%s)</td></tr>
-                    """ % (
-                        (
-                            luser["picture"]["url"]
-                            if "picture" in luser
-                            else ""
-                        ),
-                        localts.strftime("%-d %b %-I:%M %p"),
-                        display_name,
-                        email_address,
-                    )
+                    thismsg = f"""
+<tr><td colspan="2">
+<img src="{luser['picture']['url'] if 'picture' in luser else ''}"
+style="height:25px;"/>{localts:%-d %b %-I:%M %p} by
+{display_name} ({email_address})</td></tr>
+                    """
                     if thismsg != lastmsg:
                         html += thismsg
                     lastmsg = thismsg
             # Now we check revisions
             if not hit:
-                luser = item["file"].get("lastModifyingUser", dict())
-                html += """
-<tr><td colspan="2"><img src="%s" style="height:25px;"/> %s by
- %s (%s)</td></tr>
-                """ % (
-                    luser["picture"]["url"] if "picture" in luser else "",
-                    localts.strftime("%-d %b %-I:%M %p"),
-                    luser.get("displayName", "n/a"),
-                    luser.get("emailAddress", "n/a"),
-                )
+                luser = item["file"].get("lastModifyingUser", {})
+                html += f"""
+<tr><td colspan="2">
+<img src="{luser['picture']['url'] if 'picture' in luser else ''}"
+style="height:25px;"/> {localts:%-d %b %-I:%M %p} by
+ {luser.get('displayName', 'n/a')} ({luser.get('emailAddress', 'n/a')})
+ </td></tr>
+                """
         if not page_token:
             break
 
@@ -310,18 +293,14 @@ def main(argv):
     )
     yesterday = today - datetime.timedelta(days=1)
     localts = yesterday.astimezone(LOCALTZ)
-    html = """
-<h3>%s Cloud Data Changes</h3>
+    ts2 = localts + datetime.timedelta(hours=24)
+    html = f"""
+<h3>{CFG[regime]['title']} Cloud Data Changes</h3>
 <br />
-<p>Period: %s - %s
+<p>Period: {localts:%-I %p %-d %B %Y} - {ts2:%-I %p %-d %B %Y}
 
 <h4>Google Drive File Changes</h4>
-""" % (
-        CFG[regime]["title"],
-        localts.strftime("%-I %p %-d %B %Y"),
-        (localts + datetime.timedelta(hours=24)).strftime("%-I %p %-d %B %Y"),
-    )
-
+"""
     html = drive_changelog(regime, yesterday, html)
     # if regime != 'nutrinet':
     #    html = sites_changelog(regime, yesterday, html)
@@ -329,14 +308,12 @@ def main(argv):
     html += """<p>That is all...</p>"""
     # debugging
     if len(sys.argv) == 3:
-        ofp = open("/tmp/out.html", "w")
-        ofp.write(html)
-        ofp.close()
+        with open("/tmp/out.html", "w", encoding="utf-8") as fh:
+            fh.write(html)
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "%s %s Data ChangeLog" % (
-        yesterday.strftime("%-d %b"),
-        CFG[regime]["title"],
-    )
+    msg[
+        "Subject"
+    ] = f"{yesterday:%-d %b} {CFG[regime]['title']} Data ChangeLog"
     msg["From"] = "akrherz@iastate.edu"
     msg["To"] = ",".join(CFG[regime]["emails"])
 
