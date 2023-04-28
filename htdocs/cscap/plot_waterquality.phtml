@@ -4,13 +4,13 @@ include_once "../../include/forms.php";
 require_once "../../include/myview.php";
 $HIGHCHARTS = "8.2.2";
 
-$site = isset($_GET["site"]) ? $_GET["site"]: 'DPAC';
-$view = isset($_GET['view']) ? $_GET['view']: 'plot';
-$depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
+$site = isset($_GET["site"]) ? $_GET["site"] : 'DPAC';
+$view = isset($_GET['view']) ? $_GET['view'] : 'plot';
+$depth = isset($_GET['depth']) ? $_GET['depth'] : 'all';
 $errmsg = "";
 
-$varname = isset($_GET["varname"]) ? substr($_GET["varname"], 0, 4): "WAT2";
-$ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
+$varname = isset($_GET["varname"]) ? substr($_GET["varname"], 0, 4) : "WAT2";
+$ptype = isset($_GET['ptype']) ? $_GET['ptype'] : '1';
 
 /* with data as (select uniqueid, min(date(valid)),
  max(date(valid)) from waterquality_data GROUP by uniqueid)
@@ -19,48 +19,57 @@ $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
  || ' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
-$ar = Array(
-    "DPAC"=>"DPAC (2011-01-03 to 2015-12-17) [1809 days]",
-    "GILMORE"=>"GILMORE (2011-04-05 to 2015-12-11) [1711 days]",
-    "HICKS.B"=>"HICKS.B (2011-05-02 to 2015-07-19) [1539 days]",
-    "SERF"=>"SERF (2011-01-25 to 2015-09-21) [1700 days]",
-    "STJOHNS"=>"STJOHNS (2011-01-12 to 2015-07-03) [1633 days]",
-    "WATERMAN"=>"WATERMAN (2014-04-24 to 2014-10-23) [182 days]",
-		);
+$ar = array(
+    "DPAC" => "DPAC (2011-01-03 to 2015-12-17) [1809 days]",
+    "GILMORE" => "GILMORE (2011-04-05 to 2015-12-11) [1711 days]",
+    "HICKS.B" => "HICKS.B (2011-05-02 to 2015-07-19) [1539 days]",
+    "SERF" => "SERF (2011-01-25 to 2015-09-21) [1700 days]",
+    "STJOHNS" => "STJOHNS (2011-01-12 to 2015-07-03) [1633 days]",
+    "WATERMAN" => "WATERMAN (2014-04-24 to 2014-10-23) [182 days]",
+);
 $siteselect = make_select("site", $site, $ar);
 
 
-$ar = Array(
-		'plot'=> 'View Plot',
-		'html' => 'View Raw Data in HTML Table',
-		'csv' => 'Download as CSV File',
-		'excel' => 'Download as Excel File'
-		);
+$ar = array(
+    'plot' => 'View Plot',
+    'html' => 'View Raw Data in HTML Table',
+    'csv' => 'Download as CSV File',
+    'excel' => 'Download as Excel File'
+);
 $viewselect = make_select('view', $view, $ar);
 
-$ar = Array(
+$ar = array(
     'WAT2' => "Nitrate-Nitrogen Concentration",
     'WAT9' => 'Soluble Reactive Phosphorus Concentration'
-    );
+);
 $varselect = make_select('varname', $varname, $ar);
 
 $jsextra = "";
-if ($view != 'plot'){
-	$imageurl = sprintf("plot_waterquality.py?site=%s&varname=%s&ptype=%s&view=%s", 
-		$site, $varname, $ptype, $view);
-	$uri = sprintf("http://datateam.local/cscap/%s", $imageurl);
-	if ($view == 'html'){
-		$data = file_get_contents($uri);
-		$interface = $data;
-	} else{
-		Header(sprintf("Location: /cscap/%s", $imageurl));
-		die();
-	}
+if ($view != 'plot') {
+    $imageurl = sprintf(
+        "plot_waterquality.py?site=%s&varname=%s&ptype=%s&view=%s",
+        $site,
+        $varname,
+        $ptype,
+        $view
+    );
+    $uri = sprintf("http://datateam.local/cscap/%s", $imageurl);
+    if ($view == 'html') {
+        $data = file_get_contents($uri);
+        $interface = $data;
+    } else {
+        Header(sprintf("Location: /cscap/%s", $imageurl));
+        die();
+    }
 } else {
-	$jsurl = sprintf("waterquality_%s_%s_%s.js", 
-		$site, $varname, $ptype);
-	$jsextra = "<script src=\"{$jsurl}\"></script>";
-	$interface = <<<EOF
+    $jsurl = sprintf(
+        "waterquality_%s_%s_%s.js",
+        $site,
+        $varname,
+        $ptype
+    );
+    $jsextra = "<script src=\"{$jsurl}\"></script>";
+    $interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
 EOF;
 }
@@ -74,9 +83,9 @@ $t->headextra = <<<EOF
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="/vendor/highcharts/${HIGHCHARTS}/highcharts.js"></script>
-<script src="/vendor/highcharts/${HIGHCHARTS}/highcharts-more.js"></script>
-<script src="/vendor/highcharts/${HIGHCHARTS}/modules/exporting.js"></script>
+<script src="/vendor/highcharts/{$HIGHCHARTS}/highcharts.js"></script>
+<script src="/vendor/highcharts/{$HIGHCHARTS}/highcharts-more.js"></script>
+<script src="/vendor/highcharts/{$HIGHCHARTS}/modules/exporting.js"></script>
 {$jsextra}
 <script>
 function updateListing(val){
@@ -174,4 +183,3 @@ daily summaries in the time zone of the station.
 
 EOF;
 $t->render('full.phtml');
-?>

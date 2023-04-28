@@ -10,8 +10,8 @@ $view = isset($_GET['view']) ? $_GET['view']: 'plot';
 $depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
 $errmsg = "";
 if (strlen($date) != 10){
-	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
-	$date = '2014-06-10';
+    $errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
+    $date = '2014-06-10';
 }
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 100;
 $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
@@ -31,41 +31,40 @@ $ar = Array(
     "SERF"=>"SERF (2011-01-01 to 2015-12-31) [1825 days]",
     "STJOHNS"=>"STJOHNS (2011-01-01 to 2015-12-31) [1825 days]",
     "WATERMAN"=>"WATERMAN (2013-02-11 to 2015-12-17) [1039 days]",
-    
-		);
+);
 $siteselect = make_select("site", $site, $ar);
 
 $ar = Array(
-		'1' => 'Observations (no aggregation)',
-		'2' => 'Monthly Totals',
-		);
+        '1' => 'Observations (no aggregation)',
+        '2' => 'Monthly Totals',
+        );
 $ptypeselect = make_select("ptype", $ptype, $ar);
 
 $ar = Array(
-		'plot'=> 'View Plot',
-		'html' => 'View Raw Data in HTML Table',
-		'csv' => 'Download as CSV File',
-		'excel' => 'Download as Excel File'
-		);
+        'plot'=> 'View Plot',
+        'html' => 'View Raw Data in HTML Table',
+        'csv' => 'Download as CSV File',
+        'excel' => 'Download as Excel File'
+        );
 $viewselect = make_select('view', $view, $ar);
 
 $jsextra = "";
 if ($view != 'plot'){
-	$imageurl = sprintf("plot_tileflow.py?site=%s&date=%s&days=%s&ptype=%s&view=%s", 
-		$site, $date, $days, $ptype, $view);
-	$uri = sprintf("http://datateam.local/cscap/%s", $imageurl);
-	if ($view == 'html'){
-		$data = file_get_contents($uri);
-		$interface = $data;
-	} else{
-		Header(sprintf("Location: /cscap/%s", $imageurl));
-		die();
-	}
+    $imageurl = sprintf("plot_tileflow.py?site=%s&date=%s&days=%s&ptype=%s&view=%s", 
+        $site, $date, $days, $ptype, $view);
+    $uri = sprintf("http://datateam.local/cscap/%s", $imageurl);
+    if ($view == 'html'){
+        $data = file_get_contents($uri);
+        $interface = $data;
+    } else{
+        Header(sprintf("Location: /cscap/%s", $imageurl));
+        die();
+    }
 } else {
-	$jsurl = sprintf("tileflow_%s_%s_%s_%s.js", 
-		$site, $date, $days, $ptype);
-	$jsextra = "<script src=\"{$jsurl}\"></script>";
-	$interface = <<<EOF
+    $jsurl = sprintf("tileflow_%s_%s_%s_%s.js", 
+        $site, $date, $days, $ptype);
+    $jsextra = "<script src=\"{$jsurl}\"></script>";
+    $interface = <<<EOF
 <div id="hc" style="width: 100%; height: 400px;"></div>
 EOF;
 }
@@ -79,21 +78,21 @@ $t->headextra = <<<EOF
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="/vendor/highcharts/${HIGHCHARTS}/highcharts.js"></script>
-<script src="/vendor/highcharts/${HIGHCHARTS}/highcharts-more.js"></script>
-<script src="/vendor/highcharts/${HIGHCHARTS}/modules/exporting.js"></script>
+<script src="/vendor/highcharts/{$HIGHCHARTS}/highcharts.js"></script>
+<script src="/vendor/highcharts/{$HIGHCHARTS}/highcharts-more.js"></script>
+<script src="/vendor/highcharts/{$HIGHCHARTS}/modules/exporting.js"></script>
 {$jsextra}
 <script>
 var EDIT_TABLE = "tileflow_data";
 var EDIT_UNIQUEID = "{$site}";
 var EDIT_COLUMN = "discharge_mm";
 $(document).ready(function(){
-	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
-		defaultDate: "{$date}",
-		changeMonth: true,
-		changeYear: true,
-		minDate: new Date(2011, 0, 1),
-		maxDate: new Date(2016, 1, 1)});		
+    $( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
+        defaultDate: "{$date}",
+        changeMonth: true,
+        changeYear: true,
+        minDate: new Date(2011, 0, 1),
+        maxDate: new Date(2016, 1, 1)});		
 });
 </script>
 EOF;
@@ -175,4 +174,3 @@ daily summaries in the time zone of the station.
 
 EOF;
 $t->render('full.phtml');
-?>

@@ -4,17 +4,17 @@ include_once "../../include/forms.php";
 require_once "../../include/myview.php";
 
 $HC = "8.2.2";
-$site = isset($_GET["site"]) ? $_GET["site"]: 'ISUAG::302E';
-$date = isset($_GET["date"]) ? $_GET["date"]: '2014-06-10';
-$view = isset($_GET['view']) ? $_GET['view']: 'plot';
-$depth = isset($_GET['depth']) ? $_GET['depth']: 'all';
+$site = isset($_GET["site"]) ? $_GET["site"] : 'ISUAG::302E';
+$date = isset($_GET["date"]) ? $_GET["date"] : '2014-06-10';
+$view = isset($_GET['view']) ? $_GET['view'] : 'plot';
+$depth = isset($_GET['depth']) ? $_GET['depth'] : 'all';
 $errmsg = "";
-if (strlen($date) != 10){
-	$errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
-	$date = '2014-06-10';
+if (strlen($date) != 10) {
+    $errmsg = "<div class='alert alert-warning'>Invalid Date Specified!</div>";
+    $date = '2014-06-10';
 }
-$days = isset($_GET["days"]) ? intval($_GET["days"]): 1;
-$ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
+$days = isset($_GET["days"]) ? intval($_GET["days"]) : 1;
+$ptype = isset($_GET['ptype']) ? $_GET['ptype'] : '1';
 
 /* with data as (select uniqueid, plotid, min(date(valid)),
  max(date(valid)) from decagon_data GROUP by uniqueid, plotid)
@@ -23,181 +23,192 @@ $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
  plotid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
-$ar = Array(
-    "DPAC::NE"=>"DPAC NE (2011-07-01 to 2015-12-31) [1644 days]",
-    "DPAC::NW"=>"DPAC NW (2011-07-01 to 2015-12-31) [1644 days]",
-    "DPAC::SE"=>"DPAC SE (2011-07-01 to 2015-12-31) [1644 days]",
-    "DPAC::SW"=>"DPAC SW (2011-07-01 to 2015-12-31) [1644 days]",
- "GILMORE::3-1"=>"GILMORE 3-1 (2011-06-01 to 2015-12-10) [1653 days]",
- "GILMORE::4-1"=>"GILMORE 4-1 (2011-06-01 to 2015-12-10) [1653 days]",
- "GILMORE::11-1"=>"GILMORE 11-1 (2011-06-01 to 2015-09-04) [1556 days]",
- "GILMORE::11-2"=>"GILMORE 11-2 (2011-06-01 to 2015-09-04) [1556 days]",
- "GILMORE::12-2"=>"GILMORE 12-2 (2011-06-01 to 2015-09-04) [1556 days]",
- "GILMORE::14-1"=>"GILMORE 14-1 (2011-06-01 to 2015-09-04) [1556 days]",
- "GILMORE::14-2"=>"GILMORE 14-2 (2011-06-01 to 2015-09-04) [1556 days]",
- "GILMORE::16-2"=>"GILMORE 16-2 (2011-06-01 to 2015-12-10) [1653 days]",
- "GILMORE::17-3"=>"GILMORE 17-3 (2000-01-02 to 2015-12-10) [5821 days]",
- "GILMORE::19-1"=>"GILMORE 19-1 (2011-06-01 to 2015-12-10) [1653 days]",
- "GILMORE::19-3"=>"GILMORE 19-3 (2011-06-01 to 2015-12-10) [1653 days]",
- "GILMORE::21-3"=>"GILMORE 21-3 (2011-06-01 to 2015-12-10) [1653 days]",
- "GILMORE::22-3"=>"GILMORE 22-3 (2011-06-01 to 2015-12-10) [1653 days]",
- "GILMORE::24-3"=>"GILMORE 24-3 (2011-06-01 to 2015-12-10) [1653 days]",
-		"HICKS.B::E"=>"HICKS.B E (2012-06-08 to 2016-02-17) [1349 days]",
-		"HICKS.B::W"=>"HICKS.B W (2012-06-08 to 2016-02-17) [1349 days]",
-		"HICKS.G::A"=>"HICKS.G A (2012-06-07 to 2015-10-20) [1230 days]",
-		"HICKS.G::B"=>"HICKS.G B (2012-06-07 to 2015-08-28) [1177 days]",
-		"HICKS.G::C"=>"HICKS.G C (2012-06-09 to 2015-10-20) [1228 days]",
-		"HICKS.G::D"=>"HICKS.G D (2012-06-14 to 2015-08-28) [1170 days]",
-		"ISUAG::302E"=>"ISUAG 302E (2011-05-24 to 2015-09-10) [1570 days]",
-		"ISUAG::302W"=>"ISUAG 302W (2011-05-24 to 2015-10-12) [1602 days]",
-		"ISUAG::308E"=>"ISUAG 308E (2011-05-24 to 2015-10-02) [1592 days]",
-		"ISUAG::311W"=>"ISUAG 311W (2011-05-24 to 2015-09-10) [1570 days]",
-		"ISUAG::402W"=>"ISUAG 402W (2011-05-27 to 2015-10-01) [1588 days]",
-		"ISUAG::408E"=>"ISUAG 408E (2011-05-24 to 2015-10-12) [1602 days]",
-		"ISUAG::408W"=>"ISUAG 408W (2011-05-24 to 2015-10-12) [1602 days]",
-		"ISUAG::410E"=>"ISUAG 410E (2011-05-24 to 2015-10-12) [1602 days]",
-		"ISUAG.USB::1-1.1"=>"ISUAG.USB 1-1.1 (2014-07-17 to 2015-12-31) [532 days]",
-		"ISUAG.USB::1-2.1"=>"ISUAG.USB 1-2.1 (2014-07-17 to 2015-12-31) [532 days]",
-		"ISUAG.USB::1-3.2"=>"ISUAG.USB 1-3.2 (2014-07-17 to 2015-12-31) [532 days]",
-		"ISUAG.USB::1-5.1"=>"ISUAG.USB 1-5.1 (2014-07-18 to 2015-12-31) [531 days]",
-		"ISUAG.USB::1-6.2"=>"ISUAG.USB 1-6.2 (2014-07-18 to 2015-12-31) [531 days]",
-		"ISUAG.USB::1-7.2"=>"ISUAG.USB 1-7.2 (2014-07-18 to 2015-12-31) [531 days]",
-		"ISUAG.USB::2-1.1"=>"ISUAG.USB 2-1.1 (2014-07-21 to 2015-12-31) [528 days]",
-		"ISUAG.USB::2-2.1"=>"ISUAG.USB 2-2.1 (2014-07-21 to 2015-12-31) [528 days]",
-		"ISUAG.USB::2-5.2"=>"ISUAG.USB 2-5.2 (2014-07-21 to 2015-12-31) [528 days]",
-		"ISUAG.USB::2-6.1"=>"ISUAG.USB 2-6.1 (2014-07-21 to 2015-12-31) [528 days]",
-		"ISUAG.USB::2-7.2"=>"ISUAG.USB 2-7.2 (2014-07-21 to 2015-12-31) [528 days]",
-		"ISUAG.USB::2-8.2"=>"ISUAG.USB 2-8.2 (2014-07-21 to 2015-12-31) [528 days]",
-		"ISUAG.USB::3-2.1"=>"ISUAG.USB 3-2.1 (2014-07-18 to 2015-12-31) [531 days]",
-		"ISUAG.USB::3-3.2"=>"ISUAG.USB 3-3.2 (2014-07-22 to 2015-12-31) [527 days]",
-		"ISUAG.USB::3-5.1"=>"ISUAG.USB 3-5.1 (2014-07-22 to 2015-12-31) [527 days]",
-		"ISUAG.USB::3-6.2"=>"ISUAG.USB 3-6.2 (2014-07-22 to 2015-12-31) [527 days]",
-		"ISUAG.USB::3-7.1"=>"ISUAG.USB 3-7.1 (2014-07-22 to 2015-12-31) [527 days]",
-		"ISUAG.USB::3-8.2"=>"ISUAG.USB 3-8.2 (2014-07-22 to 2015-12-31) [527 days]",
-		"KELLOGG::205"=>"KELLOGG 205 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::206-1"=>"KELLOGG 206-1 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::206-2"=>"KELLOGG 206-2 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::207-1"=>"KELLOGG 207-1 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::207-2"=>"KELLOGG 207-2 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::208"=>"KELLOGG 208 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::405"=>"KELLOGG 405 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::406-1"=>"KELLOGG 406-1 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::406-2"=>"KELLOGG 406-2 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::407-1"=>"KELLOGG 407-1 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::407-2"=>"KELLOGG 407-2 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::408"=>"KELLOGG 408 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::601-1"=>"KELLOGG 601-1 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::601-2"=>"KELLOGG 601-2 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::602"=>"KELLOGG 602 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::603"=>"KELLOGG 603 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::604-1"=>"KELLOGG 604-1 (2015-05-25 to 2015-12-04) [193 days]",
-		"KELLOGG::604-2"=>"KELLOGG 604-2 (2015-05-25 to 2015-12-04) [193 days]",
-		"MASON::205"=>"MASON 205 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::206-1"=>"MASON 206-1 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::206-2"=>"MASON 206-2 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::207"=>"MASON 207 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::208-1"=>"MASON 208-1 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::208-2"=>"MASON 208-2 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::305-1"=>"MASON 305-1 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::305-2"=>"MASON 305-2 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::306"=>"MASON 306 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::307-1"=>"MASON 307-1 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::307-2"=>"MASON 307-2 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::308"=>"MASON 308 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::505"=>"MASON 505 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::506-1"=>"MASON 506-1 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::506-2"=>"MASON 506-2 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::507-1"=>"MASON 507-1 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::507-2"=>"MASON 507-2 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::508"=>"MASON 508 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::601-1"=>"MASON 601-1 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::601-2"=>"MASON 601-2 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::602"=>"MASON 602 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::603"=>"MASON 603 (2014-06-06 to 2015-12-04) [546 days]",
-		"MASON::604"=>"MASON 604 (2014-06-06 to 2015-12-04) [546 days]",
- "NAEW::WS109"=>"NAEW WS109 (2013-04-09 to 2015-11-02) [937 days]",
- "NAEW::WS111"=>"NAEW WS111 (2013-04-10 to 2015-11-02) [936 days]",
- "NAEW::WS113"=>"NAEW WS113 (2013-04-10 to 2015-11-02) [936 days]",
- "NAEW::WS115"=>"NAEW WS115 (2013-04-15 to 2015-11-02) [931 days]",
- "NAEW::WS118"=>"NAEW WS118 (2013-04-09 to 2015-11-02) [937 days]",
- "NAEW::WS123"=>"NAEW WS123 (2013-04-15 to 2015-11-02) [931 days]",
- "NAEW::WS127"=>"NAEW WS127 (2013-04-15 to 2015-10-17) [915 days]",
- "SEPAC::5"=>"SEPAC 5 (2011-07-13 to 2016-07-14) [1828 days]",
- "SEPAC::6"=>"SEPAC 6 (2011-06-30 to 2016-07-14) [1841 days]",
- "SEPAC::7"=>"SEPAC 7 (2011-06-30 to 2016-07-14) [1841 days]",
- "SEPAC::8"=>"SEPAC 8 (2011-07-13 to 2016-07-14) [1828 days]",
- "SEPAC::9"=>"SEPAC 9 (2011-07-13 to 2016-07-14) [1828 days]",
- "SEPAC::10"=>"SEPAC 10 (2011-07-13 to 2016-06-28) [1812 days]",
- "SEPAC::11"=>"SEPAC 11 (2011-07-13 to 2016-07-14) [1828 days]",
- "SEPAC::12"=>"SEPAC 12 (2011-07-13 to 2016-07-14) [1828 days]",		
-    "SERF::1"=>"SERF 1 (2011-06-03 to 2015-12-31) [1672 days]",
-    "SERF::2"=>"SERF 2 (2011-06-07 to 2015-12-31) [1668 days]",
-    "SERF::3"=>"SERF 3 (2011-06-03 to 2015-12-31) [1672 days]",
-    "SERF::4"=>"SERF 4 (2011-06-03 to 2015-12-31) [1672 days]",
-    "SERF::5"=>"SERF 5 (2011-06-03 to 2015-12-31) [1672 days]",
-    "SERF::6"=>"SERF 6 (2011-06-03 to 2015-12-31) [1672 days]",
-    "SERF::7"=>"SERF 7 (2011-06-03 to 2015-12-31) [1672 days]",
-    "SERF::8"=>"SERF 8 (2011-06-03 to 2015-12-31) [1672 days]",
-		"STJOHNS::WN1"=>"STJOHNS WN1 (2011-12-14 to 2015-11-20) [1437 days]",
-		"STJOHNS::WN2"=>"STJOHNS WN2 (2011-12-14 to 2015-11-20) [1437 days]",
-		"STJOHNS::WN3"=>"STJOHNS WN3 (2011-12-15 to 2015-11-03) [1419 days]",
-		"STJOHNS::WS1"=>"STJOHNS WS1 (2011-12-15 to 2015-11-20) [1436 days]",
-		"STJOHNS::WS2"=>"STJOHNS WS2 (2011-09-20 to 2015-11-20) [1522 days]",
-		"STJOHNS::WS3"=>"STJOHNS WS3 (2011-12-15 to 2015-11-20) [1436 days]",
- "WATERMAN::1"=>"WATERMAN 1 (2013-09-18 to 2015-12-16) [819 days]",
- "WATERMAN::4"=>"WATERMAN 4 (2013-09-18 to 2015-12-16) [819 days]",
- "WATERMAN::5"=>"WATERMAN 5 (2013-09-18 to 2015-12-16) [819 days]",
-		);
+$ar = array(
+    "DPAC::NE" => "DPAC NE (2011-07-01 to 2015-12-31) [1644 days]",
+    "DPAC::NW" => "DPAC NW (2011-07-01 to 2015-12-31) [1644 days]",
+    "DPAC::SE" => "DPAC SE (2011-07-01 to 2015-12-31) [1644 days]",
+    "DPAC::SW" => "DPAC SW (2011-07-01 to 2015-12-31) [1644 days]",
+    "GILMORE::3-1" => "GILMORE 3-1 (2011-06-01 to 2015-12-10) [1653 days]",
+    "GILMORE::4-1" => "GILMORE 4-1 (2011-06-01 to 2015-12-10) [1653 days]",
+    "GILMORE::11-1" => "GILMORE 11-1 (2011-06-01 to 2015-09-04) [1556 days]",
+    "GILMORE::11-2" => "GILMORE 11-2 (2011-06-01 to 2015-09-04) [1556 days]",
+    "GILMORE::12-2" => "GILMORE 12-2 (2011-06-01 to 2015-09-04) [1556 days]",
+    "GILMORE::14-1" => "GILMORE 14-1 (2011-06-01 to 2015-09-04) [1556 days]",
+    "GILMORE::14-2" => "GILMORE 14-2 (2011-06-01 to 2015-09-04) [1556 days]",
+    "GILMORE::16-2" => "GILMORE 16-2 (2011-06-01 to 2015-12-10) [1653 days]",
+    "GILMORE::17-3" => "GILMORE 17-3 (2000-01-02 to 2015-12-10) [5821 days]",
+    "GILMORE::19-1" => "GILMORE 19-1 (2011-06-01 to 2015-12-10) [1653 days]",
+    "GILMORE::19-3" => "GILMORE 19-3 (2011-06-01 to 2015-12-10) [1653 days]",
+    "GILMORE::21-3" => "GILMORE 21-3 (2011-06-01 to 2015-12-10) [1653 days]",
+    "GILMORE::22-3" => "GILMORE 22-3 (2011-06-01 to 2015-12-10) [1653 days]",
+    "GILMORE::24-3" => "GILMORE 24-3 (2011-06-01 to 2015-12-10) [1653 days]",
+    "HICKS.B::E" => "HICKS.B E (2012-06-08 to 2016-02-17) [1349 days]",
+    "HICKS.B::W" => "HICKS.B W (2012-06-08 to 2016-02-17) [1349 days]",
+    "HICKS.G::A" => "HICKS.G A (2012-06-07 to 2015-10-20) [1230 days]",
+    "HICKS.G::B" => "HICKS.G B (2012-06-07 to 2015-08-28) [1177 days]",
+    "HICKS.G::C" => "HICKS.G C (2012-06-09 to 2015-10-20) [1228 days]",
+    "HICKS.G::D" => "HICKS.G D (2012-06-14 to 2015-08-28) [1170 days]",
+    "ISUAG::302E" => "ISUAG 302E (2011-05-24 to 2015-09-10) [1570 days]",
+    "ISUAG::302W" => "ISUAG 302W (2011-05-24 to 2015-10-12) [1602 days]",
+    "ISUAG::308E" => "ISUAG 308E (2011-05-24 to 2015-10-02) [1592 days]",
+    "ISUAG::311W" => "ISUAG 311W (2011-05-24 to 2015-09-10) [1570 days]",
+    "ISUAG::402W" => "ISUAG 402W (2011-05-27 to 2015-10-01) [1588 days]",
+    "ISUAG::408E" => "ISUAG 408E (2011-05-24 to 2015-10-12) [1602 days]",
+    "ISUAG::408W" => "ISUAG 408W (2011-05-24 to 2015-10-12) [1602 days]",
+    "ISUAG::410E" => "ISUAG 410E (2011-05-24 to 2015-10-12) [1602 days]",
+    "ISUAG.USB::1-1.1" => "ISUAG.USB 1-1.1 (2014-07-17 to 2015-12-31) [532 days]",
+    "ISUAG.USB::1-2.1" => "ISUAG.USB 1-2.1 (2014-07-17 to 2015-12-31) [532 days]",
+    "ISUAG.USB::1-3.2" => "ISUAG.USB 1-3.2 (2014-07-17 to 2015-12-31) [532 days]",
+    "ISUAG.USB::1-5.1" => "ISUAG.USB 1-5.1 (2014-07-18 to 2015-12-31) [531 days]",
+    "ISUAG.USB::1-6.2" => "ISUAG.USB 1-6.2 (2014-07-18 to 2015-12-31) [531 days]",
+    "ISUAG.USB::1-7.2" => "ISUAG.USB 1-7.2 (2014-07-18 to 2015-12-31) [531 days]",
+    "ISUAG.USB::2-1.1" => "ISUAG.USB 2-1.1 (2014-07-21 to 2015-12-31) [528 days]",
+    "ISUAG.USB::2-2.1" => "ISUAG.USB 2-2.1 (2014-07-21 to 2015-12-31) [528 days]",
+    "ISUAG.USB::2-5.2" => "ISUAG.USB 2-5.2 (2014-07-21 to 2015-12-31) [528 days]",
+    "ISUAG.USB::2-6.1" => "ISUAG.USB 2-6.1 (2014-07-21 to 2015-12-31) [528 days]",
+    "ISUAG.USB::2-7.2" => "ISUAG.USB 2-7.2 (2014-07-21 to 2015-12-31) [528 days]",
+    "ISUAG.USB::2-8.2" => "ISUAG.USB 2-8.2 (2014-07-21 to 2015-12-31) [528 days]",
+    "ISUAG.USB::3-2.1" => "ISUAG.USB 3-2.1 (2014-07-18 to 2015-12-31) [531 days]",
+    "ISUAG.USB::3-3.2" => "ISUAG.USB 3-3.2 (2014-07-22 to 2015-12-31) [527 days]",
+    "ISUAG.USB::3-5.1" => "ISUAG.USB 3-5.1 (2014-07-22 to 2015-12-31) [527 days]",
+    "ISUAG.USB::3-6.2" => "ISUAG.USB 3-6.2 (2014-07-22 to 2015-12-31) [527 days]",
+    "ISUAG.USB::3-7.1" => "ISUAG.USB 3-7.1 (2014-07-22 to 2015-12-31) [527 days]",
+    "ISUAG.USB::3-8.2" => "ISUAG.USB 3-8.2 (2014-07-22 to 2015-12-31) [527 days]",
+    "KELLOGG::205" => "KELLOGG 205 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::206-1" => "KELLOGG 206-1 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::206-2" => "KELLOGG 206-2 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::207-1" => "KELLOGG 207-1 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::207-2" => "KELLOGG 207-2 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::208" => "KELLOGG 208 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::405" => "KELLOGG 405 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::406-1" => "KELLOGG 406-1 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::406-2" => "KELLOGG 406-2 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::407-1" => "KELLOGG 407-1 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::407-2" => "KELLOGG 407-2 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::408" => "KELLOGG 408 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::601-1" => "KELLOGG 601-1 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::601-2" => "KELLOGG 601-2 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::602" => "KELLOGG 602 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::603" => "KELLOGG 603 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::604-1" => "KELLOGG 604-1 (2015-05-25 to 2015-12-04) [193 days]",
+    "KELLOGG::604-2" => "KELLOGG 604-2 (2015-05-25 to 2015-12-04) [193 days]",
+    "MASON::205" => "MASON 205 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::206-1" => "MASON 206-1 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::206-2" => "MASON 206-2 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::207" => "MASON 207 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::208-1" => "MASON 208-1 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::208-2" => "MASON 208-2 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::305-1" => "MASON 305-1 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::305-2" => "MASON 305-2 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::306" => "MASON 306 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::307-1" => "MASON 307-1 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::307-2" => "MASON 307-2 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::308" => "MASON 308 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::505" => "MASON 505 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::506-1" => "MASON 506-1 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::506-2" => "MASON 506-2 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::507-1" => "MASON 507-1 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::507-2" => "MASON 507-2 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::508" => "MASON 508 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::601-1" => "MASON 601-1 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::601-2" => "MASON 601-2 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::602" => "MASON 602 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::603" => "MASON 603 (2014-06-06 to 2015-12-04) [546 days]",
+    "MASON::604" => "MASON 604 (2014-06-06 to 2015-12-04) [546 days]",
+    "NAEW::WS109" => "NAEW WS109 (2013-04-09 to 2015-11-02) [937 days]",
+    "NAEW::WS111" => "NAEW WS111 (2013-04-10 to 2015-11-02) [936 days]",
+    "NAEW::WS113" => "NAEW WS113 (2013-04-10 to 2015-11-02) [936 days]",
+    "NAEW::WS115" => "NAEW WS115 (2013-04-15 to 2015-11-02) [931 days]",
+    "NAEW::WS118" => "NAEW WS118 (2013-04-09 to 2015-11-02) [937 days]",
+    "NAEW::WS123" => "NAEW WS123 (2013-04-15 to 2015-11-02) [931 days]",
+    "NAEW::WS127" => "NAEW WS127 (2013-04-15 to 2015-10-17) [915 days]",
+    "SEPAC::5" => "SEPAC 5 (2011-07-13 to 2016-07-14) [1828 days]",
+    "SEPAC::6" => "SEPAC 6 (2011-06-30 to 2016-07-14) [1841 days]",
+    "SEPAC::7" => "SEPAC 7 (2011-06-30 to 2016-07-14) [1841 days]",
+    "SEPAC::8" => "SEPAC 8 (2011-07-13 to 2016-07-14) [1828 days]",
+    "SEPAC::9" => "SEPAC 9 (2011-07-13 to 2016-07-14) [1828 days]",
+    "SEPAC::10" => "SEPAC 10 (2011-07-13 to 2016-06-28) [1812 days]",
+    "SEPAC::11" => "SEPAC 11 (2011-07-13 to 2016-07-14) [1828 days]",
+    "SEPAC::12" => "SEPAC 12 (2011-07-13 to 2016-07-14) [1828 days]",
+    "SERF::1" => "SERF 1 (2011-06-03 to 2015-12-31) [1672 days]",
+    "SERF::2" => "SERF 2 (2011-06-07 to 2015-12-31) [1668 days]",
+    "SERF::3" => "SERF 3 (2011-06-03 to 2015-12-31) [1672 days]",
+    "SERF::4" => "SERF 4 (2011-06-03 to 2015-12-31) [1672 days]",
+    "SERF::5" => "SERF 5 (2011-06-03 to 2015-12-31) [1672 days]",
+    "SERF::6" => "SERF 6 (2011-06-03 to 2015-12-31) [1672 days]",
+    "SERF::7" => "SERF 7 (2011-06-03 to 2015-12-31) [1672 days]",
+    "SERF::8" => "SERF 8 (2011-06-03 to 2015-12-31) [1672 days]",
+    "STJOHNS::WN1" => "STJOHNS WN1 (2011-12-14 to 2015-11-20) [1437 days]",
+    "STJOHNS::WN2" => "STJOHNS WN2 (2011-12-14 to 2015-11-20) [1437 days]",
+    "STJOHNS::WN3" => "STJOHNS WN3 (2011-12-15 to 2015-11-03) [1419 days]",
+    "STJOHNS::WS1" => "STJOHNS WS1 (2011-12-15 to 2015-11-20) [1436 days]",
+    "STJOHNS::WS2" => "STJOHNS WS2 (2011-09-20 to 2015-11-20) [1522 days]",
+    "STJOHNS::WS3" => "STJOHNS WS3 (2011-12-15 to 2015-11-20) [1436 days]",
+    "WATERMAN::1" => "WATERMAN 1 (2013-09-18 to 2015-12-16) [819 days]",
+    "WATERMAN::4" => "WATERMAN 4 (2013-09-18 to 2015-12-16) [819 days]",
+    "WATERMAN::5" => "WATERMAN 5 (2013-09-18 to 2015-12-16) [819 days]",
+);
 $siteselect = make_select("site", $site, $ar);
 
-$ar = Array(
-		'1' => 'Observations (no aggregation)',
-		'3' => 'Hourly Averages',
-		'2' => 'Daily Averages',
-		'4' => 'Weekly Averages',
-		);
+$ar = array(
+    '1' => 'Observations (no aggregation)',
+    '3' => 'Hourly Averages',
+    '2' => 'Daily Averages',
+    '4' => 'Weekly Averages',
+);
 $ptypeselect = make_select("ptype", $ptype, $ar);
 
-$ar = Array(
-		'plot'=> 'View Plot',
-		'html' => 'View Raw Data in HTML Table',
-		'csv' => 'Download as CSV File',
-		'excel' => 'Download as Excel File'
-		);
+$ar = array(
+    'plot' => 'View Plot',
+    'html' => 'View Raw Data in HTML Table',
+    'csv' => 'Download as CSV File',
+    'excel' => 'Download as Excel File'
+);
 $viewselect = make_select('view', $view, $ar);
 
-$ar = Array(
-		'all' => 'All Depths, one plot',
-		'1' => '10cm, all plots for site',
-		'2' => '20cm, all plots for site',
-		'3' => '40cm, all plots for site',
-		'4' => '60cm, all plots for site',
-		'5' => '100cm, all plots for site',
-		);
+$ar = array(
+    'all' => 'All Depths, one plot',
+    '1' => '10cm, all plots for site',
+    '2' => '20cm, all plots for site',
+    '3' => '40cm, all plots for site',
+    '4' => '60cm, all plots for site',
+    '5' => '100cm, all plots for site',
+);
 $depthselect = make_select('depth', $depth, $ar);
 
-if ($view != 'plot'){
-	$imageurl = sprintf("plot_decagon.py?site=%s&date=%s&days=%s&ptype=%s&view=%s&depth=%s", 
-		$site, $date, $days, $ptype, $view, $depth);
-	$uri = sprintf("http://datateam.local/cscap/%s", $imageurl);
-	if ($view == 'html'){
-		$data = file_get_contents($uri);
-		$interface = $data;
-	} else{
-		Header(sprintf("Location: /cscap/%s", $imageurl));
-		die();
-	}
-	$jsextra = "";
+if ($view != 'plot') {
+    $imageurl = sprintf(
+        "plot_decagon.py?site=%s&date=%s&days=%s&ptype=%s&view=%s&depth=%s",
+        $site,
+        $date,
+        $days,
+        $ptype,
+        $view,
+        $depth
+    );
+    $uri = sprintf("http://datateam.local/cscap/%s", $imageurl);
+    if ($view == 'html') {
+        $data = file_get_contents($uri);
+        $interface = $data;
+    } else {
+        Header(sprintf("Location: /cscap/%s", $imageurl));
+        die();
+    }
+    $jsextra = "";
 } else {
-	$jsurl = sprintf("decagon_%s_%s_%s_%s_%s.js", 
-		$site, $date, $days, $ptype, $depth);
+    $jsurl = sprintf(
+        "decagon_%s_%s_%s_%s_%s.js",
+        $site,
+        $date,
+        $days,
+        $ptype,
+        $depth
+    );
     $jsextra = "<script src=\"{$jsurl}\"></script>";
     $interface = <<<EOF
 <div id="hc1" style="width: 100%; height: 400px;"></div>
 <div id="hc2" style="width: 100%; height: 400px;"></div>
 EOF;
-	
-	
 }
 $t = new MyView();
 $t->thispage = "cscap-decagon";
@@ -208,21 +219,21 @@ $t->headextra = <<<EOF
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="/vendor/highcharts/${HC}/highcharts.js"></script>
-<script src="/vendor/highcharts/${HC}/highcharts-more.js"></script>
-<script src="/vendor/highcharts/${HC}/modules/exporting.js"></script>
+<script src="/vendor/highcharts/{$HC}/highcharts.js"></script>
+<script src="/vendor/highcharts/{$HC}/highcharts-more.js"></script>
+<script src="/vendor/highcharts/{$HC}/modules/exporting.js"></script>
 {$jsextra}
 <script>
 var EDIT_TABLE = "decagon_data";
 var EDIT_UNIQUEID = "{$site}";
 var EDIT_COLUMN = "";
 $(document).ready(function(){
-	$( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
-		defaultDate: "{$date}",
-		changeMonth: true,
-		changeYear: true,
-		minDate: new Date(2011, 0, 1),
-		maxDate: new Date(2017, 1, 1)});		
+    $( "#datepicker" ).datepicker({dateFormat:"yy-mm-dd",
+        defaultDate: "{$date}",
+        changeMonth: true,
+        changeYear: true,
+        minDate: new Date(2011, 0, 1),
+        maxDate: new Date(2017, 1, 1)});		
 });
 </script>
 EOF;
@@ -336,4 +347,3 @@ lines, and reported to represent the entire zone.</li>
 
 EOF;
 $t->render('full.phtml');
-?>
