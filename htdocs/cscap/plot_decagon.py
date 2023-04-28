@@ -8,8 +8,8 @@ import os
 import pytz
 import numpy as np
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, ssw
+from sqlalchemy import text
+from pyiem.util import ssw, get_sqlalchemy_conn
 
 ERRMSG = (
     "No data found. Check the start date falls within the "
@@ -18,32 +18,9 @@ ERRMSG = (
 )
 DEPTHS = [None, "10 cm", "20 cm", "40 cm", "60 cm", "100 cm"]
 
-LINESTYLE = [
-    "-",
-    "-",
-    "-",
-    "-",
-    "-",
-    "-",
-    "-",
-    "-",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-    "-.",
-]
+LINESTYLE = (
+    "- - - - - - - - -. -. -. -. -. - -. -. -. -. -. -. -. -. -. -."
+).split()
 
 
 def send_error():
@@ -71,7 +48,6 @@ def make_plot(form):
     )
     days = int(form.getfirst("days", 1))
     ets = sts + datetime.timedelta(days=days)
-    pgconn = get_dbconn("sustainablecorn")
     tzname = (
         "America/Chicago"
         if uniqueid in ["ISUAG", "SERF", "GILMORE"]
@@ -79,72 +55,94 @@ def make_plot(form):
     )
     viewopt = form.getfirst("view", "js")
     ptype = form.getfirst("ptype", "1")
-    plotid_limit = "and plotid = '%s'" % (plotid,)
+    plotid_limit = "and plotid = :plotid "
     depth = form.getfirst("depth", "all")
     if depth != "all":
         plotid_limit = ""
     if ptype == "1":
-        df = read_sql(
-            """SELECT uniqueid, plotid, valid as v,
-        d1temp_qc as d1t,
-        d2temp_qc as d2t,
-        d3temp_qc as d3t,
-        d4temp_qc as d4t,
-        d5temp_qc as d5t,
-        d1moisture_qc as d1m,
-        d2moisture_qc as d2m,
-        d3moisture_qc as d3m,
-        d4moisture_qc as d4m,
-        d5moisture_qc as d5m
-        from decagon_data WHERE uniqueid = %s """
-            + plotid_limit
-            + """
-        and valid between %s and %s ORDER by valid ASC
-        """,
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
+        with get_sqlalchemy_conn("sustainablecorn") as conn:
+            df = pd.read_sql(
+                text(
+                    f"""SELECT uniqueid, plotid, valid as v,
+            d1temp_qc as d1t,
+            d2temp_qc as d2t,
+            d3temp_qc as d3t,
+            d4temp_qc as d4t,
+            d5temp_qc as d5t,
+            d1moisture_qc as d1m,
+            d2moisture_qc as d2m,
+            d3moisture_qc as d3m,
+            d4moisture_qc as d4m,
+            d5moisture_qc as d5m
+            from decagon_data WHERE uniqueid = :uid {plotid_limit}
+            and valid between :sts and :ets ORDER by valid ASC
+            """
+                ),
+                conn,
+                params={
+                    "plotid": plotid,
+                    "uid": uniqueid,
+                    "sts": sts.date(),
+                    "ets": ets.date(),
+                },
+            )
         df["v"] = df["v"].apply(lambda x: x.astimezone(pytz.timezone(tzname)))
 
     elif ptype in ["3", "4"]:
         res = "hour" if ptype == "3" else "week"
-        df = read_sql(
-            """SELECT uniqueid, plotid,
-        timezone('UTC', date_trunc('"""
-            + res
-            + """', valid at time zone 'UTC')) as v,
-        avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
-        avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
-        avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
-        avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
-        avg(d5moisture_qc) as d5m
-        from decagon_data WHERE uniqueid = %s """
-            + plotid_limit
-            + """
-        and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
-        """,
-            pgconn,
-            params=(uniqueid, sts.date(), ets.date()),
-        )
+        with get_sqlalchemy_conn("sustainablecorn") as conn:
+            df = pd.read_sql(
+                text(
+                    f"""SELECT uniqueid, plotid,
+            timezone('UTC',
+                date_trunc('{res}', valid at time zone 'UTC')) as v,
+            avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
+            avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t,
+            avg(d5temp_qc) as d5t,
+            avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
+            avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
+            avg(d5moisture_qc) as d5m
+            from decagon_data WHERE uniqueid = :uid {plotid_limit}
+            and valid between :sts and :ets
+            GROUP by uniqueid, v, plotid ORDER by v ASC
+            """
+                ),
+                conn,
+                params={
+                    "plotid": plotid,
+                    "uid": uniqueid,
+                    "sts": sts.date(),
+                    "ets": ets.date(),
+                },
+            )
         df["v"] = pd.to_datetime(df["v"], utc=True)
 
     else:
-        df = read_sql(
-            """SELECT uniqueid, plotid,
-        timezone('UTC', date_trunc('day', valid at time zone %s)) as v,
-        avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
-        avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t, avg(d5temp_qc) as d5t,
-        avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
-        avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
-        avg(d5moisture_qc) as d5m
-        from decagon_data WHERE uniqueid = %s  """
-            + plotid_limit
-            + """
-        and valid between %s and %s GROUP by uniqueid, v, plotid ORDER by v ASC
-        """,
-            pgconn,
-            params=(tzname, uniqueid, sts.date(), ets.date()),
-        )
+        with get_sqlalchemy_conn("sustainablecorn") as conn:
+            df = pd.read_sql(
+                text(
+                    f"""SELECT uniqueid, plotid,
+            timezone('UTC', date_trunc('day', valid at time zone :tz)) as v,
+            avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
+            avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t,
+            avg(d5temp_qc) as d5t,
+            avg(d1moisture_qc) as d1m, avg(d2moisture_qc) as d2m,
+            avg(d3moisture_qc) as d3m, avg(d4moisture_qc) as d4m,
+            avg(d5moisture_qc) as d5m
+            from decagon_data WHERE uniqueid = :uid {plotid_limit}
+            and valid between :sts and :ets
+            GROUP by uniqueid, v, plotid ORDER by v ASC
+            """
+                ),
+                conn,
+                params={
+                    "tz": tzname,
+                    "plotid": plotid,
+                    "uid": uniqueid,
+                    "sts": sts.date(),
+                    "ets": ets.date(),
+                },
+            )
         df["v"] = pd.to_datetime(df["v"], utc=True)
 
     if len(df.index) < 3:
@@ -396,8 +394,6 @@ charts[1] = new Highcharts.Chart($.extend(true, {}, options, {
 }));
     """
     )
-
-    # ax[1].set_xlabel("Time (%s Timezone)" % (tzname, ))
 
 
 def main():

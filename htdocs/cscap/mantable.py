@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 """Management Table used by cover crop paper"""
 import sys
-import cgi
-import subprocess
 import datetime
-import os
 
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn, ssw
@@ -31,34 +28,9 @@ COVER_SITES = [
 D7 = datetime.timedelta(days=7)
 
 
-def reload_data():
-    """Run the sync script to download data from Google"""
-    os.chdir("/opt/datateam/scripts/cscap")
-    proc = subprocess.Popen(
-        "python harvest_management.py",
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-
-    return """<div class="alert alert-info">
-    Here is the result of sync process<br />
-    <pre>%s %s</pre>
-    </div>""" % (
-        proc.stdout.read(),
-        proc.stderr.read(),
-    )
-
-
 def main():
     """Go Main"""
     ssw("Content-type: text/html\n\n")
-
-    form = cgi.FieldStorage()
-    reloadres = ""
-    if form.getfirst("reload") is not None:
-        reloadres += reload_data()
-
     cursor.execute(
         """
         SELECT uniqueid, valid, cropyear, operation, biomassdate1,
@@ -278,13 +250,6 @@ def main():
 </head>
 <body>
 
-<p>The data presented on this page is current as of the last sync of
-Google Data to the ISU Database Server.  You can <br />
-<a href="mantable.py?reload=yes"
- class="btn btn-info"><i class="glyphicon glyphicon-cloud-download"></i>
- Request Sync of Google Data</a>
- <br />and a script will run to sync the database.
-%s
 
 <h3>Sites</h3>
 <table class="table table-striped table-bordered">
@@ -473,7 +438,7 @@ Google Data to the ISU Database Server.  You can <br />
 </body>
 </html>
     """
-        % (reloadres, table0, table, table2, table3, table4, table5)
+        % (table0, table, table2, table3, table4, table5)
     )
 
 
