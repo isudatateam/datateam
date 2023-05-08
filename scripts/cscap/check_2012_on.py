@@ -3,8 +3,8 @@
   2011 and the rest of the years
 """
 import isudatateam.cscap_utils as util
-from pyiem.util import logger
 from gspread_pandas import Spread
+from pyiem.util import logger
 
 LOG = logger()
 

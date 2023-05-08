@@ -8,9 +8,9 @@ We end up return a JSON document that lists out what is possible
  'agronomic': ['AGR1', 'AGR2']
 }
 """
+import cgi
 import json
 import sys
-import cgi
 
 import pandas as pd
 from pyiem.util import get_dbconnstr, ssw

@@ -4,13 +4,12 @@
 1951-2010 Frost-free days ...
 
 """
-import psycopg2
 import pandas as pd
-
-pgconn = psycopg2.connect(database="coop", host="iemdb", user="nobody")
-cursor = pgconn.cursor()
+import psycopg2
 from pyiem.network import Table as NetworkTable
 
+pgconn = psycopg2.connect(database="coop")
+cursor = pgconn.cursor()
 nt = NetworkTable(
     [
         "IACLIMATE",

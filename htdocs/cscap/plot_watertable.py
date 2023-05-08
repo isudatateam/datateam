@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 """Plot!"""
-import sys
-from io import BytesIO
 import cgi
 import datetime
 import os
+import sys
+from io import BytesIO
 
+import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-import numpy as np
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
 

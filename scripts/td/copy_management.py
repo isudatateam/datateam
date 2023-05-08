@@ -1,6 +1,6 @@
 """Copy management entries from CSCAP to TD"""
-import isudatateam.cscap_utils as util
 import gdata.spreadsheets.data
+import isudatateam.cscap_utils as util
 
 CSCAP_ID = "1CdPi6IEnO3T35t-OFQajKYzFLpu7hwOaWdL2FG1_kVA"
 TD_ID = "1m797EoMbtAvasqum-pB5ykVMeHsGWwcVvre8MbvE-xM"

@@ -1,5 +1,6 @@
-import psycopg2
 import datetime
+
+import psycopg2
 
 COOP = psycopg2.connect(database="coop", host="iemdb", user="nobody")
 cursor = COOP.cursor()

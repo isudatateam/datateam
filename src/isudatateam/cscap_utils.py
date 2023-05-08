@@ -3,12 +3,12 @@ Utility Functions that are common to our scripts, I hope
 """
 import json
 import os
-import sys
 import re
+import sys
 
+import smartsheet
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-import smartsheet
 from pyiem.util import LOG
 
 CONFIG_FN = "/opt/datateam/config/mytokens.json"

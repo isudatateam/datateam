@@ -1,9 +1,9 @@
 """Process a file provided by Gio with the IPM data"""
 import sys
-import StringIO
 
 import pandas as pd
 import psycopg2
+import StringIO
 
 
 def main(argv):

@@ -1,5 +1,6 @@
-import psycopg2
 import sys
+
+import psycopg2
 
 intervals = {"BEAR": 60, "CLAY_U": 30, "FAIRM": 30, "CLAY_R": 30}
 

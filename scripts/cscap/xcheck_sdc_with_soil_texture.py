@@ -1,6 +1,6 @@
 """Hmmm, unsure."""
-import sys
 import copy
+import sys
 
 import isudatateam.cscap_utils as util
 
@@ -60,7 +60,7 @@ for item in res["items"]:
                         vals.append(d[key])
                 print("EXTRA %s" % (key.upper(),), vals)
                 if len(vals) < 4:
-                    if raw_input("DELETE? y/n ") == "y":
+                    if input("DELETE? y/n ") == "y":
                         print("Deleting...")
                         worksheet.del_column(key.upper())
                         worksheet.get_list_feed()

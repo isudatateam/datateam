@@ -1,7 +1,8 @@
 """Perhaps the TD manstore has newer entries than CSCAP"""
 from __future__ import print_function
-import psycopg2
+
 import pandas as pd
+import psycopg2
 from pandas.io.sql import read_sql
 
 CSCAPSITES = ["DPAC", "HICKS.B", "SERF", "STJOHNS"]

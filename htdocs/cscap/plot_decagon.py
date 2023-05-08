@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 """Decagon SM Plot!"""
-import sys
 import cgi
 import datetime
 import os
+import sys
 
-import pytz
 import numpy as np
 import pandas as pd
+import pytz
+from pyiem.util import get_sqlalchemy_conn, ssw
 from sqlalchemy import text
-from pyiem.util import ssw, get_sqlalchemy_conn
 
 ERRMSG = (
     "No data found. Check the start date falls within the "

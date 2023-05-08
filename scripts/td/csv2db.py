@@ -1,11 +1,11 @@
 """Verbatim copy of a csv file to the database."""
-import sys
 import os
+import sys
 from io import StringIO
 
-from pyiem.util import logger, get_dbconn
-import pandas as pd
 import numpy as np
+import pandas as pd
+from pyiem.util import get_dbconn, logger
 
 LOG = logger()
 COLTYPES = {

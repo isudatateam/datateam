@@ -1,5 +1,6 @@
-import isudatateam.cscap_utils as util
 import sys
+
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 

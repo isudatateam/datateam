@@ -5,8 +5,8 @@ https://issuetracker.google.com/issues/36756650
 """
 
 import isudatateam.cscap_utils as util
-from tqdm import tqdm
 import pandas as pd
+from tqdm import tqdm
 
 
 def main():

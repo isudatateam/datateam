@@ -1,10 +1,10 @@
 from __future__ import print_function
-import sys
-import datetime
 
-import psycopg2
+import sys
+
 import pandas as pd
-from pyiem.datatypes import temperature, distance, speed, humidity
+import psycopg2
+from pyiem.datatypes import distance, humidity, speed, temperature
 from pyiem.meteorology import dewpoint
 
 pgconn = psycopg2.connect(database="sustainablecorn")

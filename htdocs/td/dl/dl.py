@@ -4,20 +4,21 @@ select string_agg(column_name, ', ') from
     (select column_name, ordinal_position from information_schema.columns where
     table_name='management' ORDER by ordinal_position) as foo;
 """
-import sys
-import os
 import datetime
+import os
 import shutil
 import smtplib
-from email.mime.text import MIMEText
+import sys
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import numpy as np
+import pandas as pd
+from paste.request import MultiDict, parse_formvars
+from pyiem.util import get_dbconn, get_dbconnstr, logger
 
 # Third Party
 from pymemcache import Client
-from paste.request import parse_formvars, MultiDict
-import pandas as pd
-import numpy as np
-from pyiem.util import get_dbconnstr, get_dbconn, logger
 from sqlalchemy import text
 
 LOG = logger()

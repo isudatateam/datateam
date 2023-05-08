@@ -1,6 +1,7 @@
 """Harvest Soil Infiltration"""
-import isudatateam.cscap_utils as util
 import sys
+
+import isudatateam.cscap_utils as util
 import psycopg2
 
 YEAR = sys.argv[1]
@@ -124,10 +125,6 @@ for item in res["items"]:
             except Exception as exp:
                 print("HARVEST_SOIL_infiltration TRACEBACK")
                 print(exp)
-                print(
-                    "%s %s %s %s %s"
-                    % (siteid, plotid, varname, depth, val, subsample)
-                )
                 sys.exit()
             key = "%s|%s|%s|%s|%s" % (
                 siteid,

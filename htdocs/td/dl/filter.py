@@ -10,8 +10,8 @@ We end up return a JSON document that lists out what is possible
 import json
 import sys
 
-from paste.request import parse_formvars
 import pandas as pd
+from paste.request import parse_formvars
 from pyiem.util import get_dbconnstr
 from sqlalchemy import text
 

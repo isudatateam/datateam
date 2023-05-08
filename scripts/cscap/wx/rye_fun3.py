@@ -1,5 +1,6 @@
-import psycopg2
 import datetime
+
+import psycopg2
 from pyiem.network import Table as NetworkTable
 
 nt = NetworkTable("CSCAP")

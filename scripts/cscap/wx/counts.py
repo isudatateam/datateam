@@ -1,12 +1,11 @@
-import psycopg2
+"""Shrug."""
 import sys
-import numpy as np
-import matplotlib
 
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
-import matplotlib.colors as mpcolors
 import matplotlib.cm as cm
+import matplotlib.colors as mpcolors
+import numpy as np
+import psycopg2
+from pyiem.plot.use_agg import plt
 
 MODEL = sys.argv[1]
 SCENARIO = sys.argv[2]

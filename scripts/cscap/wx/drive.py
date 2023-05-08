@@ -2,6 +2,7 @@
  Generate images used for state brochures
 """
 import os
+
 from pyiem.network import Table as NetworkTable
 
 nt = NetworkTable(

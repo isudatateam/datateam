@@ -1,7 +1,7 @@
 """Script fetches openauth2 refresh token that my offline scripts can use
 """
-from gdata import gauth
 import isudatateam.cscap_utils as util
+from gdata import gauth
 
 config = util.get_config()
 
@@ -15,7 +15,7 @@ token = gauth.OAuth2Token(
 )
 
 print("Go to this URL:", token.generate_authorize_url())
-code = raw_input("What is the verification code? (auth_token)").strip()
+code = input("What is the verification code? (auth_token)").strip()
 token.get_access_token(code)
 print(f"refresh_token is {token.refresh_token}")
 config["googleauth"]["refresh_token"] = token.refresh_token

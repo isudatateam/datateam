@@ -1,8 +1,8 @@
 """Harvest Soil Fertility Files"""
 import sys
 
-import psycopg2
 import isudatateam.cscap_utils as util
+import psycopg2
 
 config = util.get_config()
 

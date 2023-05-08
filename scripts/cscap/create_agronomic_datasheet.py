@@ -1,8 +1,9 @@
 """
  Something that will create dataspreadsheets based on entries in the table
 """
-import gdata.spreadsheets.data
 import copy
+
+import gdata.spreadsheets.data
 import isudatateam.cscap_utils as util
 
 config = util.get_config()

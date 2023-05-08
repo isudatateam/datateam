@@ -5,10 +5,10 @@
 Note, set subsample equals to 1!, so pivot works
 """
 import sys
-import StringIO
 
 import pandas as pd
 import psycopg2
+import StringIO
 
 
 def main(argv):

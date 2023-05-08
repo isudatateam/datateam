@@ -1,8 +1,9 @@
 """
 Harvest the Agronomic Data into the ISU Database
 """
-import isudatateam.cscap_utils as util
 import sys
+
+import isudatateam.cscap_utils as util
 import psycopg2
 
 YEAR = sys.argv[1]

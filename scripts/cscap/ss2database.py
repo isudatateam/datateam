@@ -1,8 +1,8 @@
 """A direct copy of a Google Spreadsheet to a postgresql database"""
-import psycopg2
 import isudatateam.cscap_utils as util
-from unidecode import unidecode
+import psycopg2
 from six import string_types
+from unidecode import unidecode
 
 config = util.get_config()
 pgconn = psycopg2.connect(

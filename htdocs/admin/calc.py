@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """Dynamic Calculation, yikes"""
 import cgi
-import re
-import os
 import datetime
+import os
+import re
 
 import pandas as pd
 from pandas.io.sql import read_sql

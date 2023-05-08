@@ -1,7 +1,8 @@
-import sys
-import isudatateam.cscap_utils as util
 import copy
 import re
+import sys
+
+import isudatateam.cscap_utils as util
 
 VARNAME_RE = re.compile("^(SOIL[0-9]+)")
 
@@ -63,7 +64,7 @@ for item in res["items"]:
             print("EXTRA %s[%s]" % (varname, soilcode))
             print(vals)
             if len(vals) < 4:
-                if raw_input("DELETE? y/n ") == "y":
+                if input("DELETE? y/n ") == "y":
                     print("Deleting... |%s|" % (varname,))
                     worksheet.del_column(varname)
                     worksheet.get_list_feed()

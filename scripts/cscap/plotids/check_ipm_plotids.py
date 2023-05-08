@@ -1,8 +1,8 @@
 """Verify that the Plot IDs are OK."""
-from pandas.io.sql import read_sql
-import psycopg2
 import isudatateam.cscap_utils as utils
 import pandas as pd
+import psycopg2
+from pandas.io.sql import read_sql
 
 
 def main():
