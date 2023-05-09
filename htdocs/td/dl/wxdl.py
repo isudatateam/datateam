@@ -1,7 +1,7 @@
 """Download weather data, please"""
 # pylint: disable=abstract-class-instantiated
-import os
 import datetime
+import os
 
 import pandas as pd
 from paste.request import parse_formvars

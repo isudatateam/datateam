@@ -3,9 +3,9 @@ account.  This is not ideal as if this file is deleted, then it goes into
 purgatory."""
 
 import isudatateam.cscap_utils as util
-from oauth2client.service_account import ServiceAccountCredentials
 from apiclient.discovery import build
 from httplib2 import Http
+from oauth2client.service_account import ServiceAccountCredentials
 
 config = util.get_config()
 

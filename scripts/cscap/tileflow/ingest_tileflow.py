@@ -1,9 +1,9 @@
 """Tileflow ingest"""
-import sys
 import datetime
+import sys
 
-import pytz
 import psycopg2
+import pytz
 
 CENTRAL_TIME = [
     "ISUAG",

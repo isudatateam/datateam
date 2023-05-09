@@ -1,11 +1,11 @@
 """Copy drive permissions to site."""
-from gdata import gauth
 import gdata.acl.data
 import gdata.data
-import gdata.sites.data
 import gdata.gauth
 import gdata.sites.client as sclient
+import gdata.sites.data
 import isudatateam.cscap_utils as util
+from gdata import gauth
 
 config = util.get_config()
 

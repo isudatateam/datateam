@@ -1,8 +1,9 @@
-import pandas as pd
-import sys
-from pyiem.datatypes import distance, temperature, speed
-import psycopg2
 import datetime
+import sys
+
+import pandas as pd
+import psycopg2
+from pyiem.datatypes import distance, speed, temperature
 
 pgconn = psycopg2.connect(database="sustainablecorn", host="iemdb")
 

@@ -16,23 +16,6 @@ def main():
         .execute()
     )
 
-    HEADERS = [
-        "uniqueid",
-        "plotid",
-        "depth",
-        "tillage",
-        "rotation",
-        "soil6",
-        "nitrogen",
-        "drainage",
-        "rep",
-        "subsample",
-        "landscape",
-        "notes",
-        "herbicide",
-        "sampledate",
-    ]
-
     sz = len(res["items"])
     for i, item in enumerate(res["items"]):
         if item["mimeType"] != "application/vnd.google-apps.spreadsheet":

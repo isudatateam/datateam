@@ -2,8 +2,8 @@
  Use the Site Data Collected and then see what columns exist within the
  Agronomic Data Sheets.
 """
-import sys
 import copy
+import sys
 
 import isudatateam.cscap_utils as util
 
@@ -72,7 +72,7 @@ for item in res["items"]:
                 vals.append(d[key])
         if varname not in shouldhave:
             print("EXTRA %s %s" % (varname, vals))
-            if raw_input("DELETE? y/n ") == "y":
+            if input("DELETE? y/n ") == "y":
                 print("Deleting...")
                 worksheet.del_column(varname)
                 worksheet.get_list_feed()

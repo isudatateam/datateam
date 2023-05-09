@@ -1,16 +1,16 @@
 """Plot!"""
 # pylint: disable=abstract-class-instantiated
-import sys
 import datetime
+import sys
 
+import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-import numpy as np
 from paste.request import parse_formvars
 from pyiem.util import get_dbconn
 
 sys.path.append("/opt/datateam/htdocs/td")
-from common import CODES, getColor, send_error, COPYWRITE
+from common import CODES, COPYWRITE, getColor, send_error  # noqa
 
 LINESTYLE = [
     "-",

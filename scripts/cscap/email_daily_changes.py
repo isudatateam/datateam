@@ -3,10 +3,10 @@
   on the Google Drive
 """
 # stdlib
-import sys
 import datetime
 import json
 import smtplib
+import sys
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -14,9 +14,9 @@ from email.mime.text import MIMEText
 # third party
 import gdata.gauth
 import gdata.sites.client as sclient
-from gdata.client import RequestError
-import pytz
 import isudatateam.cscap_utils as util
+import pytz
+from gdata.client import RequestError
 from pyiem.util import logger
 
 LOG = logger()

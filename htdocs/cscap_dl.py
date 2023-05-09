@@ -2,16 +2,15 @@
 """
 
 """
-import sys
 import cgi
 import datetime
+import sys
 
-from psycopg2.extras import RealDictCursor
+import isudatateam.cscap_utils as util
 import pandas as pd
 import pandas.io.sql as pdsql
-import isudatateam.cscap_utils as util
+from psycopg2.extras import RealDictCursor
 from pyiem.util import get_dbconn, ssw
-
 
 config = util.get_config("/opt/datateam/config/mytokens.json")
 
@@ -410,7 +409,7 @@ def get_dl(form):
     def find_rotation(rotation, year):
         try:
             return rotdf.at[rotation, "y%s" % (year,)]
-        except Exception as _exp:
+        except Exception:
             return ""
 
     df2["crop"] = df2[["rotation", "year"]].apply(

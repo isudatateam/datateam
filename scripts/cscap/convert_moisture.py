@@ -1,6 +1,7 @@
 """Change % moisture values into g kg-1"""
-import isudatateam.cscap_utils as util
 import re
+
+import isudatateam.cscap_utils as util
 
 NUM = re.compile("\d+\.?\d*")
 

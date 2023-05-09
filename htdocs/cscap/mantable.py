@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Management Table used by cover crop paper"""
-import sys
 import datetime
+import sys
 
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn, ssw

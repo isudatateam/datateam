@@ -1,6 +1,6 @@
-import psycopg2
 import matplotlib.pyplot as plt
 import numpy as np
+import psycopg2
 
 pgconn = psycopg2.connect(database="coop")
 cursor = pgconn.cursor()
@@ -57,7 +57,8 @@ def run(station):
     ax.set_xlim(1958, 2100)
     ax.set_ylabel("Annual Precipitation [inch]")
     ax.set_title(
-        "Ames, Iowa ISUAG CMIP3 Hayhoe Dataset\nYearly Precipitation Totals (avg shown in legend)"
+        "Ames, Iowa ISUAG CMIP3 Hayhoe Dataset\n"
+        "Yearly Precipitation Totals (avg shown in legend)"
     )
     fig.savefig("test.png")
 

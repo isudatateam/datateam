@@ -1,8 +1,8 @@
 """Assign eco regions, I got the shapefile here:
 ftp://ftp.epa.gov/wed/ecoregions/us
 """
-import psycopg2
 import isudatateam.cscap_utils as util
+import psycopg2
 
 pgconn = psycopg2.connect(database="akrherz")
 cursor = pgconn.cursor()

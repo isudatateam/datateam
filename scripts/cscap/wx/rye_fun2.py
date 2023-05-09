@@ -1,5 +1,5 @@
-from pandas.io.sql import read_sql
 import psycopg2
+from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 
 nt = NetworkTable("CSCAP")

@@ -3,12 +3,12 @@
 import sys
 
 import pandas as pd
-from paste.request import parse_formvars
 from pandas.io.sql import read_sql
+from paste.request import parse_formvars
 from pyiem.util import get_dbconn
 
 sys.path.append("/opt/datateam/htdocs/td")
-from common import CODES, getColor, send_error, COPYWRITE
+from common import CODES, COPYWRITE, getColor, send_error  # noqa
 
 LINESTYLE = [
     "-",

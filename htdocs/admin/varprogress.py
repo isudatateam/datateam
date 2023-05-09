@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-from io import BytesIO
-import datetime
 import cgi
+import datetime
+from io import BytesIO
 
 import numpy as np
-import matplotlib
-
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
 
 

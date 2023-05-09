@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """Download weather data, please"""
-import os
 import cgi
 import datetime
+import os
 
 import pandas as pd
-from pyiem.util import get_dbconnstr, ssw
 from pyiem.datatypes import distance, temperature
+from pyiem.util import get_dbconnstr, ssw
 from sqlalchemy import text
 
 VARDF = {

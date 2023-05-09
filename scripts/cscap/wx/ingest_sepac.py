@@ -1,10 +1,10 @@
 """
 http://www.isws.illinois.edu/warm/datatype.asp
 """
+
 import pandas as pd
-import datetime
-from pyiem.datatypes import speed
 import psycopg2
+from pyiem.datatypes import speed
 
 pgconn = psycopg2.connect(database="sustainablecorn", host="iemdb")
 

@@ -1,4 +1,10 @@
+import sys
+
+import ConfigParser
 import psycopg2
+
+sys.path.insert(0, "../")
+import util  # noqa
 
 COOP = psycopg2.connect(database="coop", host="iemdb", user="nobody")
 ccursor = COOP.cursor()
@@ -8,11 +14,6 @@ SUSTAIN = psycopg2.connect(
 )
 scursor = SUSTAIN.cursor()
 
-import ConfigParser
-import sys
-
-sys.path.insert(0, "../")
-import util
 
 config = ConfigParser.ConfigParser()
 config.read("../mytokens.cfg")
@@ -97,7 +98,10 @@ for site in plantdates.keys():
                 else:
                     row3 = [0, 0, 0]
                 print(
-                    "%-12.12s, %s, %s, %5.2f, %4.0f, %4.0f, %5.2f, %4.0f, %4.0f, %5.2f, %4.0f, %4.0f, %s, %s, %s, %s"
+                    (
+                        "%-12.12s, %s, %s, %5.2f, %4.0f, %4.0f, %5.2f, %4.0f, "
+                        "%4.0f, %5.2f, %4.0f, %4.0f, %s, %s, %s, %s"
+                    )
                     % (
                         site,
                         sitemeta[site]["climate_site"],

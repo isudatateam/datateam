@@ -1,10 +1,10 @@
 """Plot!"""
 # pylint: disable=abstract-class-instantiated,wrong-import-position
-import sys
 import datetime
+import sys
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from paste.request import parse_formvars
 from pyiem.util import get_sqlalchemy_conn
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """Plot!"""
-import sys
-from io import BytesIO
 import cgi
 import os
+import sys
+from io import BytesIO
 
+import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-import numpy as np
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn, ssw
 
@@ -177,7 +177,8 @@ $("#hc").highcharts({
         type: 'datetime'
     },
     tooltip: {
-        pointFormat: 'date: <b>{point.x:%b %e %Y, %H:%M}</b><br/>value: <b>{point.y}</b><br/>',
+        pointFormat: 'date: <b>{point.x:%b %e %Y, %H:%M}</b>' +
+        '<br/>value: <b>{point.y}</b><br/>',
         shared: true,
         valueDecimals: 2,
         valueSuffix: '"""
