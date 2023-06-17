@@ -5,9 +5,8 @@ import sys
 
 import numpy as np
 import pandas as pd
-from pandas.io.sql import read_sql
 from paste.request import parse_formvars
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 
 sys.path.append("/opt/datateam/htdocs/td")
 from common import COPYWRITE, send_error  # noqa
@@ -50,30 +49,30 @@ def make_plot(form, start_response):
     )
     days = int(form.get("days", 1))
     ets = sts + datetime.timedelta(days=days)
-    pgconn = get_dbconn("td")
     by = form.get("ptype", "daily")
 
-    df = read_sql(
-        f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, depth, "
-        "avg(soil_moisture) as soil_moisture, "
-        "avg(soil_temperature) as soil_temperature "
-        "from soil_moisture_data where siteid = %s and "
-        "coalesce(plotid, location, '') = %s and "
-        "date >= %s and date < %s "
-        "GROUP by v, depth ORDER by v ASC",
-        pgconn,
-        params=(uniqueid, plotid, sts.date(), ets.date()),
-    )
+    with get_sqlalchemy_conn("td") as conn:
+        df = pd.read_sql(
+            f"SELECT date_trunc('{BYCOL[by]}', date)::date as v, depth, "
+            "avg(soil_moisture) as soil_moisture, "
+            "avg(soil_temperature) as soil_temperature "
+            "from soil_moisture_data where siteid = %s and "
+            "coalesce(plotid, location, '') = %s and "
+            "date >= %s and date < %s "
+            "GROUP by v, depth ORDER by v ASC",
+            conn,
+            params=(uniqueid, plotid, sts.date(), ets.date()),
+        )
 
     if len(df.index) < 3:
         return send_error(start_response, "js")
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6
     smdf = df[["ticks", "depth", "soil_moisture"]].pivot(
-        "ticks", "depth", "soil_moisture"
+        index="ticks", columns="depth", values="soil_moisture"
     )
     smdf = smdf.reset_index()
     stdf = df[["ticks", "depth", "soil_temperature"]].pivot(
-        "ticks", "depth", "soil_temperature"
+        index="ticks", columns="depth", values="soil_temperature"
     )
     stdf = stdf.reset_index()
 
