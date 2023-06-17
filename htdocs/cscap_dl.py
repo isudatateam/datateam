@@ -367,7 +367,7 @@ def get_dl(form):
         return val
 
     df["value"] = df["value"].apply(cleaner)
-    df2 = df.pivot("lbl", "varname", "value")
+    df2 = df.pivot(index="lbl", columns="varname", values="value")
     allcols = df2.columns.values.tolist()
     if "all" in dvars:
         cols = cols + allcols

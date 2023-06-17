@@ -35,7 +35,7 @@ def main():
         siteid, typename = tokens
         rows.append({"siteid": siteid, "res": typename, "id": item["id"]})
     df = pd.DataFrame(rows)
-    df = df.pivot("siteid", "res", "id")
+    df = df.pivot(index="siteid", columns="res", values="id")
 
     pgconn = get_dbconn("td")
     cursor = pgconn.cursor()
