@@ -1,9 +1,9 @@
 """Water Quality ingest"""
 import datetime
 import sys
+from zoneinfo import ZoneInfo
 
 import psycopg2
-import pytz
 
 CENTRAL_TIME = [
     "ISUAG",
@@ -49,7 +49,7 @@ def gio_process(filename):
         )
         offset = 6 if uniqueid in CENTRAL_TIME else 5
         ts = ts + datetime.timedelta(hours=offset)
-        ts = ts.replace(tzinfo=pytz.UTC)
+        ts = ts.replace(tzinfo=ZoneInfo("UTC"))
         cursor.execute(
             sql,
             (
