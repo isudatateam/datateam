@@ -10,12 +10,12 @@ import sys
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from zoneinfo import ZoneInfo
 
 # third party
 import gdata.gauth
 import gdata.sites.client as sclient
 import isudatateam.cscap_utils as util
-import pytz
 from gdata.client import RequestError
 from pyiem.util import logger
 
@@ -54,7 +54,7 @@ CFG = {
         emails=CONFIG["ilsoil"]["email_daily_list"], title="IL Soil Samples"
     ),
 }
-LOCALTZ = pytz.timezone("America/Chicago")
+LOCALTZ = ZoneInfo("America/Chicago")
 
 
 def get_sites_client(config, site="sustainablecorn"):
@@ -108,7 +108,7 @@ def sites_changelog(regime, yesterday, html):
         ts = datetime.datetime.strptime(
             entry.updated.text, "%Y-%m-%dT%H:%M:%S.%fZ"
         )
-        ts = ts.replace(tzinfo=pytz.UTC)
+        ts = ts.replace(tzinfo=ZoneInfo("UTC"))
         if ts < yesterday:
             continue
         updated = ts.astimezone(LOCALTZ)
@@ -273,7 +273,7 @@ def drive_changelog(regime, yesterday, html):
                     md = datetime.datetime.strptime(
                         item2["modifiedDate"][:19], "%Y-%m-%dT%H:%M:%S"
                     )
-                    md = md.replace(tzinfo=pytz.timezone("UTC"))
+                    md = md.replace(tzinfo=ZoneInfo("UTC"))
                     if md < yesterday:
                         continue
                     localts = md.astimezone(LOCALTZ)
@@ -328,7 +328,7 @@ def main(argv):
 
     today = datetime.datetime.utcnow()
     today = today.replace(
-        tzinfo=pytz.UTC, hour=12, minute=0, second=0, microsecond=0
+        tzinfo=ZoneInfo("UTC"), hour=12, minute=0, second=0, microsecond=0
     )
     yesterday = today - datetime.timedelta(days=1)
     localts = yesterday.astimezone(LOCALTZ)

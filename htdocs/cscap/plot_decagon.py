@@ -4,10 +4,10 @@ import cgi
 import datetime
 import os
 import sys
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
-import pytz
 from pyiem.util import get_sqlalchemy_conn, ssw
 from sqlalchemy import text
 
@@ -86,7 +86,7 @@ def make_plot(form):
                     "ets": ets.date(),
                 },
             )
-        df["v"] = df["v"].apply(lambda x: x.astimezone(pytz.timezone(tzname)))
+        df["v"] = df["v"].apply(lambda x: x.astimezone(ZoneInfo(tzname)))
 
     elif ptype in ["3", "4"]:
         res = "hour" if ptype == "3" else "week"
