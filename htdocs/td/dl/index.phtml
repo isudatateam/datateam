@@ -3,7 +3,7 @@ require_once "../../../include/forms.php";
 require_once "../../../include/myview.php";
 
 function build_treatments_ui(){
-	$s = <<<EOF
+    $s = <<<EOF
 <p>For sites you’ve selected, available treatments will be identified by black text; unavailable in grey.</p>
 <div class="clearfix"></div>
 
@@ -90,11 +90,11 @@ name="treatments[]" id="Subsurface Irrigation">
 
 </div></div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_agronomic_ui(){
-	$s = <<<EOF
+    $s = <<<EOF
 <div class="row"><div class="col-md-4">
 
 <div class="panel panel-default">
@@ -204,7 +204,7 @@ function build_agronomic_ui(){
 
 </div></div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function gen($ar, $label){
@@ -280,7 +280,7 @@ function build_soil_ui(){
 <div class="panel panel-default">
   <div class="panel-heading">Soil Texture</div>
   <div class="panel-body">
-    ${st}
+    {$st}
   </div>
 </div>
 
@@ -290,7 +290,7 @@ function build_soil_ui(){
 <div class="panel panel-default">
   <div class="panel-heading">Soil Properties</div>
   <div class="panel-body">
-    ${sp}
+    {$sp}
   </div>
 </div>
 
@@ -299,21 +299,21 @@ function build_soil_ui(){
 <div class="panel panel-default">
   <div class="panel-heading">Soil Carbon</div>
   <div class="panel-body">
-    ${sc}
+    {$sc}
   </div>
 </div>
 
 <div class="panel panel-default">
   <div class="panel-heading">Soil Nitrogen</div>
   <div class="panel-body">
-    ${sn}
+    {$sn}
   </div>
 </div>
 
 
 </div></div>
 EOF;
-	return $s;
+    return $s;
 }
 
 function build_sites(){
@@ -333,24 +333,24 @@ function build_sites(){
     <table class="table table-striped table-bordered">
     <thead>
     <tr>
-		<td><p><b>Research Site Code</b></p></td>
-		<td><p><b>Principal Investigator</b></p></td>
-		<td>
-			<p><b>Research
-			Site Official Name</b></p>
-		</td>
-		<td>
-			<p><b>Institution</b></p>
-		</td>
-		<td nowrap>
-			<p><b>Plot Map</b></p>
-		</td>
-		<td>
-			<p><b>Photographs</b></p>
-		</td>
-		<td nowrap>
-			<p><strong>Site Summary</strong></p>
-		</td>
+        <td><p><b>Research Site Code</b></p></td>
+        <td><p><b>Principal Investigator</b></p></td>
+        <td>
+            <p><b>Research
+            Site Official Name</b></p>
+        </td>
+        <td>
+            <p><b>Institution</b></p>
+        </td>
+        <td nowrap>
+            <p><b>Plot Map</b></p>
+        </td>
+        <td>
+            <p><b>Photographs</b></p>
+        </td>
+        <td nowrap>
+            <p><strong>Site Summary</strong></p>
+        </td>
     </tr>
     </thead>
 EOM;
@@ -388,29 +388,29 @@ foreach($headers as $k => $v){
     }
     $s .= "</table>\n</div>\n";
 }
-	return $s;
+    return $s;
 }
 
 
 function build_theses(){
-	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
-	$rs = pg_query(
+    $pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
+    $rs = pg_query(
         $pgconn,
         "select *, (string_to_array(authors, ' '))[1] as sauthor from theses ".
         "ORDER by sauthor, year ASC");
-	$s = "\n";
-	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-	    $srs = "";
-	    if ($row["online_source"] != "N/A"){
-    	    $srs = sprintf("<a href=\"%s\" target=\"_blank\">%s</a>",
-    	       $row["online_source"], $row["online_source"]);
-	    }
-	    $s .= sprintf("<p>%s%s %s %s %s</p>\n",
-				$row['authors'], trim($row["year"]), $row['title'],
-				$row["journal_or_source"], $srs);
-	}
+    $s = "\n";
+    for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+        $srs = "";
+        if ($row["online_source"] != "N/A"){
+            $srs = sprintf("<a href=\"%s\" target=\"_blank\">%s</a>",
+               $row["online_source"], $row["online_source"]);
+        }
+        $s .= sprintf("<p>%s%s %s %s %s</p>\n",
+                $row['authors'], trim($row["year"]), $row['title'],
+                $row["journal_or_source"], $srs);
+    }
     $s .= "\n";
-	return $s;
+    return $s;
 }
 
 function cullna($val){
@@ -420,42 +420,42 @@ function cullna($val){
     return $val;
 }
 function build_publications(){
-	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
-	$rs = pg_query(
+    $pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
+    $rs = pg_query(
         $pgconn,
         "select *, (string_to_array(authors, ' '))[1] as sauthor from ".
         "refereed_journals ORDER by sauthor, year ASC");
-	$s = "\n";
-	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
-		$strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
-		$endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
+    $s = "\n";
+    for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+        $strong =  ($row["open_access"] == 'Yes') ? "<strong>" : '';
+        $endstrong =  ($row["open_access"] == 'Yes')? "</strong>": '';
         $s .= sprintf(
             "<p>%s %s%s %s %s %s %s <a href=\"%s\" target=\"_blank\">%s</a>".
             "%s</p>\n",
-			$strong,
-			$row['authors'], trim($row["year"]), $row['title'],
-			$row["journal_or_source"], cullna($row["voliss"]),
-		    cullna($row["pg_no."]),
-			$row["online_source"], $row["online_source"], $endstrong);
-	}
-	$s .= "\n";
-	return $s;
+            $strong,
+            $row['authors'], trim($row["year"]), $row['title'],
+            $row["journal_or_source"], cullna($row["voliss"]),
+            cullna($row["pg_no."]),
+            $row["online_source"], $row["online_source"], $endstrong);
+    }
+    $s .= "\n";
+    return $s;
 }
 
 function build_site_groups(){
     // Create the groupings used within two sections
-	$groups = Array();
-	$pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
+    $groups = Array();
+    $pgconn = pg_connect("dbname=td host=iemdb-td.local user=nobody");
     $rs = pg_query(
         $pgconn,
         "SELECT * from meta_site_history ORDER by siteid ASC");
-	for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
+    for ($i=0; $row=@pg_fetch_assoc($rs, $i); $i++){
         $drp = $row["drainage_retention_practice"];
         if (! array_key_exists($drp, $groups)){
             $groups[$drp] = Array();
         }
         $groups[$drp][] = $row;
-	}
+    }
     return $groups;
 }
 
@@ -468,22 +468,22 @@ function build_sites_ui(){
         "Other" => "Other",
     );
     $s = "";
-	foreach($headers as $k => $v){
-		$s .= "<div class=\"col-md-4\">\n";
-		$s .= sprintf("<div class=\"panel panel-default\">".
+    foreach($headers as $k => $v){
+        $s .= "<div class=\"col-md-4\">\n";
+        $s .= sprintf("<div class=\"panel panel-default\">".
   "<div class=\"panel-heading\">".
   "<input type=\"checkbox\" class=\"state-check\" value=\"%s\"> &nbsp; %s</div>".
   "<div class=\"panel-body\">\n", $k, $v);
-		foreach($groups[$k] as $k2 => $v2){
-			$s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
-			    "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
+        foreach($groups[$k] as $k2 => $v2){
+            $s .= sprintf("<input type=\"checkbox\" value=\"%s\" id=\"ST%s\" ".
+                "data-state=\"%s\" name=\"sites[]\" class=\"site-check\">".
                 "<label for=\"ST%s\" class=\"control-label\">%s</label>",
                 $v2["siteid"], $v2["siteid"], $k, $v2["siteid"],
                 $v2["siteid"]);
         }
         $s .= "</div></div></div>\n";
     }
-	return $s;
+    return $s;
 }
 function build_water_ui(){
     $ar = Array(
@@ -530,14 +530,14 @@ function build_water_ui(){
 <div class="panel panel-default">
   <div class="panel-heading">Soil Moisture</div>
   <div class="panel-body">
-    ${sm}
+    {$sm}
   </div>
 </div>
 
 <div class="panel panel-default">
   <div class="panel-heading">Water Depth</div>
   <div class="panel-body">
-    ${wd}
+    {$wd}
   </div>
 </div>
 
@@ -547,7 +547,7 @@ function build_water_ui(){
 <div class="panel panel-default">
   <div class="panel-heading">Tile Flow and Load</div>
   <div class="panel-body">
-    ${tfl}
+    {$tfl}
   </div>
 </div>
 
@@ -556,7 +556,7 @@ function build_water_ui(){
 <div class="panel panel-default">
   <div class="panel-heading">Water Quality</div>
   <div class="panel-body">
-    ${wq}
+    {$wq}
   </div>
 </div>
 
@@ -567,38 +567,38 @@ EOF;
 }
 
 function build_shm_ui(){
-	$s = <<<EOF
+    $s = <<<EOF
 
 <p>It is recommended to export all of the data here because they are supplemental
 metadata that provide context to the experimental data and helps with
 interpretation. For this reason, all variables are selected by default.</p>
 
-	<div class="panel panel-default">
-	<div class="panel-heading">Available Variables</div>
-	<div class="panel-body">
-			
-	<input type="checkbox" value="SHM5" data-ipm="SHM5" name="shm[]" id="SHM5" checked="checked">
-	<label for="SHM5" class="control-label">Data Dictionary</label>
+    <div class="panel panel-default">
+    <div class="panel-heading">Available Variables</div>
+    <div class="panel-body">
+
+    <input type="checkbox" value="SHM5" data-ipm="SHM5" name="shm[]" id="SHM5" checked="checked">
+    <label for="SHM5" class="control-label">Data Dictionary</label>
 
     <input type="checkbox" value="SHM4" data-ipm="SHM4" name="shm[]" id="SHM4" checked="checked">
-	<label for="SHM4" class="control-label">Plot Identifiers</label>
+    <label for="SHM4" class="control-label">Plot Identifiers</label>
 
-	<input type="checkbox" value="SHM8" data-ipm="SHM8" name="shm[]" id="SHM8" checked="checked">
-	<label for="SHM8" class="control-label">Site Metadata and History</label>
-
-    <input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
-	<label for="SHM1" class="control-label">Methods</label>
+    <input type="checkbox" value="SHM8" data-ipm="SHM8" name="shm[]" id="SHM8" checked="checked">
+    <label for="SHM8" class="control-label">Site Metadata and History</label>
 
     <input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
-	<label for="SHM1" class="control-label">Field Operations Data</label>
+    <label for="SHM1" class="control-label">Methods</label>
+
+    <input type="checkbox" value="SHM1" data-ipm="SHM1" name="shm[]" id="SHM1" checked="checked">
+    <label for="SHM1" class="control-label">Field Operations Data</label>
 
     <input type="checkbox" value="SHM6" data-ipm="SHM6" name="shm[]" id="SHM6" checked="checked">
-	<label for="SHM6" class="control-label">Notes</label>
-			
-	</div>
-	</div>
+    <label for="SHM6" class="control-label">Notes</label>
+            
+    </div>
+    </div>
 EOF;
-	return $s;
+    return $s;
 }
 
 $t = new MyView();
@@ -1132,23 +1132,23 @@ unavailable in grey.</p>
 <div class="form-group">
     <label for="dlimit">How to handle values below detection limit:</label>
 <select name="detectlimit" class="form-control" id="dlimit">
-	<option value="1">Keep them as is, presented as "&lt; LOD"</option>
-	<option value="2">Divide the LOD value by two</option>
-	<option value="3">Divide the LOD value by square root of two</option>
-	<option value="4">Omit all occurrences and replace as missing</option>
+    <option value="1">Keep them as is, presented as "&lt; LOD"</option>
+    <option value="2">Divide the LOD value by two</option>
+    <option value="3">Divide the LOD value by square root of two</option>
+    <option value="4">Omit all occurrences and replace as missing</option>
 </select>
 </div>
 
 <div class="form-group">
     <label for="missingvalue">How to represent missing values:</label>
 <select name="missing" class="form-control" id="missingvalue">
-	<option value="M">M</option>
-	<option value="N/A">N/A</option>
-	<option value="NaN">NaN</option>
-	<option value="NULL">NULL</option>
-	<option value=" ">((blank space))</option>
-	<option value=".">.</option>
-	<option value="-999">-999</option>
+    <option value="M">M</option>
+    <option value="N/A">N/A</option>
+    <option value="NaN">NaN</option>
+    <option value="NULL">NULL</option>
+    <option value=" ">((blank space))</option>
+    <option value=".">.</option>
+    <option value="-999">-999</option>
     <option value="__custom__">Custom Value</option>
 </select>
 </div>
@@ -1216,7 +1216,7 @@ timeout shown, but an email will still be delivered with the data.</div>
 <div id="proceed" style="display: none;">
   <p><input type="submit" value="Proceed with Download"></p>
 </div>
-	
+    
 </div>
 <br clear="both" />
 <div class="pull-right">
@@ -1224,8 +1224,8 @@ timeout shown, but an email will still be delivered with the data.</div>
 <button id="next-btn" type="button" class="btn btn-default">Next <i class="glyphicon glyphicon-arrow-right"></i></button>
 </div>
 </form>
-		</div>
-		<div role="tabpanel" class="tab-pane active" id="sites">
+        </div>
+        <div role="tabpanel" class="tab-pane active" id="sites">
 
 <div class="row"><div class="col-md-6">
 <img src="/images/tdsites.png" class="img img-responsive" alt="Transforming Drainage Sites">
@@ -1242,8 +1242,8 @@ located on farmer fields.
     {$sitestable}
 
 
-		</div>
-		<div role="tabpanel" class="tab-pane" id="pubs">
+        </div>
+        <div role="tabpanel" class="tab-pane" id="pubs">
 
 <br />
 
@@ -1279,7 +1279,7 @@ University library.</blockquote></p>
     </div>
 </div>
 
-		</div>
+        </div>
     <div role="tabpanel" class="tab-pane" id="wdata">
 
 <p>Select the sites and practices of interest for visualization by referencing
@@ -1329,8 +1329,6 @@ that dataset will be listed here in the future.</p>
 <div class="clearfix"></div>
 <p>&nbsp;</p>
 <img src="/images/tdbanner.png" class="img img-responsive">
-		
+        
 EOF;
 $t->render('single.phtml');
-
-?>
