@@ -1,16 +1,13 @@
-#!/usr/bin/env python
 """Plot!"""
-import cgi
 import datetime
 import os
-import sys
-from io import BytesIO
+from io import StringIO
 
 import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
+from pyiem.webutil import iemapp
 
 ERRMSG = (
     "No data found. Check the start date falls within the "
@@ -80,30 +77,15 @@ def add_bling(pgconn, df, tabname):
     return df
 
 
-def send_error(viewopt, msg):
-    """ " """
-    if viewopt == "js":
-        ssw("Content-type: application/javascript\n\n")
-        ssw("alert('" + ERRMSG + "');")
-        sys.exit()
-    fig, ax = plt.subplots(1, 1)
-    ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha="center")
-    ssw("Content-type: image/png\n\n")
-    ram = BytesIO()
-    fig.savefig(ram, format="png")
-    ram.seek(0)
-    ssw(ram.read())
-    sys.exit()
-
-
-def make_plot(form):
+@iemapp()
+def application(environ, start_response):
     """Make the plot"""
-    uniqueid = form.getfirst("site", "ISUAG")
+    uniqueid = environ.get("site", "ISUAG")
 
     sts = datetime.datetime.strptime(
-        form.getfirst("date", "2014-01-01"), "%Y-%m-%d"
+        environ.get("date", "2014-01-01"), "%Y-%m-%d"
     )
-    days = int(form.getfirst("days", 1))
+    days = int(environ.get("days", 1))
     ets = sts + datetime.timedelta(days=days)
     pgconn = get_dbconn("sustainablecorn")
     tzname = (
@@ -111,8 +93,8 @@ def make_plot(form):
         if uniqueid in ["ISUAG", "SERF", "GILMORE"]
         else "America/New_York"
     )
-    viewopt = form.getfirst("view", "plot")
-    ptype = form.getfirst("ptype", "1")
+    viewopt = environ.get("view", "plot")
+    ptype = environ.get("ptype", "1")
     if ptype == "1":
         df = read_sql(
             """
@@ -149,8 +131,6 @@ def make_plot(form):
             pgconn,
             params=(tzname, uniqueid, sts.date(), ets.date()),
         )
-    if len(df.index) < 3:
-        send_error(viewopt, "No / Not Enough Data Found, sorry!")
     if ptype not in [
         "2",
     ]:
@@ -164,40 +144,49 @@ def make_plot(form):
         df = df.rename(columns=dict(v="timestamp", depth="Depth (mm)"))
         df = add_bling(pgconn, df, "Water")
         if viewopt == "html":
-            ssw("Content-type: text/html\n\n")
-            ssw(df.to_html(index=False))
-            return
+            start_response("200 OK", [("Content-type", "text/html")])
+            return [df.to_html(index=False).encode("ascii")]
         if viewopt == "csv":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
+            headers = [
+                ("Content-type", "application/octet-stream"),
                 (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s.csv\n\n"
-                )
-                % (uniqueid, sts.strftime("%Y%m%d"), ets.strftime("%Y%m%d"))
-            )
-            ssw(df.to_csv(index=False))
-            return
+                    "Content-Disposition",
+                    "attachment; filename=%s_%s_%s.csv\n\n"
+                    % (
+                        uniqueid,
+                        sts.strftime("%Y%m%d"),
+                        ets.strftime("%Y%m%d"),
+                    ),
+                ),
+            ]
+            start_response("200 OK", headers)
+            return [df.to_csv(index=False).encode("ascii")]
         if viewopt == "excel":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
+            headers = [
+                ("Content-type", "application/octet-stream"),
                 (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s.xlsx\n\n"
-                )
-                % (uniqueid, sts.strftime("%Y%m%d"), ets.strftime("%Y%m%d"))
-            )
+                    "Content-Disposition",
+                    "attachment; filename=%s_%s_%s.xlsx\n\n"
+                    % (
+                        uniqueid,
+                        sts.strftime("%Y%m%d"),
+                        ets.strftime("%Y%m%d"),
+                    ),
+                ),
+            ]
+            start_response("200 OK", headers)
             writer = pd.ExcelWriter("/tmp/ss.xlsx")
             df.to_excel(writer, "Data", index=False)
             worksheet = writer.sheets["Data"]
             worksheet.freeze_panes(3, 0)
             writer.save()
-            ssw(open("/tmp/ss.xlsx", "rb").read())
+            payload = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
-            return
+            return [payload]
 
     # Begin highcharts output
-    ssw("Content-type: application/javascript\n\n")
+    start_response("200 OK", [("Content-type", "application/javascript")])
+    sio = StringIO()
     title = ("Water Table Depth for Site: %s (%s to %s)") % (
         uniqueid,
         sts.strftime("%-d %b %Y"),
@@ -221,7 +210,7 @@ def make_plot(form):
         }"""
         )
     series = ",".join(s)
-    ssw(
+    sio.write(
         """
 $("#hc").highcharts({
     title: {text: '"""
@@ -252,13 +241,4 @@ $("#hc").highcharts({
 });
     """
     )
-
-
-def main():
-    """Do Something"""
-    form = cgi.FieldStorage()
-    make_plot(form)
-
-
-if __name__ == "__main__":
-    main()
+    return [sio.getvalue().encode("ascii")]

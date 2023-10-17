@@ -1,9 +1,7 @@
-#!/usr/bin/env python
 """ Print out a big thing of progress bars, gasp """
-import cgi
 
-import isudatateam.cscap_utils as util
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
+from pyiem.webutil import iemapp
 
 DBCONN = get_dbconn("sustainablecorn")
 cursor = DBCONN.cursor()
@@ -13,21 +11,6 @@ varorder = []
 varlookup = {}
 
 CFG = "/opt/datateam/config/mytokens.json"
-
-
-def build_vars(mode):
-    """build vars"""
-    config = util.get_config(CFG)
-    spr_client = util.get_spreadsheet_client(config)
-    feed = spr_client.get_list_feed(config["cscap"]["sdckey"], "od6")
-    places = 3 if mode != "soil" else 4
-    prefix = "AGR" if mode != "soil" else "SOIL"
-    for entry in feed.entry:
-        data = entry.to_dict()
-        if data["key"] is None or data["key"][:places] != prefix:
-            continue
-        varorder.append(data["key"].strip())
-        varlookup[data["key"].strip()] = data["name"].strip()
 
 
 def get_data(year, mode):
@@ -115,20 +98,19 @@ def make_progress(row):
     )
 
 
-def main():
+@iemapp()
+def application(environ, start_response):
     """Go Main Go"""
-    ssw("Content-type: text/html\n\n")
-    form = cgi.FieldStorage()
-    year = int(form.getfirst("year", 2011))
-    mode = form.getfirst("mode", "agronomic")
-    build_vars(mode)
+    headers = [("Content-type", "text/html")]
+    start_response("200 OK", headers)
+    year = int(environ.get("year", 2011))
+    mode = environ.get("mode", "agronomic")
 
     data, dvars = get_data(year, mode)
 
     sites = list(data.keys())
     sites.sort()
-    ssw(
-        """<!DOCTYPE html>
+    payload = """<!DOCTYPE html>
     <html lang='en'>
     <head>
 <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -161,18 +143,20 @@ def main():
     <form method="GET" name='theform'>
     <input type="hidden" name="mode" value="%s" />
     Select Year; <select name="year">
-    """
-        % (mode,)
+    """ % (
+        mode,
     )
     for yr in range(2011, 2016):
         checked = ""
         if year == yr:
             checked = " selected='selected'"
-        ssw("""<option value="%s" %s>%s</option>\n""" % (yr, checked, yr))
+        payload += f"""<option value="{yr}" {checked}>{yr}</option>\n"""
 
-    ssw("</select><br />")
+    payload += "</select><br />"
 
-    ids = form.getlist("ids")
+    ids = environ.get("ids", [])
+    if isinstance(ids, str):
+        ids = [ids]
     dvars = varorder
     if ids:
         dvars = ids
@@ -180,15 +164,16 @@ def main():
         checked = ""
         if varid in ids:
             checked = "checked='checked'"
-        ssw(
-            """<input type='checkbox' name='ids'
+        payload += """<input type='checkbox' name='ids'
         value='%s'%s><abbr title="%s">%s</abbr></input> &nbsp;
-        """
-            % (varid, checked, varlookup[varid], varid)
+        """ % (
+            varid,
+            checked,
+            varlookup[varid],
+            varid,
         )
 
-    ssw(
-        """
+    payload += """
     <input type="submit" value="Generate Table">
     </form>
     <span>Key:</span>
@@ -197,23 +182,19 @@ def main():
     <span class="btn btn-warning">did not collect</span>
     <span class="btn btn-danger">no entry / empty</span>
     <table class='table table-striped table-bordered'>
-
-    """
-    )
-    ssw("<thead><tr><th>SiteID</th>")
+    <thead><tr><th>SiteID</th>"""
     for dv in dvars:
-        ssw("""<th><abbr title="%s">%s</abbr></th>""" % (varlookup[dv], dv))
-    ssw("</tr></thead>")
+        payload += f"""<th><abbr title="{varlookup[dv]}">{dv}</abbr></th>"""
+    payload += "</tr></thead>"
     for sid in sites:
-        ssw("""<tr><th>%s</th>""" % (sid,))
+        payload += """<tr><th>%s</th>""" % (sid,)
         for datavar in dvars:
             row = data[sid].get(datavar, None)
-            ssw("<td>%s</td>" % (make_progress(row)))
-        ssw("</tr>\n\n")
-    ssw("</table>")
+            payload += f"<td>{make_progress(row)}</td>"
+        payload += "</tr>\n\n"
+    payload += "</table>"
 
-    ssw(
-        """
+    payload += """
     <h3>Data summary for all sites included</h3>
     <p>
     <span>Key:</span>
@@ -223,18 +204,16 @@ def main():
     <span class="btn btn-danger">no entry</span>
     <table class='table table-striped table-bordered'>
     <thead><tr><th width="33%%">Variable</th><th width="66%%">%s</th></tr>
-    """
-        % (ALL,)
+    """ % (
+        ALL,
     )
     for datavar in dvars:
         row = data[ALL].get(datavar, None)
-        ssw(
-            ("<tr><th>%s %s</th><td>%s</td></tr>")
-            % (datavar, varlookup[datavar], make_progress(row))
+        payload += ("<tr><th>%s %s</th><td>%s</td></tr>") % (
+            datavar,
+            varlookup[datavar],
+            make_progress(row),
         )
 
-    ssw("</table></p>")
-
-
-if __name__ == "__main__":
-    main()
+    payload += "</table></p>"
+    return [payload.encode("ascii")]

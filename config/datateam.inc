@@ -15,7 +15,8 @@
   <Directory "/opt/datateam/htdocs/admin">
     SetEnv DATATEAM_APP admin
 
-    AddHandler cgi-script .py
+    WSGIProcessGroup iemwsgi_ap
+    AddHandler wsgi-script .py
     Options +ExecCGI
 
   </Directory>
@@ -23,7 +24,8 @@
   <Directory "/opt/datateam/htdocs/cscap">
     SetEnv DATATEAM_APP cscap
 
-    AddHandler cgi-script .py
+    WSGIProcessGroup iemwsgi_ap
+    AddHandler wsgi-script .py
     Options +ExecCGI
 
     RewriteEngine On

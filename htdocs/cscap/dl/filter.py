@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """This is our fancy pants filter function.
 
 We end up return a JSON document that lists out what is possible
@@ -8,12 +7,12 @@ We end up return a JSON document that lists out what is possible
  'agronomic': ['AGR1', 'AGR2']
 }
 """
-import cgi
 import json
 import sys
 
 import pandas as pd
-from pyiem.util import get_dbconnstr, ssw
+from pyiem.util import get_dbconnstr
+from pyiem.webutil import iemapp
 from sqlalchemy import text
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
@@ -79,7 +78,7 @@ def agg(arr):
     return arr
 
 
-def do_filter(form):
+def do_filter(environ):
     """Go."""
     pgconn = get_dbconnstr("sustainablecorn")
     res = {
@@ -91,14 +90,11 @@ def do_filter(form):
         "ipm": [],
         "year": [],
     }
-    sites = agg(form.getlist("sites[]"))
-    treatments = agg(form.getlist("treatments[]"))
-    agronomic = agg(form.getlist("agronomic[]"))
-    soil = agg(form.getlist("soil[]"))
-    ghg = agg(form.getlist("ghg[]"))
-    # water = agg(form.getlist("water[]"))
-    # ipm = agg(form.getlist("ipm[]"))
-    # year = agg(form.getlist("year[]"))
+    sites = agg(list(environ.get("sites[]", [])))
+    treatments = agg(list(environ.get("treatments[]", [])))
+    agronomic = agg(list(environ.get("agronomic[]", [])))
+    soil = agg(list(environ.get("soil[]", [])))
+    ghg = agg(list(environ.get("ghg[]", [])))
 
     # build a list of treatments based on the sites selected
     df = pd.read_sql(
@@ -260,13 +256,9 @@ def do_filter(form):
     return res
 
 
-def main():
+@iemapp()
+def application(environ, start_response):
     """Do Stuff"""
-    ssw("Content-type: application/json\n\n")
-    form = cgi.FieldStorage()
-    res = do_filter(form)
-    ssw(json.dumps(res))
-
-
-if __name__ == "__main__":
-    main()
+    start_response("200 OK", [("Content-type", "application/json")])
+    res = do_filter(environ)
+    return [json.dumps(res).encode("utf-8")]
