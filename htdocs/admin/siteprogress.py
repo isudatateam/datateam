@@ -1,9 +1,10 @@
-#!/usr/bin/env python
-import cgi
+"""Shrug."""
 import datetime
+from io import StringIO
 
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
+from pyiem.webutil import iemapp
 
 DBCONN = get_dbconn("sustainablecorn")
 cursor = DBCONN.cursor()
@@ -93,7 +94,7 @@ def make_progress(row):
     )
 
 
-def do_site(site):
+def do_site(sio, site):
     """Print out a simple listing of trouble"""
     df = read_sql(
         """
@@ -112,15 +113,14 @@ def do_site(site):
         params=(site, site),
         index_col=None,
     )
-    ssw("Content-type: text/plain\n\n")
-    ssw("CSCAP Variable Progress Report\n")
-    ssw("Site: %s\n" % (site,))
-    ssw(
+    sio.write("CSCAP Variable Progress Report\n")
+    sio.write("Site: %s\n" % (site,))
+    sio.write(
         "Generated: %s\n"
         % (datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),)
     )
-    ssw("Total Missing: %s\n" % (df["count"].sum(),))
-    ssw("%4s %-10s %-10s %-6s\n" % ("YEAR", "VARNAME", "VALUE", "COUNT"))
+    sio.write("Total Missing: %s\n" % (df["count"].sum(),))
+    sio.write("%4s %-10s %-10s %-6s\n" % ("YEAR", "VARNAME", "VALUE", "COUNT"))
 
     def nice(val):
         if val is None:
@@ -132,23 +132,25 @@ def do_site(site):
         return val
 
     for _, row in df.iterrows():
-        ssw(
+        sio.write(
             "%s %-10s %-10s %-6s\n"
             % (row["year"], row["varname"], nice(row["value"]), row["count"])
         )
 
 
-def main():
-    form = cgi.FieldStorage()
-    if "site" in form:
-        do_site(form.getfirst("site"))
+@iemapp()
+def application(environ, start_response):
+    """Handle mod_wsgi request."""
+    sio = StringIO()
+    if "site" in environ:
+        do_site(sio, environ.get("site"))
         return
     # mode = form.getfirst('mode', 'agronomic')
-    show_has = form.getfirst("has", "0") == "1"
-    show_period = form.getfirst("period", "0") == "1"
-    show_dnc = form.getfirst("dnc", "0") == "1"
-    show_no = form.getfirst("no", "0") == "1"
-    if form.getfirst("a") is None:
+    show_has = environ.get("has", "0") == "1"
+    show_period = environ.get("period", "0") == "1"
+    show_dnc = environ.get("dnc", "0") == "1"
+    show_no = environ.get("no", "0") == "1"
+    if environ.get("a") is None:
         show_has = True
         show_period = True
         show_dnc = True
@@ -165,8 +167,8 @@ def main():
 
     sites = list(data.keys())
     sites.sort()
-    ssw("Content-type: text/html\n\n")
-    ssw(
+    sio.write("Content-type: text/html\n\n")
+    sio.write(
         """<!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -227,7 +229,7 @@ def main():
     for sid in sites:
         if sid == "_ALL":
             continue
-        ssw(
+        sio.write(
             """
         <tr><th>
 <a href="siteprogress.py?site=%s">
@@ -236,19 +238,22 @@ def main():
             % (sid, sid)
         )
         row = data[sid]
-        ssw("<td>%s</td>" % (make_progress(row)))
-        ssw("<td>%.0f</td>" % (row["tot"],))
-        ssw("<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0))
-        ssw("</tr>\n\n")
+        sio.write("<td>%s</td>" % (make_progress(row)))
+        sio.write("<td>%.0f</td>" % (row["tot"],))
+        sio.write(
+            "<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0)
+        )
+        sio.write("</tr>\n\n")
     sid = "_ALL"
-    ssw("""<tr><th>%s</th>""" % (sid,))
+    sio.write("""<tr><th>%s</th>""" % (sid,))
     row = data[sid]
-    ssw("<td>%s</td>" % (make_progress(row)))
-    ssw("<td>%.0f</td>" % (row["tot"],))
-    ssw("<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0))
-    ssw("</tr>\n\n")
-    ssw("</table>")
+    sio.write("<td>%s</td>" % (make_progress(row)))
+    sio.write("<td>%.0f</td>" % (row["tot"],))
+    sio.write(
+        "<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0)
+    )
+    sio.write("</tr>\n\n")
+    sio.write("</table>")
 
-
-if __name__ == "__main__":
-    main()
+    start_response("200 OK", [("Content-type", "text/html")])
+    return [sio.getvalue().encode("ascii")]

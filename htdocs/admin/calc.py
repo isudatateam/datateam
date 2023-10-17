@@ -1,29 +1,31 @@
-#!/usr/bin/env python
 """Dynamic Calculation, yikes"""
-import cgi
 import datetime
 import os
 import re
 
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_sqlalchemy_conn
+from pyiem.webutil import iemapp
+from sqlalchemy import text
 
 VARRE = re.compile(r"(AGR[0-9]{1,2})")
 
 
 def get_df(equation):
     """Attempt to compute what was asked for"""
-    pgconn = get_dbconn("sustainablecorn")
+
     varnames = VARRE.findall(equation)
-    df = read_sql(
+    with get_sqlalchemy_conn("sustainablecorn") as pgconn:
+        df = pd.read_sql(
+            text(
+                """
+        SELECT * from agronomic_data WHERE varname = ANY(:vars)
         """
-    SELECT * from agronomic_data WHERE varname in %s
-    """,
-        pgconn,
-        params=(tuple(varnames),),
-        index_col=None,
-    )
+            ),
+            pgconn,
+            params={"vars": varnames},
+            index_col=None,
+        )
     df["value"] = pd.to_numeric(df["value"], errors="coerce")
     df = pd.pivot_table(
         df,
@@ -39,38 +41,44 @@ def get_df(equation):
     return df
 
 
-def main():
+@iemapp()
+def application(environ, start_response):
     """Go Main"""
-
-    form = cgi.FieldStorage()
-    equation = form.getfirst("equation", "AGR33 / AGR4").upper()
-    fmt = form.getfirst("fmt", "html")
+    equation = environ.get("equation", "AGR33 / AGR4").upper()
+    fmt = environ.get("fmt", "html")
     df = get_df(equation)
 
     if fmt == "excel":
-        ssw("Content-type: application/octet-stream\n")
-        ssw(
-            ("Content-Disposition: attachment; filename=cscap_%s.xlsx\n\n")
-            % (datetime.datetime.now().strftime("%Y%m%d%H%M"),)
-        )
+        headers = [
+            ("Content-type", "application/octet-stream"),
+            (
+                "Content-Disposition",
+                "attachment; "
+                f"filename=cscap_{datetime.datetime.now():%Y%m%d%H%M}.xlsx",
+            ),
+        ]
+        start_response("200 OK", headers)
         writer = pd.ExcelWriter("/tmp/ss.xlsx")
         df.to_excel(writer, "Data", index=False)
         writer.save()
-        ssw(open("/tmp/ss.xlsx", "rb").read())
+        payload = open("/tmp/ss.xlsx", "rb").read()
         os.unlink("/tmp/ss.xlsx")
-        return
+        return [payload]
     if fmt == "csv":
-        ssw("Content-type: application/octet-stream\n")
-        ssw(
-            ("Content-Disposition: attachment; filename=cscap_%s.csv\n\n")
-            % (datetime.datetime.now().strftime("%Y%m%d%H%M"),)
-        )
-        ssw(df.to_csv(index=False))
-        return
+        headers = [
+            ("Content-type", "application/octet-stream"),
+            (
+                "Content-Disposition",
+                "attachment; "
+                f"filename=cscap_{datetime.datetime.now():%Y%m%d%H%M}.csv",
+            ),
+        ]
+        payload = df.to_csv(index=False).encode("ascii")
+        return [payload]
 
-    ssw("Content-type: text/html\n\n")
-    ssw(
-        """<!DOCTYPE html>
+    headers = [("Content-type", "text/html")]
+    start_response("200 OK", headers)
+    payload = """<!DOCTYPE html>
 <html lang='en'>
 <head>
  <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -100,10 +108,7 @@ body {padding: 30px;}
 
 </body>
 </html>
-    """
-        % (df.to_html(index=False).replace("NaN", "M"),)
+    """ % (
+        df.to_html(index=False).replace("NaN", "M"),
     )
-
-
-if __name__ == "__main__":
-    main()
+    return [payload.encode("ascii")]

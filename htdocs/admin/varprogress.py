@@ -1,17 +1,17 @@
-#!/usr/bin/env python
-import cgi
+"""Shrug."""
 import datetime
 from io import BytesIO
 
 import numpy as np
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
+from pyiem.webutil import iemapp
 
 
 def make_plot(form):
     """Make the make_plot"""
-    year = int(form.getfirst("year", 2013))
-    varname = form.getfirst("varname", "AGR1")[:10]
+    year = int(form.get("year", 2013))
+    varname = form.get("varname", "AGR1")[:10]
 
     pgconn = get_dbconn("sustainablecorn")
     cursor = pgconn.cursor()
@@ -34,7 +34,7 @@ def make_plot(form):
         x.append(row[0])
         y.append(y[-1] + row[1])
         total += row[2]
-
+    pgconn.close()
     xticks = []
     xticklabels = []
     now = x[0]
@@ -57,20 +57,15 @@ def make_plot(form):
     return fig
 
 
-def main():
+@iemapp()
+def application(environ, start_response):
     """Make a plot please"""
-    form = cgi.FieldStorage()
-    fig = make_plot(form)
+    fig = make_plot(environ)
 
-    ssw("Content-type: image/png\n\n")
+    start_response("200 OK", [("Content-type", "image/png")])
 
     ram = BytesIO()
     fig.savefig(ram, format="png", dpi=100)
     ram.seek(0)
     res = ram.read()
-    ssw(res)
-
-
-if __name__ == "__main__":
-    # Go Main
-    main()
+    return [res]

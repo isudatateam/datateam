@@ -1,15 +1,12 @@
-#!/usr/bin/env python
 """Plot!"""
-import cgi
 import os
-import sys
-from io import BytesIO
+from io import StringIO
 
 import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
+from pyiem.webutil import iemapp
 
 ERRMSG = (
     "No data found. Check the start date falls within the "
@@ -60,29 +57,14 @@ def add_bling(pgconn, df, tabname):
     return df
 
 
-def send_error(viewopt, msg):
-    """ " """
-    if viewopt == "js":
-        ssw("Content-type: application/javascript\n\n")
-        ssw("alert('" + ERRMSG + "');")
-        sys.exit()
-    fig, ax = plt.subplots(1, 1)
-    ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha="center")
-    ssw("Content-type: image/png\n\n")
-    ram = BytesIO()
-    fig.savefig(ram, format="png")
-    ram.seek(0)
-    ssw(ram.read())
-    sys.exit()
-
-
-def make_plot(form):
+@iemapp()
+def application(environ, start_response):
     """Make the plot"""
-    uniqueid = form.getfirst("site", "ISUAG").split("::")[0]
+    uniqueid = environ.get("site", "ISUAG").split("::")[0]
 
     pgconn = get_dbconn("sustainablecorn")
-    viewopt = form.getfirst("view", "plot")
-    varname = form.getfirst("varname", "WAT2")
+    viewopt = environ.get("view", "plot")
+    varname = environ.get("varname", "WAT2")
     df = read_sql(
         """
     SELECT uniqueid, plotid, valid at time zone 'UTC' as v, value
@@ -101,34 +83,39 @@ def make_plot(form):
         df.rename(columns=dict(v="timestamp", value=newcolname), inplace=True)
         df = add_bling(pgconn, df, "Water")
         if viewopt == "html":
-            ssw("Content-type: text/html\n\n")
-            ssw(df.to_html(index=False))
-            return
+            start_response("200 OK", [("Content-type", "text/html")])
+            return [df.to_html(index=False).encode("ascii", "ignore")]
         if viewopt == "csv":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                ("Content-Disposition: attachment; " "filename=%s.csv\n\n")
-                % (uniqueid,)
-            )
-            ssw(df.to_csv(index=False))
-            return
+            headers = [
+                ("Content-type", "application/octet-stream"),
+                (
+                    "Content-Disposition",
+                    f"attachment; filename={uniqueid}.csv",
+                ),
+            ]
+            start_response("200 OK", headers)
+            return [df.to_csv(index=False).encode("ascii", "ignore")]
         if viewopt == "excel":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
-                ("Content-Disposition: attachment; " "filename=%s.xlsx\n\n")
-                % (uniqueid,)
-            )
+            headers = [
+                ("Content-type", "application/octet-stream"),
+                (
+                    "Content-Disposition",
+                    f"attachment; filename={uniqueid}.xlsx",
+                ),
+            ]
+            start_response("200 OK", headers)
             writer = pd.ExcelWriter("/tmp/ss.xlsx")
             df.to_excel(writer, "Data", index=False)
             worksheet = writer.sheets["Data"]
             worksheet.freeze_panes(3, 0)
             writer.save()
-            ssw(open("/tmp/ss.xlsx", "rb").read())
+            payload = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
-            return
+            return [payload]
 
     # Begin highcharts output
-    ssw("Content-type: application/javascript\n\n")
+    start_response("200 OK", [("Content-type", "application/javascript")])
+    sio = StringIO()
     title = ("Water Quality for Site: %s") % (uniqueid,)
     splots = []
     plot_ids = df["plotid"].unique()
@@ -158,7 +145,7 @@ def make_plot(form):
             .replace("nan", "null")
         )
     series = ",".join(splots)
-    ssw(
+    sio.write(
         """
 $("#hc").highcharts({
     title: {text: '"""
@@ -191,13 +178,4 @@ $("#hc").highcharts({
 });
     """
     )
-
-
-def main():
-    """Do Something"""
-    form = cgi.FieldStorage()
-    make_plot(form)
-
-
-if __name__ == "__main__":
-    main()
+    return [sio.getvalue().encode("ascii")]

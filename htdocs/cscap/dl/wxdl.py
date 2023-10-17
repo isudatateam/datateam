@@ -1,12 +1,10 @@
-#!/usr/bin/env python
 """Download weather data, please"""
-import cgi
-import datetime
 import os
 
 import pandas as pd
 from pyiem.datatypes import distance, temperature
-from pyiem.util import get_dbconnstr, ssw
+from pyiem.util import get_dbconnstr
+from pyiem.webutil import iemapp
 from sqlalchemy import text
 
 VARDF = {
@@ -39,40 +37,13 @@ UVARDF = {
 }
 
 
-def sane_date(year, month, day):
-    """Attempt to account for usage of days outside of the bounds for
-    a given month"""
-    # Calculate the last date of the given month
-    nextmonth = datetime.date(year, month, 1) + datetime.timedelta(days=35)
-    lastday = nextmonth.replace(day=1) - datetime.timedelta(days=1)
-    return datetime.date(year, month, min(day, lastday.day))
-
-
-def get_cgi_dates(form):
-    """Figure out which dates are requested via the form, we shall attempt
-    to account for invalid dates provided!"""
-    y1 = int(form.getfirst("year1"))
-    m1 = int(form.getfirst("month1"))
-    d1 = int(form.getfirst("day1"))
-    y2 = int(form.getfirst("year2"))
-    m2 = int(form.getfirst("month2"))
-    d2 = int(form.getfirst("day2"))
-
-    ets = sane_date(y2, m2, d2)
-    archive_end = datetime.date.today() - datetime.timedelta(days=1)
-    if ets > archive_end:
-        ets = archive_end
-
-    return [sane_date(y1, m1, d1), ets]
-
-
-def do_work(form):
+@iemapp()
+def application(environ, start_response):
     """do great things"""
     pgconn = get_dbconnstr("sustainablecorn")
-    stations = form.getlist("stations")
+    stations = list(environ.get("stations", []))
     if not stations:
         stations.append("XXX")
-    sts, ets = get_cgi_dates(form)
     df = pd.read_sql(
         text(
             """
@@ -84,7 +55,11 @@ def do_work(form):
     """
         ),
         pgconn,
-        params={"sites": tuple(stations), "sts": sts, "ets": ets},
+        params={
+            "sites": tuple(stations),
+            "sts": environ["sts"],
+            "ets": environ["ets"],
+        },
         index_col=None,
     )
     df["highc"] = temperature(df["high"].values, "F").value("C")
@@ -113,17 +88,11 @@ def do_work(form):
     fn = ",".join(stations)
     if len(stations) > 3:
         fn = "cscap"
-    ssw("Content-type: application/vnd.ms-excel\n")
-    ssw(f"Content-Disposition: attachment;Filename=wx_{fn}.xls\n\n")
-    ssw(open("/tmp/ss.xlsx", "rb").read())
+    headers = [
+        ("Content-type", "application/vnd.ms-excel"),
+        ("Content-Disposition", f"attachment;Filename=wx_{fn}.xls"),
+    ]
+    start_response("200 OK", headers)
+    payload = open("/tmp/ss.xlsx", "rb").read()
     os.unlink("/tmp/ss.xlsx")
-
-
-def main():
-    """Do Stuff"""
-    form = cgi.FieldStorage()
-    do_work(form)
-
-
-if __name__ == "__main__":
-    main()
+    return [payload]

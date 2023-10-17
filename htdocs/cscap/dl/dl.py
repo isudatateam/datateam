@@ -1,11 +1,9 @@
-#!/usr/bin/env python
 """This is our fancy pants download function
 
 select string_agg(column_name, ', ') from
     (select column_name, ordinal_position from information_schema.columns where
     table_name='management' ORDER by ordinal_position) as foo;
 """
-import cgi
 import datetime
 import os
 import re
@@ -17,7 +15,9 @@ from email.mime.text import MIMEText
 
 import numpy as np
 import pandas as pd
-from pyiem.util import get_dbconn, get_dbconnstr, logger, ssw
+from pyiem.exceptions import NoDataFound
+from pyiem.util import get_dbconn, get_dbconnstr, logger
+from pyiem.webutil import iemapp
 from pymemcache import Client
 from sqlalchemy import text
 
@@ -685,34 +685,31 @@ def do_dwm(writer, sites, missing):
     worksheet.set_column("H:H", 30)
 
 
-def do_work(form):
+def do_work(environ, start_response):
     """do great things"""
-    agree = form.getfirst("agree")
+    agree = environ.get("agree")
     if agree != "AGREE":
-        ssw("Content-type: text/plain\n\n")
-        ssw("You did not agree to download terms.")
-        return
-    email = form.getfirst("email")
-    sites = form.getlist("sites[]")
+        raise NoDataFound("You did not agree to download terms.")
+    email = environ.get("email")
+    sites = list(environ.get("sites[]", []))
     if not sites:
         sites.append("XXX")
     # treatments = form.getlist('treatments[]')
-    agronomic = redup(form.getlist("agronomic[]"))
-    soil = redup(form.getlist("soil[]"))
-    ghg = redup(form.getlist("ghg[]"))
-    # water = redup(form.getlist('water[]'))
-    ipm = redup(form.getlist("ipm[]"))
-    years = redup(form.getlist("year[]"))
+    agronomic = redup(list(environ.get("agronomic[]", [])))
+    soil = redup(list(environ.get("soil[]", [])))
+    ghg = redup(list(environ.get("ghg[]", [])))
+    ipm = redup(list(environ.get("ipm[]", [])))
+    years = redup(list(environ.get("year[]", [])))
     if not years:
         years = ["2011", "2012", "2013", "2014", "2015"]
-    shm = redup(form.getlist("shm[]"))
-    missing = form.getfirst("missing", "M")
+    shm = redup(list(environ.get("shm[]", [])))
+    missing = environ.get("missing", "M")
     if missing == "__custom__":
-        missing = form.getfirst("custom_missing", "M")
+        missing = environ.get("custom_missing", "M")
     pprint("Missing is %s" % (missing,))
     if years:
         years = [str(s) for s in range(2011, 2016)]
-    detectlimit = form.getfirst("detectlimit", "1")
+    detectlimit = environ.get("detectlimit", "1")
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine="xlsxwriter")
 
@@ -786,20 +783,10 @@ def do_work(form):
     )
 
     msg.attach(MIMEText(etext))
-    # else:
-    #    msg.attach(MIMEText(EMAILTEXT))
-    #    part = MIMEBase('application', "octet-stream")
-    #    part.set_payload(open('/tmp/cscap.xlsx', 'rb').read())
-    #    encoders.encode_base64(part)
-    #    part.add_header('Content-Disposition',
-    #                    'attachment; filename="cscap.xlsx"')
-    #    msg.attach(part)
     _s = smtplib.SMTP("localhost")
     _s.sendmail(msg["From"], msg["To"], msg.as_string())
     _s.quit()
     os.unlink("/tmp/cscap.xlsx")
-    ssw("Content-type: text/plain\n\n")
-    ssw("Email Delivered!")
     pgconn = get_dbconn("sustainablecorn")
     cursor = pgconn.cursor()
     cursor.execute(
@@ -809,6 +796,8 @@ def do_work(form):
     cursor.close()
     pgconn.commit()
     pprint("is done!!!")
+    start_response("200 OK", [("Content-type", "text/plain")])
+    return [b"Email Delivered!"]
 
 
 def preventive_log(pgconn):
@@ -843,23 +832,12 @@ def throttle():
     return False
 
 
-def main():
+@iemapp()
+def application(environ, start_response):
     """Do Stuff"""
     with get_dbconn("mesosite") as pgconn:
         preventive_log(pgconn)
         pgconn.commit()
     if throttle():
-        ssw("Content-type: text/plain\n\n")
-        ssw("You did not agree to download terms.")
-        return
-    form = cgi.FieldStorage()
-    do_work(form)
-
-
-if __name__ == "__main__":
-    # do_soil(None, ['MASON', ],
-    #        ['SOIL15', ],
-    #        ['2015', ], '', 'daryl')
-    # writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine='xlsxwriter')
-    # do_dictionary(writer)
-    main()
+        raise NoDataFound("You did not agree to download terms.")
+    return do_work(environ, start_response)

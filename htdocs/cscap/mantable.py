@@ -1,10 +1,10 @@
-#!/usr/bin/env python
 """Management Table used by cover crop paper"""
 import datetime
 import sys
 
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, ssw
+from pyiem.util import get_dbconn
+from pyiem.webutil import iemapp
 
 DBCONN = get_dbconn("sustainablecorn")
 cursor = DBCONN.cursor()
@@ -28,9 +28,10 @@ COVER_SITES = [
 D7 = datetime.timedelta(days=7)
 
 
-def main():
+@iemapp()
+def application(environ, start_response):
     """Go Main"""
-    ssw("Content-type: text/html\n\n")
+    start_response("200 OK", [("Content-type", "text/html")])
     cursor.execute(
         """
         SELECT uniqueid, valid, cropyear, operation, biomassdate1,
@@ -241,8 +242,9 @@ def main():
                 table5 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
         table5 += "</tr>"
 
-    ssw(
-        """<!DOCTYPE html>
+    return [
+        (
+            """<!DOCTYPE html>
 <html lang='en'>
 <head>
  <link href="/vendor/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -438,9 +440,6 @@ def main():
 </body>
 </html>
     """
-        % (table0, table, table2, table3, table4, table5)
-    )
-
-
-if __name__ == "__main__":
-    main()
+            % (table0, table, table2, table3, table4, table5)
+        ).encode("utf-8")
+    ]

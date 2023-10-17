@@ -1,14 +1,13 @@
-#!/usr/bin/env python
 """Decagon SM Plot!"""
-import cgi
 import datetime
 import os
-import sys
+from io import StringIO
 from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn, ssw
+from pyiem.util import get_sqlalchemy_conn
+from pyiem.webutil import iemapp
 from sqlalchemy import text
 
 ERRMSG = (
@@ -23,16 +22,11 @@ LINESTYLE = (
 ).split()
 
 
-def send_error():
-    """ " """
-    ssw("Content-type: application/javascript\n\n")
-    ssw("alert('" + ERRMSG + "');")
-    sys.exit()
-
-
-def make_plot(form):
+@iemapp()
+def application(environ, start_response):
     """Make the plot"""
-    (uniqueid, plotid) = form.getfirst("site", "ISUAG::302E").split("::")
+    sio = StringIO()
+    (uniqueid, plotid) = environ.get("site", "ISUAG::302E").split("::")
     if uniqueid in ["KELLOGG", "MASON"]:
         DEPTHS[1] = "-"
         DEPTHS[5] = "80 cm"
@@ -44,19 +38,19 @@ def make_plot(form):
         DEPTHS[5] = "50 cm"
 
     sts = datetime.datetime.strptime(
-        form.getfirst("date", "2014-06-10"), "%Y-%m-%d"
+        environ.get("date", "2014-06-10"), "%Y-%m-%d"
     )
-    days = int(form.getfirst("days", 1))
+    days = int(environ.get("days", 1))
     ets = sts + datetime.timedelta(days=days)
     tzname = (
         "America/Chicago"
         if uniqueid in ["ISUAG", "SERF", "GILMORE"]
         else "America/New_York"
     )
-    viewopt = form.getfirst("view", "js")
-    ptype = form.getfirst("ptype", "1")
+    viewopt = environ.get("view", "js")
+    ptype = environ.get("ptype", "1")
     plotid_limit = "and plotid = :plotid "
-    depth = form.getfirst("depth", "all")
+    depth = environ.get("depth", "all")
     if depth != "all":
         plotid_limit = ""
     if ptype == "1":
@@ -145,8 +139,6 @@ def make_plot(form):
             )
         df["v"] = pd.to_datetime(df["v"], utc=True)
 
-    if len(df.index) < 3:
-        send_error()
     if ptype not in ["2"]:
         df["v"] = df["v"].apply(lambda x: x.tz_convert(tzname))
 
@@ -168,47 +160,46 @@ def make_plot(form):
             inplace=True,
         )
         if viewopt == "html":
-            ssw("Content-type: text/html\n\n")
-            ssw(df.to_html(index=False))
-            return
+            start_response("200 OK", [("Content-type", "text/html")])
+            return [df.to_html(index=False).encode("ascii", "ignore")]
         if viewopt == "csv":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
+            headers = [
+                ("Content-type", "application/octet-stream"),
                 (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s_%s.csv\n\n"
-                )
-                % (
-                    uniqueid,
-                    plotid,
-                    sts.strftime("%Y%m%d"),
-                    ets.strftime("%Y%m%d"),
-                )
-            )
-            ssw(df.to_csv(index=False))
-            return
+                    "Content-Disposition",
+                    "attachment; filename=%s_%s_%s_%s.csv"
+                    % (
+                        uniqueid,
+                        plotid,
+                        sts.strftime("%Y%m%d"),
+                        ets.strftime("%Y%m%d"),
+                    ),
+                ),
+            ]
+            start_response("200 OK", headers)
+            return [df.to_csv(index=False).encode("ascii", "ignore")]
         if viewopt == "excel":
-            ssw("Content-type: application/octet-stream\n")
-            ssw(
+            headers = [
+                ("Content-type", "application/octet-stream"),
                 (
-                    "Content-Disposition: attachment; "
-                    "filename=%s_%s_%s_%s.xlsx\n\n"
-                )
-                % (
-                    uniqueid,
-                    plotid,
-                    sts.strftime("%Y%m%d"),
-                    ets.strftime("%Y%m%d"),
-                )
-            )
+                    "Content-Disposition",
+                    "attachment; filename=%s_%s_%s_%s.xlsx"
+                    % (
+                        uniqueid,
+                        plotid,
+                        sts.strftime("%Y%m%d"),
+                        ets.strftime("%Y%m%d"),
+                    ),
+                ),
+            ]
             writer = pd.ExcelWriter("/tmp/ss.xlsx")
             # Prevent timezone troubles
             df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
             df.to_excel(writer, "Data", index=False)
             writer.save()
-            ssw(open("/tmp/ss.xlsx", "rb").read())
+            payload = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
-            return
+            return [payload]
 
     # Begin highcharts output
     lbl = "Plot:%s" % (plotid,)
@@ -217,8 +208,9 @@ def make_plot(form):
     title = (
         "Decagon Temperature + Moisture for " "Site:%s %s Period:%s to %s"
     ) % (uniqueid, lbl, sts.date(), ets.date())
-    ssw("Content-type: application/javascript\n\n")
-    ssw(
+    start_response("200 OK", [("Content-type", "application/javascript")])
+    sio = StringIO()
+    sio.write(
         """
 /**
  * In order to synchronize tooltips and crosshairs, override the
@@ -370,7 +362,7 @@ options = {
             )
     series = ",".join(lines)
     series2 = ",".join(lines2)
-    ssw(
+    sio.write(
         """
 charts[0] = new Highcharts.Chart($.extend(true, {}, options, {
     chart: { renderTo: 'hc1'},
@@ -394,13 +386,4 @@ charts[1] = new Highcharts.Chart($.extend(true, {}, options, {
 }));
     """
     )
-
-
-def main():
-    """Do Something"""
-    form = cgi.FieldStorage()
-    make_plot(form)
-
-
-if __name__ == "__main__":
-    main()
+    return [sio.getvalue().encode("utf-8")]
