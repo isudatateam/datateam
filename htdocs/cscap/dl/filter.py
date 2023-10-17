@@ -12,7 +12,7 @@ import sys
 
 import pandas as pd
 from pyiem.util import get_dbconnstr
-from pyiem.webutil import iemapp
+from pyiem.webutil import ensure_list, iemapp
 from sqlalchemy import text
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
@@ -66,8 +66,6 @@ def redup(arr):
 
 def agg(arr):
     """Make listish and apply dedup logic"""
-    if len(arr) == 0:
-        arr.append("ZZZ")
     additional = []
     for val in arr:
         if val in AGG:
@@ -90,22 +88,22 @@ def do_filter(environ):
         "ipm": [],
         "year": [],
     }
-    sites = agg(list(environ.get("sites[]", [])))
-    treatments = agg(list(environ.get("treatments[]", [])))
-    agronomic = agg(list(environ.get("agronomic[]", [])))
-    soil = agg(list(environ.get("soil[]", [])))
-    ghg = agg(list(environ.get("ghg[]", [])))
+    sites = agg(ensure_list(environ, "sites[]"))
+    treatments = agg(ensure_list(environ, "treatments[]"))
+    agronomic = agg(ensure_list(environ, "agronomic[]"))
+    soil = agg(ensure_list(environ, "soil[]"))
+    ghg = agg(ensure_list(environ, "ghg[]"))
 
     # build a list of treatments based on the sites selected
     df = pd.read_sql(
         text(
             """
         SELECT distinct tillage, rotation, drainage, nitrogen,
-        landscape from plotids where uniqueid in :sites
+        landscape from plotids where uniqueid = ANY(:sites)
         """
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     arr = []
@@ -119,7 +117,7 @@ def do_filter(environ):
     # build a list of agronomic data based on the plotids and sites
     a = {}
     arsql = []
-    args = {"sites": tuple(sites)}
+    args = {"sites": sites}
     for lc, col in zip(
         ["TIL", "ROT", "DWM", "NIT", "LND"],
         ["tillage", "rotation", "drainage", "nitrogen", "landscape"],
@@ -128,8 +126,8 @@ def do_filter(environ):
         if lc == "LND":
             a[lc].append("n/a")
         if len(a[lc]) > 0:
-            arsql.append(f" {col} in :{col}")
-            args[col] = tuple(a[lc])
+            arsql.append(f" {col} = ANY(:{col})")
+            args[col] = a[lc]
     if len(arsql) == 0:
         sql = ""
     else:
@@ -141,7 +139,7 @@ def do_filter(environ):
             f"""
     with myplotids as (
         SELECT uniqueid, plotid, nitrogen from plotids
-        WHERE uniqueid in :sites {sql}
+        WHERE uniqueid = ANY(:sites) {sql}
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
@@ -161,7 +159,7 @@ def do_filter(environ):
             f"""
     with myplotids as (
         SELECT uniqueid, plotid from plotids
-        WHERE uniqueid in :sites {sql}
+        WHERE uniqueid = ANY(:sites) {sql}
     )
     SELECT distinct varname from soil_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
@@ -181,14 +179,14 @@ def do_filter(environ):
             """
     with myplotids as (
         SELECT uniqueid, plotid from plotids
-        WHERE uniqueid in :sites
+        WHERE uniqueid = ANY(:sites)
     )
     SELECT * from ghg_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
     """
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     if not df.empty:
@@ -203,14 +201,14 @@ def do_filter(environ):
             """
     with myplotids as (
         SELECT uniqueid, plotid from plotids
-        WHERE uniqueid in :sites
+        WHERE uniqueid = ANY(:sites)
     )
     SELECT * from ipm_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid
     """
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     if not df.empty:
@@ -228,13 +226,15 @@ def do_filter(environ):
         text(
             f"""
     WITH soil_years as (
-        SELECT distinct year from soil_data where varname in :soils
-        and uniqueid in :sites and value not in ('n/a', 'did not collect')),
+        SELECT distinct year from soil_data where varname = ANY(:soils)
+        and uniqueid = ANY(:sites)
+        and value not in ('n/a', 'did not collect')),
     agronomic_years as (
-        SELECT distinct year from agronomic_data where varname in :ags
-        and uniqueid in :sites and value not in ('n/a', 'did not collect')),
+        SELECT distinct year from agronomic_data where varname = ANY(:ags)
+        and uniqueid = ANY(:sites)
+        and value not in ('n/a', 'did not collect')),
     ghg_years as (
-        SELECT distinct year from ghg_data where uniqueid in :sites
+        SELECT distinct year from ghg_data where uniqueid = ANY(:sites)
         and {ghglimiter}),
     agg as (SELECT year from soil_years UNION select year from agronomic_years
         UNION select year from ghg_years)
@@ -244,9 +244,9 @@ def do_filter(environ):
         ),
         pgconn,
         params={
-            "soils": tuple(soil),
-            "sites": tuple(sites),
-            "ags": tuple(agronomic),
+            "soils": soil,
+            "sites": sites,
+            "ags": agronomic,
         },
         index_col=None,
     )
