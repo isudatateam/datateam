@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from pyiem.datatypes import distance, temperature
 from pyiem.util import get_dbconnstr
-from pyiem.webutil import iemapp
+from pyiem.webutil import ensure_list, iemapp
 from sqlalchemy import text
 
 VARDF = {
@@ -41,22 +41,20 @@ UVARDF = {
 def application(environ, start_response):
     """do great things"""
     pgconn = get_dbconnstr("sustainablecorn")
-    stations = list(environ.get("stations", []))
-    if not stations:
-        stations.append("XXX")
+    stations = ensure_list(environ, "stations")
     df = pd.read_sql(
         text(
             """
     SELECT station as uniqueid, valid as day, extract(doy from valid) as doy,
     high, low, precip, sknt,
-    srad_mj, drct from weather_data_daily WHERE station in :sites
+    srad_mj, drct from weather_data_daily WHERE station = ANY(:sites)
     and valid >= :sts and valid <= :ets
     ORDER by station ASC, valid ASC
     """
         ),
         pgconn,
         params={
-            "sites": tuple(stations),
+            "sites": stations,
             "sts": environ["sts"],
             "ets": environ["ets"],
         },

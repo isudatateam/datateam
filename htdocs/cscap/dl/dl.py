@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from pyiem.exceptions import NoDataFound
 from pyiem.util import get_dbconn, get_dbconnstr, logger
-from pyiem.webutil import iemapp
+from pyiem.webutil import ensure_list, iemapp
 from pymemcache import Client
 from sqlalchemy import text
 
@@ -241,12 +241,12 @@ def do_metadata_master(writer, sites, missing):
     sitearea as "site area",
     numberofplots as "number of plots"
     from metadata_master
-    WHERE uniqueid in :sites
+    WHERE uniqueid = ANY(:sites)
     ORDER by uniqueid
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     df.replace(["None", None, ""], np.nan, inplace=True)
@@ -268,12 +268,12 @@ def do_ghg(writer, sites, ghg, years, missing):
     from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
-    and d.uniqueid in :sites and d.year in :years
+    and d.uniqueid = ANY(:sites) and d.year = ANY(:years)
     ORDER by d.uniqueid, year, date, plotid
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites), "years": tuple(years)},
+        params={"sites": sites, "years": years},
         index_col=None,
     )
     df.fillna(missing, inplace=True)
@@ -291,12 +291,12 @@ def do_ipm(writer, sites, ipm, years, missing):
     from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in :sites and d.year in :years
+    d.uniqueid = ANY(:sites) and d.year = ANY(:years)
     ORDER by d.uniqueid, year, date, plotid
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites), "years": tuple(years)},
+        params={"sites": sites, "years": years},
         index_col=None,
     )
     df.fillna(missing, inplace=True)
@@ -314,15 +314,15 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in :sites and year in :years and varname in :vars
+    d.uniqueid = ANY(:sites) and year = ANY(:years) and varname = ANY(:vars)
     ORDER by uniqueid, year, plotid
     """
         ),
         PGCONN,
         params={
-            "sites": tuple(sites),
-            "years": tuple(years),
-            "vars": tuple(agronomic),
+            "sites": sites,
+            "years": years,
+            "vars": agronomic,
         },
         index_col=None,
     )
@@ -387,9 +387,6 @@ def add_bling(writer, df, sheetname, tabname):
 
 def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
-    # pprint("do_soil: " + str(soil))
-    # pprint("do_soil: " + str(sites))
-    # pprint("do_soil: " + str(years))
     df = pd.read_sql(
         text(
             """
@@ -399,15 +396,15 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     from soil_data d JOIN plotids p ON (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
-    d.uniqueid in :sites and year in :years and varname in :vars
+    d.uniqueid = ANY(:sites) and year = ANY(:years) and varname = ANY(:vars)
     ORDER by uniqueid, year, plotid, subsample
     """
         ),
         PGCONN,
         params={
-            "sites": tuple(sites),
-            "years": tuple(years),
-            "vars": tuple(soil),
+            "sites": sites,
+            "years": years,
+            "vars": soil,
         },
         index_col=None,
     )
@@ -497,12 +494,12 @@ def do_operations(writer, sites, years, missing):
     -- These are deleted below
     nitrogen, phosphorus, phosphate, potassium,
     potash, sulfur, calcium, magnesium, zinc, iron
-    from operations where uniqueid in :sites and cropyear in :years
+    from operations where uniqueid = ANY(:sites) and cropyear = ANY(:years)
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites), "years": tuple(years)},
+        params={"sites": sites, "years": years},
     )
     opdf["productrate"] = pd.to_numeric(opdf["productrate"], errors="coerce")
     for fert in FERTELEM:
@@ -545,12 +542,12 @@ def do_management(writer, sites, years):
     irrigationmethod, residueremoval, residuehow, residuebiomassweight,
     residuebiomassmoisture, residueplantingpercentage, residuetype,
     limeyear, comments
-    from management where uniqueid in :sites and cropyear in :years
+    from management where uniqueid = ANY(:sites) and cropyear = ANY(:years)
     ORDER by cropyear ASC
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites), "years": tuple(years)},
+        params={"sites": sites, "years": [str(x) for x in years]},
     )
     opdf.to_excel(writer, "Residue, Irrigation", index=False)
 
@@ -568,13 +565,13 @@ def do_pesticides(writer, sites, years):
     product3, rate3, rateunit3,
     product4, rate4, rateunit4,
     adjuvant1, adjuvant2, comments
-    from pesticides where uniqueid in :sites and cropyear in :years and
+    from pesticides where uniqueid = ANY(:sites) and cropyear = ANY(:years) and
     operation != 'seed'
     ORDER by uniqueid ASC, cropyear ASC, valid ASC
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites), "years": tuple(years)},
+        params={"sites": sites, "years": [str(x) for x in years]},
     )
     valid2date(opdf)
     opdf, worksheet = add_bling(writer, opdf, "Pesticides", "Pesticides")
@@ -610,13 +607,13 @@ def do_plotids(writer, sites):
         soilseriesdescription4,
         soiltaxonomicclass4
         from plotids p LEFT JOIN xref_rotation x on (p.rotation = x.code)
-        where uniqueid in :sites and
+        where uniqueid = ANY(:sites) and
         (herbicide != 'HERB2' or herbicide is null)
         ORDER by uniqueid, plotid ASC
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
     )
     # Fake rotation codes
     opdf.replace({"rotation": ROT_CODES}, inplace=True)
@@ -639,13 +636,13 @@ def do_notes(writer, sites, missing):
         SELECT "primary" as uniqueid, overarching_data_category, data_type,
         replace(growing_season, '.0', '') as growing_season,
         comments
-        from highvalue_notes where "primary" in :sites
+        from highvalue_notes where "primary" = ANY(:sites)
         ORDER by "primary" ASC, overarching_data_category ASC, data_type ASC,
         growing_season ASC
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
     )
     opdf.replace(["None", None, ""], np.nan, inplace=True)
     opdf.dropna(how="all", inplace=True)
@@ -665,12 +662,12 @@ def do_dwm(writer, sites, missing):
             """
         SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
         outletdepth, outletdate, comments
-        from dwm where uniqueid in :sites
+        from dwm where uniqueid = ANY(:sites)
         ORDER by uniqueid ASC, cropyear ASC
     """
         ),
         PGCONN,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
     )
     opdf.replace(["None", None, ""], np.nan, inplace=True)
     opdf.dropna(how="all", inplace=True)
@@ -691,24 +688,20 @@ def do_work(environ, start_response):
     if agree != "AGREE":
         raise NoDataFound("You did not agree to download terms.")
     email = environ.get("email")
-    sites = list(environ.get("sites[]", []))
-    if not sites:
-        sites.append("XXX")
+    sites = ensure_list(environ, "sites[]")
     # treatments = form.getlist('treatments[]')
     agronomic = redup(list(environ.get("agronomic[]", [])))
     soil = redup(list(environ.get("soil[]", [])))
     ghg = redup(list(environ.get("ghg[]", [])))
     ipm = redup(list(environ.get("ipm[]", [])))
-    years = redup(list(environ.get("year[]", [])))
+    years = [int(x) for x in list(environ.get("year[]", []))]
     if not years:
-        years = ["2011", "2012", "2013", "2014", "2015"]
+        years = [2011, 2012, 2013, 2014, 2015]
     shm = redup(list(environ.get("shm[]", [])))
     missing = environ.get("missing", "M")
     if missing == "__custom__":
         missing = environ.get("custom_missing", "M")
     pprint("Missing is %s" % (missing,))
-    if years:
-        years = [str(s) for s in range(2011, 2016)]
     detectlimit = environ.get("detectlimit", "1")
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine="xlsxwriter")
