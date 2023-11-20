@@ -108,7 +108,5 @@ body {padding: 30px;}
 
 </body>
 </html>
-    """ % (
-        df.to_html(index=False).replace("NaN", "M"),
-    )
+    """ % (df.to_html(index=False).replace("NaN", "M"),)
     return [payload.encode("ascii")]

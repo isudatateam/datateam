@@ -1,7 +1,6 @@
 """Process the decagon data"""
-from __future__ import print_function
-import sys
 import datetime
+import sys
 
 import pandas as pd
 from pyiem.util import get_dbconn
@@ -673,7 +672,7 @@ def database_save(uniqueid, plot, df):
         val = row.get(name)
         if val is None:
             return "null"
-        if isinstance(val, (str, unicode)):
+        if isinstance(val, str):
             if val.strip().lower() in ["nan", "-999"]:
                 return "null"
             return val
@@ -684,7 +683,7 @@ def database_save(uniqueid, plot, df):
         try:
             if pd.isnull(val):
                 return "null"
-        except Exception, exp:
+        except Exception as exp:
             print(exp)
             print(
                 ("Plot: %s Val: %s[%s] Name: %s Valid: %s")

@@ -143,9 +143,7 @@ def application(environ, start_response):
     <form method="GET" name='theform'>
     <input type="hidden" name="mode" value="%s" />
     Select Year; <select name="year">
-    """ % (
-        mode,
-    )
+    """ % (mode,)
     for yr in range(2011, 2016):
         checked = ""
         if year == yr:
@@ -204,9 +202,7 @@ def application(environ, start_response):
     <span class="btn btn-danger">no entry</span>
     <table class='table table-striped table-bordered'>
     <thead><tr><th width="33%%">Variable</th><th width="66%%">%s</th></tr>
-    """ % (
-        ALL,
-    )
+    """ % (ALL,)
     for datavar in dvars:
         row = data[ALL].get(datavar, None)
         payload += ("<tr><th>%s %s</th><td>%s</td></tr>") % (
