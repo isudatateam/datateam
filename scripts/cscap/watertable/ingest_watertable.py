@@ -1,12 +1,10 @@
 """Water table ingest"""
-from __future__ import print_function
-import sys
 import datetime
+import sys
 
+import isudatateam.cscap_utils as util
 import pandas as pd
 import psycopg2
-import numpy as np
-import isudatateam.cscap_utils as util
 
 CENTRAL_TIME = ["ISUAG", "GILMORE", "SERF"]
 
@@ -191,7 +189,7 @@ def database_save(df, uniqueid, plotid, project):
         try:
             if pd.isnull(val):
                 return "null"
-        except Exception, exp:
+        except Exception as exp:
             print(exp)
             print(
                 ("Plot: %s Val: %s[%s] Name: %s Valid: %s")

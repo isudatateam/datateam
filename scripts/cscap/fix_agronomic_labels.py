@@ -6,8 +6,10 @@ import gdata.docs.client
 import isudatateam.cscap_utils as util
 
 VARID = "agr43"  # lowercase
-NEWVAL = "[43] Red clover or mixed cover crop total carbon in late fall of previous year"
-
+NEWVAL = (
+    "[43] Red clover or mixed cover crop total carbon in late fall of "
+    "previous year"
+)
 config = util.get_config()
 
 # Get me a client, stat
@@ -25,10 +27,12 @@ for entry in feed:
     feed2 = spr_client.GetWorksheets(entry.id.text.split("/")[-1][14:])
     for entry2 in feed2.entry:
         worksheet = entry2.id.text.split("/")[-1]
-        print(
-            "Processing %s WRK: %s Title: %s"
-            % (entry.title.text, worksheet, entry2.title.text)
-        ),
+        (
+            print(
+                "Processing %s WRK: %s Title: %s"
+                % (entry.title.text, worksheet, entry2.title.text)
+            ),
+        )
         feed3 = spr_client.get_list_feed(
             entry.id.text.split("/")[-1][14:], worksheet
         )
