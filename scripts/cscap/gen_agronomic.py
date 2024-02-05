@@ -74,8 +74,8 @@ for site in sites:
         drive.files()
         .list(
             q=(
-                "mimeType = 'application/vnd.google-apps.folder' and title = '%s'"
-                " and '%s' in parents"
+                "mimeType = 'application/vnd.google-apps.folder' "
+                "and title = '%s' and '%s' in parents"
             )
             % (foldername, config["td"]["syncfolder"])
         )

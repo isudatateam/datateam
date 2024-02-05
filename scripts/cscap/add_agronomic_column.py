@@ -14,17 +14,20 @@ feed = docs_client.GetAllResources(query=query)
 newcols = [
     [
         "AGR44",
-        "[44] Red clover or mixed cover crop biomass in spring of spreadsheet year",
+        "[44] Red clover or mixed cover crop biomass in "
+        "spring of spreadsheet year",
         "kg ha-1",
     ],
     [
         "AGR45",
-        "[45] Red clover or mixed cover crop total nitrogen in spring of spreadsheet year",
+        "[45] Red clover or mixed cover crop total nitrogen in "
+        "spring of spreadsheet year",
         "kg ha-1",
     ],
     [
         "AGR46",
-        "[46] Red clover or mixed cover crop total carbon in spring of spreadsheet year",
+        "[46] Red clover or mixed cover crop total carbon in "
+        "spring of spreadsheet year",
         "kg ha-1",
     ],
 ]

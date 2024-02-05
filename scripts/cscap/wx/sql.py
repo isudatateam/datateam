@@ -17,16 +17,19 @@ for mdl in [
 ]:
     sql = """
     WITH obs as (
-     SELECT avg((f2c(high)+f2c(low))/2.) as avgt, sum(precip) from alldata_ia where
+     SELECT avg((f2c(high)+f2c(low))/2.) as avgt, sum(precip) from alldata_ia
+     where
      station = 'IA0200' and year = 2012),
     
     forecast as (
-     SELECT avg((f2c(high)+f2c(low))/2.) as avgt, sum(precip) from hayhoe_daily WHERE
+     SELECT avg((f2c(high)+f2c(low))/2.) as avgt, sum(precip) from hayhoe_daily
+     WHERE
      model = %s and scenario = 'a1b' and station = 'IA0200' and
      day between '2012-01-01' and '2013-01-01' and precip is not null and
      high is not null and low is not null)
      
-    SELECT obs.avgt, obs.sum, forecast.avgt - obs.avgt, (forecast.sum - obs.sum) / 1. 
+    SELECT obs.avgt, obs.sum, forecast.avgt - obs.avgt,
+    (forecast.sum - obs.sum) / 1. 
     from obs, forecast
     """
     cursor.execute(sql, (mdl,))
@@ -35,7 +38,8 @@ for mdl in [
 
 """
    WITH periods as (
-   SELECT extract(year from day) as year, max(case when low < 32 and extract(month from day) < 7
+   SELECT extract(year from day) as year, max(case when low < 32 and
+   extract(month from day) < 7
            then extract(doy from day) else 0 end),
     min(case when low < 32 and extract(month from day) > 7
            then extract(doy from day) else 366 end)
@@ -53,7 +57,8 @@ for mdl in [
   SELECT sum(precip), avg((f2c(high)+f2c(low))/2.) as avgt,
   sum(case when high >= 100 then 1 else 0 end) as d100
   from hayhoe_daily where station = 'IA0200' and
-  model = %s and scenario = 'a1b' and day between '1980-01-01' and '2000-01-01'),
+  model = %s and scenario = 'a1b' and day between '1980-01-01' and
+  '2000-01-01'),
   two as (
   SELECT sum(precip), avg((f2c(high)+f2c(low))/2.) as avgt,
   sum(case when high >= 100 then 1 else 0 end) as d100
@@ -61,6 +66,7 @@ for mdl in [
   model = %s and scenario = 'a1b' and day between '2046-01-01' and '2066-01-01'
   )
   
-  SELECT two.sum, one.sum, (two.sum - one.sum) / 20., one.d100, two.d100, one.avgt, two.avgt from one, two
+  SELECT two.sum, one.sum, (two.sum - one.sum) / 20., one.d100, two.d100,
+  one.avgt, two.avgt from one, two
 
 """

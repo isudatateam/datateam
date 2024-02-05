@@ -82,12 +82,6 @@ for item in res["items"]:
         subsample = "1"
         for col in range(3, worksheet.cols + 1):
             if worksheet.get_cell_value(1, col) is None:
-                print(
-                    (
-                        "harvest_soil_infiltration Year: %s Site: %s Col: %s is null"
-                    )
-                    % (YEAR, siteid, col)
-                )
                 continue
             varname = worksheet.get_cell_value(1, col).strip().split()[0]
             if not varname.startswith("SOIL"):
@@ -97,7 +91,7 @@ for item in res["items"]:
             if inval is not None and val is None:
                 print(
                     (
-                        "harvest_soil_infiltration found None. site: %s year: %s "
+                        "harvest_soil_infiltration None. site: %s year: %s "
                         " row: %s col: %s varname: %s"
                     )
                     % (siteid, YEAR, row, col, varname)
