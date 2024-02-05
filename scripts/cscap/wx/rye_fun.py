@@ -44,7 +44,6 @@ for row in scursor:
     operation = row[2]
     bm1 = row[3]
     bm2 = row[4]
-    # print "%-15.15s %-20s %10s %10s %10s" % (site, operation, valid, bm1, bm2)
     if operation.find("termination") == 0:
         cropyear = valid.year
         termdates[site][cropyear].append([valid, bm1, bm2])

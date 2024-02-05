@@ -43,14 +43,17 @@ for sid in nt.sts.keys():
         and year < 2011 GROUP by year),
     ff as (
         SELECT year, 
-        max(case when month < 7 and low < 32 then extract(doy from day) else 0 end),
-        min(case when month > 7 and low < 32 then extract(doy from day) else 366 end)
+        max(case when month < 7 and low < 32 then extract(doy from day)
+        else 0 end),
+        min(case when month > 7 and low < 32 then extract(doy from day)
+        else 366 end)
         from """
         + TABLE
         + """ WHERE station = %s and year >= 1951 and year < 2011
         GROUP by year)
         
-    SELECT g.year, g.sum, f.min - f.max from ff f JOIN gdd g on (g.year = f.year)
+    SELECT g.year, g.sum, f.min - f.max from ff f JOIN gdd g on
+    (g.year = f.year)
     ORDER by g.year ASC
     """,
         (sid, sid),
