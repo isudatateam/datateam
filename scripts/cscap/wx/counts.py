@@ -1,4 +1,5 @@
 """Shrug."""
+
 import sys
 
 import matplotlib.cm as cm

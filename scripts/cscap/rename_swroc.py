@@ -1,4 +1,5 @@
 """SWROC sites changed to HICKS"""
+
 import isudatateam.cscap_utils as util
 
 config = util.get_config()

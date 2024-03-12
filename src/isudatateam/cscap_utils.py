@@ -1,6 +1,7 @@
 """
 Utility Functions that are common to our scripts, I hope
 """
+
 import json
 import os
 import re

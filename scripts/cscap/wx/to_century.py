@@ -1,5 +1,5 @@
 """
- Util script to reprocess some data for Magda
+Util script to reprocess some data for Magda
 """
 
 import psycopg2

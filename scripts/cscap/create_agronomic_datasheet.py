@@ -1,6 +1,7 @@
 """
- Something that will create dataspreadsheets based on entries in the table
+Something that will create dataspreadsheets based on entries in the table
 """
+
 import copy
 
 import gdata.spreadsheets.data

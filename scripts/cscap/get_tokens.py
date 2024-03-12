@@ -1,5 +1,5 @@
-"""Script fetches openauth2 refresh token that my offline scripts can use
-"""
+"""Script fetches openauth2 refresh token that my offline scripts can use"""
+
 import isudatateam.cscap_utils as util
 from gdata import gauth
 

@@ -1,4 +1,5 @@
 """Decagon SM Plot!"""
+
 import datetime
 import os
 from io import StringIO

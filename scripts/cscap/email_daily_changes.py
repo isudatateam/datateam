@@ -1,7 +1,8 @@
 """
-  My purpose in life is to send an email each day with changes found
-  on the Google Drive
+My purpose in life is to send an email each day with changes found
+on the Google Drive
 """
+
 # stdlib
 import datetime
 import json
@@ -350,9 +351,9 @@ def main(argv):
         with open("/tmp/out.html", "w", encoding="utf-8") as fh:
             fh.write(html)
     msg = MIMEMultipart("alternative")
-    msg[
-        "Subject"
-    ] = f"{yesterday:%-d %b} {CFG[regime]['title']} Data ChangeLog"
+    msg["Subject"] = (
+        f"{yesterday:%-d %b} {CFG[regime]['title']} Data ChangeLog"
+    )
     msg["From"] = "akrherz@iastate.edu"
     msg["To"] = ",".join(CFG[regime]["emails"])
 

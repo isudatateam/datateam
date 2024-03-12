@@ -1,4 +1,4 @@
-""" Print out a big thing of progress bars, gasp """
+"""Print out a big thing of progress bars, gasp"""
 
 from pyiem.util import get_dbconn
 from pyiem.webutil import iemapp

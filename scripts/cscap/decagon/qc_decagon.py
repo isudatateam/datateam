@@ -1,4 +1,5 @@
 """Decagon Quality Control."""
+
 import sys
 
 import psycopg2

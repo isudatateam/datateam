@@ -1,4 +1,5 @@
 """Shrug."""
+
 import datetime
 from io import StringIO
 

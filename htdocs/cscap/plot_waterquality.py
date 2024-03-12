@@ -1,4 +1,5 @@
 """Plot!"""
+
 import os
 from io import StringIO
 

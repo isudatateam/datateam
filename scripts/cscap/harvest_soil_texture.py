@@ -1,6 +1,7 @@
 """
- Scrape out the Soil Texture data from Google Drive
+Scrape out the Soil Texture data from Google Drive
 """
+
 from __future__ import print_function
 
 import sys
