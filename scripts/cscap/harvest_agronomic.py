@@ -1,6 +1,7 @@
 """
 Harvest the Agronomic Data into the ISU Database
 """
+
 import sys
 
 import isudatateam.cscap_utils as util

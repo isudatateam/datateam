@@ -1,4 +1,5 @@
 """Some common stuff."""
+
 from io import BytesIO
 
 from pyiem.plot.use_agg import plt

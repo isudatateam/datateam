@@ -1,4 +1,5 @@
 """A direct copy of a Google Spreadsheet to a postgresql database"""
+
 import isudatateam.cscap_utils as util
 import psycopg2
 from six import string_types

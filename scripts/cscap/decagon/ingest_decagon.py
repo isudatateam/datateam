@@ -1,4 +1,5 @@
 """Process the decagon data"""
+
 import datetime
 import glob
 import os

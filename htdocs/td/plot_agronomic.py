@@ -1,4 +1,5 @@
 """Plot!"""
+
 # pylint: disable=abstract-class-instantiated
 import sys
 

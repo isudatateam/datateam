@@ -1,7 +1,8 @@
 """
- Go thru the agronomic data sheets and replace the description label found on
- row 2 with a new value
+Go thru the agronomic data sheets and replace the description label found on
+row 2 with a new value
 """
+
 import gdata.docs.client
 import isudatateam.cscap_utils as util
 

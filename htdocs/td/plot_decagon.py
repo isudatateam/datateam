@@ -1,4 +1,5 @@
 """SM Plot!"""
+
 # pylint: disable=abstract-class-instantiated
 import datetime
 import sys

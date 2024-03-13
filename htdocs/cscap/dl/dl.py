@@ -4,6 +4,7 @@ select string_agg(column_name, ', ') from
     (select column_name, ordinal_position from information_schema.columns where
     table_name='management' ORDER by ordinal_position) as foo;
 """
+
 import datetime
 import os
 import re

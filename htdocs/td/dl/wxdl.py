@@ -1,4 +1,5 @@
 """Download weather data, please"""
+
 # pylint: disable=abstract-class-instantiated
 import datetime
 import os

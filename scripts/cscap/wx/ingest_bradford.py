@@ -1,6 +1,7 @@
 """
 http://agebb.missouri.edu/weather/history/index.asp?station_prefix=bfd
 """
+
 import pandas as pd
 
 df = pd.read_table(

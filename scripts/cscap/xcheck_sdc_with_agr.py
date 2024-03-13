@@ -1,7 +1,8 @@
 """
- Use the Site Data Collected and then see what columns exist within the
- Agronomic Data Sheets.
+Use the Site Data Collected and then see what columns exist within the
+Agronomic Data Sheets.
 """
+
 import copy
 import sys
 

@@ -1,4 +1,5 @@
 """Dynamic Calculation, yikes"""
+
 import datetime
 import os
 import re

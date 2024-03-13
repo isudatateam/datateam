@@ -1,6 +1,7 @@
 """
- List out the folders on the Google Drive and see who their owners are!
+List out the folders on the Google Drive and see who their owners are!
 """
+
 import isudatateam.cscap_utils as util
 
 config = util.get_config()

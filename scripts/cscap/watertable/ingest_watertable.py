@@ -1,4 +1,5 @@
 """Water table ingest"""
+
 import datetime
 import sys
 

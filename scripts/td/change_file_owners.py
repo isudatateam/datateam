@@ -1,4 +1,4 @@
-""" We have files on the Google Drive that are solely owned by an *old* service
+"""We have files on the Google Drive that are solely owned by an *old* service
 account.  This is not ideal as if this file is deleted, then it goes into
 purgatory."""
 

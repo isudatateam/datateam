@@ -1,4 +1,5 @@
 """Management Table used by cover crop paper"""
+
 import datetime
 import sys
 
