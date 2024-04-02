@@ -193,11 +193,10 @@ def application(environ, start_response):
                     ),
                 ),
             ]
-            writer = pd.ExcelWriter("/tmp/ss.xlsx")
             # Prevent timezone troubles
             df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
-            df.to_excel(writer, "Data", index=False)
-            writer.save()
+            with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
+                df.to_excel(writer, "Data", index=False)
             payload = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
             return [payload]
