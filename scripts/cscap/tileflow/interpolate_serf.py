@@ -25,7 +25,6 @@ for plotid in df:
     ].interpolate(method="time")
 
 
-writer = pd.ExcelWriter("output.xlsx")
-for plotid in df:
-    df[plotid].to_excel(writer, plotid)
-writer.save()
+with pd.ExcelWriter("output.xlsx") as writer:
+    for plotid in df:
+        df[plotid].to_excel(writer, plotid)

@@ -59,9 +59,8 @@ def application(environ, start_response):
             ),
         ]
         start_response("200 OK", headers)
-        writer = pd.ExcelWriter("/tmp/ss.xlsx")
-        df.to_excel(writer, "Data", index=False)
-        writer.save()
+        with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
+            df.to_excel(writer, "Data", index=False)
         payload = open("/tmp/ss.xlsx", "rb").read()
         os.unlink("/tmp/ss.xlsx")
         return [payload]

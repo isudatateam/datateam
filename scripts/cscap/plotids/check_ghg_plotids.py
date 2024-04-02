@@ -63,9 +63,8 @@ def main():
                     plotdf.at[idx, "ghg"] = "yes"
 
     df = pd.DataFrame(rows)
-    writer = pd.ExcelWriter("output.xlsx")
-    df.to_excel(writer, "Sheet1")
-    writer.save()
+    with pd.ExcelWriter("output.xlsx") as writer:
+        df.to_excel(writer, "Sheet1")
 
     res = drive.files().list(q="title contains 'Plot Identifiers'").execute()
     for item in res["items"]:

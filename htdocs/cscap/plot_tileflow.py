@@ -162,16 +162,15 @@ def application(environ, start_response):
                 ),
             ]
             start_response("200 OK", headers)
-            writer = pd.ExcelWriter("/tmp/ss.xlsx")
             # Prevent timezone troubles
             if ptype not in [
                 "2",
             ]:
                 df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
-            df.to_excel(writer, "Data", index=False)
-            worksheet = writer.sheets["Data"]
-            worksheet.freeze_panes(3, 0)
-            writer.save()
+            with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
+                df.to_excel(writer, "Data", index=False)
+                worksheet = writer.sheets["Data"]
+                worksheet.freeze_panes(3, 0)
             payload = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
             return [payload]
