@@ -27,4 +27,4 @@ for plotid in df:
 
 with pd.ExcelWriter("output.xlsx") as writer:
     for plotid in df:
-        df[plotid].to_excel(writer, plotid)
+        df[plotid].to_excel(writer, sheet_name=plotid)

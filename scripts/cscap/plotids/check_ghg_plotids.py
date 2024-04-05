@@ -64,7 +64,7 @@ def main():
 
     df = pd.DataFrame(rows)
     with pd.ExcelWriter("output.xlsx") as writer:
-        df.to_excel(writer, "Sheet1")
+        df.to_excel(writer, sheet_name="Sheet1")
 
     res = drive.files().list(q="title contains 'Plot Identifiers'").execute()
     for item in res["items"]:

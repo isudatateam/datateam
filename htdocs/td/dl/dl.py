@@ -124,7 +124,7 @@ def do_dictionary(pgconn, writer):
         index_col=None,
     )
     sheetname = "Data Dictionary"
-    df.to_excel(writer, sheetname, index=False)
+    df.to_excel(writer, sheet_name=sheetname, index=False)
     # Increase column width
     worksheet = writer.sheets[sheetname]
     worksheet.set_column("A:Z", 30)
@@ -205,7 +205,7 @@ def add_bling(pgconn, writer, df, sheetname, filename):
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
     df = df.reindex(columns=cols)
-    df.to_excel(writer, sheetname, index=False)
+    df.to_excel(writer, sheet_name=sheetname, index=False)
     worksheet = writer.sheets[sheetname]
     worksheet.freeze_panes(3, 0)
     return df, worksheet

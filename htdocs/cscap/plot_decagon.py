@@ -196,7 +196,7 @@ def application(environ, start_response):
             # Prevent timezone troubles
             df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
             with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
-                df.to_excel(writer, "Data", index=False)
+                df.to_excel(writer, sheet_name="Data", index=False)
             payload = open("/tmp/ss.xlsx", "rb").read()
             os.unlink("/tmp/ss.xlsx")
             return [payload]

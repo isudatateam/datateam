@@ -99,11 +99,10 @@ def do_work(form):
     # re-establish the correct column sorting
     df = df.reindex(cols, axis=1)
 
-    writer = pd.ExcelWriter("/tmp/ss.xlsx", engine="xlsxwriter")
-    df.to_excel(writer, "Daily Weather", index=False)
-    worksheet = writer.sheets["Daily Weather"]
-    worksheet.freeze_panes(3, 0)
-    writer.close()
+    with pd.ExcelWriter("/tmp/ss.xlsx", engine="xlsxwriter") as writer:
+        df.to_excel(writer, sheet_name="Daily Weather", index=False)
+        worksheet = writer.sheets["Daily Weather"]
+        worksheet.freeze_panes(3, 0)
 
     fn = ",".join(stations)
     res = open("/tmp/ss.xlsx", "rb").read()
