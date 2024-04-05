@@ -217,7 +217,7 @@ def do_dictionary(writer):
     )
     for col in ["ss_order", "number_of_decimal_places_to_round_up"]:
         df.drop(col, axis=1, inplace=True)
-    df.to_excel(writer, "Data Dictionary", index=False)
+    df.to_excel(writer, sheet_name="Data Dictionary", index=False)
     # Increase column width
     worksheet = writer.sheets["Data Dictionary"]
     worksheet.set_column("A:D", 36)
@@ -380,7 +380,7 @@ def add_bling(writer, df, sheetname, tabname):
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
     df = df.reindex(cols, axis=1)
-    df.to_excel(writer, sheetname, index=False)
+    df.to_excel(writer, sheet_name=sheetname, index=False)
     worksheet = writer.sheets[sheetname]
     worksheet.freeze_panes(3, 0)
     return df, worksheet
@@ -550,7 +550,7 @@ def do_management(writer, sites, years):
         PGCONN,
         params={"sites": sites, "years": [str(x) for x in years]},
     )
-    opdf.to_excel(writer, "Residue, Irrigation", index=False)
+    opdf.to_excel(writer, sheet_name="Residue, Irrigation", index=False)
 
 
 def do_pesticides(writer, sites, years):
@@ -648,7 +648,7 @@ def do_notes(writer, sites, missing):
     opdf.replace(["None", None, ""], np.nan, inplace=True)
     opdf.dropna(how="all", inplace=True)
     opdf.fillna(missing, inplace=True)
-    opdf[opdf.columns].to_excel(writer, "Notes", index=False)
+    opdf[opdf.columns].to_excel(writer, sheet_name="Notes", index=False)
     # Increase column width
     worksheet = writer.sheets["Notes"]
     worksheet.set_column("B:B", 36)

@@ -79,7 +79,7 @@ def application(environ, start_response):
     df = df.reindex(cols, axis=1)
 
     writer = pd.ExcelWriter("/tmp/ss.xlsx", engine="xlsxwriter")
-    df.to_excel(writer, "Daily Weather", index=False)
+    df.to_excel(writer, sheet_name="Daily Weather", index=False)
     worksheet = writer.sheets["Daily Weather"]
     worksheet.freeze_panes(3, 0)
     writer.close()

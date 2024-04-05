@@ -60,7 +60,7 @@ def application(environ, start_response):
         ]
         start_response("200 OK", headers)
         with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
-            df.to_excel(writer, "Data", index=False)
+            df.to_excel(writer, sheet_name="Data", index=False)
         payload = open("/tmp/ss.xlsx", "rb").read()
         os.unlink("/tmp/ss.xlsx")
         return [payload]
