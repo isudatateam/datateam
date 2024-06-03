@@ -5,7 +5,6 @@ Utility Functions that are common to our scripts, I hope
 import json
 import os
 import re
-import sys
 
 import smartsheet
 from google.oauth2.service_account import Credentials
@@ -37,9 +36,6 @@ def get_config(filename=None):
     if filename is None:
         filename = CONFIG_FN
     if not os.path.isfile(filename):
-        sys.stderr.write(
-            f"cscap_utils.get_config({filename}) File Not Found.\n"
-        )
         return None
     with open(filename, encoding="utf-8") as fh:
         res = json.load(fh)

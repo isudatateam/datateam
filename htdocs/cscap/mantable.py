@@ -1,7 +1,6 @@
 """Management Table used by cover crop paper"""
 
 import datetime
-import sys
 
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
@@ -98,13 +97,7 @@ def application(environ, start_response):
             "other",
         ]:
             plantcorndate = _d["plant_corn"]
-            # sys.stderr.write("%s %s %s %s %s\n" % (plantcorndate, valid,
-            #                                       fertilizercrop, site,
-            #                                       cropyear))
             if plantcorndate is None:
-                sys.stderr.write(
-                    ("ERROR! No plant corn for %s %s\n") % (site, cropyear)
-                )
                 continue
             if valid.year < plantcorndate.year:
                 _d[operation + "_fall"] = valid
