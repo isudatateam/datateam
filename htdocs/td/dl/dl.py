@@ -9,7 +9,6 @@ import datetime
 import os
 import shutil
 import smtplib
-import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -77,14 +76,6 @@ KGH_LBA = 1.12085
 
 # runtime storage
 MEMORY = dict(stamp=datetime.datetime.utcnow())
-
-
-def pprint(msg):
-    """log a pretty message for my debugging fun"""
-    utcnow = datetime.datetime.utcnow()
-    delta = (utcnow - MEMORY["stamp"]).total_seconds()
-    MEMORY["stamp"] = utcnow
-    sys.stderr.write("timedelta: %.3f %s\n" % (delta, msg))
 
 
 def valid2date(df):
@@ -265,7 +256,6 @@ def do_work(form):
     missing = form.get("missing", "M")
     if missing == "__custom__":
         missing = form.get("custom_missing", "M")
-    pprint("Missing is %s" % (missing,))
     # detectlimit = form.get("detectlimit", "1")
 
     # pylint: disable=abstract-class-instantiated
@@ -277,7 +267,6 @@ def do_work(form):
     # First sheet is Data Dictionary
     if "SHM5" in shm or "_ALL" in shm:
         do_dictionary(pgconn, writer)
-        pprint("do_dictionary() is done")
 
     # Sheet two is plot IDs
     if "SHM4" in shm or "_ALL" in shm:
@@ -309,7 +298,6 @@ def do_work(form):
             agronomic,
             missing,
         )
-        pprint("Agronomic is done")
     if water:
         water.extend(["depth", "dwm_treatment", "sample_type", "height"])
         cols = ["soil_moisture", "soil_temperature", "soil_ec"]
@@ -324,7 +312,6 @@ def do_work(form):
                 water,
                 missing,
             )
-            pprint("Soil Moisture is done")
         cols = (
             "tile_flow discharge nitrate_n_load nitrate_n_removed "
             "tile_flow_filled nitrate_n_load_filled"
@@ -340,7 +327,6 @@ def do_work(form):
                 water,
                 missing,
             )
-            pprint("Tile Flow and Loads is done")
         cols = (
             "nitrate_n_concentration ammonia_n_concentration "
             "total_n_filtered_concentration total_n_unfiltered_concentration "
@@ -359,7 +345,6 @@ def do_work(form):
                 water,
                 missing,
             )
-            pprint("Tile Flow and Loads is done")
         cols = [
             "water_table_depth",
         ]
@@ -399,7 +384,6 @@ def do_work(form):
             soil,
             missing,
         )
-        pprint("Soil is done")
 
     # Management
     if "SHM1" in shm or "_ALL" in shm:
@@ -437,7 +421,6 @@ def do_work(form):
         ["_ALL"],
         missing,
     )
-    pprint("do_dwm() is done")
     # Methods
     if "SHM1" in shm or "_ALL" in shm:
         do_generic(
@@ -463,7 +446,6 @@ def do_work(form):
             ["_ALL"],
             missing,
         )
-        pprint("do_notes() is done")
     # Notes
     if "SHM8" in shm or "_ALL" in shm:
         do_generic(
@@ -493,7 +475,6 @@ def do_work(form):
     msg["From"] = "ISU Data Team <isudatateam@iastate.edu>"
     msg["To"] = email
     msg.preamble = "Data"
-    pprint(f"Created spreadsheet: /tmp/{tmpfn}")
     try:
         shutil.copyfile(f"/tmp/{tmpfn}", f"/var/webtmp/{tmpfn}")
         os.unlink(f"/tmp/{tmpfn}")
@@ -517,7 +498,6 @@ def do_work(form):
     )
     cursor.close()
     pgconn.commit()
-    pprint("is done!!!")
     return b"Email Delivered!"
 
 

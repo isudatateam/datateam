@@ -9,7 +9,6 @@ We end up return a JSON document that lists out what is possible
 """
 
 import json
-import sys
 
 import pandas as pd
 from pyiem.util import get_dbconnstr
@@ -61,7 +60,6 @@ def redup(arr):
         for val in vals:
             if val in arr and key not in additional:
                 additional.append(key)
-    sys.stderr.write("dedup added %s to %s\n" % (str(additional), str(arr)))
     return arr + additional
 
 
@@ -73,7 +71,6 @@ def agg(arr):
             additional += AGG[val]
     if len(additional) > 0:
         arr += additional
-    sys.stderr.write("agg added %s to %s\n" % (str(additional), str(arr)))
     return arr
 
 

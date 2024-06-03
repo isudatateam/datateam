@@ -70,7 +70,6 @@ def make_plot(form, start_response):
         params=(uniqueid,),
         index_col=None,
     )
-    sys.stderr.write(uniqueid)
     if df.empty:
         return send_error(
             start_response, "js", "No / Not Enough Data Found, sorry!"

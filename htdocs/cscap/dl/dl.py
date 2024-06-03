@@ -10,7 +10,6 @@ import os
 import re
 import shutil
 import smtplib
-import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -158,14 +157,6 @@ def replace_varname(varname):
     return varname
 
 
-def pprint(msg):
-    """log a pretty message for my debugging fun"""
-    utcnow = datetime.datetime.utcnow()
-    delta = (utcnow - MEMORY["stamp"]).total_seconds()
-    MEMORY["stamp"] = utcnow
-    sys.stderr.write("timedelta: %.3f %s\n" % (delta, msg))
-
-
 def valid2date(df):
     """If dataframe has valid in columns, rename it to date"""
     if "valid" in df.columns:
@@ -178,7 +169,6 @@ def redup(arr):
     for key in arr:
         if key in AGG:
             additional.extend(AGG[key])
-    pprint("dedup added %s to %s" % (str(additional), str(arr)))
     return arr + additional
 
 
@@ -409,9 +399,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
         },
         index_col=None,
     )
-    pprint("do_soil() query done")
     df["value"] = df["value"].apply(lambda x: conv(x, detectlimit))
-    pprint("do_soil() value replacement done")
     df = pd.pivot_table(
         df,
         index=(
@@ -449,31 +437,12 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     df = df.reindex(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
     df.replace(["None", None], np.nan, inplace=True)
-    pprint(
-        "do_soil() len of inbound df %s"
-        % (
-            len(
-                df.index,
-            )
-        )
-    )
     df.dropna(how="all", inplace=True)
     df.fillna(missing, inplace=True)
-    pprint(
-        "do_soil() len of outbound df %s"
-        % (
-            len(
-                df.index,
-            )
-        )
-    )
-    pprint("do_soil() pivot_table done")
     df.reset_index(inplace=True)
     df["sampledate"] = df["sampledate"].replace("", missing)
     valid2date(df)
-    pprint("do_soil() valid2date done")
     df, worksheet = add_bling(writer, df, "Soil", "Soil")
-    pprint("do_soil() to_excel done")
     workbook = writer.book
     format1 = workbook.add_format({"num_format": "@"})
     worksheet.set_column("B:B", 12, format1)
@@ -702,7 +671,6 @@ def do_work(environ, start_response):
     missing = environ.get("missing", "M")
     if missing == "__custom__":
         missing = environ.get("custom_missing", "M")
-    pprint("Missing is %s" % (missing,))
     detectlimit = environ.get("detectlimit", "1")
 
     writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine="xlsxwriter")
@@ -710,52 +678,40 @@ def do_work(environ, start_response):
     # First sheet is Data Dictionary
     if "SHM5" in shm:
         do_dictionary(writer)
-        pprint("do_dictionary() is done")
 
     # Sheet two is plot IDs
     if "SHM4" in shm:
         do_plotids(writer, sites)
-        pprint("do_plotids() is done")
 
     # Measurement Data
     if agronomic:
         do_agronomic(writer, sites, agronomic, years, detectlimit, missing)
-        pprint("do_agronomic() is done")
     if soil:
         do_soil(writer, sites, soil, years, detectlimit, missing)
-        pprint("do_soil() is done")
     if ghg:
         do_ghg(writer, sites, ghg, years, missing)
-        pprint("do_ghg() is done")
     if ipm:
         do_ipm(writer, sites, ipm, years, missing)
-        pprint("do_ipm() is done")
 
     # Management
     # Field Operations
     if "SHM1" in shm:
         do_operations(writer, sites, years, missing)
-        pprint("do_operations() is done")
     # Pesticides
     if "SHM2" in shm:
         do_pesticides(writer, sites, years)
-        pprint("do_pesticides() is done")
     # Residue and Irrigation
     if "SHM3" in shm:
         do_management(writer, sites, years)
-        pprint("do_management() is done")
     # Site Metadata
     if "SHM8" in shm:
         do_metadata_master(writer, sites, missing)
-        pprint("do_metadata_master() is done")
     # Drainage Management
     if "SHM7" in shm:
         do_dwm(writer, sites, missing)
-        pprint("do_dwm() is done")
     # Notes
     if "SHM6" in shm:
         do_notes(writer, sites, missing)
-        pprint("do_notes() is done")
 
     # Send to client
     writer.close()
@@ -789,7 +745,6 @@ def do_work(environ, start_response):
     )
     cursor.close()
     pgconn.commit()
-    pprint("is done!!!")
     start_response("200 OK", [("Content-type", "text/plain")])
     return [b"Email Delivered!"]
 
