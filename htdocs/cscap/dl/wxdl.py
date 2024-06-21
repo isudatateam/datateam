@@ -3,8 +3,9 @@
 import os
 
 import pandas as pd
+from pyiem.database import get_dbconnstr
 from pyiem.datatypes import distance, temperature
-from pyiem.util import get_dbconnstr
+from pyiem.exceptions import IncompleteWebRequest
 from pyiem.webutil import ensure_list, iemapp
 from sqlalchemy import text
 
@@ -41,6 +42,8 @@ UVARDF = {
 @iemapp()
 def application(environ, start_response):
     """do great things"""
+    if environ.get("sts") is None or environ.get("ets") is None:
+        raise IncompleteWebRequest("Missing start and end date.")
     pgconn = get_dbconnstr("sustainablecorn")
     stations = ensure_list(environ, "stations")
     df = pd.read_sql(
