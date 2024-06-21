@@ -1,0 +1,24 @@
+version = 1
+
+exclude_patterns = [
+    "include/vendor/**",
+    "include/jpgraph/**",
+]
+
+[[analyzers]]
+name = "shell"
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  environment = ["jquery", "browser"]
+
+[[analyzers]]
+name = "python"
+
+  [analyzers.meta]
+  runtime_version = "3.x.x"
+
+[[analyzers]]
+name = "php"
