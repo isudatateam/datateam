@@ -4,7 +4,7 @@ import datetime
 from io import StringIO
 
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 from pyiem.webutil import iemapp
 
 DBCONN = get_dbconn("sustainablecorn")
@@ -146,17 +146,6 @@ def application(environ, start_response):
     if "site" in environ:
         do_site(sio, environ.get("site"))
         return
-    # mode = form.getfirst('mode', 'agronomic')
-    show_has = environ.get("has", "0") == "1"
-    show_period = environ.get("period", "0") == "1"
-    show_dnc = environ.get("dnc", "0") == "1"
-    show_no = environ.get("no", "0") == "1"
-    if environ.get("a") is None:
-        show_has = True
-        show_period = True
-        show_dnc = True
-        show_no = True
-    # Forget the above, we hard code things like so
     show_has = True
     show_period = True
     show_dnc = True
