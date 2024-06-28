@@ -5,7 +5,7 @@ import isudatateam.cscap_utils as util
 
 def main():
     """Go Main Go."""
-    config = util.get_config()
+    config = util.get_config("cscap")
 
     # Get me a client, stat
     spr_client = util.get_spreadsheet_client(config)

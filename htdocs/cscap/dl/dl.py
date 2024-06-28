@@ -15,8 +15,9 @@ from email.mime.text import MIMEText
 
 import numpy as np
 import pandas as pd
+from pyiem.database import get_dbconn, get_dbconnstr
 from pyiem.exceptions import NoDataFound
-from pyiem.util import get_dbconn, get_dbconnstr, logger
+from pyiem.util import logger
 from pyiem.webutil import ensure_list, iemapp
 from pymemcache import Client
 from sqlalchemy import text
@@ -660,14 +661,15 @@ def do_work(environ, start_response):
     email = environ.get("email")
     sites = ensure_list(environ, "sites[]")
     # treatments = form.getlist('treatments[]')
-    agronomic = redup(list(environ.get("agronomic[]", [])))
-    soil = redup(list(environ.get("soil[]", [])))
-    ghg = redup(list(environ.get("ghg[]", [])))
-    ipm = redup(list(environ.get("ipm[]", [])))
-    years = [int(x) for x in list(environ.get("year[]", []))]
+    agronomic = redup(ensure_list(environ, "agronomic[]"))
+    print(environ["ghg[]"])
+    soil = redup(ensure_list(environ, "soil[]"))
+    ghg = redup(ensure_list(environ, "ghg[]"))
+    ipm = redup(ensure_list(environ, "ipm[]"))
+    years = [int(x) for x in ensure_list(environ, "year[]")]
     if not years:
         years = [2011, 2012, 2013, 2014, 2015]
-    shm = redup(list(environ.get("shm[]", [])))
+    shm = redup(ensure_list(environ, "shm[]"))
     missing = environ.get("missing", "M")
     if missing == "__custom__":
         missing = environ.get("custom_missing", "M")
