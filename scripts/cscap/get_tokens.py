@@ -1,7 +1,8 @@
 """Script fetches openauth2 refresh token that my offline scripts can use"""
 
-import isudatateam.cscap_utils as util
 from gdata import gauth
+
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 

@@ -4,6 +4,7 @@ row 2 with a new value
 """
 
 import gdata.docs.client
+
 import isudatateam.cscap_utils as util
 
 VARID = "agr43"  # lowercase

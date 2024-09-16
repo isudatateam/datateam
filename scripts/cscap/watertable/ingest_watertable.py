@@ -3,9 +3,10 @@
 import datetime
 import sys
 
-import isudatateam.cscap_utils as util
 import pandas as pd
 import psycopg2
+
+import isudatateam.cscap_utils as util
 
 CENTRAL_TIME = ["ISUAG", "GILMORE", "SERF"]
 

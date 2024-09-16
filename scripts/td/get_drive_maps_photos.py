@@ -5,8 +5,9 @@ alter table meta_site_history add drive_photos_folder text;
 """
 
 import pandas as pd
-from isudatateam.cscap_utils import get_config, get_driveclient
 from pyiem.util import get_dbconn, logger
+
+from isudatateam.cscap_utils import get_config, get_driveclient
 
 LOG = logger()
 

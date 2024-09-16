@@ -2,8 +2,9 @@
 ftp://ftp.epa.gov/wed/ecoregions/us
 """
 
-import isudatateam.cscap_utils as util
 import psycopg2
+
+import isudatateam.cscap_utils as util
 
 pgconn = psycopg2.connect(database="akrherz")
 cursor = pgconn.cursor()

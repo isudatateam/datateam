@@ -1,7 +1,8 @@
 """Gio discovered a mismatch between AG codes and headers"""
 
-import isudatateam.cscap_utils as util
 import pandas as pd
+
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 drive = util.get_driveclient(config, "cscap")
