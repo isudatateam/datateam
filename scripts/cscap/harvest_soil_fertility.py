@@ -2,8 +2,9 @@
 
 import sys
 
-import isudatateam.cscap_utils as util
 import psycopg2
+
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 

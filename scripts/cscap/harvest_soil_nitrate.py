@@ -5,8 +5,9 @@ from __future__ import print_function
 import datetime
 import sys
 
-import isudatateam.cscap_utils as util
 import psycopg2
+
+import isudatateam.cscap_utils as util
 
 YEAR = sys.argv[1]
 

@@ -1,8 +1,9 @@
 """A direct copy of a Google Spreadsheet to a postgresql database"""
 
-import isudatateam.cscap_utils as util
 from gspread_pandas import Spread
 from pyiem.util import get_dbconn, logger
+
+import isudatateam.cscap_utils as util
 
 LOG = logger()
 config = util.get_config()

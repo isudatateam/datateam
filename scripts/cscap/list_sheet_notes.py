@@ -4,9 +4,10 @@ Not able to get Comments because of this:
 https://issuetracker.google.com/issues/36756650
 """
 
-import isudatateam.cscap_utils as util
 import pandas as pd
 from tqdm import tqdm
+
+import isudatateam.cscap_utils as util
 
 
 def main():

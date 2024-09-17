@@ -2,6 +2,9 @@
 [tool.ruff]
 line-length = 79
 target-version = "py39"
+exclude = [
+    "**/*.ipynb",
+]
 
 [tool.ruff.lint]
 select = [

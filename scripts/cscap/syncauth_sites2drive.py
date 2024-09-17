@@ -4,6 +4,7 @@ Sync authorized users on Google Sites to Google Drive
 
 import gdata.gauth
 import gdata.sites.client as sclient
+
 import isudatateam.cscap_utils as util
 
 config = util.get_config()
