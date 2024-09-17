@@ -69,15 +69,6 @@ def do_notes():
 
 
 if __name__ == "__main__":
-    # do_notes()
-    # one2one('Field Operations', 'Soil & Fert', ['fertilizer_synthetic',
-    #                                            'soiladmend_lime'])
-    # one2one('Field Operations', 'Plant & Harvest',
-    #        ['harvest_corn', 'harvest_other', 'harvest_soy', 'harvest_wheat',
-    #         'plant_corn', 'plant_other', 'plant_rye', 'plant_rye-corn-res',
-    #         'plant_rye-soy-res', 'plant_soy', 'plant_wheat'])
-    # one2one('Management', 'Residue Mngt', ['all'])
-    # one2one('Pesticides', 'Pesticides', ['herbicide', ])
     one2one(
         "DWM",
         "DWM",

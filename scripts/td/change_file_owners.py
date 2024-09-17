@@ -8,8 +8,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 import isudatateam.cscap_utils as util
 
-config = util.get_config()
-
 
 def get_driveclient(config):
     """Return an authorized apiclient"""
@@ -24,18 +22,31 @@ def get_driveclient(config):
     return build("drive", "v2", http=http_auth)
 
 
-drive = get_driveclient(config)
-SA = config["service_account"]
+def main():
+    """Go Main Go."""
+    config = util.get_config()
+    drive = get_driveclient(config)
+    SA = config["service_account"]
 
-res = drive.files().list(q="'%s' in owners", maxResults=999).execute()
-print("Query found %s items" % (len(res["items"]),))
-for item in res["items"]:
-    owners = [a["emailAddress"] for a in item["owners"]]
-    if len(owners) == 1 and owners[0] == SA:
-        print("Updating %s" % (item["title"],))
-        body = {"value": "gio@iastate.edu", "role": "owner", "type": "user"}
-        permission = (
-            drive.permissions().insert(fileId=item["id"], body=body).execute()
-        )
-    else:
-        print("%s %s" % (item["title"], ",".join(owners)))
+    res = drive.files().list(q="'%s' in owners", maxResults=999).execute()
+    print("Query found %s items" % (len(res["items"]),))
+    for item in res["items"]:
+        owners = [a["emailAddress"] for a in item["owners"]]
+        if len(owners) == 1 and owners[0] == SA:
+            print("Updating %s" % (item["title"],))
+            body = {
+                "value": "gio@iastate.edu",
+                "role": "owner",
+                "type": "user",
+            }
+            _permission = (
+                drive.permissions()
+                .insert(fileId=item["id"], body=body)
+                .execute()
+            )
+        else:
+            print("%s %s" % (item["title"], ",".join(owners)))
+
+
+if __name__ == "__main__":
+    main()
