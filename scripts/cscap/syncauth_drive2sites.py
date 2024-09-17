@@ -5,8 +5,9 @@ import gdata.data
 import gdata.gauth
 import gdata.sites.client as sclient
 import gdata.sites.data
-import isudatateam.cscap_utils as util
 from gdata import gauth
+
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 

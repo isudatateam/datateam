@@ -16,9 +16,10 @@ from zoneinfo import ZoneInfo
 # third party
 import gdata.gauth
 import gdata.sites.client as sclient
-import isudatateam.cscap_utils as util
 from gdata.client import RequestError
 from pyiem.util import logger
+
+import isudatateam.cscap_utils as util
 
 LOG = logger()
 CONFIG = util.get_config()

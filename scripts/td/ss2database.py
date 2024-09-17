@@ -1,8 +1,9 @@
 """A direct copy of a Google Sheet to a postgresql database"""
 
-import isudatateam.cscap_utils as util
 import psycopg2
 from gspread_pandas import Spread
+
+import isudatateam.cscap_utils as util
 
 config = util.get_config()
 pgconn = psycopg2.connect(database="td", host=config["database"]["host"])
