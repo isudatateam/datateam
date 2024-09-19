@@ -11,8 +11,8 @@ We end up return a JSON document that lists out what is possible
 import json
 
 import pandas as pd
-from paste.request import parse_formvars
-from pyiem.util import get_dbconnstr
+from pyiem.database import get_sqlalchemy_conn
+from pyiem.webutil import ensure_list, iemapp
 from sqlalchemy import text
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
@@ -76,28 +76,20 @@ def agg(arr):
     return arr
 
 
-def do_filter(form):
+def do_filter(pgconn, environ):
     """Do the filtering fun."""
-    pgconn = get_dbconnstr("td")
     res = {"treatments": [], "agronomic": [], "soil": [], "water": []}
-    sites = agg(form.getall("sites[]"))
-    # treatments = agg(form.getall("treatments[]"))
-    # agronomic = agg(form.getall("agronomic[]"))
-    # soil = agg(form.getall("soil[]"))
-    # ghg = agg(form.getall("ghg[]"))
-    # water = agg(form.get("water[]"))
-    # ipm = agg(form.get("ipm[]"))
-    # year = agg(form.get("year[]"))
+    sites = agg(ensure_list(environ, "sites[]"))
 
     # build a list of treatments based on the sites selected
     df = pd.read_sql(
         text(
             "select distinct drainage_water_management, irrigation "
             "from meta_treatment_identifier where "
-            "siteid in :sites"
+            "siteid = ANY(:sites)"
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     res["treatments"] = df["drainage_water_management"].unique().tolist()
@@ -105,20 +97,20 @@ def do_filter(form):
 
     # Agronomic Filtering
     df = pd.read_sql(
-        text("select * from agronomic_data where siteid in :sites"),
+        text("select * from agronomic_data where siteid = ANY(:sites)"),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
-    for col, val in df.max().iteritems():
+    for col, val in df.max(numeric_only=True).items():
         if not pd.isnull(val):
             res["agronomic"].append(col)
 
     # Soil Filtering
     df = pd.read_sql(
-        text("select * from soil_properties_data where siteid in :sites"),
+        text("select * from soil_properties_data where siteid = ANY(:sites)"),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     for col in df.columns:
@@ -130,14 +122,14 @@ def do_filter(form):
     df = pd.read_sql(
         text(
             "select max(water_table_depth) as water_table_depth "
-            "from water_table_data where siteid in :sites "
+            "from water_table_data where siteid = ANY(:sites) "
             "GROUP by siteid"
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
-    for col, val in df.max().iteritems():
+    for col, val in df.max(numeric_only=True).items():
         if not pd.isnull(val):
             res["water"].append(col)
 
@@ -145,14 +137,14 @@ def do_filter(form):
     df = pd.read_sql(
         text(
             "select max(stage) as water_stage "
-            "from water_stage_data where siteid in :sites "
+            "from water_stage_data where siteid = ANY(:sites) "
             "GROUP by siteid"
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
-    for col, val in df.max().iteritems():
+    for col, val in df.max(numeric_only=True).items():
         if not pd.isnull(val):
             res["water"].append(col)
 
@@ -162,13 +154,13 @@ def do_filter(form):
             "select max(soil_moisture) as soil_moisture, "
             "max(soil_temperature) as soil_temperature, "
             "max(soil_ec) as soil_ec from soil_moisture_data where "
-            "siteid in :sites GROUP by siteid"
+            "siteid = ANY(:sites) GROUP by siteid"
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
-    for col, val in df.max().iteritems():
+    for col, val in df.max(numeric_only=True).items():
         if not pd.isnull(val):
             res["water"].append(col)
     df = pd.read_sql(
@@ -179,20 +171,20 @@ def do_filter(form):
             "max(nitrate_n_removed) as nitrate_n_removed, "
             "max(tile_flow_filled) as tile_flow_filled, "
             "max(nitrate_n_load_filled) as nitrate_n_load_filled "
-            "from tile_flow_and_N_loads_data where siteid in :sites "
+            "from tile_flow_and_N_loads_data where siteid = ANY(:sites) "
             "GROUP by siteid"
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
-    for col, val in df.max().iteritems():
+    for col, val in df.max(numeric_only=True).items():
         if not pd.isnull(val):
             res["water"].append(col)
     df = pd.read_sql(
-        text("select * from water_quality_data where siteid in :sites"),
+        text("select * from water_quality_data where siteid = ANY(:sites)"),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     # tricky non-numeric stuff here, sigh
@@ -204,9 +196,10 @@ def do_filter(form):
     return res
 
 
+@iemapp()
 def application(environ, start_response):
     """Do Stuff"""
     start_response("200 OK", [("Content-type", "application/json")])
-    form = parse_formvars(environ)
-    res = do_filter(form)
-    return [json.dumps(res).encode("utf-8")]
+    with get_sqlalchemy_conn("td") as pgconn:
+        res = do_filter(pgconn, environ)
+    return json.dumps(res).encode("utf-8")
