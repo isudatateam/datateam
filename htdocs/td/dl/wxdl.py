@@ -78,11 +78,11 @@ def do_work(form):
     df = pd.read_sql(
         text(
             "SELECT *, extract(doy from date) as doy from weather_data "
-            "WHERE siteid in :sites and date >= :sts and date <= :ets "
+            "WHERE siteid = ANY(:sites) and date >= :sts and date <= :ets "
             "ORDER by siteid ASC, date ASC"
         ),
         pgconn,
-        params={"sites": tuple(stations), "sts": sts, "ets": ets},
+        params={"sites": stations, "sts": sts, "ets": ets},
         index_col=None,
     )
 

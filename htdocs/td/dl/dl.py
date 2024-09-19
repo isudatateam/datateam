@@ -136,12 +136,12 @@ def do_metadata_master(pgconn, writer, sites, missing):
     sitearea as "site area",
     numberofplots as "number of plots"
     from metadata_master
-    WHERE uniqueid in :sites
+    WHERE uniqueid = ANY(:sites)
     ORDER by uniqueid
     """
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     df.replace(["None", None, ""], np.nan, inplace=True)
@@ -157,11 +157,11 @@ def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
     """generalized datatable dumper."""
     df = pd.read_sql(
         text(
-            f"SELECT * from {tablename} WHERE siteid in :sites "
+            f"SELECT * from {tablename} WHERE siteid = ANY(:sites) "
             "ORDER by siteid"
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
         index_col=None,
     )
     standard = ["siteid", "plotid", "location", "date", "comments", "year"]
@@ -206,11 +206,11 @@ def do_plotids(pgconn, writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = pd.read_sql(
         text(
-            "SELECT * from meta_plot_identifier where siteid in :sites "
+            "SELECT * from meta_plot_identifier where siteid = ANY(:sites) "
             "ORDER by siteid, plotid ASC"
         ),
         pgconn,
-        params={"sites": tuple(sites)},
+        params={"sites": sites},
     )
     opdf, worksheet = add_bling(
         pgconn,
