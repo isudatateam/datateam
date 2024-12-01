@@ -1,10 +1,10 @@
 """Shrug."""
 
-import datetime
 from io import StringIO
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.database import get_dbconn
+from pyiem.util import utc
 from pyiem.webutil import iemapp
 
 DBCONN = get_dbconn("sustainablecorn")
@@ -15,7 +15,7 @@ def get_data(mode, data, arr):
     """Do stuff"""
     table = "agronomic_data" if mode == "agronomic" else "soil_data"
     cursor.execute(
-        """SELECT uniqueid,
+        f"""SELECT uniqueid,
     -- We have some number
     sum(case when lower(value) not in ('.','','did not collect','n/a') and
         value is not null then 1 else 0 end),
@@ -26,9 +26,7 @@ def get_data(mode, data, arr):
         then 1 else 0 end),
     -- We have a null
     sum(case when value is null then 1 else 0 end),
-    count(*) from """
-        + table
-        + """
+    count(*) from {table}
     WHERE (value is Null or lower(value) != 'n/a')
     GROUP by uniqueid"""
     )
@@ -97,7 +95,7 @@ def make_progress(row):
 
 def do_site(sio, site):
     """Print out a simple listing of trouble"""
-    df = read_sql(
+    df = pd.read_sql(
         """
     with ag as (
         select year, varname, value, count(*) from agronomic_data
@@ -116,10 +114,7 @@ def do_site(sio, site):
     )
     sio.write("CSCAP Variable Progress Report\n")
     sio.write("Site: %s\n" % (site,))
-    sio.write(
-        "Generated: %s\n"
-        % (datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),)
-    )
+    sio.write(f"Generated: {utc():%Y-%m-%dT%H:%M:%SZ}\n")
     sio.write("Total Missing: %s\n" % (df["count"].sum(),))
     sio.write("%4s %-10s %-10s %-6s\n" % ("YEAR", "VARNAME", "VALUE", "COUNT"))
 

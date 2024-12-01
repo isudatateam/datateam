@@ -5,7 +5,6 @@ select string_agg(column_name, ', ') from
     table_name='management' ORDER by ordinal_position) as foo;
 """
 
-import datetime
 import os
 import shutil
 import smtplib
@@ -15,7 +14,7 @@ from email.mime.text import MIMEText
 import numpy as np
 import pandas as pd
 from paste.request import MultiDict, parse_formvars
-from pyiem.util import get_dbconn, get_dbconnstr, logger
+from pyiem.util import get_dbconn, get_dbconnstr, logger, utc
 
 # Third Party
 from pymemcache import Client
@@ -75,7 +74,7 @@ FERTELEM = [
 KGH_LBA = 1.12085
 
 # runtime storage
-MEMORY = dict(stamp=datetime.datetime.utcnow())
+MEMORY = dict(stamp=utc())
 
 
 def valid2date(df):
@@ -256,12 +255,8 @@ def do_work(form):
     missing = form.get("missing", "M")
     if missing == "__custom__":
         missing = form.get("custom_missing", "M")
-    # detectlimit = form.get("detectlimit", "1")
 
-    # pylint: disable=abstract-class-instantiated
-    tmpfn = "td_%s.xlsx" % (
-        datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"),
-    )
+    tmpfn = f"td_{utc():%Y%m%d%H%M%S}.xlsx"
     writer = pd.ExcelWriter(f"/tmp/{tmpfn}", engine="xlsxwriter")
 
     # First sheet is Data Dictionary
@@ -482,7 +477,7 @@ def do_work(form):
         pass
     uri = f"https://datateam.agron.iastate.edu/tmp/{tmpfn}"
     etext = EMAILTEXT % (
-        datetime.datetime.utcnow().strftime("%d %B %Y %H:%M:%S"),
+        utc().strftime("%d %B %Y %H:%M:%S"),
         uri,
     )
 
