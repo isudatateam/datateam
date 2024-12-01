@@ -4,11 +4,11 @@ on the Google Drive
 """
 
 # stdlib
-import datetime
 import json
 import smtplib
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from zoneinfo import ZoneInfo
@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 import gdata.gauth
 import gdata.sites.client as sclient
 from gdata.client import RequestError
-from pyiem.util import logger
+from pyiem.util import logger, utc
 
 import isudatateam.cscap_utils as util
 
@@ -107,9 +107,7 @@ def sites_changelog(regime, yesterday, html):
         return html
     tablerows = []
     for entry in feed.entry:
-        ts = datetime.datetime.strptime(
-            entry.updated.text, "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
+        ts = datetime.strptime(entry.updated.text, "%Y-%m-%dT%H:%M:%S.%fZ")
         ts = ts.replace(tzinfo=ZoneInfo("UTC"))
         if ts < yesterday:
             continue
@@ -206,13 +204,13 @@ def drive_changelog(regime, yesterday, html):
                 continue
             # Files copied in could have a createdDate of interest, but old
             # modification date
-            created = datetime.datetime.strptime(
+            created = datetime.strptime(
                 item["file"]["createdDate"][:19], "%Y-%m-%dT%H:%M:%S"
-            ).replace(tzinfo=datetime.timezone.utc)
+            ).replace(tzinfo=timezone.utc)
             # don't do more work when this file actually did not change
-            modifiedDate = datetime.datetime.strptime(
+            modifiedDate = datetime.strptime(
                 item["file"]["modifiedDate"][:19], "%Y-%m-%dT%H:%M:%S"
-            ).replace(tzinfo=datetime.timezone.utc)
+            ).replace(tzinfo=timezone.utc)
             if modifiedDate < yesterday and created < yesterday:
                 continue
             # Need to see which base folder this file is in!
@@ -328,13 +326,10 @@ def main(argv):
     """Do Fun things"""
     regime = argv[1]
 
-    today = datetime.datetime.utcnow()
-    today = today.replace(
-        tzinfo=ZoneInfo("UTC"), hour=12, minute=0, second=0, microsecond=0
-    )
-    yesterday = today - datetime.timedelta(days=1)
+    today = utc().replace(hour=12, minute=0, second=0, microsecond=0)
+    yesterday = today - timedelta(days=1)
     localts = yesterday.astimezone(LOCALTZ)
-    ts2 = localts + datetime.timedelta(hours=24)
+    ts2 = localts + timedelta(hours=24)
     html = f"""
 <h3>{CFG[regime]['title']} Cloud Data Changes</h3>
 <br />

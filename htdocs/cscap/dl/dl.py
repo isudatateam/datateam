@@ -5,7 +5,6 @@ select string_agg(column_name, ', ') from
     table_name='management' ORDER by ordinal_position) as foo;
 """
 
-import datetime
 import os
 import re
 import shutil
@@ -17,7 +16,7 @@ import numpy as np
 import pandas as pd
 from pyiem.database import get_dbconn, get_dbconnstr
 from pyiem.exceptions import NoDataFound
-from pyiem.util import logger
+from pyiem.util import logger, utc
 from pyiem.webutil import ensure_list, iemapp
 from pymemcache import Client
 from sqlalchemy import text
@@ -115,7 +114,7 @@ AGG = {
     ],
 }
 # runtime storage
-MEMORY = dict(stamp=datetime.datetime.utcnow())
+MEMORY = dict(stamp=utc())
 ROT_CODES = {
     "ROT10": "ROT7v",
     "ROT11": "ROT8v",
@@ -724,13 +723,11 @@ def do_work(environ, start_response):
     msg.preamble = "Data"
     # conservative limit of 8 MB
     # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
-    tmpfn = ("cscap_%s.xlsx") % (
-        datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"),
-    )
+    tmpfn = f"cscap_{utc():%Y%m%d%H%M%S}.xlsx"
     shutil.copyfile("/tmp/cscap.xlsx", "/var/webtmp/%s" % (tmpfn,))
     uri = "https://datateam.agron.iastate.edu/tmp/%s" % (tmpfn,)
     etext = EMAILTEXT % (
-        datetime.datetime.utcnow().strftime("%d %B %Y %H:%M:%S"),
+        utc().strftime("%d %B %Y %H:%M:%S"),
         uri,
     )
 

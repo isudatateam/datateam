@@ -11,7 +11,7 @@ We end up return a JSON document that lists out what is possible
 import json
 
 import pandas as pd
-from pyiem.util import get_dbconnstr
+from pyiem.database import get_dbconnstr
 from pyiem.webutil import ensure_list, iemapp
 from sqlalchemy import text
 

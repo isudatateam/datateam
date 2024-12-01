@@ -1,11 +1,11 @@
 """Shrug."""
 
-import datetime
+from datetime import timedelta
 from io import BytesIO
 
 import numpy as np
+from pyiem.database import get_dbconn
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 from pyiem.webutil import iemapp
 
 
@@ -30,7 +30,7 @@ def make_plot(form):
     total = 0
     for i, row in enumerate(cursor):
         if i == 0:
-            x.append(row[0] - datetime.timedelta(days=1))
+            x.append(row[0] - timedelta(days=1))
             y.append(0)
         x.append(row[0])
         y.append(y[-1] + row[1])
@@ -44,7 +44,7 @@ def make_plot(form):
             fmt = "%b\n%Y" if (len(xticks) == 0 or now.month == 1) else "%b"
             xticks.append(now)
             xticklabels.append(now.strftime(fmt))
-        now += datetime.timedelta(days=1)
+        now += timedelta(days=1)
 
     (fig, ax) = plt.subplots(1, 1)
     ax.plot(x, np.array(y) / float(total) * 100.0)
