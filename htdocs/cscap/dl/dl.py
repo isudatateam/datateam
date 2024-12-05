@@ -661,7 +661,6 @@ def do_work(environ, start_response):
     sites = ensure_list(environ, "sites[]")
     # treatments = form.getlist('treatments[]')
     agronomic = redup(ensure_list(environ, "agronomic[]"))
-    print(environ["ghg[]"])
     soil = redup(ensure_list(environ, "soil[]"))
     ghg = redup(ensure_list(environ, "ghg[]"))
     ipm = redup(ensure_list(environ, "ipm[]"))
