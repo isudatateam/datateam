@@ -270,7 +270,7 @@ def drive_changelog(regime, yesterday, html):
                     )
                     revisions = {"items": []}
                 for item2 in revisions["items"]:
-                    md = datetime.datetime.strptime(
+                    md = datetime.strptime(
                         item2["modifiedDate"][:19], "%Y-%m-%dT%H:%M:%S"
                     )
                     md = md.replace(tzinfo=ZoneInfo("UTC"))
