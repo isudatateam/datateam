@@ -77,7 +77,7 @@ def make_plot(form, start_response):
     )
     stdf = stdf.reset_index()
 
-    title = ("Soil Temperature + Moisture for " "Site:%s Period:%s to %s") % (
+    title = ("Soil Temperature + Moisture for Site:%s Period:%s to %s") % (
         uniqueid,
         sts.date(),
         ets.date(),

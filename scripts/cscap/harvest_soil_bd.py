@@ -25,7 +25,7 @@ res = (
     drive_client.files()
     .list(
         q=("title contains '%s'")
-        % (("Soil Bulk Density and " "Water Retention Data"),)
+        % (("Soil Bulk Density and Water Retention Data"),)
     )
     .execute()
 )
