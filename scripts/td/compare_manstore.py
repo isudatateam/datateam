@@ -74,10 +74,7 @@ def list_fertilizer(cscapdf, tddf):
                 & (tddf["uniqueid"] == uniqueid)
             ]
             print(
-                (
-                    '<tr><td valign="top">%s</td>'
-                    '<td valign="top">%s</td></tr>'
-                )
+                ('<tr><td valign="top">%s</td><td valign="top">%s</td></tr>')
                 % (print_df(cdf), print_df(tdf))
             )
     print("</table>")

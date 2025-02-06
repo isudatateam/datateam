@@ -114,7 +114,7 @@ def main():
         delete_entries(current, siteid)
         if newvals > 0:
             print(
-                ("harvest_agronomic year: %s site: %s had %s new values" "")
+                ("harvest_agronomic year: %s site: %s had %s new values")
                 % (YEAR, siteid, newvals)
             )
 

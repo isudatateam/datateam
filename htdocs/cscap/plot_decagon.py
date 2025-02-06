@@ -206,7 +206,7 @@ def application(environ, start_response):
     if depth != "all":
         lbl = "Depth:%s" % (DEPTHS[int(depth)],)
     title = (
-        "Decagon Temperature + Moisture for " "Site:%s %s Period:%s to %s"
+        "Decagon Temperature + Moisture for Site:%s %s Period:%s to %s"
     ) % (uniqueid, lbl, sts.date(), ets.date())
     start_response("200 OK", [("Content-type", "application/javascript")])
     sio = StringIO()

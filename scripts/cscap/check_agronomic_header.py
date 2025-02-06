@@ -64,7 +64,7 @@ def main():
                     v2 = c2.get("formattedValue", "n/a").strip()
                     if v1 not in IGNORE and xref.get(v1, "") != v2:
                         print(
-                            ("%s -> '%s'\n" "        should be '%s'")
+                            ("%s -> '%s'\n        should be '%s'")
                             % (v1, v2, xref.get(v1))
                         )
                         rows.append(
