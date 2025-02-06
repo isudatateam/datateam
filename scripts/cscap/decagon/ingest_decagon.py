@@ -52,7 +52,6 @@ def process4(fn):
     extract = {}
     for col in df.columns[1:]:
         plotid = col[:-3]
-        depth = col[-2:]
         e = extract.setdefault(plotid, [df.columns[0]])
         e.append(col)
     print(extract)
@@ -70,7 +69,7 @@ def process4(fn):
 
 def process3(fn):
     """SERF"""
-    mydict = pd.read_excel(fn, sheetname=None, index_col=False)
+    mydict = pd.read_excel(fn, sheet_name=None, index_col=False)
     # Need to load up rows 0 and 1 into the column names
     for sheetname in mydict:
         df = mydict[sheetname]
@@ -133,7 +132,7 @@ def process6(uniqueid, dirname):
         thissite = "HICKS.%s" % (plotid[0],)
         plotid = plotid[1]
         print("%s %s %s" % (fn, thissite, plotid))
-        df = pd.read_excel(fn, sheetname=None)
+        df = pd.read_excel(fn, sheet_name=None)
         sheets = df.keys()
         df[sheets[0]].set_index("valid", inplace=True)
         df[sheets[1]].set_index("valid", inplace=True)
