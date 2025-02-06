@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.webutil import iemapp
 from sqlalchemy import text
 
@@ -26,7 +26,6 @@ LINESTYLE = (
 @iemapp()
 def application(environ, start_response):
     """Make the plot"""
-    sio = StringIO()
     (uniqueid, plotid) = environ.get("site", "ISUAG::302E").split("::")
     if uniqueid in ["KELLOGG", "MASON"]:
         DEPTHS[1] = "-"
@@ -206,7 +205,7 @@ def application(environ, start_response):
     if depth != "all":
         lbl = "Depth:%s" % (DEPTHS[int(depth)],)
     title = (
-        "Decagon Temperature + Moisture for " "Site:%s %s Period:%s to %s"
+        "Decagon Temperature + Moisture for Site:%s %s Period:%s to %s"
     ) % (uniqueid, lbl, sts.date(), ets.date())
     start_response("200 OK", [("Content-type", "application/javascript")])
     sio = StringIO()

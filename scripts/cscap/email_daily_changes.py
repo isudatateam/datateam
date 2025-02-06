@@ -83,7 +83,7 @@ def pprint(mydict):
 def sites_changelog(regime, yesterday, html):
     """Do Sites Changelog"""
     html += f"""
-    <h4>{CFG[regime]['title']} Internal Website Changes</h4>
+    <h4>{CFG[regime]["title"]} Internal Website Changes</h4>
     <table border="1" cellpadding="3" cellspacing="0">
     <thead><tr><th>Time</th><th>Activity</th></tr></thead>
     <tbody>"""
@@ -249,7 +249,7 @@ def drive_changelog(regime, yesterday, html):
             )
             html += f"""
 <tr>
-<td><a href="{uu}">{folders[pfolder]['title']}</a></td>
+<td><a href="{uu}">{folders[pfolder]["title"]}</a></td>
 <td><a href="{uri}">{title}</a></td></tr>
             """
             hit = False
@@ -291,7 +291,7 @@ def drive_changelog(regime, yesterday, html):
                         email_address = "akrherz@iastate.edu"
                     thismsg = f"""
 <tr><td colspan="2">
-<img src="{luser['picture']['url'] if 'picture' in luser else ''}"
+<img src="{luser["picture"]["url"] if "picture" in luser else ""}"
 style="height:25px;"/>{localts:%-d %b %-I:%M %p} by
 {display_name} ({email_address})</td></tr>
                     """
@@ -303,9 +303,9 @@ style="height:25px;"/>{localts:%-d %b %-I:%M %p} by
                 luser = item["file"].get("lastModifyingUser", {})
                 html += f"""
 <tr><td colspan="2">
-<img src="{luser['picture']['url'] if 'picture' in luser else ''}"
+<img src="{luser["picture"]["url"] if "picture" in luser else ""}"
 style="height:25px;"/> {localts:%-d %b %-I:%M %p} by
- {luser.get('displayName', 'n/a')} ({luser.get('emailAddress', 'n/a')})
+ {luser.get("displayName", "n/a")} ({luser.get("emailAddress", "n/a")})
  </td></tr>
                 """
         if not page_token:
@@ -331,7 +331,7 @@ def main(argv):
     localts = yesterday.astimezone(LOCALTZ)
     ts2 = localts + timedelta(hours=24)
     html = f"""
-<h3>{CFG[regime]['title']} Cloud Data Changes</h3>
+<h3>{CFG[regime]["title"]} Cloud Data Changes</h3>
 <br />
 <p>Period: {localts:%-I %p %-d %B %Y} - {ts2:%-I %p %-d %B %Y}
 

@@ -8,7 +8,7 @@ config = util.get_config()
 
 # Get me a client, stat
 spr_client = util.get_spreadsheet_client(config)
-drive_client = util.get_driveclient()
+drive_client = util.get_driveclient(config)
 
 res = (
     drive_client.files().list(q="title contains 'Soil Nitrate Data'").execute()

@@ -66,10 +66,7 @@ for item in res["items"]:
             )
             if plcode != code:
                 print(
-                    (
-                        " Conflict: Plot:%s Rotation PlotIdSheet->%s "
-                        "AgSheet->%s"
-                    )
+                    (" Conflict: Plot:%s Rotation PlotIdSheet->%s AgSheet->%s")
                     % (data["plotid"], plotids[data["plotid"]], code)
                 )
             if newval != data["rotation"]:
