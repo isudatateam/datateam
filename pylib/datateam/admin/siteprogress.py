@@ -231,14 +231,15 @@ def application(environ, start_response):
         sio.write("</tr>\n\n")
     sid = "_ALL"
     sio.write("""<tr><th>%s</th>""" % (sid,))
-    row = data[sid]
-    sio.write("<td>%s</td>" % (make_progress(row)))
-    sio.write("<td>%.0f</td>" % (row["tot"],))
-    sio.write(
-        "<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0)
-    )
-    sio.write("</tr>\n\n")
-    sio.write("</table>")
+    if "_ALL" in data:
+        row = data[sid]
+        sio.write("<td>%s</td>" % (make_progress(row)))
+        sio.write("<td>%.0f</td>" % (row["tot"],))
+        sio.write(
+            "<td>%.0f%%</td>" % (((row["hits2"]) / float(row["all"])) * 100.0)
+        )
+        sio.write("</tr>\n\n")
+        sio.write("</table>")
 
     start_response("200 OK", [("Content-type", "text/html")])
     return [sio.getvalue().encode("ascii")]

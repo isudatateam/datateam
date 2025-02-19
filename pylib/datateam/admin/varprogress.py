@@ -38,13 +38,16 @@ def make_plot(form):
     pgconn.close()
     xticks = []
     xticklabels = []
-    now = x[0]
-    while now < x[-1]:
-        if now.day == 1:
-            fmt = "%b\n%Y" if (len(xticks) == 0 or now.month == 1) else "%b"
-            xticks.append(now)
-            xticklabels.append(now.strftime(fmt))
-        now += timedelta(days=1)
+    if x:
+        now = x[0]
+        while now < x[-1]:
+            if now.day == 1:
+                fmt = (
+                    "%b\n%Y" if (len(xticks) == 0 or now.month == 1) else "%b"
+                )
+                xticks.append(now)
+                xticklabels.append(now.strftime(fmt))
+            now += timedelta(days=1)
 
     (fig, ax) = plt.subplots(1, 1)
     ax.plot(x, np.array(y) / float(total) * 100.0)

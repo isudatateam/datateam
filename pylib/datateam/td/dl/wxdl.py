@@ -6,7 +6,7 @@ import os
 
 import pandas as pd
 from paste.request import parse_formvars
-from pyiem.util import get_dbconnstr
+from pyiem.util import LOG, get_dbconnstr
 from sqlalchemy import text
 
 VARDF = {
@@ -53,12 +53,12 @@ def sane_date(year, month, day):
 def get_cgi_dates(form):
     """Figure out which dates are requested via the form, we shall attempt
     to account for invalid dates provided!"""
-    y1 = int(form.get("year1"))
-    m1 = int(form.get("month1"))
-    d1 = int(form.get("day1"))
-    y2 = int(form.get("year2"))
-    m2 = int(form.get("month2"))
-    d2 = int(form.get("day2"))
+    y1 = int(form.get("year1", 2000))
+    m1 = int(form.get("month1", 1))
+    d1 = int(form.get("day1", 1))
+    y2 = int(form.get("year2", 2000))
+    m2 = int(form.get("month2", 1))
+    d2 = int(form.get("day2", 1))
 
     ets = sane_date(y2, m2, d2)
     archive_end = datetime.date.today() - datetime.timedelta(days=1)
@@ -112,8 +112,14 @@ def do_work(form):
 
 def application(environ, start_response):
     """Do Stuff"""
-    form = parse_formvars(environ)
-    res, fn = do_work(form)
+    try:
+        form = parse_formvars(environ)
+        res, fn = do_work(form)
+    except Exception as exp:
+        LOG.exception(exp, exc_info=True)
+        start_response("200 OK", [("Content-type", "text/plain")])
+        return [b"Failure to parse dates"]
+
     headers = [
         ("Content-type", "application/vnd.ms-excel"),
         ("Content-Disposition", f"attachment;filename=wx_{fn}.xls"),

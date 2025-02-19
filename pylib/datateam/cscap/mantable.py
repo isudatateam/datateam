@@ -162,6 +162,8 @@ def application(environ, start_response):
 
     table = ""
     for site in COVER_SITES:  # data.keys():
+        if site not in data:
+            continue
         table += "<tr><td>%s</td>" % (site,)
         for yr in ["2011", "2012", "2013", "2014", "2015"]:
             for op in ["harvest_corn", "harvest_soy"]:
@@ -177,6 +179,8 @@ def application(environ, start_response):
     # ---------------------------------------------------------------
     table2 = ""
     for site in COVER_SITES:  # data.keys():
+        if site not in data:
+            continue
         table2 += "<tr><td>%s</td>" % (site,)
         for yr in ["2011", "2012", "2013", "2014", "2015"]:
             for op in [
@@ -197,6 +201,8 @@ def application(environ, start_response):
     # ---------------------------------------------------------------
     table3 = ""
     for site in COVER_SITES:  # data.keys():
+        if site not in data:
+            continue
         table3 += "<tr><td>%s</td>" % (site,)
         for yr in ["2012", "2013", "2014", "2015"]:
             for op in [
@@ -216,6 +222,8 @@ def application(environ, start_response):
     # ---------------------------------------------------------------
     table4 = ""
     for site in COVER_SITES:  # data.keys():
+        if site not in data:
+            continue
         table4 += "<tr><td>%s</td>" % (site,)
         for yr in ["2011", "2012", "2013", "2014", "2015"]:
             for op in ["plant_corn", "plant_soy"]:
@@ -225,6 +233,8 @@ def application(environ, start_response):
     # ---------------------------------------------------------------
     table5 = ""
     for site in COVER_SITES:  # data.keys():
+        if site not in data:
+            continue
         table5 += "<tr><td>%s</td>" % (site,)
         for yr in ["2011", "2012", "2013", "2014", "2015"]:
             for op in [

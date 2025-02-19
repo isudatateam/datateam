@@ -5,7 +5,8 @@ import os
 import re
 
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
+from pyiem.util import LOG
 from pyiem.webutil import iemapp
 from sqlalchemy import text
 
@@ -35,10 +36,13 @@ def get_df(equation):
         columns=("varname",),
         aggfunc=lambda x: " ".join(str(v) for v in x),
     )
-    df.eval("calc = %s" % (equation,), inplace=True)
-    df.sort_values(by="calc", inplace=True)
-    df.reset_index(inplace=True)
-    df = df[pd.notnull(df["calc"])]
+    try:
+        df.eval("calc = %s" % (equation,), inplace=True)
+        df.sort_values(by="calc", inplace=True)
+        df.reset_index(inplace=True)
+        df = df[pd.notnull(df["calc"])]
+    except Exception as exp:
+        LOG.exception(exp, exc_info=True)
     return df
 
 
