@@ -5,6 +5,7 @@ dependencies:
   - pyiem
   # testing
   - pytest
+  - pytest-cov
   # for pandas
   - sqlalchemy
   # testing
