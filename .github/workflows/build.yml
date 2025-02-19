@@ -64,6 +64,7 @@ jobs:
         set -e
         sudo ln -s `pwd` /opt/datateam
         sudo cp config/datateam-vhost.conf /etc/apache2/sites-enabled/datateam.conf
+        sudo cp config/datateam.inc /etc/apache2/conf.d/datateam.inc
 
         # ci_tooling places a mod_wsgi conf with startup disabled, we enable it
         sudo sed -i 's/# WSGIImportScript/WSGIImportScript/' /etc/apache2/sites-enabled/mod_wsgi.conf
