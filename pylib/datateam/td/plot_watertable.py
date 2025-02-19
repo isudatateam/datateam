@@ -2,7 +2,6 @@
 
 # pylint: disable=abstract-class-instantiated
 import datetime
-import sys
 
 import numpy as np
 import pandas as pd
@@ -10,8 +9,7 @@ from pandas.io.sql import read_sql
 from paste.request import parse_formvars
 from pyiem.util import get_dbconn
 
-sys.path.append("/opt/datateam/htdocs/td")
-from common import CODES, COPYWRITE, getColor, send_error  # noqa
+from .common import CODES, COPYWRITE, getColor, send_error
 
 LINESTYLE = [
     "-",

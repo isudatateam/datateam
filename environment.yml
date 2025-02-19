@@ -1,0 +1,11 @@
+dependencies:
+  - coverage
+  - numpy
+  # Ensure a bit of discipline
+  - pyiem
+  # testing
+  - pytest
+  # for pandas
+  - sqlalchemy
+  # testing
+  - werkzeug

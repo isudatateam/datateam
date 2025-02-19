@@ -1,16 +1,13 @@
 """SM Plot!"""
 
-# pylint: disable=abstract-class-instantiated
 import datetime
-import sys
 
 import numpy as np
 import pandas as pd
 from paste.request import parse_formvars
 from pyiem.util import get_sqlalchemy_conn
 
-sys.path.append("/opt/datateam/htdocs/td")
-from common import COPYWRITE, send_error  # noqa
+from .common import COPYWRITE, send_error
 
 LINESTYLE = [
     "-",
