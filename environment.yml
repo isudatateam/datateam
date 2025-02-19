@@ -1,0 +1,14 @@
+dependencies:
+  - coverage
+  - numpy
+  # legacy
+  - psycopg2
+  # Ensure a bit of discipline
+  - pyiem
+  # testing
+  - pytest
+  - pytest-cov
+  # for pandas
+  - sqlalchemy
+  # testing
+  - werkzeug

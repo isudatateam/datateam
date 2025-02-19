@@ -1,0 +1,97 @@
+name: Install and Test
+on:
+    pull_request:
+      branches:
+        - main
+    push:
+      branches:
+        - main
+jobs:
+  build-linux:
+    name: Python (${{ matrix.PYTHON_VERSION }})
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Ensures environment gets sourced right
+        shell: bash -l {0}  
+    strategy:
+      matrix:
+        PYTHON_VERSION: ["3.11"]
+    env:
+      PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Add /etc/hosts entries
+      run: |
+        cat .github/workflows/etchosts.txt | sudo tee -a /etc/hosts
+
+    - name: Run IEM Database container
+      run: |
+        docker run -d --name iem_database -p 5432:5432 ghcr.io/akrherz/iem_database:test_data
+        until docker exec iem_database pg_isready -h localhost; do
+          sleep 6
+        done
+
+    - name: Run Memcached container
+      run: |
+        docker run -d --name iem_memcached -p 11211:11211 memcached:1.6.9
+
+    # setup conda-forge with micromamba
+    - name: Setup Python
+      uses: mamba-org/setup-micromamba@v2
+      with:
+        environment-file: environment.yml
+        condarc: |
+          channels:
+            - conda-forge
+            - defaults
+        create-args: >-
+          python=${{ env.PYTHON_VERSION }}
+        environment-name: prod
+        cache-environment: true
+
+    - name: Setup IEMFarm Environment
+      run: |
+        set -e
+        git clone --depth 1 https://github.com/akrherz/ci_tooling.git .ci_tooling
+        cd .ci_tooling
+        . iemwebfarm.sh
+        cd ..
+
+    - name: Configure Apache
+      run: |
+        set -e
+        sudo ln -s `pwd` /opt/datateam
+        sudo cp config/datateam-vhost-ci.conf /etc/apache2/sites-enabled/datateam.conf
+
+        # ci_tooling places a mod_wsgi conf with startup disabled, we enable it
+        sudo sed -i 's/# WSGIImportScript/WSGIImportScript/' /etc/apache2/sites-enabled/mod_wsgi.conf
+
+        sudo systemctl restart apache2
+
+    #- name: Debug with SSH
+    #  uses: lhotari/action-upterm@v1
+    - name: Run Website Request Tests
+      run: |
+        set -e
+        export PYTHONPATH=/opt/datateam/pylib
+        python -m pytest --cov=datateam -v tests
+        python -m coverage xml
+
+    - name: Upload to codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: coverage.xml
+
+    - name: View Apache Logs
+      if: failure()
+      run: |
+        sudo systemctl status apache2 -l
+        sudo cat /var/log/apache2/error.log
+  
+    - name: View PHP-FPM Logs
+      if: failure()
+      run: |
+        sudo cat /var/log/php*-fpm.log
