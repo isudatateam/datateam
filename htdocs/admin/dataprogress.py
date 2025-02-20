@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/admin/dataprogress.py"""
+"""implementation in src/isudatateam/admin/dataprogress.py"""
 
-from datateam.admin.dataprogress import application
+from isudatateam.admin.dataprogress import application
 
 # Appease linter
 _ = application

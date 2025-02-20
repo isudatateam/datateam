@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/cscap/mantable.py"""
+"""implementation in src/isudatateam/cscap/mantable.py"""
 
-from datateam.cscap.mantable import application
+from isudatateam.cscap.mantable import application
 
 # Appease linter
 _ = application

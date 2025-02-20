@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/cscap/dl/filter.py"""
+"""implementation in src/isudatateam/cscap/dl/filter.py"""
 
-from datateam.cscap.dl.filter import application
+from isudatateam.cscap.dl.filter import application
 
 # Appease linter
 _ = application

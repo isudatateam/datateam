@@ -1,5 +1,8 @@
 dependencies:
   - coverage
+  # legacy
+  - google-api-python-client
+  - google-auth
   - numpy
   # legacy
   - psycopg2
@@ -8,6 +11,8 @@ dependencies:
   # testing
   - pytest
   - pytest-cov
+  # legacy stuff
+  - smartsheet-python-sdk
   # for pandas
   - sqlalchemy
   # testing

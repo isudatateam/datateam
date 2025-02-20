@@ -75,8 +75,8 @@ jobs:
     - name: Run Website Request Tests
       run: |
         set -e
-        export PYTHONPATH=/opt/datateam/pylib
-        python -m pytest --cov=datateam -v tests
+        export PYTHONPATH=/opt/datateam/src
+        python -m pytest --cov=isudatateam -v tests
         python -m coverage xml
 
     - name: Upload to codecov

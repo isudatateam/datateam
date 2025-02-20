@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/td/dl/wxdl.py"""
+"""implementation in src/isudatateam/td/dl/wxdl.py"""
 
-from datateam.td.dl.wxdl import application
+from isudatateam.td.dl.wxdl import application
 
 # Appease linter
 _ = application

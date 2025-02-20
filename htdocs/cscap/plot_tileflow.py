@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/cscap/plot_tileflow.py"""
+"""implementation in src/isudatateam/cscap/plot_tileflow.py"""
 
-from datateam.cscap.plot_tileflow import application
+from isudatateam.cscap.plot_tileflow import application
 
 # Appease linter
 _ = application
