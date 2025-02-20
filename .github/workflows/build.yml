@@ -1,4 +1,4 @@
-name: Install and Test
+name: CI
 on:
     pull_request:
       branches:
@@ -72,10 +72,10 @@ jobs:
 
     #- name: Debug with SSH
     #  uses: lhotari/action-upterm@v1
-    - name: Run Website Request Tests
+    - name: Install and Run Coverage
       run: |
         set -e
-        export PYTHONPATH=/opt/datateam/src
+        python -m pip install . --upgrade --no-deps
         python -m pytest --cov=isudatateam -v tests
         python -m coverage xml
 

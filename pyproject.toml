@@ -1,3 +1,17 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+description = "Legacy stuff that helped the ISU DataTeam in the early 2010s"
+dynamic = ["version"]
+name = "isudatateam"
+license = {text = "Apache"}
+readme = "README.md"
+
+[project.urls]
+"homepage" = "https://github.com/isudatateam/datateam"
+
 
 [tool.ruff]
 line-length = 79
@@ -12,3 +26,9 @@ select = [
     "F",
     "I",
 ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools_scm
