@@ -23,20 +23,20 @@ nt = NetworkTable(
         "MICLIMATE",
     )
 )
-PLOTS = [
+PLOTS1 = [
     "annual_sum_precip",
     "annual_avg_temp",
     "frost_free",
     "gdd50",
     "hdd65",
 ]
-PLOTS = [
+PLOTS2 = [
     "summer_avg_temp",
     "fall_avg_temp",
     "spring_avg_temp",
     "winter_avg_temp",
 ]
-PLOTS = [
+PLOTS3 = [
     "summer_avg_high",
     "winter_avg_low",
     "summer_avg_low",

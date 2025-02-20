@@ -39,12 +39,12 @@ HEADERS = [
     "sampledate",
 ]
 
-LKP = {
+LKP0 = {
     "TIL1": "[1] No Tillage (NT)",
     "TIL2": "[2] Conventional Tillage (CT)",
     "TIL3": "[3] Natural Vegetation (NV)",
 }
-LKP = {
+LKP1 = {
     "DWM1": "[1] No drainage",
     "DWM2": '[2] Conventional drainage ("free")',
     "DWM3": '[3] Controlled drainage ("managed")',
@@ -52,7 +52,7 @@ LKP = {
     "DWM5": "[5] Drainage with subirrigation",
     "DWM6": "[6] Lysimeters ",
 }
-LKP = {
+LKP2 = {
     "NIT1": "[1] No additional nitrogen fertilizer applied",
     "NIT2": "[2] MRTN application of N fertilizer in spring",
     "NIT3": "[3] Sensor based N application (mid-season) - MO/OH rec",
