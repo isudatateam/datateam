@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/td/plot_watertable.py"""
+"""implementation in src/isudatateam/td/plot_watertable.py"""
 
-from datateam.td.plot_watertable import application
+from isudatateam.td.plot_watertable import application
 
 # Appease linter
 _ = application

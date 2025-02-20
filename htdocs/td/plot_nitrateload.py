@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/td/plot_nitrateload.py"""
+"""implementation in src/isudatateam/td/plot_nitrateload.py"""
 
-from datateam.td.plot_nitrateload import application
+from isudatateam.td.plot_nitrateload import application
 
 # Appease linter
 _ = application

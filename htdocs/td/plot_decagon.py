@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/td/plot_decagon.py"""
+"""implementation in src/isudatateam/td/plot_decagon.py"""
 
-from datateam.td.plot_decagon import application
+from isudatateam.td.plot_decagon import application
 
 # Appease linter
 _ = application

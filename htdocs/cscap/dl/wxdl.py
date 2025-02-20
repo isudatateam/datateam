@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/cscap/dl/wxdl.py"""
+"""implementation in src/isudatateam/cscap/dl/wxdl.py"""
 
-from datateam.cscap.dl.wxdl import application
+from isudatateam.cscap.dl.wxdl import application
 
 # Appease linter
 _ = application

@@ -19,7 +19,7 @@ def get_services(package_name):
             yield mod
 
 
-@pytest.mark.parametrize("service", get_services("datateam"))
+@pytest.mark.parametrize("service", get_services("isudatateam"))
 def test_all(service):
     """Test all apps."""
     c = Client(service.application)

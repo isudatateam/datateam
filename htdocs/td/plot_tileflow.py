@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/td/plot_tileflow.py"""
+"""implementation in src/isudatateam/td/plot_tileflow.py"""
 
-from datateam.td.plot_tileflow import application
+from isudatateam.td.plot_tileflow import application
 
 # Appease linter
 _ = application

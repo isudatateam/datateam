@@ -1,6 +1,6 @@
-"""implementation in pylib/datateam/admin/calc.py"""
+"""implementation in src/isudatateam/admin/calc.py"""
 
-from datateam.admin.calc import application
+from isudatateam.admin.calc import application
 
 # Appease linter
 _ = application
