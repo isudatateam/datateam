@@ -400,7 +400,7 @@ function build_sites_ui(){
         "IN" => "Indiana",
         "MI" => "Michigan",
         "OH" => "Ohio");
-    $pgconn = pg_connect("dbname=mesosite host=iemdb-sustainablecorn.local user=nobody");
+    $pgconn = pg_connect("dbname=mesosite host=iemdb-mesosite.local user=nobody");
     $rs = pg_query($pgconn, "SELECT * from stations where network = 'CSCAP'".
             " and id !~* 'ONFARM' and ".
             "id not in ('VICMS', 'NAEW.Y102', 'NAEW.Y103', 'NAEW.WS115', ".
