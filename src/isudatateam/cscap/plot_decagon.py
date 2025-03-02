@@ -7,9 +7,8 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.webutil import iemapp
-from sqlalchemy import text
 
 ERRMSG = (
     "No data found. Check the start date falls within the "
@@ -56,8 +55,8 @@ def application(environ, start_response):
     if ptype == "1":
         with get_sqlalchemy_conn("sustainablecorn") as conn:
             df = pd.read_sql(
-                text(
-                    f"""SELECT uniqueid, plotid, valid as v,
+                sql_helper(
+                    """SELECT uniqueid, plotid, valid as v,
             d1temp_qc as d1t,
             d2temp_qc as d2t,
             d3temp_qc as d3t,
@@ -70,7 +69,8 @@ def application(environ, start_response):
             d5moisture_qc as d5m
             from decagon_data WHERE uniqueid = :uid {plotid_limit}
             and valid between :sts and :ets ORDER by valid ASC
-            """
+            """,
+                    plotid_limit=plotid_limit,
                 ),
                 conn,
                 params={
@@ -86,8 +86,8 @@ def application(environ, start_response):
         res = "hour" if ptype == "3" else "week"
         with get_sqlalchemy_conn("sustainablecorn") as conn:
             df = pd.read_sql(
-                text(
-                    f"""SELECT uniqueid, plotid,
+                sql_helper(
+                    """SELECT uniqueid, plotid,
             timezone('UTC',
                 date_trunc('{res}', valid at time zone 'UTC')) as v,
             avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
@@ -99,7 +99,9 @@ def application(environ, start_response):
             from decagon_data WHERE uniqueid = :uid {plotid_limit}
             and valid between :sts and :ets
             GROUP by uniqueid, v, plotid ORDER by v ASC
-            """
+            """,
+                    res=res,
+                    plotid_limit=plotid_limit,
                 ),
                 conn,
                 params={
@@ -114,8 +116,8 @@ def application(environ, start_response):
     else:
         with get_sqlalchemy_conn("sustainablecorn") as conn:
             df = pd.read_sql(
-                text(
-                    f"""SELECT uniqueid, plotid,
+                sql_helper(
+                    """SELECT uniqueid, plotid,
             timezone('UTC', date_trunc('day', valid at time zone :tz)) as v,
             avg(d1temp_qc) as d1t, avg(d2temp_qc) as d2t,
             avg(d3temp_qc) as d3t, avg(d4temp_qc) as d4t,
@@ -126,7 +128,8 @@ def application(environ, start_response):
             from decagon_data WHERE uniqueid = :uid {plotid_limit}
             and valid between :sts and :ets
             GROUP by uniqueid, v, plotid ORDER by v ASC
-            """
+            """,
+                    plotid_limit=plotid_limit,
                 ),
                 conn,
                 params={

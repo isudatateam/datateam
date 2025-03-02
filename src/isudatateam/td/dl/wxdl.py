@@ -6,8 +6,8 @@ import os
 
 import pandas as pd
 from paste.request import parse_formvars
-from pyiem.util import LOG, get_dbconnstr
-from sqlalchemy import text
+from pyiem.database import get_dbconnstr, sql_helper
+from pyiem.util import LOG
 
 VARDF = {
     "siteid": "",
@@ -76,7 +76,7 @@ def do_work(form):
         stations.append("XXX")
     sts, ets = get_cgi_dates(form)
     df = pd.read_sql(
-        text(
+        sql_helper(
             "SELECT *, extract(doy from date) as doy from weather_data "
             "WHERE siteid = ANY(:sites) and date >= :sts and date <= :ets "
             "ORDER by siteid ASC, date ASC"

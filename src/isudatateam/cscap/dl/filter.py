@@ -11,9 +11,8 @@ We end up return a JSON document that lists out what is possible
 import json
 
 import pandas as pd
-from pyiem.database import get_dbconnstr
+from pyiem.database import get_dbconnstr, sql_helper
 from pyiem.webutil import ensure_list, iemapp
-from sqlalchemy import text
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
 AGG = {
@@ -94,7 +93,7 @@ def do_filter(environ):
 
     # build a list of treatments based on the sites selected
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
         SELECT distinct tillage, rotation, drainage, nitrogen,
         landscape from plotids where uniqueid = ANY(:sites)
@@ -133,16 +132,17 @@ def do_filter(environ):
         sql = sql + " and ".join(arsql)
 
     df = pd.read_sql(
-        text(
-            f"""
+        sql_helper(
+            """
     with myplotids as (
         SELECT uniqueid, plotid, nitrogen from plotids
-        WHERE uniqueid = ANY(:sites) {sql}
+        WHERE uniqueid = ANY(:sites) {txtsql}
     )
     SELECT distinct varname from agronomic_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
     a.value not in ('n/a', 'did not collect')
-    """
+    """,
+            txtsql=sql,
         ),
         pgconn,
         params=args,
@@ -153,16 +153,17 @@ def do_filter(environ):
 
     # build a list of soil data based on the plotids and sites
     df = pd.read_sql(
-        text(
-            f"""
+        sql_helper(
+            """
     with myplotids as (
         SELECT uniqueid, plotid from plotids
-        WHERE uniqueid = ANY(:sites) {sql}
+        WHERE uniqueid = ANY(:sites) {txtsql}
     )
     SELECT distinct varname from soil_data a, myplotids p
     WHERE a.uniqueid = p.uniqueid and a.plotid = p.plotid and
     a.value not in ('n/a', 'did not collect')
-    """
+    """,
+            txtsql=sql,
         ),
         pgconn,
         params=args,
@@ -173,7 +174,7 @@ def do_filter(environ):
 
     # Figure out which GHG variables we have
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
     with myplotids as (
         SELECT uniqueid, plotid from plotids
@@ -195,7 +196,7 @@ def do_filter(environ):
 
     # Figure out which IPM variables we have
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
     with myplotids as (
         SELECT uniqueid, plotid from plotids
@@ -221,8 +222,8 @@ def do_filter(environ):
     if _g:
         ghglimiter = "( %s )" % ("or".join(_g),)
     df = pd.read_sql(
-        text(
-            f"""
+        sql_helper(
+            """
     WITH soil_years as (
         SELECT distinct year from soil_data where varname = ANY(:soils)
         and uniqueid = ANY(:sites)
@@ -238,7 +239,8 @@ def do_filter(environ):
         UNION select year from ghg_years)
 
     SELECT distinct year from agg ORDER by year
-    """
+    """,
+            ghglimiter=ghglimiter,
         ),
         pgconn,
         params={

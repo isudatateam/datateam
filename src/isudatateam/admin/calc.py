@@ -5,10 +5,9 @@ import os
 import re
 
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.util import LOG
 from pyiem.webutil import iemapp
-from sqlalchemy import text
 
 VARRE = re.compile(r"(AGR[0-9]{1,2})")
 
@@ -19,7 +18,7 @@ def get_df(equation):
     varnames = VARRE.findall(equation)
     with get_sqlalchemy_conn("sustainablecorn") as pgconn:
         df = pd.read_sql(
-            text(
+            sql_helper(
                 """
         SELECT * from agronomic_data WHERE varname = ANY(:vars)
         """
