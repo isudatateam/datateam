@@ -14,12 +14,11 @@ from email.mime.text import MIMEText
 
 import numpy as np
 import pandas as pd
-from pyiem.database import get_dbconn, get_dbconnstr
+from pyiem.database import get_dbconn, get_dbconnstr, sql_helper
 from pyiem.exceptions import NoDataFound
 from pyiem.util import logger, utc
 from pyiem.webutil import ensure_list, iemapp
 from pymemcache import Client
-from sqlalchemy import text
 
 LOG = logger()
 VARNAME_RE = re.compile(r"^[A-Z]+[0-9]$")
@@ -220,7 +219,7 @@ def do_dictionary(writer):
 def do_metadata_master(writer, sites, missing):
     """get Metadata master data"""
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT uniqueid,
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
@@ -252,8 +251,8 @@ def do_ghg(writer, sites, ghg, years, missing):
     """get GHG data"""
     cols = ", ".join(['%s as "%s"' % (s, s) for s in ghg])
     df = pd.read_sql(
-        text(
-            f"""
+        sql_helper(
+            """
     SELECT d.uniqueid, d.plotid, d.date, d.year, d.method, d.subsample,
     d.position, {cols}
     from ghg_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
@@ -261,7 +260,8 @@ def do_ghg(writer, sites, ghg, years, missing):
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null)
     and d.uniqueid = ANY(:sites) and d.year = ANY(:years)
     ORDER by d.uniqueid, year, date, plotid
-    """
+    """,
+            cols=cols,
         ),
         PGCONN,
         params={"sites": sites, "years": years},
@@ -276,15 +276,16 @@ def do_ipm(writer, sites, ipm, years, missing):
     """get IPM data"""
     cols = ", ".join(ipm)
     df = pd.read_sql(
-        text(
-            f"""
+        sql_helper(
+            """
     SELECT d.uniqueid, d.plotid, d.date, d.year, {cols}
     from ipm_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
     d.plotid = p.plotid)
     WHERE (p.herbicide != 'HERB2' or p.herbicide is null) and
     d.uniqueid = ANY(:sites) and d.year = ANY(:years)
     ORDER by d.uniqueid, year, date, plotid
-    """
+    """,
+            cols=cols,
         ),
         PGCONN,
         params={"sites": sites, "years": years},
@@ -299,7 +300,7 @@ def do_ipm(writer, sites, ipm, years, missing):
 def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     """get agronomic data"""
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT d.uniqueid, d.plotid, d.varname, d.year, d.value
     from agronomic_data d JOIN plotids p on (d.uniqueid = p.uniqueid and
@@ -379,7 +380,7 @@ def add_bling(writer, df, sheetname, tabname):
 def do_soil(writer, sites, soil, years, detectlimit, missing):
     """get soil data"""
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT d.uniqueid, d.plotid, d.depth,
     coalesce(d.subsample, '1') as subsample, d.varname, d.year, d.value,
@@ -451,7 +452,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
 def do_operations(writer, sites, years, missing):
     """Return a DataFrame for the operations"""
     opdf = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT uniqueid, cropyear, operation, valid, cashcrop, croprot,
     plantryemethod, planthybrid, plantmaturity, plantrate, plantrateunits,
@@ -506,7 +507,7 @@ def do_operations(writer, sites, years, missing):
 def do_management(writer, sites, years):
     """Return a DataFrame for the management"""
     opdf = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT uniqueid, cropyear, notill, irrigation, irrigationamount,
     irrigationmethod, residueremoval, residuehow, residuebiomassweight,
@@ -525,7 +526,7 @@ def do_management(writer, sites, years):
 def do_pesticides(writer, sites, years):
     """Return a DataFrame for the pesticides"""
     opdf = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT uniqueid, cropyear, operation, valid, timing, method,
     cropapplied,
@@ -551,7 +552,7 @@ def do_pesticides(writer, sites, years):
 def do_plotids(writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = pd.read_sql(
-        text(
+        sql_helper(
             """
         SELECT uniqueid, rep, plotid, tillage, rotation,
         drainage, nitrogen, landscape,
@@ -601,7 +602,7 @@ def do_plotids(writer, sites):
 def do_notes(writer, sites, missing):
     """Write notes to the spreadsheet"""
     opdf = pd.read_sql(
-        text(
+        sql_helper(
             """
         SELECT "primary" as uniqueid, overarching_data_category, data_type,
         replace(growing_season, '.0', '') as growing_season,
@@ -628,7 +629,7 @@ def do_notes(writer, sites, missing):
 def do_dwm(writer, sites, missing):
     """Write dwm to the spreadsheet"""
     opdf = pd.read_sql(
-        text(
+        sql_helper(
             """
         SELECT uniqueid, plotid, cropyear, cashcrop, boxstructure,
         outletdepth, outletdate, comments

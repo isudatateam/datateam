@@ -14,11 +14,9 @@ from email.mime.text import MIMEText
 import numpy as np
 import pandas as pd
 from paste.request import MultiDict, parse_formvars
-from pyiem.util import get_dbconn, get_dbconnstr, logger, utc
-
-# Third Party
+from pyiem.database import get_dbconn, get_dbconnstr, sql_helper
+from pyiem.util import logger, utc
 from pymemcache import Client
-from sqlalchemy import text
 
 LOG = logger()
 EMAILTEXT = """
@@ -123,7 +121,7 @@ def do_dictionary(pgconn, writer):
 def do_metadata_master(pgconn, writer, sites, missing):
     """get Metadata master data"""
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT uniqueid,
     nwlon as "NW Lon", nwlat as "NW Lat", swlon as "SW Lon", swlat as "SW Lat",
@@ -155,9 +153,9 @@ def do_metadata_master(pgconn, writer, sites, missing):
 def do_generic(pgconn, writer, tt, fn, tablename, sites, varnames, missing):
     """generalized datatable dumper."""
     df = pd.read_sql(
-        text(
-            f"SELECT * from {tablename} WHERE siteid = ANY(:sites) "
-            "ORDER by siteid"
+        sql_helper(
+            "SELECT * from {table} WHERE siteid = ANY(:sites) ORDER by siteid",
+            table=tablename,
         ),
         pgconn,
         params={"sites": sites},
@@ -204,7 +202,7 @@ def add_bling(pgconn, writer, df, sheetname, filename):
 def do_plotids(pgconn, writer, sites):
     """Write plotids to the spreadsheet"""
     opdf = pd.read_sql(
-        text(
+        sql_helper(
             "SELECT * from meta_plot_identifier where siteid = ANY(:sites) "
             "ORDER by siteid, plotid ASC"
         ),

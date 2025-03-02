@@ -11,9 +11,8 @@ We end up return a JSON document that lists out what is possible
 import json
 
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.webutil import ensure_list, iemapp
-from sqlalchemy import text
 
 # NOTE: filter.py is upstream for this table, copy to dl.py
 AGG = {
@@ -83,7 +82,7 @@ def do_filter(pgconn, environ):
 
     # build a list of treatments based on the sites selected
     df = pd.read_sql(
-        text(
+        sql_helper(
             "select distinct drainage_water_management, irrigation "
             "from meta_treatment_identifier where "
             "siteid = ANY(:sites)"
@@ -97,7 +96,7 @@ def do_filter(pgconn, environ):
 
     # Agronomic Filtering
     df = pd.read_sql(
-        text("select * from agronomic_data where siteid = ANY(:sites)"),
+        sql_helper("select * from agronomic_data where siteid = ANY(:sites)"),
         pgconn,
         params={"sites": sites},
         index_col=None,
@@ -108,7 +107,9 @@ def do_filter(pgconn, environ):
 
     # Soil Filtering
     df = pd.read_sql(
-        text("select * from soil_properties_data where siteid = ANY(:sites)"),
+        sql_helper(
+            "select * from soil_properties_data where siteid = ANY(:sites)"
+        ),
         pgconn,
         params={"sites": sites},
         index_col=None,
@@ -120,7 +121,7 @@ def do_filter(pgconn, environ):
 
     # Water Table Filtering
     df = pd.read_sql(
-        text(
+        sql_helper(
             "select max(water_table_depth) as water_table_depth "
             "from water_table_data where siteid = ANY(:sites) "
             "GROUP by siteid"
@@ -135,7 +136,7 @@ def do_filter(pgconn, environ):
 
     # Water Stage Filtering
     df = pd.read_sql(
-        text(
+        sql_helper(
             "select max(stage) as water_stage "
             "from water_stage_data where siteid = ANY(:sites) "
             "GROUP by siteid"
@@ -150,7 +151,7 @@ def do_filter(pgconn, environ):
 
     # Water Filtering
     df = pd.read_sql(
-        text(
+        sql_helper(
             "select max(soil_moisture) as soil_moisture, "
             "max(soil_temperature) as soil_temperature, "
             "max(soil_ec) as soil_ec from soil_moisture_data where "
@@ -164,7 +165,7 @@ def do_filter(pgconn, environ):
         if not pd.isnull(val):
             res["water"].append(col)
     df = pd.read_sql(
-        text(
+        sql_helper(
             "select max(tile_flow) as tile_flow, "
             "max(discharge) as discharge, "
             "max(nitrate_n_load) as nitrate_n_load, "
@@ -182,7 +183,9 @@ def do_filter(pgconn, environ):
         if not pd.isnull(val):
             res["water"].append(col)
     df = pd.read_sql(
-        text("select * from water_quality_data where siteid = ANY(:sites)"),
+        sql_helper(
+            "select * from water_quality_data where siteid = ANY(:sites)"
+        ),
         pgconn,
         params={"sites": sites},
         index_col=None,

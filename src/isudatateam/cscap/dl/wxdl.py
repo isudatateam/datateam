@@ -3,11 +3,10 @@
 import os
 
 import pandas as pd
-from pyiem.database import get_dbconnstr
+from pyiem.database import get_dbconnstr, sql_helper
 from pyiem.datatypes import distance, temperature
 from pyiem.exceptions import IncompleteWebRequest
 from pyiem.webutil import ensure_list, iemapp
-from sqlalchemy import text
 
 VARDF = {
     "uniqueid": "",
@@ -47,7 +46,7 @@ def application(environ, start_response):
     pgconn = get_dbconnstr("sustainablecorn")
     stations = ensure_list(environ, "stations")
     df = pd.read_sql(
-        text(
+        sql_helper(
             """
     SELECT station as uniqueid, valid as day, extract(doy from valid) as doy,
     high, low, precip, sknt,
