@@ -1,8 +1,8 @@
 <?php 
-include_once "../include/myview.php";
+require_once "../include/myview.php";
 $t = new MyView();
 $t->title = "ISU Data Team!";
-$t->content = <<<EOF
+$t->content = <<<EOM
 <p>&nbsp;</p>
 
 <h3>ISU Data Team Contacts</h3>
@@ -41,6 +41,5 @@ metadata, photographs, and maps.
 
 <p><img src="images/dt-160307.jpg" class="img img-responsive"></p>
 
-EOF;
+EOM;
 $t->render('single.phtml');
-?>
