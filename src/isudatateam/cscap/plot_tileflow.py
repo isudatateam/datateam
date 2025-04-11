@@ -114,7 +114,7 @@ def application(environ, start_response, conn: Connection = None):
             params=params,
             parse_dates=["v"],
         )
-    elif ptype == "2":
+    else:
         df = pd.read_sql(
             sql_helper("""SELECT uniqueid, plotid,
         date_trunc('month', valid at time zone 'UTC') as v,
