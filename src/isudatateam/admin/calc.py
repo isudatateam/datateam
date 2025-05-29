@@ -19,9 +19,7 @@ def get_df(equation):
     with get_sqlalchemy_conn("sustainablecorn") as pgconn:
         df = pd.read_sql(
             sql_helper(
-                """
-        SELECT * from agronomic_data WHERE varname = ANY(:vars)
-        """
+                "SELECT * from agronomic_data WHERE varname = ANY(:vars)"
             ),
             pgconn,
             params={"vars": varnames},
