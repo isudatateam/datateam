@@ -1,4 +1,4 @@
-
+// global $
 function xmlescape(text) {
     text = text.replace(/\&/g, "&amp;");
     text = text.replace(/</g, "&lt;");
