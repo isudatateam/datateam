@@ -5,7 +5,7 @@ from io import BytesIO
 
 import numpy as np
 from pyiem.database import get_dbconn
-from pyiem.plot.use_agg import plt
+from pyiem.plot import figure_axes
 from pyiem.webutil import iemapp
 
 
@@ -49,7 +49,7 @@ def make_plot(form):
                 xticklabels.append(now.strftime(fmt))
             now += timedelta(days=1)
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
     ax.plot(x, np.array(y) / float(total) * 100.0)
     ax.set_ylim(0, 100)
     ax.set_yticks([0, 25, 50, 75, 100])

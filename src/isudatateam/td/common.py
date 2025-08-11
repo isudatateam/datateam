@@ -2,7 +2,7 @@
 
 from io import BytesIO
 
-from pyiem.plot.use_agg import plt
+from pyiem.plot import figure_axes
 
 COPYWRITE = """credits: {
 position: {align: 'left', x: 15},
@@ -59,7 +59,7 @@ def send_error(start_response, viewopt, msg=ERRMSG):
     if viewopt == "js":
         start_response("200 OK", [("Content-type", "application/javascript")])
         return b"alert('No data found, sorry');"
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = figure_axes()
     ax.text(0.5, 0.5, msg, transform=ax.transAxes, ha="center")
     start_response("200 OK", [("Content-type", "image/png")])
     ram = BytesIO()
