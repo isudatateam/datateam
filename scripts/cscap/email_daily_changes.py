@@ -225,10 +225,9 @@ def drive_changelog(regime, yesterday, html):
                     )
                     continue
                 isproject = True
-            if (
-                not isproject
-                and item["file"]["driveId"] != CONFIG[regime]["driveId"]
-            ):
+            if not isproject and item["file"].get("driveId", "") != CONFIG[
+                regime
+            ].get("driveId", ""):
                 LOG.info(
                     "[%s] %s (%s) skipped as basefolders are: %s",
                     regime,
