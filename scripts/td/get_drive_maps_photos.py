@@ -1,8 +1,4 @@
-"""Build xref for maps and photos.
-
-alter table meta_site_history add drive_maps_folder text;
-alter table meta_site_history add drive_photos_folder text;
-"""
+"""Build xref for maps and photos."""
 
 import pandas as pd
 from pyiem.database import get_dbconn
@@ -21,10 +17,14 @@ def main():
         drive.files()
         .list(
             q=(
-                "('1Xbv-V9xQLc2sYcCO30lyKQhjpizXoE4g' in parents or "
-                "'1bm9WXTfeFkSCXILU6qBeVskTn_Do2SeQ' in parents) and "
+                "('10wvuu-yEZL1M3Mg2Yaen_cKg334c4mDn' in parents or "
+                "'1XGdNsU9x5RL_KrkvBc8bGOYU2W4v-3b7' in parents) and "
                 "mimeType='application/vnd.google-apps.folder'"
-            )
+            ),
+            corpora="drive",
+            driveId="0ABOgL0ZpGFeqUk9PVA",
+            includeItemsFromAllDrives=True,
+            supportsAllDrives=True,
         )
         .execute()
     )
@@ -36,6 +36,9 @@ def main():
             continue
         siteid, typename = tokens
         rows.append({"siteid": siteid, "res": typename, "id": item["id"]})
+    if not rows:
+        LOG.info("No rows found, exiting")
+        return
     df = pd.DataFrame(rows)
     df = df.pivot(index="siteid", columns="res", values="id")
 
