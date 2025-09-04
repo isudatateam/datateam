@@ -242,6 +242,8 @@ def drive_changelog(regime, yesterday, html):
             )
             localts = modifiedDate.astimezone(LOCALTZ)
             hits += 1
+            if not item["file"]["parents"]:
+                continue
             pfolder = item["file"]["parents"][0]["id"]
             uu = (
                 f"https://docs.google.com/folderview?id={pfolder}&usp=drivesdk"
