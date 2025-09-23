@@ -1,0 +1,13 @@
+<?php 
+require_once "../../include/myview.php";
+$t = new MyView();
+$t->title = "NutriNet";
+$t->content = <<<EOF
+<p>&nbsp;</p>
+
+<h2>NutriNet</h2>
+
+<p>Content coming soon!</p>
+
+EOF;
+$t->render('single.phtml');
