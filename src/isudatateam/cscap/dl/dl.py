@@ -344,7 +344,7 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     # String aggregate above creates a mixture of None and "None"
     df = df.replace(["None", None], np.nan).dropna(how="all").reset_index()
     df = valid2date(df)
-    df, _worksheet = add_bling(writer, df, "Agronomic", "Agronomic", missing)
+    add_bling(writer, df, "Agronomic", "Agronomic", missing)
 
 
 def add_bling(writer, df, sheetname, tabname, missing: str):
