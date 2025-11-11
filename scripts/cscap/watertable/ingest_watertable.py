@@ -63,9 +63,9 @@ def process5(spreadkey):
     return res
 
 
-def process3(fn):
+def process3(fn: str):
     """Format 3, STJOHNS"""
-    df = pd.read_excel(fn, sheetname=None)
+    df = pd.read_excel(fn)
     for plotid in df:
         print("%s %s" % (plotid, df[plotid].columns))
         df[plotid].dropna(inplace=True)
@@ -86,11 +86,9 @@ def process2(fn):
     """Format 2, SERF"""
     df = pd.read_excel(
         fn,
-        sheetname=None,
         skiprows=[
             0,
         ],
-        parse_cols="H,I",
     )
     for plotid in df:
         print("%s %s" % (plotid, df[plotid].columns))
@@ -240,7 +238,7 @@ def main(argv):
         df = process4(fn)
     elif fmt == "5":
         df = process5(fn)
-    elif fmt == "6":
+    else:  # 6
         df = process6(fn)
     for plotid in df:
         database_save(df[plotid], uniqueid, plotid, project)
