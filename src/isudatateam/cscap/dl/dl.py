@@ -156,10 +156,9 @@ def replace_varname(varname):
     return varname
 
 
-def valid2date(df):
+def valid2date(df: pd.DataFrame) -> pd.DataFrame:
     """If dataframe has valid in columns, rename it to date"""
-    if "valid" in df.columns:
-        df.rename(columns={"valid": "date"}, inplace=True)
+    return df.rename(columns={"valid": "date"}, errors="ignore")
 
 
 def redup(arr):
@@ -197,15 +196,14 @@ def conv(value, detectlimit):
 def do_dictionary(writer):
     """Add Data Dictionary to the spreadsheet"""
     df = pd.read_sql(
-        """
-        SELECT * from data_dictionary_export
-        ORDER by ss_order ASC
-    """,
+        sql_helper(
+            "SELECT * from data_dictionary_export ORDER by ss_order ASC"
+        ),
         PGCONN,
         index_col=None,
     )
     for col in ["ss_order", "number_of_decimal_places_to_round_up"]:
-        df.drop(col, axis=1, inplace=True)
+        df = df.drop(col, axis=1)
     df.to_excel(writer, sheet_name="Data Dictionary", index=False)
     # Increase column width
     worksheet = writer.sheets["Data Dictionary"]
@@ -239,10 +237,10 @@ def do_metadata_master(writer, sites, missing):
         params={"sites": sites},
         index_col=None,
     )
-    df.replace(["None", None, ""], np.nan, inplace=True)
-    df.dropna(how="all", inplace=True)
-    df.fillna(missing, inplace=True)
-    df, worksheet = add_bling(writer, df, "Site Metadata", "Site Metadata")
+    df = df.replace(["None", None, ""], np.nan).dropna(how="all").reset_index()
+    df, worksheet = add_bling(
+        writer, df, "Site Metadata", "Site Metadata", missing
+    )
     worksheet.set_column("A:A", 12)
     worksheet.set_column("L:R", 12)
 
@@ -267,8 +265,7 @@ def do_ghg(writer, sites, ghg, years, missing):
         params={"sites": sites, "years": years},
         index_col=None,
     )
-    df.fillna(missing, inplace=True)
-    df, worksheet = add_bling(writer, df, "GHG", "GHG")
+    df, worksheet = add_bling(writer, df, "GHG", "GHG", missing)
     worksheet.set_column("C:C", 12)
 
 
@@ -291,9 +288,8 @@ def do_ipm(writer, sites, ipm, years, missing):
         params={"sites": sites, "years": years},
         index_col=None,
     )
-    df.fillna(missing, inplace=True)
     df.columns = [s.upper() if s.startswith("ipm") else s for s in df.columns]
-    df, worksheet = add_bling(writer, df, "IPM", "IPM")
+    df, worksheet = add_bling(writer, df, "IPM", "IPM", missing)
     worksheet.set_column("C:C", 12)
 
 
@@ -346,15 +342,12 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
     cols.sort()
     df = df.reindex(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
-    df.replace(["None", None], np.nan, inplace=True)
-    df.dropna(how="all", inplace=True)
-    df.fillna(missing, inplace=True)
-    df.reset_index(inplace=True)
-    valid2date(df)
-    df, _worksheet = add_bling(writer, df, "Agronomic", "Agronomic")
+    df = df.replace(["None", None], np.nan).dropna(how="all").reset_index()
+    df = valid2date(df)
+    df, _worksheet = add_bling(writer, df, "Agronomic", "Agronomic", missing)
 
 
-def add_bling(writer, df, sheetname, tabname):
+def add_bling(writer, df, sheetname, tabname, missing: str):
     """Do fancy things"""
     # Insert some headers rows
     metarows = [{}, {}]
@@ -371,7 +364,7 @@ def add_bling(writer, df, sheetname, tabname):
     df = pd.concat([pd.DataFrame(metarows), df], ignore_index=True)
     # re-establish the correct column sorting
     df = df.reindex(cols, axis=1)
-    df.to_excel(writer, sheet_name=sheetname, index=False)
+    df.to_excel(writer, sheet_name=sheetname, index=False, na_rep=missing)
     worksheet = writer.sheets[sheetname]
     worksheet.freeze_panes(3, 0)
     return df, worksheet
@@ -424,7 +417,7 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
             places = vardf.at[colname, "round"]
         if pd.isnull(places):
             continue
-        df[colname] = pd.to_numeric(df[colname], errors="ignore")
+        df[colname] = pd.to_numeric(df[colname], errors="coerce")
         df[colname] = df[colname].apply(
             (
                 lambda x: round(x, int(places))
@@ -437,13 +430,10 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
     cols.sort()
     df = df.reindex(cols, axis=1)
     # String aggregate above creates a mixture of None and "None"
-    df.replace(["None", None], np.nan, inplace=True)
-    df.dropna(how="all", inplace=True)
-    df.fillna(missing, inplace=True)
-    df.reset_index(inplace=True)
+    df = df.replace(["None", None], np.nan).dropna(how="all").reset_index()
     df["sampledate"] = df["sampledate"].replace("", missing)
-    valid2date(df)
-    df, worksheet = add_bling(writer, df, "Soil", "Soil")
+    df = valid2date(df)
+    df, worksheet = add_bling(writer, df, "Soil", "Soil", missing)
     workbook = writer.book
     format1 = workbook.add_format({"num_format": "@"})
     worksheet.set_column("B:B", 12, format1)
@@ -494,10 +484,10 @@ def do_operations(writer, sites, years, missing):
     for elem in FERTELEM:
         opdf.loc[df.index, elem] = df[elem] * KGH_LBA
         del opdf[elem]
-    valid2date(opdf)
+    opdf = valid2date(opdf)
     del opdf["productrate"]
     opdf, worksheet = add_bling(
-        writer, opdf, "Field Operations", "Field Operations"
+        writer, opdf, "Field Operations", "Field Operations", missing
     )
     worksheet.set_column("C:C", 18)
     worksheet.set_column("D:D", 12)
@@ -523,7 +513,7 @@ def do_management(writer, sites, years):
     opdf.to_excel(writer, sheet_name="Residue, Irrigation", index=False)
 
 
-def do_pesticides(writer, sites, years):
+def do_pesticides(writer, sites, years, missing: str):
     """Return a DataFrame for the pesticides"""
     opdf = pd.read_sql(
         sql_helper(
@@ -544,12 +534,14 @@ def do_pesticides(writer, sites, years):
         PGCONN,
         params={"sites": sites, "years": [str(x) for x in years]},
     )
-    valid2date(opdf)
-    opdf, worksheet = add_bling(writer, opdf, "Pesticides", "Pesticides")
+    opdf = valid2date(opdf)
+    opdf, worksheet = add_bling(
+        writer, opdf, "Pesticides", "Pesticides", missing
+    )
     worksheet.set_column("D:D", 12)
 
 
-def do_plotids(writer, sites):
+def do_plotids(writer, sites, missing: str):
     """Write plotids to the spreadsheet"""
     opdf = pd.read_sql(
         sql_helper(
@@ -587,11 +579,15 @@ def do_plotids(writer, sites):
         params={"sites": sites},
     )
     # Fake rotation codes
-    opdf.replace({"rotation": ROT_CODES}, inplace=True)
+    opdf = opdf.replace({"rotation": ROT_CODES})
     # Fake tillage codes
-    opdf.replace({"tillage": TIL_CODES}, inplace=True)
+    opdf = opdf.replace({"tillage": TIL_CODES})
     opdf, worksheet = add_bling(
-        writer, opdf[opdf.columns], "Plot Identifiers", "Plot Identifiers"
+        writer,
+        opdf[opdf.columns],
+        "Plot Identifiers",
+        "Plot Identifiers",
+        missing,
     )
     # Make plotids as strings and not something that goes to dates
     workbook = writer.book
@@ -615,9 +611,12 @@ def do_notes(writer, sites, missing):
         PGCONN,
         params={"sites": sites},
     )
-    opdf.replace(["None", None, ""], np.nan, inplace=True)
-    opdf.dropna(how="all", inplace=True)
-    opdf.fillna(missing, inplace=True)
+    opdf = (
+        opdf.replace(["None", None, ""], np.nan)
+        .dropna(how="all")
+        .fillna(missing)
+        .reset_index()
+    )
     opdf[opdf.columns].to_excel(writer, sheet_name="Notes", index=False)
     # Increase column width
     worksheet = writer.sheets["Notes"]
@@ -640,14 +639,17 @@ def do_dwm(writer, sites, missing):
         PGCONN,
         params={"sites": sites},
     )
-    opdf.replace(["None", None, ""], np.nan, inplace=True)
-    opdf.dropna(how="all", inplace=True)
-    opdf.fillna(missing, inplace=True)
+    opdf = (
+        opdf.replace(["None", None, ""], np.nan)
+        .dropna(how="all")
+        .reset_index()
+    )
     _df, worksheet = add_bling(
         writer,
         opdf[opdf.columns],
         "Drainage Control Structure Mngt",
         "Drainage Control Structure Mngt",
+        missing,
     )
     worksheet.set_column("G:G", 12)
     worksheet.set_column("H:H", 30)
@@ -682,7 +684,7 @@ def do_work(environ, start_response):
 
     # Sheet two is plot IDs
     if "SHM4" in shm:
-        do_plotids(writer, sites)
+        do_plotids(writer, sites, missing)
 
     # Measurement Data
     if agronomic:
@@ -700,7 +702,7 @@ def do_work(environ, start_response):
         do_operations(writer, sites, years, missing)
     # Pesticides
     if "SHM2" in shm:
-        do_pesticides(writer, sites, years)
+        do_pesticides(writer, sites, years, missing)
     # Residue and Irrigation
     if "SHM3" in shm:
         do_management(writer, sites, years)
