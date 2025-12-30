@@ -1,18 +1,13 @@
 dependencies:
   - coverage
-  # help dep solver
-  - gdal>=3.10,<3.11
   # legacy
   - google-api-python-client
   - google-auth
-  # Help dep solver
-  - libnetcdf=4.9.2
   - numpy
   # legacy
   - psycopg2
   # Ensure a bit of discipline
-  # and help dep solver get it right
-  - pyiem >=1.25
+  - pyiem >=1.26
   # testing
   - pytest
   - pytest-cov
