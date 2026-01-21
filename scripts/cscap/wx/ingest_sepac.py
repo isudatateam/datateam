@@ -34,7 +34,7 @@ cursor.execute(
 if cursor.rowcount > 0:
     print("Deleted %s rows" % (cursor.rowcount,))
 
-for i, row in df.iterrows():
+for _i, row in df.iterrows():
     cursor.execute(
         """INSERT into weather_data_daily
     (station, valid, high, low, precip, sknt, srad_mj) VALUES (%s,

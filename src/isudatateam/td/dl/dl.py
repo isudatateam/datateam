@@ -141,7 +141,7 @@ def do_metadata_master(pgconn, writer, sites, missing):
         params={"sites": sites},
         index_col=None,
     )
-    df.replace(["None", None, ""], np.nan, inplace=True)
+    df = df.replace(["None", None, ""], np.nan)
     df.dropna(how="all", inplace=True)
     df.fillna(missing, inplace=True)
     df, worksheet = add_bling(
@@ -553,4 +553,3 @@ def test_crawling():
         ]
     )
     do_work(form)
-    assert False

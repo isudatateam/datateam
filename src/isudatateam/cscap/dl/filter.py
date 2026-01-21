@@ -118,6 +118,7 @@ def do_filter(environ):
     for lc, col in zip(
         ["TIL", "ROT", "DWM", "NIT", "LND"],
         ["tillage", "rotation", "drainage", "nitrogen", "landscape"],
+        strict=True,
     ):
         a[lc] = [b for b in treatments if b.startswith(lc)]
         if lc == "LND":

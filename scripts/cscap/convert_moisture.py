@@ -29,7 +29,7 @@ for i, item in enumerate(res["items"]):
     for year in spreadsheet.worksheets:
         print('%3i/%3i sheet "%s" for "%s"' % (i + 1, sz, year, item["title"]))
         lf = spreadsheet.worksheets[year].get_list_feed()
-        for rownum, entry in enumerate(lf.entry):
+        for _rownum, entry in enumerate(lf.entry):
             dirty = False
             data = entry.to_dict()
             for key, value in data.iteritems():

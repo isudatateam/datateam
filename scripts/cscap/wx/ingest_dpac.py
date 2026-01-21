@@ -26,14 +26,13 @@ def do_daily(fn):
     )
     if cursor.rowcount > 0:
         print("Deleted %s rows" % (cursor.rowcount,))
-    for i, row in df.iterrows():
+    for _i, row in df.iterrows():
         cursor.execute(
             """INSERT into weather_data_daily
         (station, valid, high, low, precip, sknt) VALUES ('DPAC',
         %s, %s, %s, %s, %s)""",
             (row["date"], row["high"], row["low"], row["pday"], row["sknt"]),
         )
-    print("Inserted %s rows..." % (i + 1,))
     cursor.close()
     pgconn.commit()
 
@@ -61,7 +60,7 @@ def do_hourly(fn):
     )
     if cursor.rowcount > 0:
         print("Deleted %s rows" % (cursor.rowcount,))
-    for i, row in df.iterrows():
+    for _i, row in df.iterrows():
         cursor.execute(
             """INSERT into weather_data_obs
         (station, valid, tmpf, sknt, precip, srad) VALUES ('DPAC',
@@ -74,7 +73,6 @@ def do_hourly(fn):
                 row["RADIATION"],
             ),
         )
-    print("Inserted %s rows..." % (i + 1,))
     cursor.close()
     pgconn.commit()
 

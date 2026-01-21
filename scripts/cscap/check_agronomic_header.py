@@ -59,7 +59,9 @@ def main():
             for griddata in sheet["data"]:
                 row1 = griddata["rowData"][0]
                 row2 = griddata["rowData"][1]
-                for c1, c2 in zip(row1["values"], row2["values"]):
+                for c1, c2 in zip(
+                    row1["values"], row2["values"], strict=False
+                ):
                     v1 = c1.get("formattedValue", "n/a").strip()
                     v2 = c2.get("formattedValue", "n/a").strip()
                     if v1 not in IGNORE and xref.get(v1, "") != v2:

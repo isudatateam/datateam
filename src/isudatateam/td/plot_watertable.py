@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
 from paste.request import parse_formvars
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 from .common import CODES, COPYWRITE, getColor, send_error
 

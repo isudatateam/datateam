@@ -4,7 +4,7 @@ import datetime
 import sys
 
 import pandas as pd
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 CENTRAL_TIME = [
     "SERF_IA",
@@ -214,7 +214,7 @@ def process3(fn):
         row0 = df.iloc[0, :]
         row1 = df.iloc[1, :]
         reg = {df.columns[0]: "valid"}
-        for c, r0, r1 in zip(df.columns, row0, row1):
+        for c, r0, r1 in zip(df.columns, row0, row1, strict=True):
             reg[c] = "%s %s %s" % (c, r0, r1)
         df.rename(columns=reg, inplace=True)
         df.drop(df.head(2).index, inplace=True)
@@ -618,6 +618,7 @@ def process8(filename):
         for prefix, newval in zip(
             ["soil_moisture", "soil_temp", "soil_ec"],
             ["moisture", "temp", "ec"],
+            strict=True,
         ):
             remap["%s %s" % (prefix, key)] = "d%s%s" % (conv[key], newval)
 

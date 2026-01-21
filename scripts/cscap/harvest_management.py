@@ -25,7 +25,7 @@ def main():
 
     tabs = ["Field Operations", "Management", "Pesticides", "DWM", "Notes"]
     tablenames = ["operations", "management", "pesticides", "dwm", "notes"]
-    for sheetkey, table in zip(tabs, tablenames):
+    for sheetkey, table in zip(tabs, tablenames, strict=False):
         pcursor.execute("""DELETE from """ + table)
         deleted = pcursor.rowcount
         sheet = spread.worksheets[sheetkey]
@@ -64,7 +64,7 @@ def main():
             except Exception as exp:
                 print("CSCAP harvest_management traceback")
                 print(exp)
-                for a, b in zip(cols, vals):
+                for a, b in zip(cols, vals, strict=False):
                     print("   |%s| -> |%s|" % (a, b))
                 return
             added += 1
