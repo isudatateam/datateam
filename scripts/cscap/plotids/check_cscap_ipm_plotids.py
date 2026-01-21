@@ -49,7 +49,7 @@ def main():
                 rows.append(dict(uniqueid=d["uniqueid"], plotid=d["plotid"]))
 
     plotipm = pd.DataFrame(rows)
-    for i, row in plotipm.iterrows():
+    for _i, row in plotipm.iterrows():
         df2 = plotdf[
             (plotdf["uniqueid"] == row["uniqueid"])
             & (plotdf["plotid"] == row["plotid"])

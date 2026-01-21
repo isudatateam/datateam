@@ -58,7 +58,7 @@ for entry in meta_feed.entry:
 
     # Do row1
     entry = gdata.spreadsheets.data.ListEntry()
-    for col, unit in zip(columns, units):
+    for col, unit in zip(columns, units, strict=False):
         entry.set_value(col.replace(" ", "").lower(), unit)
     rows.append(entry)
 

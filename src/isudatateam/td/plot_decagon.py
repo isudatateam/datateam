@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 import pandas as pd
 from paste.request import parse_formvars
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 from .common import COPYWRITE, send_error
 

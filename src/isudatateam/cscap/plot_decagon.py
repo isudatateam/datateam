@@ -325,7 +325,7 @@ options = {
         dlevel = "d%st" % (depth,)
         plot_ids = df["plotid"].unique()
         plot_ids.sort()
-        for i, plotid in enumerate(plot_ids):
+        for plotid in plot_ids:
             df2 = df[df["plotid"] == plotid]
             v = df2[["ticks", dlevel]].to_json(orient="values")
             lines.append(
@@ -345,7 +345,7 @@ options = {
         dlevel = "d%sm" % (depth,)
         plot_ids = df["plotid"].unique()
         plot_ids.sort()
-        for i, plotid in enumerate(plot_ids):
+        for plotid in plot_ids:
             df2 = df[df["plotid"] == plotid]
             v = df2[["ticks", dlevel]].to_json(orient="values")
             lines2.append(

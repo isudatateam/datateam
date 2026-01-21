@@ -3,7 +3,7 @@
 import datetime
 
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 from pyiem.webutil import iemapp
 
 DBCONN = get_dbconn("sustainablecorn")

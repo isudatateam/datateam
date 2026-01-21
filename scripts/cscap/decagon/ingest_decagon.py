@@ -76,7 +76,7 @@ def process3(fn):
         row0 = df.iloc[0, :]
         row1 = df.iloc[1, :]
         reg = {df.columns[0]: "valid"}
-        for c, r0, r1 in zip(df.columns, row0, row1):
+        for c, r0, r1 in zip(df.columns, row0, row1, strict=False):
             reg[c] = "%s %s %s" % (c, r0, r1)
         df.rename(columns=reg, inplace=True)
         df.drop(df.head(2).index, inplace=True)
@@ -95,7 +95,7 @@ def process5(uniqueid, dirname):
         row0 = df.iloc[0, :]
         row1 = df.iloc[1, :]
         reg = {df.columns[0]: "valid"}
-        for c, r0, r1 in zip(df.columns, row0, row1):
+        for c, r0, r1 in zip(df.columns, row0, row1, strict=False):
             reg[c] = "%s %s %s" % (c, r0, r1)
         df.rename(columns=reg, inplace=True)
         df.drop(df.head(2).index, inplace=True)

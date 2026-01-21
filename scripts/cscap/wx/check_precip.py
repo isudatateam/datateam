@@ -26,5 +26,5 @@ for sid in nt.sts.keys():
         params=(clid,),
         index_col=None,
     )
-    for i, row in df[df["sum"] < 10].iterrows():
+    for _i, row in df[df["sum"] < 10].iterrows():
         print(sid, clid, row["year"], row["sum"])

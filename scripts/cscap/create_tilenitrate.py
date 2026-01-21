@@ -107,6 +107,7 @@ for site in sites:
         for v, u in zip(
             ["WAT2 Tile Nitrate-N concentration", "WAT20 Tile Nitrate-N loss"],
             ["(mg N L-1)", "(kg ha-1)"],
+            strict=False,
         ):
             row1.append("%s %s" % (p, v))
             row2.append(u)

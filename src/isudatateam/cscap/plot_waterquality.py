@@ -6,7 +6,7 @@ from io import StringIO
 import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 from pyiem.webutil import iemapp
 
 ERRMSG = (
@@ -134,7 +134,9 @@ def application(environ, start_response):
                     [
                         [a, b]
                         for a, b in zip(
-                            df2["ticks"].values, df2["value"].values
+                            df2["ticks"].values,
+                            df2["value"].values,
+                            strict=True,
                         )
                     ]
                 )

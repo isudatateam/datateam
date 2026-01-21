@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 import pandas as pd
 from paste.request import parse_formvars
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 from .common import CODES, COPYWRITE, getColor, send_error
 
@@ -109,7 +109,7 @@ def make_plot(form, start_response):
             except KeyError:
                 return row["datum"]
 
-        df["treatment"] = df.apply(lookup, axis=1)
+        df["treatment"] = df.apply(lookup, axis="columns")
         del df["datum"]
         df = df.groupby(["treatment", "v"]).mean()
         df = df.reset_index()
@@ -131,7 +131,9 @@ def make_plot(form, start_response):
                     [
                         [a, b]
                         for a, b in zip(
-                            wxdf["ticks"].values, wxdf["precip"].values
+                            wxdf["ticks"].values,
+                            wxdf["precip"].values,
+                            strict=True,
                         )
                     ]
                 )
@@ -169,7 +171,9 @@ def make_plot(form, start_response):
                     [
                         [a, b]
                         for a, b in zip(
-                            df2["ticks"].values, df2["tile_flow_filled"].values
+                            df2["ticks"].to_numpy(),
+                            df2["tile_flow_filled"].to_numpy(),
+                            strict=True,
                         )
                     ]
                 )

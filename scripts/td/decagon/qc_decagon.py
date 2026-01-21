@@ -63,7 +63,10 @@ def bounds_check():
     for uniqueid, plotid in entries:
         for v in range(1, 6):
             for n, lbound, ubound in zip(
-                ["moisture", "temp", "ec"], [0, -50, -0.01], [1, 50, 28]
+                ["moisture", "temp", "ec"],
+                [0, -50, -0.01],
+                [1, 50, 28],
+                strict=True,
             ):
                 if v > 1 and n == "ec":
                     continue

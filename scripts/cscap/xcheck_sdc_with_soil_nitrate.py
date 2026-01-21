@@ -48,7 +48,7 @@ for item in res["items"]:
     shouldhave = copy.deepcopy(sdc[YEAR][sitekey])
     doeshave = []
     error = False
-    for col, varname in enumerate(header):
+    for varname in header:
         if not varname.startswith("SOIL"):
             continue
         soilcode = varname.split()[0]

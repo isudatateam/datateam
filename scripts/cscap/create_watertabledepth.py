@@ -106,7 +106,7 @@ for site in sites:
     row1 = ["Date"]
     row2 = ["MM/DD/YYYY"]
     for p in sites[site]:
-        for v, u in zip(["WAT4 Water Table Depth"], ["(cm)"]):
+        for v, u in zip(["WAT4 Water Table Depth"], ["(cm)"], strict=False):
             row1.append("%s %s" % (p, v))
             row2.append(u)
     for yr in years[site]:

@@ -75,7 +75,7 @@ for i, item in enumerate(res["items"]):
         uniqueid = item["title"].split()[0]
         print('%3i/%3i sheet "%s" for "%s"' % (i + 1, sz, year, item["title"]))
         lf = spreadsheet.worksheets[year].get_list_feed()
-        for rownum, entry in enumerate(lf.entry):
+        for _rownum, entry in enumerate(lf.entry):
             dirty = False
             data = entry.to_dict()
             if data["plotid"] is None or col not in data:

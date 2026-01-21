@@ -208,7 +208,9 @@ def application(environ, start_response, conn: Connection = None):
                     [
                         [a, b]
                         for a, b in zip(
-                            df2["ticks"].values, df2["discharge"].values
+                            df2["ticks"].values,
+                            df2["discharge"].values,
+                            strict=True,
                         )
                     ]
                 )
