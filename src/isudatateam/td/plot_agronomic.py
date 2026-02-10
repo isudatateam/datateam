@@ -98,8 +98,7 @@ def make_plot(form, start_response):
     start_response("200 OK", [("Content-type", "application/javascript")])
     title = "Agronomic Data for Site: %s" % (uniqueid,)
     arr = []
-    plot_ids = df[linecol].unique()
-    plot_ids.sort()
+    plot_ids = df[linecol].sort_values().unique()
     if ungroup == 1:
         plot_ids = plot_ids[::-1]
     for i, plotid in enumerate(plot_ids):

@@ -332,9 +332,9 @@ def do_agronomic(writer, sites, agronomic, years, detectlimit, missing):
         df[colname] = pd.to_numeric(df[colname], errors="coerce")
         df[colname] = df[colname].apply(
             (
-                lambda x: round(x, int(places))  # noqa
-                if isinstance(x, (int, float))
-                else x
+                lambda x, places=places: (
+                    round(x, int(places)) if isinstance(x, (int, float)) else x
+                )
             )
         )
     # reorder columns
@@ -420,9 +420,9 @@ def do_soil(writer, sites, soil, years, detectlimit, missing):
         df[colname] = pd.to_numeric(df[colname], errors="coerce")
         df[colname] = df[colname].apply(
             (
-                lambda x: round(x, int(places))  # noqa
-                if isinstance(x, (int, float))
-                else x
+                lambda x, places=places: (
+                    round(x, int(places)) if isinstance(x, (int, float)) else x
+                )
             )
         )
     # reorder columns
