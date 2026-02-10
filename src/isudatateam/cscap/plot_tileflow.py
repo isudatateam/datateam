@@ -189,8 +189,7 @@ def application(environ, start_response, conn: Connection = None):
         ets.strftime("%-d %b %Y"),
     )
     s = []
-    plot_ids = df["plotid"].unique()
-    plot_ids.sort()
+    plot_ids = df["plotid"].sort_values().unique()
     df["ticks"] = df["v"].astype(np.int64) // 10**6
     seriestype = "line" if ptype == "1" else "column"
     for plotid in plot_ids:

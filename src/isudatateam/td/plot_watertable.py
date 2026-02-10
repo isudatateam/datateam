@@ -96,8 +96,7 @@ def make_plot(form, start_response):
         ets.strftime("%-d %b %Y"),
     )
     s = []
-    plot_ids = df[linecol].unique()
-    plot_ids.sort()
+    plot_ids = df[linecol].sort_values().unique()
     if ungroup == 0:
         plot_ids = plot_ids[::-1]
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6

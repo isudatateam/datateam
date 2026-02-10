@@ -97,8 +97,7 @@ def make_plot(form, start_response):
     start_response("200 OK", [("Content-type", "application/javascript")])
     title = f"Nitrate Load for {siteid} ({sts:%-d %b %Y} to {ets:%-d %b %Y})"
     s = []
-    plot_ids = df[linecol].unique()
-    plot_ids.sort()
+    plot_ids = df[linecol].sort_values().unique()
     if ungroup == 1:
         plot_ids = plot_ids[::-1]
     df["ticks"] = pd.to_datetime(df["v"]).astype(np.int64) // 10**6

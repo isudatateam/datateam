@@ -323,8 +323,7 @@ options = {
             )
     else:
         dlevel = "d%st" % (depth,)
-        plot_ids = df["plotid"].unique()
-        plot_ids.sort()
+        plot_ids = df["plotid"].sort_values().unique()
         for plotid in plot_ids:
             df2 = df[df["plotid"] == plotid]
             v = df2[["ticks", dlevel]].to_json(orient="values")
@@ -343,8 +342,7 @@ options = {
             """
             )
         dlevel = "d%sm" % (depth,)
-        plot_ids = df["plotid"].unique()
-        plot_ids.sort()
+        plot_ids = df["plotid"].sort_values().unique()
         for plotid in plot_ids:
             df2 = df[df["plotid"] == plotid]
             v = df2[["ticks", dlevel]].to_json(orient="values")
