@@ -196,11 +196,14 @@ def application(environ, start_response):
                 ),
             ]
             # Prevent timezone troubles
-            df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
+            if not df.empty:
+                df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
             with pd.ExcelWriter("/tmp/ss.xlsx") as writer:
                 df.to_excel(writer, sheet_name="Data", index=False)
-            payload = open("/tmp/ss.xlsx", "rb").read()
+            with open("/tmp/ss.xlsx", "rb") as fh:
+                payload = fh.read()
             os.unlink("/tmp/ss.xlsx")
+            start_response("200 OK", headers)
             return [payload]
 
     # Begin highcharts output
