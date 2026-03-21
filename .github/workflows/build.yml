@@ -37,40 +37,20 @@ jobs:
       run: |
         docker run -d --name iem_memcached -p 11211:11211 memcached:1.6.9
 
-    # setup conda-forge with micromamba
-    - name: Setup Python
-      uses: mamba-org/setup-micromamba@v2
+    - uses: akrherz/ci_tooling/actions/iemwebfarm@main
       with:
-        environment-file: environment.yml
-        condarc: |
-          channels:
-            - conda-forge
-        create-args: >-
-          python=${{ env.PYTHON_VERSION }}
-        environment-name: prod
-        cache-environment: true
-
-    - name: Setup IEMFarm Environment
-      run: |
-        set -e
-        git clone --depth 1 https://github.com/akrherz/ci_tooling.git .ci_tooling
-        cd .ci_tooling
-        . iemwebfarm.sh
-        cd ..
+        python-version: ${{ matrix.PYTHON_VERSION }}
 
     - name: Configure Apache
       run: |
         set -e
         sudo ln -s `pwd` /opt/datateam
         sudo cp config/datateam-vhost-ci.conf /etc/apache2/sites-enabled/datateam.conf
-
-        # ci_tooling places a mod_wsgi conf with startup disabled, we enable it
-        sudo sed -i 's/# WSGIImportScript/WSGIImportScript/' /etc/apache2/sites-enabled/mod_wsgi.conf
-
         sudo systemctl restart apache2
 
     #- name: Debug with SSH
     #  uses: lhotari/action-upterm@v1
+
     - name: Install and Run Coverage
       run: |
         set -e
