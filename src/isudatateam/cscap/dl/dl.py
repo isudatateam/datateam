@@ -175,6 +175,8 @@ def conv(value, detectlimit):
     # Careful here, we need to keep missing values for a later replacement
     if value is None or value == "":
         return None
+    if isinstance(value, float):
+        return value
     if value in ["n/a", "did not collect"]:
         return None
     if value.startswith("<"):
