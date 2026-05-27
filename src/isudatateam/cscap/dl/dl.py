@@ -30,7 +30,7 @@ Contact: isudatateam@iastate.edu
 
 Please click here to download your spreadsheet file.
 
-    %s (link will remain active for 30 days)
+    %s (link will remain active for ~1 day)
 
 Please reference this data set in publications as:
 
