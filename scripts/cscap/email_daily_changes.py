@@ -3,7 +3,6 @@ My purpose in life is to send an email each day with changes found
 on the Google Drive
 """
 
-# stdlib
 import json
 import smtplib
 import sys
@@ -13,7 +12,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from zoneinfo import ZoneInfo
 
-# third party
 import gdata.gauth
 import gdata.sites.client as sclient
 from gdata.client import RequestError
@@ -366,7 +364,10 @@ def main(argv):
             p25.quit()
             attempt = 10
         except Exception as exp:
-            print(exp)
+            # By default LOG.info is a NOOP for non-tty cron jobs, so swallow
+            # the noise until it fails 3 times.
+            loglvl = LOG.info if attempt < 3 else LOG.exception
+            loglvl(exp)
             time.sleep(10)
             attempt += 1
 
