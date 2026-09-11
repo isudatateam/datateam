@@ -1,21 +1,21 @@
-<?php 
+<?php
 $title = array_key_exists('title', $this->vars)? 'Data Team :: '. $this->title : 'ISU Data Team';
 $refresh = array_key_exists('refresh', $this->vars)? $this->refresh : '';
 $headextra = array_key_exists('headextra', $this->vars)? $this->headextra : '';
 $bodyextra = array_key_exists('bodyextra', $this->vars)? ' '. $this->bodyextra : '';
-$twimage = array_key_exists('twitter_image', $this->vars) ? 
+$twimage = array_key_exists('twitter_image', $this->vars) ?
                 $this->twitter_image : '/images/logo_small.png';
-$twcard = array_key_exists('twitter_card', $this->vars) ? 
+$twcard = array_key_exists('twitter_card', $this->vars) ?
                 $this->twitter_card : 'summary';
-$twdescription = array_key_exists('twitter_description', $this->vars) ? 
+$twdescription = array_key_exists('twitter_description', $this->vars) ?
                 $this->twitter_description : 'ISU Data Team of Iowa State University';
 ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <?php 
-    echo $refresh; 
-    echo $headextra; 
+    <?php
+    echo $refresh;
+    echo $headextra;
     ?>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -28,7 +28,7 @@ $twdescription = array_key_exists('twitter_description', $this->vars) ?
     <link href="/vendor/fa/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="/vendor/iastate-v2.0.1/css/iastate.min.css" rel="stylesheet">
     <link href="/css/bootstrap-override.css" rel="stylesheet">
- 
+
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="/js/html5shiv.js"></script>

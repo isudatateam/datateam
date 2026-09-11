@@ -1,11 +1,11 @@
 <?php
 /* Here lies the dead simple templating engine the IEM uses
- * 
+ *
  * For example
  *     $t = new MyView();
  *     $t->blah = "Hi";
  *     $t->render('single.phtml');
- *     
+ *
  *  http://coding.smashingmagazine.com/2011/10/17/getting-started-with-php-templating/
  */
 class MyView {

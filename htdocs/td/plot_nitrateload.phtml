@@ -21,7 +21,7 @@ $ptype = isset($_GET['ptype']) ? $_GET['ptype']: '1';
  with data as (select siteid, min(date),
  max(date) from tile_flow_and_n_loads_data WHERE
  nitrate_n_load is not null GROUP by siteid)
- 
+
  SELECT '"'|| siteid || '"=>"' || siteid || '  ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
@@ -55,12 +55,12 @@ $ar = Array(
     "OH_Defiance1"=>"OH_Defiance1  (2010-12-20 to 2014-12-30) [1471 days]",
     "OH_Delaware"=>"OH_Delaware  (2005-01-01 to 2012-12-31) [2921 days]",
     "OH_Hardin1"=>"OH_Hardin1  (2011-01-26 to 2014-12-29) [1433 days]",
-    "SD_Clay"=>"SD_Clay  (2015-01-01 to 2017-06-07) [888 days]",   
+    "SD_Clay"=>"SD_Clay  (2015-01-01 to 2017-06-07) [888 days]",
 	);
 $siteselect = td_site_select("site", $site, $ar);
 
 
-$jsurl = sprintf("nitrateload__%s__%s__%s__%s__%s.js", 
+$jsurl = sprintf("nitrateload__%s__%s__%s__%s__%s.js",
     $site, $date, $days, $by, $ungroup);
 $jsextra = "<script src=\"{$jsurl}\"></script>";
 $interface = <<<EOF
@@ -155,7 +155,7 @@ Agricultural Landscapes" (Award No. 2015-68007-23193).</p>
 <input type="submit" value="Run">
 </form>
 
-<p><strong>Viewing Options:</strong> Click the legend name to de/select data series. 
+<p><strong>Viewing Options:</strong> Click the legend name to de/select data series.
 To zoom in, click and drag your mouse within the plot frame.</p>
 
 <p><strong>Download Options:</strong> Download the figure by clicking

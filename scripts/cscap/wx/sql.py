@@ -20,16 +20,16 @@ for mdl in [
      SELECT avg((f2c(high)+f2c(low))/2.) as avgt, sum(precip) from alldata_ia
      where
      station = 'IA0200' and year = 2012),
-    
+
     forecast as (
      SELECT avg((f2c(high)+f2c(low))/2.) as avgt, sum(precip) from hayhoe_daily
      WHERE
      model = %s and scenario = 'a1b' and station = 'IA0200' and
      day between '2012-01-01' and '2013-01-01' and precip is not null and
      high is not null and low is not null)
-     
+
     SELECT obs.avgt, obs.sum, forecast.avgt - obs.avgt,
-    (forecast.sum - obs.sum) / 1. 
+    (forecast.sum - obs.sum) / 1.
     from obs, forecast
     """
     cursor.execute(sql, (mdl,))
@@ -65,7 +65,7 @@ for mdl in [
   from hayhoe_daily where station = 'IA0200' and
   model = %s and scenario = 'a1b' and day between '2046-01-01' and '2066-01-01'
   )
-  
+
   SELECT two.sum, one.sum, (two.sum - one.sum) / 20., one.d100, two.d100,
   one.avgt, two.avgt from one, two
 

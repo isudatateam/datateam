@@ -16,11 +16,11 @@ if (strlen($date) != 10){
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 100;
 $by = isset($_GET['by']) ? $_GET['by']: 'daily';
 
-/* 
+/*
  with data as (select siteid, min(date),
  max(date) from tile_flow_and_n_loads_data
  WHERE tile_flow_filled is not null GROUP by siteid)
- 
+
  SELECT '"'||siteid ||  '"=>"' || siteid || ' '||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
 */
@@ -45,7 +45,7 @@ $ar = Array(
 );
 $siteselect = td_site_select("site", $site, $ar);
 
-$jsurl = sprintf("tileflow__%s__%s__%s__%s__%s.js", 
+$jsurl = sprintf("tileflow__%s__%s__%s__%s__%s.js",
 		$site, $date, $days, $by, $ungroup);
 	$jsextra = "<script src=\"{$jsurl}\"></script>";
 	$interface = <<<EOF
@@ -78,7 +78,7 @@ $(document).ready(function(){
 		changeMonth: true,
 		changeYear: true,
 		minDate: new Date(1990, 0, 1),
-		maxDate: new Date(2018, 0, 1)});		
+		maxDate: new Date(2018, 0, 1)});
 
 });
 </script>
@@ -142,13 +142,13 @@ and aggregation tool. Data are from the USDA-NIFA funded project:
 <input type="submit" value="Run">
 </form>
 
-<p>Plotting of data may not occur if the time period selected is more than 
-~700 days. This is due to the amount of data overwhelming the user's web 
-browser and failing to load. Select a shorter time span if you run into 
-this problem. Long time periods can be selected without problems if only 
+<p>Plotting of data may not occur if the time period selected is more than
+~700 days. This is due to the amount of data overwhelming the user's web
+browser and failing to load. Select a shorter time span if you run into
+this problem. Long time periods can be selected without problems if only
 exporting the data.</p>
 
-<p><strong>Viewing Options:</strong> Click the legend name to de/select data series. 
+<p><strong>Viewing Options:</strong> Click the legend name to de/select data series.
 To zoom in, click and drag your mouse within the plot frame.</p>
 
 <p><strong>Download Options:</strong> Download the figure by clicking on the

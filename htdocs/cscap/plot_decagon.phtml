@@ -18,7 +18,7 @@ $ptype = isset($_GET['ptype']) ? $_GET['ptype'] : '1';
 
 /* with data as (select uniqueid, plotid, min(date(valid)),
  max(date(valid)) from decagon_data GROUP by uniqueid, plotid)
- 
+
  SELECT '"'||uniqueid || '::'|| plotid || '"=>"' || uniqueid || ' '||
  plotid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
@@ -233,7 +233,7 @@ $(document).ready(function(){
         changeMonth: true,
         changeYear: true,
         minDate: new Date(2011, 0, 1),
-        maxDate: new Date(2017, 1, 1)});		
+        maxDate: new Date(2017, 1, 1)});
 });
 </script>
 EOF;
@@ -248,11 +248,11 @@ select {
 
 <h3>Decagon Data Plotting/Download</h3>
 
-<p>Decagon data included in this visualization and aggregation tool are associated with 
+<p>Decagon data included in this visualization and aggregation tool are associated with
 the USDA-NIFA funded project: "Cropping Systems Coordinated Agricultural Project: Climate Change,
 Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-68002-30190).</p>
 
-<p>By using this tool, you agree to the 
+<p>By using this tool, you agree to the
 <a href="/cscap/usage.phtml" target="_blank">data usage agreement</a>.</p>
 
 {$errmsg}
@@ -280,10 +280,10 @@ Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-6800
 <input type="submit" value="Run">
 </form>
 
-<p>Plotting of data may not occur if the time period selected is more than 
-~700 days. This is due to the amount of data overwhelming the user’s web 
-browser and failing to load. Select a shorter time span if you run into 
-this problem. Long time periods can be selected without problems if only 
+<p>Plotting of data may not occur if the time period selected is more than
+~700 days. This is due to the amount of data overwhelming the user’s web
+browser and failing to load. Select a shorter time span if you run into
+this problem. Long time periods can be selected without problems if only
 exporting the data.</p>
 
 <p>{$interface}</p>
@@ -296,10 +296,10 @@ The timestamps presented should be valid for the local time zone of the sensor
 and are daylight saving time aware.
 </li>
 <li><strong>How the aggregation is implemented?</strong><br />
-The hourly aggregated value is computed by averaging any available 
-observations taken during that hour. If holes exist in the data 
-for that hour, they are ignored/unused in the aggregation. The same 
-procedure holds true for the daily aggregation, which represent 
+The hourly aggregated value is computed by averaging any available
+observations taken during that hour. If holes exist in the data
+for that hour, they are ignored/unused in the aggregation. The same
+procedure holds true for the daily aggregation, which represent
 the daily summaries in the time zone of the station.
 </li>
 </ol>
@@ -335,13 +335,13 @@ moisture.</li>
 
  <li><strong>GILMORE</strong>. Soil moisture is monitored midway between the tile
   lines in about the middle of the plot</li>
-  
+
  <li><strong>HICKS.B and HICKS.G</strong>. Soil moisture is measured at a single location within  each management zone, midway between a pair of drainage
 lines, and reported to represent the entire zone.</li>
 
  <li><strong>STJOHNS</strong>. Soil moisture data at 3 specific locations each in free and managed drainage areas.
  </li>
- 
+
 </ul>
 
 

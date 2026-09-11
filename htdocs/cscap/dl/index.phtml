@@ -1,4 +1,4 @@
-<?php 
+<?php
 // require_once "../../../include/require_auth.php";
 
 function build_treatments_ui(){
@@ -412,7 +412,7 @@ function build_sites_ui(){
     $keys = array_keys($data);
     asort($keys);
     $s = '';
-    $q = -1;	
+    $q = -1;
     foreach($keys as $v => $k){
         $q += 1;
         if ($q % 3 == 0){
@@ -444,7 +444,7 @@ function build_year_ui(){
     <div class="panel panel-default">
     <div class="panel-heading">Available Years</div>
     <div class="panel-body">
-    
+
     <input type="checkbox" value="2011" data-year="2011" name="year[]" id="Y2011">
     <label for="Y2011" class="control-label">2011</label>
     <input type="checkbox" value="2012" data-year="2012" name="year[]" id="Y2012">
@@ -455,7 +455,7 @@ function build_year_ui(){
     <label for="Y2014" class="control-label">2014</label>
     <input type="checkbox" value="2015" data-year="2015" name="year[]" id="Y2015">
     <label for="Y2015" class="control-label">2015</label>
-    
+
     </div>
     </div>
 EOF;
@@ -467,7 +467,7 @@ function build_ghg_ui(){
     <div class="panel panel-default">
     <div class="panel-heading">Available Variables</div>
     <div class="panel-body">
-    
+
     <input type="checkbox" value="GHG01" data-ghg="GHG01" name="ghg[]" id="GHG01">
     <label for="GHG01" class="control-label">Carbon Dioxide (CO<sub>2</sub>-C) flux</label>
     <input type="checkbox" value="GHG02" data-ghg="GHG02" name="ghg[]" id="GHG02">
@@ -492,7 +492,7 @@ function build_ghg_ui(){
     <label for="GHG13" class="control-label">Soil Nitrate (NO<sub>3</sub>-N) at 0-10 cm</label>
     <input type="checkbox" value="GHG14" data-ghg="GHG14" name="ghg[]" id="GHG14">
     <label for="GHG14" class="control-label">Soil Ammonium (NH<sub>4</sub>-N) at 0-10 cm</label>
-    
+
     </div>
     </div>
 EOF;
@@ -533,7 +533,7 @@ function build_ipm_ui(){
     <label for="IPM13" class="control-label">Position assessed</label>
     <input type="checkbox" value="IPM14" data-ipm="IPM14" name="ipm[]" id="IPM14">
     <label for="IPM14" class="control-label">Visual rating of damage due to disease or insect</label>
-            
+
     </div>
     </div>
 EOF;
@@ -550,7 +550,7 @@ interpretation. For this reason, all variables are selected by default.</p>
     <div class="panel panel-default">
     <div class="panel-heading">Available Variables</div>
     <div class="panel-body">
-            
+
     <input type="checkbox" value="SHM5" data-ipm="SHM5" name="shm[]" id="SHM5" checked="checked">
     <label for="SHM5" class="control-label">Data Dictionary</label>
     <input type="checkbox" value="SHM7" data-ipm="SHM7" name="shm[]" id="SHM7" checked="checked">
@@ -565,7 +565,7 @@ interpretation. For this reason, all variables are selected by default.</p>
     <label for="SHM4" class="control-label">Plot Identifiers</label>
     <input type="checkbox" value="SHM8" data-ipm="SHM8" name="shm[]" id="SHM8" checked="checked">
     <label for="SHM8" class="control-label">Site Metadata and History</label>
-            
+
     </div>
     </div>
 EOF;
@@ -612,17 +612,17 @@ $wxdatacontent = <<<EOM
 
 <div class="tab-content">
 
-  
+
  <div role="tabpanel" class="tab-pane active" id="wx2">
-<p>Supplementary weather data are available for Sustainable Corn CAP research sites 
-and are provided from nearby weather networks. These data are most appropriate 
-to use with these research sites because of proximity. The data are collected 
-from a variety of sources, including the National Climatic Data Center, 
-National Weather Service, and State Climatologists with curation and 
-management by Iowa Environmental Mesonet. These entities revise their 
+<p>Supplementary weather data are available for Sustainable Corn CAP research sites
+and are provided from nearby weather networks. These data are most appropriate
+to use with these research sites because of proximity. The data are collected
+from a variety of sources, including the National Climatic Data Center,
+National Weather Service, and State Climatologists with curation and
+management by Iowa Environmental Mesonet. These entities revise their
 data and will produce updated values that are reprocessed into this archive.</p>
 
-<p>Documentation on this dataset can be found 
+<p>Documentation on this dataset can be found
 <a href="https://mesonet.agron.iastate.edu/info/datasets/climodat.html" target="_blank">here</a></p>
 
 <form method="GET" id="wxform" action="https://mesonet.agron.iastate.edu/cgi-bin/request/coop.py">
@@ -781,7 +781,7 @@ data and will produce updated values that are reprocessed into this archive.</p>
 </table>
 
 <p><strong>Select Data Variables</strong>:
-<br /><i>Date and Day of Year are included automatically in the export. 
+<br /><i>Date and Day of Year are included automatically in the export.
 To select multiple data, hold CTRL key down while selecting options here.</i>
 <br /><select size=5 name="vars[]" MULTIPLE class="select">0
   <option value="high">Variable: High Air Temperature [F]</option>
@@ -799,12 +799,12 @@ To select multiple data, hold CTRL key down while selecting options here.</i>
 their choice dictates the variables to be included.</i>
 <br />
 <select size="5" name="model">
-  <option value="apsim">Model: APSIM MET File</option> 
-  <option value="century">Model: Century (Monthly Format)</option> 
-  <option value="daycent">Model: DailyDayCent (no extra drivers)</option> 
-  <option value="dndc">Model: DNDC</option> 
-  <option value="salus">Model: SALUS</option> 
-  <option value="swat">Model: SWAT (daily precip and temperature)</option> 
+  <option value="apsim">Model: APSIM MET File</option>
+  <option value="century">Model: Century (Monthly Format)</option>
+  <option value="daycent">Model: DailyDayCent (no extra drivers)</option>
+  <option value="dndc">Model: DNDC</option>
+  <option value="salus">Model: SALUS</option>
+  <option value="swat">Model: SWAT (daily precip and temperature)</option>
 </select></p>
 
 <input type="hidden" name="what" value="download" />
@@ -819,7 +819,7 @@ their choice dictates the variables to be included.</i>
 
 <p>The downloaded data file name will contain the weather station identifiers
 if you request data from 9 or less sites.  For requests over 9 sites,
-the filename will simply be "changeme". Refer to the drop-down above for reminder as to 
+the filename will simply be "changeme". Refer to the drop-down above for reminder as to
 which site it corresponds with.</p>
 
 <p><input type="submit" value="Request Data" /></p>
@@ -934,7 +934,7 @@ between the stations but the precipitation amounts will vary.</p>
 </p>
 <!--
 <p><strong>Select Data Variables:</strong>
-<br /><i>Date and Day of Year are included automatically in the export. 
+<br /><i>Date and Day of Year are included automatically in the export.
 To select multiple data, hold CTRL key down while selecting options here.</i>
 <br /><select size=5 name="vars" MULTIPLE class="select">0
   <option value="high">Variable: High Air Temperature [F]</option>
@@ -975,10 +975,10 @@ $t->content = <<<EOF
     <li role="presentation"><a href="#sdata" aria-controls="data" role="tab" data-toggle="tab">Soc Econ Data</a></li>
     <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
   </ul>
-  
+
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane" id="data">
-    
+
 <form method="POST" action="dl.py" id="mainform">
 <div class="btn-group fauxtabs" role="group" aria-label="Pages">
   <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
@@ -998,7 +998,7 @@ $t->content = <<<EOF
 </div>
 <div class="clearfix"></div>
 
-<p>This download tool will auto-populate options in the following tabs based on the research sites selected below. 
+<p>This download tool will auto-populate options in the following tabs based on the research sites selected below.
 We recommended you “Select All” sites if you want to retain the most options moving forward.</p>
 {$sitesui}
 </div>
@@ -1017,7 +1017,7 @@ We recommended you “Select All” sites if you want to retain the most options
 </div>
 <div class="clearfix"></div>
 
-<p>For sites and treatments you’ve selected, available agronomic data will be identified by black text; 
+<p>For sites and treatments you’ve selected, available agronomic data will be identified by black text;
 unavailable in grey. The usage of abbreviations <i>C</i>
 and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 {$agronomicui}
@@ -1028,7 +1028,7 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
   <button id="soil-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
 <div class="clearfix"></div>
-<p>For sites and treatments you’ve selected, available soil data will be identified by black text; 
+<p>For sites and treatments you’ve selected, available soil data will be identified by black text;
 unavailable in grey.</p>
 <div class="clearfix"></div>
 
@@ -1041,8 +1041,8 @@ unavailable in grey.</p>
 </div>
 <div class="clearfix"></div>
 
-<p>For sites and treatments you’ve selected, available greenhouse gas data will be identified by black text; 
-unavailable in grey. The soil data listed here were collected at the same time as the greenhouse 
+<p>For sites and treatments you’ve selected, available greenhouse gas data will be identified by black text;
+unavailable in grey. The soil data listed here were collected at the same time as the greenhouse
 gas measurement; these are distinct for those under the Soil tab.</p>
 
 <div class="clearfix"></div>
@@ -1056,7 +1056,7 @@ gas measurement; these are distinct for those under the Soil tab.</p>
 </div>
 <div class="clearfix"></div>
 
-<p>For sites and treatments you’ve selected, available insects (pest and beneficial) and plant diseases data 
+<p>For sites and treatments you’ve selected, available insects (pest and beneficial) and plant diseases data
 will be identified by black text; unavailable in grey.</p>
 
 <div class="clearfix"></div>
@@ -1070,7 +1070,7 @@ will be identified by black text; unavailable in grey.</p>
 </div>
 <div class="clearfix"></div>
 
-<p>For sites and treatments you’ve selected, available years of data 
+<p>For sites and treatments you’ve selected, available years of data
 will be identified by black text; unavailable in grey.</p>
 
 <div class="clearfix"></div>
@@ -1132,25 +1132,25 @@ will be identified by black text; unavailable in grey.</p>
 <blockquote>
 <p>Please reference this data set in publications as:</p>
 
-<p>Abendroth, Lori J., Daryl E. Herzmann, Giorgi Chighladze, Eileen J. Kladivko, Matthew J. Helmers, 
-Laura Bowling, Michael Castellano, Richard M. Cruse, Warren A. Dick, Norman R. Fausey, Jane Frankenberger, 
-Aaron J. Gassmann, Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller, Emerson D. Nafziger, 
-Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer, Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017. 
-Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190). National Agricultural Library - ARS 
+<p>Abendroth, Lori J., Daryl E. Herzmann, Giorgi Chighladze, Eileen J. Kladivko, Matthew J. Helmers,
+Laura Bowling, Michael Castellano, Richard M. Cruse, Warren A. Dick, Norman R. Fausey, Jane Frankenberger,
+Aaron J. Gassmann, Alexandra Kravchenko, Rattan Lal, Joseph G. Lauer, Daren S. Mueller, Emerson D. Nafziger,
+Nsalambi Nkongolo, Matthew O'Neal, John E. Sawyer, Peter Scharf, Jeffrey S. Strock, and Maria B. Villamil. 2017.
+Sustainable Corn CAP Research Data (USDA-NIFA Award No. 2011-68002-30190). National Agricultural Library - ARS
 - USDA. <a href="https://dx.doi.org/10.15482/USDA.ADC/1411953" target="_blank">https://dx.doi.org/10.15482/USDA.ADC/1411953</a>
 </p>
 
-<p>You are encouraged to contact the Sustainable Corn CAP personnel listed above to ensure 
-proper data interpretation and may also consider co-authoring with them. You shall have no claim 
-of ownership to any intellectual property rights in any part of the data, content, functions, features, 
+<p>You are encouraged to contact the Sustainable Corn CAP personnel listed above to ensure
+proper data interpretation and may also consider co-authoring with them. You shall have no claim
+of ownership to any intellectual property rights in any part of the data, content, functions, features,
 code, data exploration tools, logos or other intellectual property comprising this database.
 </p>
 
-<p>The coauthors individually and the Sustainable Corn CAP collectively shall NOT be responsible or 
-liable for the accuracy, reliability and completeness of any information included in the database nor 
-the suitability of its application for any particular purpose. Data users are encouraged to notify 
-the coauthors regarding data quality and other issues concerning the data, tools, and functionality of this website. 
-Contact <a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a> with any questions or concerns 
+<p>The coauthors individually and the Sustainable Corn CAP collectively shall NOT be responsible or
+liable for the accuracy, reliability and completeness of any information included in the database nor
+the suitability of its application for any particular purpose. Data users are encouraged to notify
+the coauthors regarding data quality and other issues concerning the data, tools, and functionality of this website.
+Contact <a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a> with any questions or concerns
 regarding usage and application of the data available at this site.
 </p>
 </blockquote>
@@ -1174,7 +1174,7 @@ timeout shown, but an email will still be delivered with the data.</div>
 <div id="proceed" style="display: none;">
   <p><input type="submit" value="Proceed with Download"></p>
 </div>
-    
+
 </div>
 <br clear="both" />
 <div class="pull-right">
@@ -1200,52 +1200,52 @@ timeout shown, but an email will still be delivered with the data.</div>
     <li role="presentation"><a href="#p2" aria-controls="p2" role="tab" data-toggle="tab">Thesis and Dissertations</a></li>
     <li role="presentation"><a href="#p3" aria-controls="p3" role="tab" data-toggle="tab">Technical Reports</a></li>
   </ul>
-  
+
 <div class="tab-content">
 
     <div role="tabpanel" class="tab-pane active" id="p1">
 <p><blockquote>Articles with open access availability are <strong>in bold</strong>.
-These do not require a subscription to the journal to access. For individuals 
-without accessibility to certain journals, contact 
-<a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a> 
+These do not require a subscription to the journal to access. For individuals
+without accessibility to certain journals, contact
+<a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a>
 for requests to articles below that are subscription-only.</blockquote></p>
 
 {$publisting}
     </div>
-    
+
     <div role="tabpanel" class="tab-pane" id="p2">
-<p><blockquote>Many biophysical and social science graduate students were 
-supported by and contributed to the scientific discoveries and publications of 
-the Sustainable Corn CAP team. Their theses and dissertations are provided here 
-via links to their major University library. If a web link is not provided, 
+<p><blockquote>Many biophysical and social science graduate students were
+supported by and contributed to the scientific discoveries and publications of
+the Sustainable Corn CAP team. Their theses and dissertations are provided here
+via links to their major University library. If a web link is not provided,
 contact <a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a>
 for a PDF copy.</blockquote></p>
 
 {$theseslisting}
     </div>
-    
+
     <div role="tabpanel" class="tab-pane" id="p3">
-<p><blockquote>The Sustainable Corn CAP published a technical report series highlighting 
-the team’s research, extension, education, and management findings. These are available 
+<p><blockquote>The Sustainable Corn CAP published a technical report series highlighting
+the team’s research, extension, education, and management findings. These are available
 in electronic and print format:</blockquote></p>
     <ul>
-    <li><a href="https://store.extension.iastate.edu/product/14878" target="_blank">Climate and Managing Corn-Soybean 
+    <li><a href="https://store.extension.iastate.edu/product/14878" target="_blank">Climate and Managing Corn-Soybean
     Agroecosystems 1: Findings, Implications and Recommendations</a></li>
-    <li><a href="https://store.extension.iastate.edu/product/15130" target="_blank">Climate and Managing Corn-Soybean 
+    <li><a href="https://store.extension.iastate.edu/product/15130" target="_blank">Climate and Managing Corn-Soybean
     Agroecosystems 2: Findings, Implications and Recommendations</a></li>
-    <li><a href="https://store.extension.iastate.edu/product/14504" target="_blank">Climate Change and Agricultural Extension; 
-    Building Capacity for Land Grant Extension Services to Address the Agricultural Impacts of Climate Change 
+    <li><a href="https://store.extension.iastate.edu/product/14504" target="_blank">Climate Change and Agricultural Extension;
+    Building Capacity for Land Grant Extension Services to Address the Agricultural Impacts of Climate Change
     and the Adaptive Management Needs of Agricultural Stakeholders (vol. 3)</a></li>
-    <li><a href="https://store.extension.iastate.edu/product/14913" target="_blank">Agri-Climate Education; Preparing 
+    <li><a href="https://store.extension.iastate.edu/product/14913" target="_blank">Agri-Climate Education; Preparing
     the Next Generation (vol. 4)</a></li>
-    <li><a href="https://store.extension.iastate.edu/product/15140" target="_blank">Project and Research Management: 
+    <li><a href="https://store.extension.iastate.edu/product/15140" target="_blank">Project and Research Management:
     Integrating Systems, Data, and People in Multidisciplinary Work (vol. 5)</a></li>
     </ul>
 
-<p>Project Director, Lois Wright Morton, co-published a primer for project directors of large teams. 
+<p>Project Director, Lois Wright Morton, co-published a primer for project directors of large teams.
 This publication is hosted on the USDA NIFA website:</p>
     <ul>
-    <li><a href="https://nifa.usda.gov/leading-transdisciplinary-projects" target="_blank">Leading Large Transdisciplinary 
+    <li><a href="https://nifa.usda.gov/leading-transdisciplinary-projects" target="_blank">Leading Large Transdisciplinary
     Projects Addressing Social-Ecological Systems: A Primer for Project Directors</a></li>
     </ul>
 
@@ -1255,11 +1255,11 @@ This publication is hosted on the USDA NIFA website:</p>
         </div>
     <div role="tabpanel" class="tab-pane" id="wdata">
 
-<p>Data originating from research sites that have subsurface tile drainage installed are included here. 
-They are not included under the Research Data tab because data are collected on a time series basis with 
-the user selecting the aggregation preferred for export. Please note that additional data such as management 
-operations, plot identifiers, data dictionary, and site history for these drainage research sites are included 
-under the Research Data tab. This supporting data must be downloaded to properly interpret and synthesize water 
+<p>Data originating from research sites that have subsurface tile drainage installed are included here.
+They are not included under the Research Data tab because data are collected on a time series basis with
+the user selecting the aggregation preferred for export. Please note that additional data such as management
+operations, plot identifiers, data dictionary, and site history for these drainage research sites are included
+under the Research Data tab. This supporting data must be downloaded to properly interpret and synthesize water
 data contained here.</p>
 
 <p>Datasets include:</p>
@@ -1270,8 +1270,8 @@ data contained here.</p>
 <li><a href="/cscap/plot_decagon.phtml" target="_blank">Decagon - Soil Moisture and Temperature</a></li>
 </ul>
 
-<p>Tile flow and water quality data for the BRADFORD.A experimental site are not included here due to conditions 
-that are distinct from other drainage sites. Drainage tile were installed in the clay layer of the soil profile 
+<p>Tile flow and water quality data for the BRADFORD.A experimental site are not included here due to conditions
+that are distinct from other drainage sites. Drainage tile were installed in the clay layer of the soil profile
 which impacted the amount of water through the system and out from the site. Contact <a href="mailto:isudatateam@iastate.edu">
 isudatateam@iastate.edu</a> for access to this data.</p>
 
@@ -1283,33 +1283,33 @@ isudatateam@iastate.edu</a> for access to this data.</p>
 
 <div class="clearfix"><p>&nbsp;</p></div>
 
-<p>Social economic research was conducted and included a survey of 4,778 farmers 
-in 11 Corn Belt states and 156 one-hour, in-person farmer interviews. The data 
-cannot be released due to anonymity issues but are available in aggregated 
-format across watersheds in the region. These aggregated data and maps are 
+<p>Social economic research was conducted and included a survey of 4,778 farmers
+in 11 Corn Belt states and 156 one-hour, in-person farmer interviews. The data
+cannot be released due to anonymity issues but are available in aggregated
+format across watersheds in the region. These aggregated data and maps are
 available in two publications:</p>
 
-<p><a href="https://store.extension.iastate.edu/Product/14459" target="_blank">   
+<p><a href="https://store.extension.iastate.edu/Product/14459" target="_blank">
 Farmer Perspectives on Agriculture and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 1</a></p>
 
-<p>This first atlas (Volume 1) provides data regarding farmer beliefs and 
-concerns about climate change, attitudes toward adaptation and mitigation, 
-perceived capacity to deal with the impacts and recent experiences with extreme 
-weather events. Delineated by watershed, this collection of tables and maps 
-provides the results of a USDA-NIFA-supported survey, conducted in 2012, of 
+<p>This first atlas (Volume 1) provides data regarding farmer beliefs and
+concerns about climate change, attitudes toward adaptation and mitigation,
+perceived capacity to deal with the impacts and recent experiences with extreme
+weather events. Delineated by watershed, this collection of tables and maps
+provides the results of a USDA-NIFA-supported survey, conducted in 2012, of
 4,778 farmers in 11 Corn-belt states.</p>
 
 <p><a href="https://store.extension.iastate.edu/Product/14458" target="_blank">
 Farmer Perspectives on Agricultural Practices, Information, and Weather Variability in the Corn Belt: A Statistical Atlas, Volume 2</a></p>
 
-<p>This second atlas (Volume 2) provides additional results from a 2012 survey of 
-4,778 farmers in 11 Corn-belt states. Here, the focus is upon farmers' 
-specific behaviors, beliefs about climate and weather, and the tools they 
-utilize to make farm decisions. You will find information covering timing of 
-farming practices and farming decisions, whether and how farmers use weather 
-information when making farming decisions; a detailed look at the influence of 
-agricultural advisors in farmer decision making processes; farmers' personal 
-experiences regarding weather and risks; and plans and efforts of farmers to 
+<p>This second atlas (Volume 2) provides additional results from a 2012 survey of
+4,778 farmers in 11 Corn-belt states. Here, the focus is upon farmers'
+specific behaviors, beliefs about climate and weather, and the tools they
+utilize to make farm decisions. You will find information covering timing of
+farming practices and farming decisions, whether and how farmers use weather
+information when making farming decisions; a detailed look at the influence of
+agricultural advisors in farmer decision making processes; farmers' personal
+experiences regarding weather and risks; and plans and efforts of farmers to
 adapt to and manage for weather and climate variability and risk.</p>
 
     </div>
@@ -1317,11 +1317,11 @@ adapt to and manage for weather and climate variability and risk.</p>
 
 </div>
 
-</div>    
+</div>
 
 <div class="clearfix"></div>
 <p>&nbsp;</p>
 <img src="/images/logos/web_logos.png" class="img img-responsive">
-        
+
 EOF;
 $t->render('single.phtml');
