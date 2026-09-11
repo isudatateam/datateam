@@ -35,7 +35,7 @@ DataTeam Meeting Notes
     for guidance on what to do with the unknown variables
   - Need to throw this all at AgMIP eventually with details on our protocols
     and units, etc
-  - Dr Arbuckle will be adding some additional variables to the dictionary 
+  - Dr Arbuckle will be adding some additional variables to the dictionary
     of the social-economic data, where appropriate
   - TD data upload deadline looms and hopefully more data shows up soon
   - Suggestion to implement more comments in the backend data sheets when data
@@ -65,7 +65,7 @@ DataTeam Meeting Notes
   - [ ] write and run script that checks units found on various pages
   - [ ] create water retention plots
   - next meeting 1 PM, 3 Aug
- 
+
  10 Jun 2016
   Lori, Gio, Suresh
   - Gio's got a Google Form cronjob that is modifying the form each hour
@@ -91,11 +91,11 @@ DataTeam Meeting Notes
   - [x] I showed the new data editing, Lori wanted the text changed
   - [x] modify highcharts pages to use fullpage bootstrap template
   - Our next meeting is 18 May
- 
+
  19 Apr 2016
   Lori, Gio, Suresh
   - Purpose is to discuss Gio's data download thoughts
-  - [ ] When I email the team a listing of text, the result is not pretty on 
+  - [ ] When I email the team a listing of text, the result is not pretty on
     their end
   - [ ] need to again review the IPM plotids for Suresh and resend email
   - Lori discussed Syngenta meeting, interested in 4mon/yr coordinator
@@ -111,7 +111,7 @@ DataTeam Meeting Notes
   - Discussion on what will happen with the writing worshop and perhaps there
     would be time for us to work on it some
   - Volume 5 of the primary reports for the project is coming from us
-  - Katie has been working on some survey data from Dr Morton that will 
+  - Katie has been working on some survey data from Dr Morton that will
     eventually come to the db
   - Discussion of the failure to take the team photo at the TD Project Meeting
   - Getting the soil data sheets generated for TD is a priority, but we do

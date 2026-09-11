@@ -14,7 +14,7 @@ $ptype = isset($_GET['ptype']) ? $_GET['ptype'] : '1';
 
 /* with data as (select uniqueid, min(date(valid)),
  max(date(valid)) from waterquality_data GROUP by uniqueid)
- 
+
  SELECT '"'||uniqueid || '"=>"' || uniqueid
  || ' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
@@ -125,7 +125,7 @@ select {
 USDA-NIFA funded project: "Cropping Systems Coordinated Agricultural Project: Climate Change,
 Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-68002-30190).</p>
 
-<p>By using this tool, you agree to the 
+<p>By using this tool, you agree to the
 <a href="/cscap/usage.phtml" target="_blank">data usage agreement</a>.</p>
 
 {$errmsg}
@@ -155,7 +155,7 @@ Mitigation, and Adaptation in Corn-based Cropping Systems." (Award No. 2011-6800
 
 <p>{$interface}</p>
 
-<p><i>Pro Tip:</i> Click the legend name to de/select data series. 
+<p><i>Pro Tip:</i> Click the legend name to de/select data series.
 To zoom in, click and drag your mouse within the plot frame.</p>
 
 <h3>Frequently Asked Questions</h3>

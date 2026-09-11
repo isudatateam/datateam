@@ -253,12 +253,12 @@ function build_soil_ui(){
         "mg_amount" => "Mg Amount",
         "sar" => "SAR",
         "salinity_paste" => "Salinity Paste",
-        "salinity_water" => "Salinity Water",        
+        "salinity_water" => "Salinity Water",
     );
     $sp = gen($ar, "soil");
 
     $ar = Array(
-        "soc" => "Soil Organic Carbon",      
+        "soc" => "Soil Organic Carbon",
     );
     $sc = gen($ar, "soil");
 
@@ -594,7 +594,7 @@ interpretation. For this reason, all variables are selected by default.</p>
 
     <input type="checkbox" value="SHM6" data-ipm="SHM6" name="shm[]" id="SHM6" checked="checked">
     <label for="SHM6" class="control-label">Notes</label>
-            
+
     </div>
     </div>
 EOF;
@@ -640,17 +640,17 @@ $wxdatacontent = <<<EOM
 
 <div class="tab-content">
 
-  
+
  <div role="tabpanel" class="tab-pane active" id="wx2">
-<p>Supplementary weather data are available for Transforming Drainage research sites 
-and are provided from nearby weather networks. These data are most appropriate 
-to use with these research sites because of proximity. The data are collected 
-from a variety of sources, including the National Climatic Data Center, 
-National Weather Service, and State Climatologists with curation and 
-management by Iowa Environmental Mesonet. These entities revise their 
+<p>Supplementary weather data are available for Transforming Drainage research sites
+and are provided from nearby weather networks. These data are most appropriate
+to use with these research sites because of proximity. The data are collected
+from a variety of sources, including the National Climatic Data Center,
+National Weather Service, and State Climatologists with curation and
+management by Iowa Environmental Mesonet. These entities revise their
 data and will produce updated values that are reprocessed into this archive.</p>
 
-<p>Documentation on this dataset can be found 
+<p>Documentation on this dataset can be found
 <a href="https://mesonet.agron.iastate.edu/info/datasets/climodat.html" target="_blank">here</a></p>
 
 <form method="GET" id="wxform" action="https://mesonet.agron.iastate.edu/cgi-bin/request/coop.py">
@@ -824,7 +824,7 @@ select '<option value="'||a.climate_site||'">'||a.id||' ['||a.name||'] -- '||a.c
 </table>
 
 <p><strong>Select Data Variables</strong>:
-<br /><i>Date and Day of Year are included automatically in the export. 
+<br /><i>Date and Day of Year are included automatically in the export.
 To select multiple data, hold CTRL key down while selecting options here.</i>
 <br /><select size=5 name="vars[]" MULTIPLE class="select">0
   <option value="high">Variable: High Air Temperature [F]</option>
@@ -842,12 +842,12 @@ To select multiple data, hold CTRL key down while selecting options here.</i>
 their choice dictates the variables to be included.</i>
 <br />
 <select size="5" name="model">
-  <option value="apsim">Model: APSIM MET File</option> 
-  <option value="century">Model: Century (Monthly Format)</option> 
-  <option value="daycent">Model: DailyDayCent (no extra drivers)</option> 
-  <option value="dndc">Model: DNDC</option> 
-  <option value="salus">Model: SALUS</option> 
-  <option value="swat">Model: SWAT (daily precip and temperature)</option> 
+  <option value="apsim">Model: APSIM MET File</option>
+  <option value="century">Model: Century (Monthly Format)</option>
+  <option value="daycent">Model: DailyDayCent (no extra drivers)</option>
+  <option value="dndc">Model: DNDC</option>
+  <option value="salus">Model: SALUS</option>
+  <option value="swat">Model: SWAT (daily precip and temperature)</option>
 </select></p>
 
 <input type="hidden" name="what" value="download" />
@@ -862,7 +862,7 @@ their choice dictates the variables to be included.</i>
 
 <p>The downloaded data file name will contain the weather station identifiers
 if you request data from 9 or less sites.  For requests over 9 sites,
-the filename will simply be "changeme". Refer to the drop-down above for reminder as to 
+the filename will simply be "changeme". Refer to the drop-down above for reminder as to
 which site it corresponds with.</p>
 
 <p><input type="submit" value="Request Data" /></p>
@@ -997,7 +997,7 @@ with data as (select siteid, min(date), max(date) from weather_data group by sit
 </p>
 <!--
 <p><strong>Select Data Variables:</strong>
-<br /><i>Date and Day of Year are included automatically in the export. 
+<br /><i>Date and Day of Year are included automatically in the export.
 To select multiple data, hold CTRL key down while selecting options here.</i>
 <br /><select size=5 name="vars" MULTIPLE class="select">0
   <option value="high">Variable: High Air Temperature [F]</option>
@@ -1038,10 +1038,10 @@ $t->content = <<<EOF
     <li role="presentation"><a href="#wdata" aria-controls="data" role="tab" data-toggle="tab">Data Visualization</a></li>
     <li role="presentation"><a href="#pubs" aria-controls="pubs" role="tab" data-toggle="tab">Publications</a></li>
   </ul>
-  
+
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane" id="data">
-    
+
 <form method="POST" action="dl.py" id="mainform">
 <div class="btn-group fauxtabs" role="group" aria-label="Pages">
   <button type="button" class="btn btn-primary" id="sites-btn">Sites</button>
@@ -1059,7 +1059,7 @@ $t->content = <<<EOF
 </div>
 <div class="clearfix"></div>
 
-<p>This download tool will auto-populate options in the following tabs based on the research sites selected below. 
+<p>This download tool will auto-populate options in the following tabs based on the research sites selected below.
 It is recommended to “Select All” sites if you want to retain the most options moving forward.</p>
 {$sitesui}
 </div>
@@ -1079,7 +1079,7 @@ It is recommended to “Select All” sites if you want to retain the most optio
 </div>
 <div class="clearfix"></div>
 
-<p>This download tool will auto-populate options in the following tabs based on the research sites selected below. 
+<p>This download tool will auto-populate options in the following tabs based on the research sites selected below.
 It is recommended to “Select All” sites if you want to retain the most options moving forward.</p>
 
 {$waterui}
@@ -1099,7 +1099,7 @@ It is recommended to “Select All” sites if you want to retain the most optio
 </div>
 <div class="clearfix"></div>
 
-<p>For sites and treatments you’ve selected, available agronomic data will be identified by black text; 
+<p>For sites and treatments you’ve selected, available agronomic data will be identified by black text;
 unavailable in grey. The usage of abbreviations <i>C</i>
 and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
 {$agronomicui}
@@ -1110,7 +1110,7 @@ and <i>N</i> below denote <i>carbon</i> and <i>nitrogen</i> respectively.</p>
   <button id="soil-selectall" type="button" class="btn btn-default sa"><i class="fa fa-check"></i> Select All</button>
 </div>
 <div class="clearfix"></div>
-<p>For sites and treatments you’ve selected, available soil data will be identified by black text; 
+<p>For sites and treatments you’ve selected, available soil data will be identified by black text;
 unavailable in grey.</p>
 <div class="clearfix"></div>
 
@@ -1171,28 +1171,28 @@ unavailable in grey.</p>
 <blockquote>
 <p>Please reference this data set in publications as:</p>
 
-<p>Chighladze, G., L.J. Abendroth, D. Herzmann, M. Helmers, L. Ahiablame, 
-B. Allred, L. Bowling, L. Brown, N. Fausey, J. Frankenberger, D. Jaynes, 
-X. Jia, J. Kjaersgaard, K. King, E. Kladivko, K. Nelson, L. Pease, 
-B. Reinhart, J. Strock, and M. Youssef 2021. Transforming Drainage Project Research Data 
-(USDA-NIFA Award No. 2015-68007-23193). National Agricultural Library - 
+<p>Chighladze, G., L.J. Abendroth, D. Herzmann, M. Helmers, L. Ahiablame,
+B. Allred, L. Bowling, L. Brown, N. Fausey, J. Frankenberger, D. Jaynes,
+X. Jia, J. Kjaersgaard, K. King, E. Kladivko, K. Nelson, L. Pease,
+B. Reinhart, J. Strock, and M. Youssef 2021. Transforming Drainage Project Research Data
+(USDA-NIFA Award No. 2015-68007-23193). National Agricultural Library -
 ARS - USDA. <a href="https://doi.org/10.15482/USDA.ADC/1521092" target="_blank">https://doi.org/10.15482/USDA.ADC/1521092</a></p>
 
-<p>You are encouraged to contact the Transforming Drainage Project personnel 
-listed above to ensure proper data interpretation and may also consider 
-co-authoring with them. You shall have no claim of ownership to any 
-intellectual property rights in any part of the data, content, functions, 
-features, code, data exploration tools, logos or other intellectual 
+<p>You are encouraged to contact the Transforming Drainage Project personnel
+listed above to ensure proper data interpretation and may also consider
+co-authoring with them. You shall have no claim of ownership to any
+intellectual property rights in any part of the data, content, functions,
+features, code, data exploration tools, logos or other intellectual
 property comprising this database.</p>
 
-<p>The coauthors individually and the Transforming Drainage Project 
-collectively shall NOT be responsible or liable for the accuracy, 
-reliability and completeness of any information included in the 
-database nor the suitability of its application for any particular purpose. 
-Data users are encouraged to notify the coauthors regarding data quality 
-and other issues concerning the data, tools, and functionality of this 
+<p>The coauthors individually and the Transforming Drainage Project
+collectively shall NOT be responsible or liable for the accuracy,
+reliability and completeness of any information included in the
+database nor the suitability of its application for any particular purpose.
+Data users are encouraged to notify the coauthors regarding data quality
+and other issues concerning the data, tools, and functionality of this
 website. Contact <a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a>
-with any questions or concerns 
+with any questions or concerns
 regarding usage and application of the data available at this site.
 </p>
 </blockquote>
@@ -1216,7 +1216,7 @@ timeout shown, but an email will still be delivered with the data.</div>
 <div id="proceed" style="display: none;">
   <p><input type="submit" value="Proceed with Download"></p>
 </div>
-    
+
 </div>
 <br clear="both" />
 <div class="pull-right">
@@ -1251,28 +1251,28 @@ located on farmer fields.
     <li role="presentation" class="active"><a href="#p1" aria-controls="p1" role="tab" data-toggle="tab">Refereed Journals</a></li>
     <li role="presentation"><a href="#p2" aria-controls="p2" role="tab" data-toggle="tab">Thesis and Dissertations</a></li>
   </ul>
-  
+
 <div class="tab-content">
 
     <div role="tabpanel" class="tab-pane active" id="p1">
 <p><blockquote>Articles with open access availability are <strong>in bold</strong>.
-These do not require a subscription to the journal to access. For individuals 
-without accessibility to certain journals, contact 
-<a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a> 
+These do not require a subscription to the journal to access. For individuals
+without accessibility to certain journals, contact
+<a href="mailto:isudatateam@iastate.edu">isudatateam@iastate.edu</a>
 for requests to articles below that are subscription-only.</blockquote></p>
 
 {$publisting}
     </div>
-    
+
     <div role="tabpanel" class="tab-pane" id="p2">
-<p><blockquote>Several graduate students were supported by and contributed to 
-the scientific discoveries and publications of the Transforming Drainage team. 
-Their theses and dissertations are provided here via links to their major 
+<p><blockquote>Several graduate students were supported by and contributed to
+the scientific discoveries and publications of the Transforming Drainage team.
+Their theses and dissertations are provided here via links to their major
 University library.</blockquote></p>
 
 {$theseslisting}
     </div>
-    
+
     <div role="tabpanel" class="tab-pane" id="p3">
 
 
@@ -1302,10 +1302,10 @@ located on farmer fields.</p>
 <li><a href="/td/plot_decagon.phtml" target="_blank">Soil Moisture and Temperature</a> (Still in Development)</li>
 </ul>
 
-<p>Project-wide tools are also available at 
+<p>Project-wide tools are also available at
 <a href="https://transformingdrainage.org/tools/" target="_blank">Transforming Drainage Tools</a>.
 You will find geospatial tools for identifying areas where these
-drainage practices may be successful as well as calculators to determine 
+drainage practices may be successful as well as calculators to determine
 installation specifications and effectiveness of practices.</p>
 
     </div><!-- ./wdata -->
@@ -1324,11 +1324,11 @@ that dataset will be listed here in the future.</p>
 
 </div>
 
-</div>    
+</div>
 
 <div class="clearfix"></div>
 <p>&nbsp;</p>
 <img src="/images/tdbanner.png" class="img img-responsive">
-        
+
 EOF;
 $t->render('single.phtml');

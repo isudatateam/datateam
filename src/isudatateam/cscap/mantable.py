@@ -2,7 +2,7 @@
 
 import datetime
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.database import get_dbconn
 from pyiem.webutil import iemapp
 
@@ -29,9 +29,8 @@ D7 = datetime.timedelta(days=7)
 
 
 @iemapp()
-def application(environ, start_response):
+def application(_environ, start_response):
     """Go Main"""
-    start_response("200 OK", [("Content-type", "text/html")])
     cursor.execute(
         """
         SELECT uniqueid, valid, cropyear, operation, biomassdate1,
@@ -123,7 +122,7 @@ def application(environ, start_response):
             data[site][cropyear][operation] = valid
 
     table0 = ""
-    df = read_sql(
+    df = pd.read_sql(
         """
     WITH sites as (
         SELECT uniqueid, latitude, longitude, officialfarmname
@@ -246,6 +245,7 @@ def application(environ, start_response):
                 table5 += "<td>%s</td>" % (data[site].get(yr, {}).get(op, ""),)
         table5 += "</tr>"
 
+    start_response("200 OK", [("Content-type", "text/html")])
     return [
         (
             """<!DOCTYPE html>

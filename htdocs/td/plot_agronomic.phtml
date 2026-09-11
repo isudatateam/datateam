@@ -8,10 +8,10 @@ $ungroup = isset($_GET["ungroup"]) ? $_GET["ungroup"]: '0';
 $errmsg = "";
 $varname = isset($_GET["varname"])? $_GET["varname"]: 'crop_yield';
 
-/* 
+/*
  with data as (select siteid, min(year),
  max(year) from agronomic_data GROUP by siteid)
- 
+
  SELECT '"'|| siteid || '"=>"' || siteid ||' ('|| min ||' to '|| max ||') ['
  || (max - min) + 1 ||' years]",' as d
  from data ORDER by d;
@@ -45,7 +45,7 @@ $ar = Array(
     "OH_Hardin2"=>"OH_Hardin2 (2008 to 2011) [4 years]",
     "OH_Henry"=>"OH_Henry (2008 to 2011) [4 years]",
     "OH_VanWert"=>"OH_VanWert (1997 to 2008) [12 years]",
-    "SD_Clay"=>"SD_Clay (2016 to 2017) [2 years]",   
+    "SD_Clay"=>"SD_Clay (2016 to 2017) [2 years]",
 		);
 $siteselect = td_site_select("site", $site, $ar);
 
@@ -58,31 +58,31 @@ $siteselect = td_site_select("site", $site, $ar);
 $ar = Array(
     "To Be Determined" => Array(
         "leaf_area_index" => "Leaf Area Index",
-        "final_plant_population" => "Final Plant Population", 
+        "final_plant_population" => "Final Plant Population",
             ),
     "Crop Yield" => Array(
         "grain_moisture" => "Grain Moisture",
-        "crop_yield" => "Crop Yield", 
+        "crop_yield" => "Crop Yield",
         "biomass_yield" => "Biomass Yield",
             ),
     "Plant and Grain Biomass" => Array(
         "whole_plant_biomass" => "Whole Plant Biomass",
         "vegetative_biomass" => "Vegetative Biomass",
-        "grain_biomass" => "Grain Biomass", 
-        "corn_cob_biomass" => "Corn Cob Biomass", 
+        "grain_biomass" => "Grain Biomass",
+        "corn_cob_biomass" => "Corn Cob Biomass",
             ),
 		"Total Nitrogen Content" => Array(
             "whole_plant_total_n" => "Whole Plant Total N",
             "vegetative_total_n" => "Vegetative Total N",
             "grain_total_n" => "Grain Total N",
-            "corn_cob_total_n" => "Corn Cob Total N", 
+            "corn_cob_total_n" => "Corn Cob Total N",
 				),
         "Total Carbon Content" => Array(
             "whole_plant_total_C" => "Whole Plant Total C",
             "vegetative_total_C" => "Vegetative Total C",
             "grain_total_C" => "Grain Total C",
-            "corn_cob_total_C" => "Corn Cob Total C", 
-                ),		
+            "corn_cob_total_C" => "Corn Cob Total C",
+                ),
 		);
 $varselect = make_select("varname", $varname, $ar);
 
@@ -123,7 +123,7 @@ select {
 <h3>Agronomic Data Plotting/Download</h3>
 
 <p>Agronomic data included in this visualization and aggregation tool are associated with the
-USDA-NIFA funded project: 
+USDA-NIFA funded project:
 "Managing Water for Increased Resiliency of Drained Agricultural Landscapes" (Award No.
 2015-68007-23193).</p>
 

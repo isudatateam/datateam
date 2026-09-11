@@ -103,7 +103,7 @@ function build_ui(){
 	$(".site-check").click(function(){
 		var state = $(this).attr('data-state');
 		if (! this.checked){
-			$(".state-check[value='"+state+"']").prop('checked', false);	
+			$(".state-check[value='"+state+"']").prop('checked', false);
 		}
 	});
 
@@ -119,7 +119,7 @@ function build_ui(){
 		$("#"+currentdiv).css("display", "none");
 		var btndiv = TABS[CURRENTTAB] +"-btn";
 		$("#"+btndiv).removeClass().addClass("btn btn-default");
-		
+
 		CURRENTTAB += increment;
 
 		var currentdiv = TABS[CURRENTTAB] +"-ui";
@@ -129,7 +129,7 @@ function build_ui(){
 
 		$('#next-btn').prop('disabled', ((CURRENTTAB + 1) == TABS.length));
 		$('#prev-btn').prop('disabled', (CURRENTTAB  == 0));
-		
+
 	});
 	$(".fauxtabs button").click(function() {
 		runfilter();
@@ -147,7 +147,7 @@ function build_ui(){
 
 		$('#next-btn').prop('disabled', ((CURRENTTAB + 1) == TABS.length));
 		$('#prev-btn').prop('disabled', (CURRENTTAB  == 0));
-		
+
 	});
 	$(".sa").click(function(){
 		var tabtitle = $(this).attr("id").replace("-selectall", "");
@@ -155,17 +155,17 @@ function build_ui(){
 	});
 	$("#missingvalue").change(function(){
 		if ($(this).val() == '__custom__'){
-			$("#missingvalue_opt").css('display', 'block');			
+			$("#missingvalue_opt").css('display', 'block');
 		} else {
 			$("#missingvalue_opt").css('display', 'none');
 		}
 	});
 	$("#agreewithterms").change(function(){
 		if ($(this).is(':checked')){
-			$("#proceed").css('display', 'block');			
+			$("#proceed").css('display', 'block');
 		} else {
 			$("#proceed").css('display', 'none');
-		}		
+		}
 	});
 	// https://stackoverflow.com/questions/7862233
 	// Change hash for page-reload

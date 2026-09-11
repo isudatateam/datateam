@@ -3,7 +3,7 @@
 /**
  * AJAX Cross Domain (PHP) Proxy 0.7
  *    by Iacovos Constantinou (http://www.iacons.net)
- * 
+ *
  * Released under CC-GNU GPL
  */
 
@@ -85,7 +85,7 @@ curl_setopt( $ch, CURLOPT_HTTPHEADER, $request_headers );   // (re-)send headers
 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );    // return response
 curl_setopt( $ch, CURLOPT_HEADER, true );      // enabled response headers
 if ($request_method == 'GET'){
-	
+
 }
 elseif ($request_method == 'POST'){
 	curl_setopt( $ch, CURLOPT_POST, true );
@@ -94,7 +94,7 @@ elseif ($request_method == 'POST'){
 	curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'PUT' );
 	curl_setopt( $ch, CURLOPT_POSTFIELDS, $xml );
 }
-	
+
 
 // retrieve response (headers and content)
 $response = curl_exec( $ch );

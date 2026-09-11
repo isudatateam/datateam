@@ -13,10 +13,10 @@ if (strlen($date) != 10){
 $days = isset($_GET["days"]) ? intval($_GET["days"]): 100;
 $by = isset($_GET['by']) ? $_GET['by']: 'daily';
 
-/* 
+/*
  with data as (select siteid, coalesce(plotid, location, '') as pid, min(date),
  max(date) from soil_moisture_data GROUP by siteid, pid)
- 
+
  SELECT '"'||siteid || '--'|| pid || '"=>"' || siteid || ' '||
  pid||' ('|| min ||' to '|| max ||') ['|| (max - min) ||' days]",' as d
  from data ORDER by d;
@@ -89,14 +89,14 @@ $ar = Array(
 		);
 $byselect = make_select("by", $by, $ar);
 
-$jsurl = sprintf("decagon__%s__%s__%s__%s__%s.js", 
+$jsurl = sprintf("decagon__%s__%s__%s__%s__%s.js",
     $site, $date, $days, $by, "all");
 $jsextra = "<script src=\"{$jsurl}\"></script>";
 $interface = <<<EOF
 <div id="hc1" style="width: 100%; height: 400px;"></div>
 <div id="hc2" style="width: 100%; height: 400px;"></div>
 EOF;
-	
+
 $t = new MyView();
 $t->thispage = "td-soilmoisture";
 $t->title = "TD Soil Moisture Data Plotting/Download";
@@ -135,7 +135,7 @@ select {
 <h3>Soil Moisture Data Plotting/Download</h3>
 
 <p>Soil Moisture data included in this visualization and aggregation tool are associated with the
-USDA-NIFA funded project: 
+USDA-NIFA funded project:
 "Managing Water for Increased Resiliency of Drained Agricultural Landscapes" (Award No.
 2015-68007-23193).</p>
 
@@ -167,10 +167,10 @@ USDA-NIFA funded project:
 <input type="submit" value="Run">
 </form>
 
-<p>Plotting of data may not occur if the time period selected is more than 
-~700 days. This is due to the amount of data overwhelming the user’s web 
-browser and failing to load. Select a shorter time span if you run into 
-this problem. Long time periods can be selected without problems if only 
+<p>Plotting of data may not occur if the time period selected is more than
+~700 days. This is due to the amount of data overwhelming the user’s web
+browser and failing to load. Select a shorter time span if you run into
+this problem. Long time periods can be selected without problems if only
 exporting the data.</p>
 
 <p>{$interface}</p>
@@ -188,29 +188,29 @@ Please see this <a target="_blank" href="https://docs.google.com/document/d/1K_F
 to denote quality control.
 </li>
 <li><strong>How were data collected?</strong><br />
-Variations exist across research sites in methodology and frequency of 
+Variations exist across research sites in methodology and frequency of
 		measurements. Generalized site information is provided below in the table.
-		Detailed descriptions are available from the 
+		Detailed descriptions are available from the
 		<a target="_blank" href="https://sites.google.com/site/transformingdrainage/database/export-sampling-methods">Transforming Drainage internal website</a>.</li>
 </ol>
 
 <h3>Observation Site Collection Interval</h3>
 
 <p>This table lists the observation time interval at each site. If details are
-not provided below, the site does not have data entered yet or has issues that need 
+not provided below, the site does not have data entered yet or has issues that need
 to be resolved first relative to quality concerns.</p>
 <pre>
  ST  SITE       INTERVAL  SAMPLING DEPTHS [CM]
 [IA] BEAR       60 minute  7, 15, 30, 60, 90
 [IA] MAASS      5 minute   7, 15, 30, 60, 90
 [IA] SERF_IA    5 minute  10, 20, 40, 60, 100
-[IN] ACRE       
+[IN] ACRE
 [IN] DPAC       5 minute  10, 20, 40, 60, 100
 [MN] HICKS_B    5 or 60   10, 20, 40, 60, 100
-[MN] HICKS.P    
-[MN] HICKS.S    
-[MN] SWROC      
-[ND] CLAY_C     
+[MN] HICKS.P
+[MN] HICKS.S
+[MN] SWROC
+[ND] CLAY_C
 [ND] CLAY_R     30 minute  5, 15, 30, 45, 60, 75, 90
 [ND] CLAY_U     30 minute  5, 15, 30, 45, 60, 75, 90
 [ND] FAIRM      30 minute  5, 15, 30, 45, 60, 75, 90
@@ -227,9 +227,9 @@ selected to be within the zone of influence of the control structure.  It most l
 moisture.</li>
 
 		<li><strong>HICKS_B</strong> Soil moisture is measured at a single location within each management zone, midway between a pair of drainage lines, and reported to represent the entire zone.</li>
-		
+
 		<li><strong>STJOHNS</strong> Soil moisture data at 3 specific locations each in free and managed drainage areas.</li>
- 
+
 </ul>
 
 <p><strong>Download Options:</strong> Download the figure by right clicking

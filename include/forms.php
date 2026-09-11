@@ -28,7 +28,7 @@ function td_site_select($name, $selected, $ar){
 
  function make_select($name, $selected, $ar, $jscallback="", $cssclass=''){
         // Create a simple HTML select box
-        $s = sprintf("<select name=\"%s\"%s%s>\n", $name, 
+        $s = sprintf("<select name=\"%s\"%s%s>\n", $name,
                         ($jscallback != "")? " onChange=\"$jscallback(this.value)\"" : "",
                         ($cssclass != "")? " class=\"$cssclass\"" : "");
         foreach($ar as $key => $val){
@@ -151,10 +151,10 @@ function hour24Select($selected, $name){
     $s .= "<option value='".$i."' ";
     if ($i == intval($selected)) $s .= "SELECTED";
     $s .= ">". $i ."</option>";
-  } 
+  }
   $s .= "</select>\n";
   return $s;
-} 
+}
 
 function hourSelect($selected, $name, $jsextra=''){
   $s = "<select name=\"{$name}\" {$jsextra}>\n";
@@ -256,17 +256,17 @@ function daySelect2($selected, $name, $jsextra=''){
   }
   $s .= "</select>\n";
   return $s;
-} // End 
+} // End
 
 function segmentSelect($dbconn, $year, $month, $selected, $name="segid")
-{ 
+{
   $s = "<select name=\"$name\">\n";
   $rs = pg_prepare($dbconn, "R_S",
   		"SELECT segid, major, minor from roads_base "
   		." WHERE archive_begin <= $1 and archive_end > $1 ORDER by major ASC");
   $rs = pg_execute($dbconn, "R_S", Array("${year}-${month}-01"));
   for ($i=0; $row = @pg_fetch_array($rs, $i); $i++)
-  { 
+  {
     $s .= "<option value=\"". $row["segid"] ."\" ";
     if ($row["segid"] == $selected) $s .= "SELECTED";
     $s .= ">". $row["major"] ." -- ". $row["minor"] ."</option>";

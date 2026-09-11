@@ -362,7 +362,7 @@ function radio($varname, $vals)
                     echo "</div></div>";
                 } // End of cover
                 echo "</div></div></div>";
-            } // End of field loop 
+            } // End of field loop
 
             echo "</div>";
 

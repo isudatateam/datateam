@@ -19,7 +19,7 @@ def main():
 
     cursor.execute(
         """SELECT station, extract(year from day) as yr, count(*)
-    from hayhoe_daily WHERE high is not null and low is not null 
+    from hayhoe_daily WHERE high is not null and low is not null
     and precip is not null and model = %s and scenario = %s
     GROUP by station, yr""",
         (MODEL, SCENARIO),

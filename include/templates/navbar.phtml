@@ -204,7 +204,7 @@ if (isset($_SERVER["REMOTE_USER"])) {
                 foreach ($_pages as $idx => $page) {
                     if (!isset($_SERVER["REMOTE_USER"]) && isset($page["auth"])) continue;
                     echo sprintf(
-                        "<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\" 
+                        "<li class=\"dropdown%s\">\n<a class=\"dropdown-toggle\"
         data-toggle=\"dropdown\" href=\"#\">%s</a>\n",
                         ($ar[0] == $idx) ? " active" : "",
                         get_title($page)
