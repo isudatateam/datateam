@@ -242,7 +242,7 @@ def compare(hascols, wanted):
 def do_work(form):
     """do great things"""
     pgconn = get_dbconnstr("td")
-    email = form.get("email")
+    email = form.get("email", "")
     sites = form.getall("sites[]")
     if not sites:
         sites.append("XXX")
@@ -536,9 +536,12 @@ def application(environ, start_response):
         return [b"You did not agree to download terms."]
     form = parse_formvars(environ)
     agree = form.get("agree")
+    email = form.get("email", "")
     start_response("200 OK", [("Content-type", "text/plain")])
     if agree != "AGREE":
         return [b"You did not agree to download terms."]
+    if not email or "example" in email:
+        return [b"Email address is required."]
 
     return [do_work(form)]
 

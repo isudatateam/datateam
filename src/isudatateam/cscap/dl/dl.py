@@ -662,7 +662,10 @@ def do_work(environ, start_response):
     agree = environ.get("agree")
     if agree != "AGREE":
         raise NoDataFound("You did not agree to download terms.")
-    email = environ.get("email")
+    email = environ.get("email", "")
+    if not email or "example" in email:
+        raise NoDataFound("Email address is required.")
+
     sites = ensure_list(environ, "sites[]")
     # treatments = form.getlist('treatments[]')
     agronomic = redup(ensure_list(environ, "agronomic[]"))
