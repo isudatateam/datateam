@@ -8,9 +8,6 @@ select string_agg(column_name, ', ') from
 import os
 import re
 import shutil
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 import numpy as np
 import pandas as pd
@@ -723,11 +720,6 @@ def do_work(environ, start_response):
 
     # Send to client
     writer.close()
-    msg = MIMEMultipart()
-    msg["Subject"] = "Sustainable Corn CAP Dataset"
-    msg["From"] = "ISU Data Team <isudatateam@iastate.edu>"
-    msg["To"] = email
-    msg.preamble = "Data"
     # conservative limit of 8 MB
     # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
     tmpfn = f"cscap_{utc():%Y%m%d%H%M%S}.xlsx"
@@ -738,10 +730,6 @@ def do_work(environ, start_response):
         uri,
     )
 
-    msg.attach(MIMEText(etext))
-    _s = smtplib.SMTP("localhost")
-    _s.sendmail(msg["From"], msg["To"], msg.as_string())
-    _s.quit()
     os.unlink("/tmp/cscap.xlsx")
     pgconn = get_dbconn("sustainablecorn")
     cursor = pgconn.cursor()
@@ -752,7 +740,7 @@ def do_work(environ, start_response):
     cursor.close()
     pgconn.commit()
     start_response("200 OK", [("Content-type", "text/plain")])
-    return [b"Email Delivered!"]
+    return [etext.encode("UTF-8")]
 
 
 def preventive_log(pgconn):
