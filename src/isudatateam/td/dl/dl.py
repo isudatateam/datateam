@@ -7,9 +7,6 @@ select string_agg(column_name, ', ') from
 
 import os
 import shutil
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 import numpy as np
 import pandas as pd
@@ -463,11 +460,6 @@ def do_work(form):
         )
     # Send to client
     writer.close()
-    msg = MIMEMultipart()
-    msg["Subject"] = "Transforming Drainage Dataset"
-    msg["From"] = "ISU Data Team <isudatateam@iastate.edu>"
-    msg["To"] = email
-    msg.preamble = "Data"
     try:
         shutil.copyfile(f"/tmp/{tmpfn}", f"/var/webtmp/{tmpfn}")
         os.unlink(f"/tmp/{tmpfn}")
@@ -478,12 +470,6 @@ def do_work(form):
         utc().strftime("%d %B %Y %H:%M:%S"),
         uri,
     )
-
-    msg.attach(MIMEText(etext))
-
-    if email is not None:
-        with smtplib.SMTP("localhost") as s:
-            s.sendmail(msg["From"], msg["To"], msg.as_string())
     pgconn = get_dbconn("td")
     cursor = pgconn.cursor()
     cursor.execute(
@@ -491,7 +477,7 @@ def do_work(form):
     )
     cursor.close()
     pgconn.commit()
-    return b"Email Delivered!"
+    return etext.encode("UTF-8")
 
 
 def preventive_log(pgconn, environ):
