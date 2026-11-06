@@ -724,10 +724,10 @@ def do_work(environ, start_response):
     # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
     tmpfn = f"cscap_{utc():%Y%m%d%H%M%S}.xlsx"
     shutil.copyfile("/tmp/cscap.xlsx", "/var/webtmp/%s" % (tmpfn,))
-    uri = "https://datateam.agron.iastate.edu/tmp/%s" % (tmpfn,)
-    etext = EMAILTEXT % (
-        utc().strftime("%d %B %Y %H:%M:%S"),
-        uri,
+    uri = f"https://datateam.agron.iastate.edu/tmp/{tmpfn}"
+    etext = (
+        "<h3>Download Ready!</h3> "
+        f'<p>This <a href="{uri}">download link</a> will expire in 1 day.</p>'
     )
 
     os.unlink("/tmp/cscap.xlsx")
@@ -739,6 +739,7 @@ def do_work(environ, start_response):
     )
     cursor.close()
     pgconn.commit()
+    pgconn.close()
     start_response("200 OK", [("Content-type", "text/plain")])
     return [etext.encode("UTF-8")]
 

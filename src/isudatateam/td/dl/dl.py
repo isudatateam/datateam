@@ -466,9 +466,9 @@ def do_work(form):
     except PermissionError:
         pass
     uri = f"https://datateam.agron.iastate.edu/tmp/{tmpfn}"
-    etext = EMAILTEXT % (
-        utc().strftime("%d %B %Y %H:%M:%S"),
-        uri,
+    etext = (
+        "<h3>Download Ready!</h3> "
+        f'<p>This <a href="{uri}">download link</a> will expire in 1 day.</p>'
     )
     pgconn = get_dbconn("td")
     cursor = pgconn.cursor()
@@ -477,6 +477,7 @@ def do_work(form):
     )
     cursor.close()
     pgconn.commit()
+    pgconn.close()
     return etext.encode("UTF-8")
 
 

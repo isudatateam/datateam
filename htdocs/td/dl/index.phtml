@@ -616,7 +616,7 @@ label { display: block !important; margin-left: 1.5em;}
 EOF;
 $t->jsextra = <<<EOF
 <script src="/vendor/jquery-ui/1.11.4/jquery-ui.js"></script>
-<script src="dl.js?v=7"></script>
+<script src="dl.js?v=8"></script>
 EOF;
 
 $sitesui = build_sites_ui();
@@ -1163,7 +1163,7 @@ unavailable in grey.</p>
     <input type="text" name="email" id="myemail" placeholder="joeuser@iastate.edu" class="form-control" aria-describedby="helpEmailBlock">
     <label for="myemail2">Verify Email Address:</label>
     <input type="text" name="email2" id="myemail2" placeholder="joeuser@iastate.edu" class="form-control" aria-describedby="helpEmailBlock">
-<span id="helpEmailBlock" class="help-block">You will be emailed the exported data file once generated.</span>
+<span id="helpEmailBlock" class="help-block">A link to the file will be generated.</span>
 </div>
 <br class="clearfix" />
 
@@ -1211,7 +1211,7 @@ on how to download your data file. Large data requests may result in a processin
 timeout shown, but an email will still be delivered with the data.</div>
 
 <div class="alert alert-info" role="alert" id="dlmsg2" style="display: none;">
-<strong>Completed</strong>: Please check your email for download information!</div>
+<strong>Completed</strong>: <span id="dlmsg2text"></span></div>
 
 <div id="proceed" style="display: none;">
   <p><input type="submit" value="Proceed with Download"></p>
