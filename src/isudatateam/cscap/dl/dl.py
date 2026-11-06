@@ -8,6 +8,7 @@ select string_agg(column_name, ', ') from
 import os
 import re
 import shutil
+import tempfile
 
 import numpy as np
 import pandas as pd
@@ -678,7 +679,9 @@ def do_work(environ, start_response):
         missing = environ.get("custom_missing", "M")
     detectlimit = environ.get("detectlimit", "1")
 
-    writer = pd.ExcelWriter("/tmp/cscap.xlsx", engine="xlsxwriter")
+    fd, workbook_path = tempfile.mkstemp(prefix="cscap_", suffix=".xlsx")
+    os.close(fd)
+    writer = pd.ExcelWriter(workbook_path, engine="xlsxwriter")
 
     # First sheet is Data Dictionary
     if "SHM5" in shm:
@@ -721,16 +724,20 @@ def do_work(environ, start_response):
     # Send to client
     writer.close()
     # conservative limit of 8 MB
-    # if os.stat('/tmp/cscap.xlsx').st_size > 8000000:
-    tmpfn = f"cscap_{utc():%Y%m%d%H%M%S}.xlsx"
-    shutil.copyfile("/tmp/cscap.xlsx", "/var/webtmp/%s" % (tmpfn,))
+    # if os.stat(workbook_path).st_size > 8000000:
+    fd, download_path = tempfile.mkstemp(
+        dir="/var/webtmp", prefix="cscap_", suffix=".xlsx"
+    )
+    os.close(fd)
+    tmpfn = os.path.basename(download_path)
+    shutil.copyfile(workbook_path, download_path)
     uri = f"https://datateam.agron.iastate.edu/tmp/{tmpfn}"
     etext = (
         "<h3>Download Ready!</h3> "
         f'<p>This <a href="{uri}">download link</a> will expire in 1 day.</p>'
     )
 
-    os.unlink("/tmp/cscap.xlsx")
+    os.unlink(workbook_path)
     pgconn = get_dbconn("sustainablecorn")
     cursor = pgconn.cursor()
     cursor.execute(
@@ -740,7 +747,7 @@ def do_work(environ, start_response):
     cursor.close()
     pgconn.commit()
     pgconn.close()
-    start_response("200 OK", [("Content-type", "text/plain")])
+    start_response("200 OK", [("Content-type", "text/html")])
     return [etext.encode("UTF-8")]
 
 
