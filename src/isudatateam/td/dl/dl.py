@@ -7,6 +7,7 @@ select string_agg(column_name, ', ') from
 
 import os
 import shutil
+import uuid
 
 import numpy as np
 import pandas as pd
@@ -251,7 +252,7 @@ def do_work(form):
     if missing == "__custom__":
         missing = form.get("custom_missing", "M")
 
-    tmpfn = f"td_{utc():%Y%m%d%H%M%S}.xlsx"
+    tmpfn = f"td_{uuid.uuid4().hex}.xlsx"
     writer = pd.ExcelWriter(f"/tmp/{tmpfn}", engine="xlsxwriter")
 
     # First sheet is Data Dictionary
@@ -460,15 +461,13 @@ def do_work(form):
         )
     # Send to client
     writer.close()
-    try:
-        shutil.copyfile(f"/tmp/{tmpfn}", f"/var/webtmp/{tmpfn}")
-        os.unlink(f"/tmp/{tmpfn}")
-    except PermissionError:
-        pass
+    # Failures propagate so we never return a link to an unpublished file
+    shutil.copyfile(f"/tmp/{tmpfn}", f"/var/webtmp/{tmpfn}")
+    os.unlink(f"/tmp/{tmpfn}")
     uri = f"https://datateam.agron.iastate.edu/tmp/{tmpfn}"
-    etext = EMAILTEXT % (
-        utc().strftime("%d %B %Y %H:%M:%S"),
-        uri,
+    etext = (
+        "<h3>Download Ready!</h3> "
+        f'<p>This <a href="{uri}">download link</a> will expire in 1 day.</p>'
     )
     pgconn = get_dbconn("td")
     cursor = pgconn.cursor()
@@ -477,6 +476,7 @@ def do_work(form):
     )
     cursor.close()
     pgconn.commit()
+    pgconn.close()
     return etext.encode("UTF-8")
 
 

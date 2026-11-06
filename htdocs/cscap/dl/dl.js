@@ -108,6 +108,7 @@ function build_ui(){
 		    data: $(this).serialize(),
 		    success: function(data)
 		    {
+		    	$("#dlmsg2text").html(data);
 		    	$("#dlmsg2").show();
 		    	$("#dlmsg").hide();
 		    },
